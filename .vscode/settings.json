@@ -1,0 +1,9 @@
+{
+  "phpserver.port": 1111,
+  "phpserver.relativePath": "src/public",
+  "markdown.extension.toc.levels": "2..6",
+  "markdown.extension.toc.omittedFromToc": {
+    "DEVELOPMENT.md": ["## Table of Contents"]
+  },
+  "cSpell.words": ["appspecific"]
+}
