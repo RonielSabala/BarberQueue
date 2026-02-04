@@ -47,8 +47,14 @@ class Template
     private function includePartialView(string $partialViewPath)
     {
         $file_path = self::$partialViewsPath . $partialViewPath;
+
+        // Fallback
         if (!file_exists($file_path)) {
             $file_path = _VIEWS_DIR . '/_partials/' . $partialViewPath;
+        }
+
+        if (!file_exists($file_path)) {
+            return;
         }
 
         include $file_path;
