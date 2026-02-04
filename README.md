@@ -6,23 +6,16 @@ BarberQueue is a web application designed to improve the waiting experience at b
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Motivation](#motivation)
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
-    - [Email Setup (Optional)](#email-setup-optional)
-    - [Google Setup (Optional)](#google-setup-optional)
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
-  - [`client`](#client)
-  - [`barber`](#barber)
-  - [`assistant`](#assistant)
-  - [`admin`](#admin)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Authors](#authors)
@@ -153,40 +146,36 @@ Open your browser at: `http://localhost:1111`
 
 Four main roles exist in the system:
 
-### `client`
+### `client` <!-- omit in toc -->
 
-- Browse available barbershops and view live queues.
-- Join a queue as an individual or as a group.
+- Browse available barbershops and view their live queue.
+- Join/leave a queue as an individual or as a group.
 - Choose a preferred barber or opt for the next available barber.
-- Leave a queue.
 - View personal turn details and, if in a group, view other group members' turns and group wait estimate.
 - Leave reviews to barbers and barbershops.
 
-### `barber`
+### `barber` <!-- omit in toc -->
 
 - Sign in/out for service shifts and mark breaks.
 - View their personal queue with detailed information on assigned turns.
-- See the live shop queue in context with aggregated stats.
 - Start/finish service for a client.
 - Access personal statistics and historical performance metrics.
-- Update availability and simple profile information.
 
-### `assistant`
+### `assistant` <!-- omit in toc -->
 
 - Enqueue clients and groups on behalf of customers.
 - Provide a staff-facing view of the live queue to support front-desk operations.
 - Perform limited actions to support barbers (e.g., mark client as present, mark client as away).
 
-### `admin`
+### `admin` <!-- omit in toc -->
 
 Full management of one or more barbershops they administer:
 
 - CRUD operations for employees (barbers & assistants).
-- Manage shop settings: visibility, open/close times and the number of maximum concurrent clients.
+- Manage rules & settings: barbershop visibility, open/close times, maximum number of concurrent clients, allowed absence timeout, group policies, and queue assignment strategies.
 - Upload and manage barbershop photos and content.
-- View shop-level dashboards, metrics and historical data.
-- Moderate reviews.
-- Configure business rules such as allowed absence timeout, group policies, and queue assignment strategies.
+- View business-level dashboards, metrics and historical data.
+- Moderate client reviews.
 
 ---
 
