@@ -7,14 +7,14 @@ require_once BASE_DIR . 'vendor/autoload.php';
 require_once BASE_DIR . 'config/db.php';
 
 // Read SQL scripts
-$creationSql = file_get_contents(CREATION_FILE_PATH);
-if (!$creationSql) {
-    die("The file could not be read to create the database");
+$creationSql = @file_get_contents(CREATION_FILE_PATH);
+if ($creationSql === false) {
+    die("Failed to read database creation file: " . CREATION_FILE_PATH);
 }
 
-$insertionsSql = file_get_contents(INSERTIONS_FILE_PATH);
-if (!$insertionsSql) {
-    die("The file could not be read to insert the data");
+$insertionsSql = @file_get_contents(INSERTIONS_FILE_PATH);
+if ($insertionsSql === false) {
+    die("Failed to read data insertion file: " . INSERTIONS_FILE_PATH);
 }
 
 try {

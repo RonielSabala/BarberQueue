@@ -6,4 +6,4 @@ $dotenv->safeLoad();
 $host = $_ENV['HOST'];
 $user = $_ENV['USER'];
 $pass = $_ENV['PASS'];
-$db = "incidents_db";
+$db = "barber_queue_db";
