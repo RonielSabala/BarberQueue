@@ -7,6 +7,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
 ## Table of Contents
 
 - [Motivation](#motivation)
+- [Solution](#solution)
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
@@ -35,7 +36,7 @@ Current challenges this project addresses:
 - Groups (families or friends) arriving together increase queue length and complicate ordering.
 - Client preferences for specific barbers alter queue behavior and increase uncertainty for those who arrive later.
 
-### Solution <!-- omit in toc -->
+## Solution
 
 BarberQueue gives customers and barbershops tools to manage queues in real time, allowing:
 
@@ -61,7 +62,7 @@ The following items are explicitly out of scope for the current project:
 ### Requirements
 
 - PHP>=8.4.7
-- Python>=3.11
+- Python>=3.13.9
 - Composer=>2.8.9
 - MySQL>=8.0.42
 
@@ -69,11 +70,19 @@ The following items are explicitly out of scope for the current project:
 
 ### Virtual Environment Setup
 
+Before installation, you'll need to execute this command in **PowerShell**:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
+
+> It allows running unsigned local scripts.
+
 From the repository root:
 
 ```bash
 # Create virtual environment
-py -3.11 -m venv .venv
+python -m venv .venv
 
 # Activate (Windows)
 .venv\Scripts\Activate.ps1
@@ -240,7 +249,7 @@ Full management of one or more barbershops they administer:
 Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
-2. Create a feature branch: `feature/my-change`.
+2. Create a feature branch: `feat/my-change`
 3. Commit, push, and open a pull request describing the change and reason.
 
 > Please, ensure your code follows the existing style and includes appropriate documentation.
@@ -249,10 +258,12 @@ Contributions are welcome. Suggested workflow:
 
 ## Authors
 
-- Roniel Antonio Sabala Germán
-- Yerelin Vanessa Rosario Taveras
-- Idelka Regina Rodríguez Jáquez
-- Jheinel Brown
+| Name | ID | Contact |
+| --- | ---: | --- |
+| Roniel Antonio Sabala Germán | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com) |
+| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com) |
+| Idelka Regina Rodríguez Jáquez | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
+| Jheinel Jesús Brown Curbata | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com) |
 
 ---
 
