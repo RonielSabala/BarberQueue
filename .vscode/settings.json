@@ -2,9 +2,16 @@
   "phpserver.port": 1111,
   "phpserver.relativePath": "src/public",
   "phpserver.autoOpenOnReload": true,
+  "python.terminal.activateEnvironment": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
   },
-  "cSpell.words": ["appspecific"]
+  "cSpell.words": ["appspecific"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    ".pytest_cache": true,
+    "*.egg-info": true
+  }
 }
