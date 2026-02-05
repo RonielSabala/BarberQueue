@@ -1,5 +1,5 @@
 {
-  "phpserver.port": 1111,
+  "phpserver.port": 3000,
   "phpserver.relativePath": "src/public",
   "phpserver.autoOpenOnReload": true,
   "python.terminal.activateEnvironment": true,

@@ -141,7 +141,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
     ```md
-    http://localhost:1111/auth/GoogleController.php
+    http://localhost:3000/auth/GoogleController.php
     ```
 
 4. Copy **Client ID** and **Client secret** into `.env`.
@@ -163,10 +163,10 @@ php src/db/install.php
 Start the built-in PHP server:
 
 ```bash
-php -S localhost:1111 -t src/public
+php -S localhost:3000 -t src/public
 ```
 
-Open your browser at: `http://localhost:1111`
+Open your browser at: `http://localhost:3000`
 
 ---
 

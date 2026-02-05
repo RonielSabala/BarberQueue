@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from selenium import webdriver
 
-PROJECT_URL = "http://localhost:1111"
+PROJECT_URL = "http://localhost:3000"
 OUTPUT_DIR = Path(__file__).resolve().parent / "results" / "captures"
 
 
