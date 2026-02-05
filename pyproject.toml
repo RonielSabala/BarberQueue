@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "barberqueue"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[dependency-groups]
+lint = ["ruff"]
+type-check = ["pyright"]
+tests = ["pytest", "pytest-html", "selenium"]
+dev = [
+    { include-group = "lint" },
+    { include-group = "type-check" },
+    { include-group = "tests" },
+]
+
+# Tool configs
+
+[tool.ruff]
+fix = true
+preview = true
+line-length = 88
+indent-width = 4
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 72
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = false
+
+[tool.pyright]
+typeCheckingMode = "standard"
+reportIncompatibleMethodOverride = "none"

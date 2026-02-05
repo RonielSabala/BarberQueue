@@ -10,10 +10,12 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
+  - [Virtual Environment Setup](#virtual-environment-setup)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
+- [Run Tests](#run-tests)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Troubleshooting](#troubleshooting)
@@ -59,12 +61,45 @@ The following items are explicitly out of scope for the current project:
 ### Requirements
 
 - PHP>=8.4.7
+- Python>=3.11
 - Composer=>2.8.9
 - MySQL>=8.0.42
 
 ---
 
+### Virtual Environment Setup
+
+From the repository root:
+
+```bash
+# Create virtual environment
+py -3.11 -m venv .venv
+
+# Activate (Windows)
+.venv\Scripts\Activate.ps1
+
+# Activate (macOS/Linux)
+source .venv/bin/activate
+```
+
+---
+
 ### Install Dependencies
+
+#### Python
+
+```bash
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e ".[dev]"
+```
+
+If you later modify dependencies:
+
+```bash
+python -m pip install -e . --upgrade
+```
+
+#### PHP
 
 Use system terminal (recommended):
 
@@ -132,6 +167,17 @@ php -S localhost:1111 -t src/public
 ```
 
 Open your browser at: `http://localhost:1111`
+
+---
+
+## Run Tests
+
+```bash
+# From the repository root
+pytest
+```
+
+A folder named `tests/results/` will be generated (if it does not already exist) where the screenshots and an HTML report of the executed tests will be saved.
 
 ---
 
