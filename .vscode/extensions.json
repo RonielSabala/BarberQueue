@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "devsense.phptools-vscode",
+    "devsense.profiler-php-vscode",
+    "bmewburn.vscode-intelephense-client",
+    "brapifra.phpserver",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
