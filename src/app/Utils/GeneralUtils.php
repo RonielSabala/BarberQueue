@@ -5,6 +5,15 @@ namespace App\Utils;
 
 class GeneralUtils
 {
+    public static function removePrefix(string $text, string $prefix): string
+    {
+        if (!str_starts_with($text, $prefix)) {
+            return $text;
+        }
+
+        return substr($text, strlen($prefix));
+    }
+
     public static function echoAlert(
         string $message,
         string $type = 'danger',
@@ -12,7 +21,7 @@ class GeneralUtils
         bool $showReturn = true
     ) {
         if ($showReturn && empty($returnRoute)) {
-            $returnRoute = UriUtils::getNthUri(-2);
+            $returnRoute = UriCache::getIthUri(-2);
         }
 
         echo "

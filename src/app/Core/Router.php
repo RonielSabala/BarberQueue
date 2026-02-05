@@ -3,23 +3,22 @@
 namespace App\Core;
 
 use App\Utils\UriUtils;
+use App\Utils\UriCache;
 use App\Utils\GeneralUtils;
 
-
+const _LEGACY_VIEWS_PATH = "src/public/views/";
 const _PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
 class Router
 {
     public function dispatch()
     {
-        // Start history if inactive
-        if (!isset($_SESSION['uri_history'])) {
-            $_SESSION['uri_history'] = [];
-        }
+        UriCache::start();
 
-        // Get URI and view name
-        $uri = UriUtils::get();
-        [$route, $view_name] = UriUtils::split($uri);
+        // Get route and view
+        $uri = UriCache::getCurrentUri();
+        $uri = GeneralUtils::removePrefix($uri, _LEGACY_VIEWS_PATH);
+        [$route, $view] = UriUtils::split($uri);
 
         // Get uri route
         $uri_route = _ROUTES[$uri] ?? null;
@@ -36,14 +35,14 @@ class Router
         }
 
         // Get final view name
-        if ($view_name === '' || ($route === '' && $view_name === 'index.php')) {
-            $final_view_name = _DEFAULT_VIEW_NAME;
+        if ($view === '' || ($route === '' && $view === 'index.php')) {
+            $view_name = _DEFAULT_VIEW_NAME;
         } else {
-            $final_view_name = preg_replace('/\.php$/', '', $view_name);
+            $view_name = preg_replace('/\.php$/', '', $view);
         }
 
         // Config template paths
-        Template::$viewPath = $route . '/' . $final_view_name;
+        Template::$viewPath = $route . '/' . $view_name;
         Template::$partialViewsPath = $route;
 
         // Call controller

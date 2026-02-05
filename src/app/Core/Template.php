@@ -3,14 +3,14 @@
 namespace App\Core;
 
 
-const _VIEWS_DIR = __DIR__ . "/../../public/views";
 const _VIEWS_CONTENT_DIR = __DIR__ . "/../../public";
+const _VIEWS_DIR = _VIEWS_CONTENT_DIR . "/" . "views";
 const _JSON_HEADER = "Content-Type: application/json; charset=utf-8";
 
 class Template
 {
-    static public $partialViewsPath = '';
-    static public $viewPath = '';
+    static public string $partialViewsPath = '';
+    static public string $viewPath = '';
     private static bool $jsonMode = false;
 
     public static function enableJsonMode()
