@@ -3,21 +3,21 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "barberqueue"
+name = "barberqueue-tests"
 version = "0.1.0"
-requires-python = ">=3.11"
+description = "Test suite for BarberQueue (pytest + Selenium)."
+requires-python = ">=3.13"
 
-[dependency-groups]
-lint = ["ruff"]
-type-check = ["pyright"]
-tests = ["pytest", "pytest-html", "selenium"]
-dev = [
-    { include-group = "lint" },
-    { include-group = "type-check" },
-    { include-group = "tests" },
-]
+[project.optional-dependencies]
+dev = ["ruff", "pyright", "pytest", "pytest-html", "selenium"]
 
 # Tool configs
+
+[tool.setuptools]
+package-dir = { "" = "tests" }
+
+[tool.pytest.ini_options]
+addopts = "--html=tests/results/report.html --self-contained-html -v"
 
 [tool.ruff]
 fix = true
@@ -39,4 +39,3 @@ split-on-trailing-comma = false
 
 [tool.pyright]
 typeCheckingMode = "standard"
-reportIncompatibleMethodOverride = "none"

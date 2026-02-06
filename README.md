@@ -7,15 +7,18 @@ BarberQueue is a web application designed to improve the waiting experience at b
 ## Table of Contents
 
 - [Motivation](#motivation)
+- [Solution](#solution)
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
+  - [PowerShell Setup (Windows only)](#powershell-setup-windows-only)
   - [Virtual Environment Setup](#virtual-environment-setup)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
+  - [Test Results](#test-results)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Troubleshooting](#troubleshooting)
@@ -35,7 +38,7 @@ Current challenges this project addresses:
 - Groups (families or friends) arriving together increase queue length and complicate ordering.
 - Client preferences for specific barbers alter queue behavior and increase uncertainty for those who arrive later.
 
-### Solution <!-- omit in toc -->
+## Solution
 
 BarberQueue gives customers and barbershops tools to manage queues in real time, allowing:
 
@@ -60,20 +63,30 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP>=8.4.7
-- Python>=3.11
-- Composer=>2.8.9
-- MySQL>=8.0.42
+- PHP >= 8.4
+- Python >= 3.13
+- Composer >= 2.8
+- MySQL >= 8.0
+
+---
+
+### PowerShell Setup (Windows only)
+
+Before installation, Windows users need to configure PowerShell to allow script execution. Open **PowerShell as Administrator** and run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
 
 ---
 
 ### Virtual Environment Setup
 
-From the repository root:
+From the **repository root**:
 
 ```bash
 # Create virtual environment
-py -3.11 -m venv .venv
+python -m venv .venv
 
 # Activate (Windows)
 .venv\Scripts\Activate.ps1
@@ -88,20 +101,22 @@ source .venv/bin/activate
 
 #### Python
 
+Run from the **repository root** with the venv activated:
+
 ```bash
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install -U pip setuptools wheel
 python -m pip install -e ".[dev]"
 ```
 
 If you later modify dependencies:
 
 ```bash
-python -m pip install -e . --upgrade
+python -m pip install -e ".[dev]" -U
 ```
 
-#### PHP
+#### PHP / Composer
 
-Use system terminal (recommended):
+Composer manages PHP packages for the web app. Run Composer commands from the `src` folder:
 
 ```bash
 cd src
@@ -112,7 +127,13 @@ composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 
 ### `.env` Configuration
 
-Create a `.env` under `src/config/.env` containing all keys shown below. Optional values may be left empty, but the keys should exist.
+Create a `.env` file at:
+
+```bash
+src/config/.env
+```
+
+This file should contain the keys below. Optional values may be left empty, but the keys should exist.
 
 ```env
 # Database (required)
@@ -131,7 +152,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 
 #### Email Setup (Optional)
 
-1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security).
+1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
 2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASS`.
 
 #### Google Setup (Optional)
@@ -140,11 +161,11 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```md
-    http://localhost:1111/auth/GoogleController.php
+    ```bash
+    http://localhost:3000/auth/GoogleController.php
     ```
 
-4. Copy **Client ID** and **Client secret** into `.env`.
+4. Copy **Client ID** and **Client secret** into `src/config/.env`.
 
 ---
 
@@ -163,28 +184,34 @@ php src/db/install.php
 Start the built-in PHP server:
 
 ```bash
-php -S localhost:1111 -t src/public
+php -S localhost:3000 -t src/public
 ```
 
-Open your browser at: `http://localhost:1111`
+Open your browser at: `http://localhost:3000`
 
 ---
 
 ## Run Tests
 
+Execute the test suite from the **repository root**:
+
 ```bash
-# From the repository root
 pytest
 ```
 
-A folder named `tests/results/` will be generated (if it does not already exist) where the screenshots and an HTML report of the executed tests will be saved.
+### Test Results
+
+After running tests, results are automatically saved to `tests/results/` containing:
+
+- **HTML test report**: A detailed pass/fail summary with execution times.
+- **Screenshots**: Visual captures from UI test and key checkpoints.
 
 ---
 
 ## Email Notifications
 
 - Password reset uses an email verification code flow.
-- Ensure `MAIL_USER` and `MAIL_PASS` are set in `.env` for email functionality.
+- Ensure `MAIL_USER` and `MAIL_PASS` are set in `src/config/.env` for email functionality.
 
 ---
 
@@ -240,7 +267,7 @@ Full management of one or more barbershops they administer:
 Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
-2. Create a feature branch: `feature/my-change`.
+2. Create a feature branch: `feat/my-change`
 3. Commit, push, and open a pull request describing the change and reason.
 
 > Please, ensure your code follows the existing style and includes appropriate documentation.
@@ -249,10 +276,12 @@ Contributions are welcome. Suggested workflow:
 
 ## Authors
 
-- Roniel Antonio Sabala Germán
-- Yerelin Vanessa Rosario Taveras
-- Idelka Regina Rodríguez Jáquez
-- Jheinel Brown
+| Name | ID | Contact |
+| --- | ---: | --- |
+| Roniel Antonio Sabala Germán | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com) |
+| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com) |
+| Idelka Regina Rodríguez Jáquez | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
+| Jheinel Jesús Brown Curbata | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com) |
 
 ---
 
