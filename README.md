@@ -61,10 +61,10 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP>=8.4.7
-- Python>=3.13.9
-- Composer=>2.8.9
-- MySQL>=8.0.42
+- PHP>=8.4
+- Python>=3.13
+- Composer=>2.8
+- MySQL>=8.0
 
 ---
 
@@ -98,14 +98,14 @@ source .venv/bin/activate
 #### Python
 
 ```bash
-python -m pip install --upgrade pip setuptools wheel
+python -m pip install -U pip setuptools wheel
 python -m pip install -e ".[dev]"
 ```
 
 If you later modify dependencies:
 
 ```bash
-python -m pip install -e . --upgrade
+python -m pip install -e ".[dev]" -U
 ```
 
 #### PHP
