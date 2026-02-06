@@ -11,12 +11,14 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
+  - [PowerShell Setup (Windows only)](#powershell-setup-windows-only)
   - [Virtual Environment Setup](#virtual-environment-setup)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
+  - [Test Results](#test-results)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Troubleshooting](#troubleshooting)
@@ -61,24 +63,26 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP>=8.4
-- Python>=3.13
-- Composer=>2.8
-- MySQL>=8.0
+- PHP >= 8.4
+- Python >= 3.13
+- Composer >= 2.8
+- MySQL >= 8.0
 
 ---
 
-### Virtual Environment Setup
+### PowerShell Setup (Windows only)
 
-Before installation, you'll need to execute this command in **PowerShell**:
+Before installation, Windows users need to configure PowerShell to allow script execution. Open **PowerShell as Administrator** and run:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 ```
 
-> It allows running unsigned local scripts.
+---
 
-From the repository root:
+### Virtual Environment Setup
+
+From the **repository root**:
 
 ```bash
 # Create virtual environment
@@ -97,6 +101,8 @@ source .venv/bin/activate
 
 #### Python
 
+Run from the **repository root** with the venv activated:
+
 ```bash
 python -m pip install -U pip setuptools wheel
 python -m pip install -e ".[dev]"
@@ -108,9 +114,9 @@ If you later modify dependencies:
 python -m pip install -e ".[dev]" -U
 ```
 
-#### PHP
+#### PHP / Composer
 
-Use system terminal (recommended):
+Composer manages PHP packages for the web app. Run Composer commands from the `src` folder:
 
 ```bash
 cd src
@@ -121,7 +127,13 @@ composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 
 ### `.env` Configuration
 
-Create a `.env` under `src/config/.env` containing all keys shown below. Optional values may be left empty, but the keys should exist.
+Create a `.env` file at:
+
+```bash
+src/config/.env
+```
+
+This file should contain the keys below. Optional values may be left empty, but the keys should exist.
 
 ```env
 # Database (required)
@@ -140,7 +152,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 
 #### Email Setup (Optional)
 
-1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security).
+1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
 2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASS`.
 
 #### Google Setup (Optional)
@@ -149,11 +161,11 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```md
+    ```bash
     http://localhost:3000/auth/GoogleController.php
     ```
 
-4. Copy **Client ID** and **Client secret** into `.env`.
+4. Copy **Client ID** and **Client secret** into `src/config/.env`.
 
 ---
 
@@ -181,19 +193,25 @@ Open your browser at: `http://localhost:3000`
 
 ## Run Tests
 
+Execute the test suite from the **repository root**:
+
 ```bash
-# From the repository root
 pytest
 ```
 
-A folder named `tests/results/` will be generated (if it does not already exist) where the screenshots and an HTML report of the executed tests will be saved.
+### Test Results
+
+After running tests, results are automatically saved to `tests/results/` containing:
+
+- **HTML test report**: A detailed pass/fail summary with execution times.
+- **Screenshots**: Visual captures from UI test and key checkpoints.
 
 ---
 
 ## Email Notifications
 
 - Password reset uses an email verification code flow.
-- Ensure `MAIL_USER` and `MAIL_PASS` are set in `.env` for email functionality.
+- Ensure `MAIL_USER` and `MAIL_PASS` are set in `src/config/.env` for email functionality.
 
 ---
 
