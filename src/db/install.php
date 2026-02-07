@@ -2,9 +2,11 @@
 const SRC_DIR = __DIR__ . '/../';
 const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
+const SUCCESS_MESSAGE = "✔️  Database created successfully!";
 
-require_once SRC_DIR . 'vendor/autoload.php';
+require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . 'config/db.php';
+
 
 // Read SQL scripts
 $creationSql = @file_get_contents(CREATION_FILE_PATH);
@@ -41,4 +43,4 @@ try {
     die("DB error: " . $e->getMessage());
 }
 
-echo "✔️  Database created successfully\n";
+echo SUCCESS_MESSAGE;

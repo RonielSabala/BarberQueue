@@ -1,10 +1,11 @@
 <?php
 const SRC_DIR = __DIR__ . '/../';
-require_once SRC_DIR . 'vendor/autoload.php';
+require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . 'config/db.php';
 
 use App\Core\Router;
 use App\Controllers;
+
 
 // Controllers and routes
 const _DEFAULT_VIEW_NAME = 'home';
