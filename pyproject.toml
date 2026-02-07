@@ -9,7 +9,7 @@ description = "Test suite for BarberQueue."
 requires-python = ">=3.13.9"
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-html", "selenium", "ruff", "pyright"]
+dev = ["pytest", "pytest-html", "selenium", "requests", "ruff", "pyright"]
 
 # Tool configs
 
