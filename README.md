@@ -18,7 +18,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
-  - [Results](#results)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Troubleshooting](#troubleshooting)
@@ -213,7 +212,7 @@ Execute the test suite:
 pytest
 ```
 
-### Results
+### Results <!-- omit in toc -->
 
 After running tests, results are automatically saved to `tests/results/` containing:
 
