@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "barberqueue-tests"
 version = "0.1.0"
 description = "Test suite for BarberQueue (pytest + Selenium)."
-requires-python = ">=3.13"
+requires-python = ">=3.13.9"
 
 [project.optional-dependencies]
 dev = ["ruff", "pyright", "pytest", "pytest-html", "selenium"]

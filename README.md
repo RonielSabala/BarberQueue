@@ -63,10 +63,10 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP >= 8.4
-- Python >= 3.13
-- Composer >= 2.8
-- MySQL >= 8.0
+- PHP >= 8.4.7
+- Python >= 3.13.9
+- Composer >= 2.8.9
+- MySQL >= 8.0.42
 
 ---
 
@@ -129,7 +129,7 @@ composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 
 Create a `.env` file at:
 
-```bash
+```txt
 src/config/.env
 ```
 
@@ -161,7 +161,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```bash
+    ```txt
     http://localhost:3000/auth/GoogleController.php
     ```
 

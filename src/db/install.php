@@ -1,10 +1,10 @@
 <?php
-const BASE_DIR = __DIR__ . '/../';
+const SRC_DIR = __DIR__ . '/../';
 const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 
-require_once BASE_DIR . 'vendor/autoload.php';
-require_once BASE_DIR . 'config/db.php';
+require_once SRC_DIR . 'vendor/autoload.php';
+require_once SRC_DIR . 'config/db.php';
 
 // Read SQL scripts
 $creationSql = @file_get_contents(CREATION_FILE_PATH);
@@ -18,11 +18,6 @@ if ($insertionsSql === false) {
 }
 
 try {
-    // Create tables
-    $pdo = new PDO("mysql:host=$host", $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-
     $statements = array_filter(array_map('trim', explode(';', $creationSql)));
     foreach ($statements as $stmt) {
         if (!empty($stmt)) {
