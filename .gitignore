@@ -1,8 +1,12 @@
-.pytest_cache
+# Files
 .env
-.venv
-vendor/
 composer.*
-*.egg-info
+
+# Folders
+.venv
+.ruff_cache
+.pytest_cache
 __pycache__
+vendor/
+*.egg-info
 tests/results

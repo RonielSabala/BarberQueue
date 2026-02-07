@@ -17,6 +17,8 @@ dev = ["pytest", "pytest-html", "selenium", "ruff", "pyright"]
 package-dir = { "" = "tests" }
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
 addopts = "--html=tests/results/report.html --self-contained-html -v"
 
 [tool.ruff]
