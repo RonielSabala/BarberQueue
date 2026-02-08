@@ -12,5 +12,5 @@
     "README.md": ["## Table of Contents"]
   },
   // Project-specific words that should not be flagged as typos
-  "cSpell.words": ["appspecific"]
+  "cSpell.words": ["addoption", "appspecific", "barberqueue", "usefixtures"]
 }

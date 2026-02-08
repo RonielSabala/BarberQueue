@@ -1,8 +1,12 @@
+# Files
 .env
-.venv
-vendor/
 composer.*
-__pycache__
+
+# Folders
+.venv
+.ruff_cache
 .pytest_cache
+__pycache__
+vendor/
 *.egg-info
 tests/results

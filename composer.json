@@ -6,7 +6,7 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/",
+      "App\\": "src/app/",
       "GetUser\\Client\\": "client/"
     }
   }

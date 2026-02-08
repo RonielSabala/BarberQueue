@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS barber_queue_db;
+DROP DATABASE IF EXISTS barberqueue_db;
 
-CREATE DATABASE barber_queue_db;
+CREATE DATABASE barberqueue_db;
 
-USE barber_queue_db;
+USE barberqueue_db;

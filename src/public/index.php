@@ -1,21 +1,11 @@
 <?php
-const BASE_DIR = __DIR__ . '/../';
-require_once BASE_DIR . 'vendor/autoload.php';
-require_once BASE_DIR . 'config/db.php';
+const SRC_DIR = __DIR__ . '/../';
+require_once SRC_DIR . '/../vendor/autoload.php';
+require_once SRC_DIR . 'config/db.php';
 
 use App\Core\Router;
 use App\Controllers;
 
-// Create PDO singleton
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$db;charset=utf8",
-        $user,
-        $pass
-    );
-} catch (PDOException $e) {
-    die("Error de BD: " . $e->getMessage());
-}
 
 // Controllers and routes
 const _DEFAULT_VIEW_NAME = 'home';

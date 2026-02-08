@@ -18,7 +18,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
-  - [Test Results](#test-results)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Troubleshooting](#troubleshooting)
@@ -63,10 +62,10 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP >= 8.4
-- Python >= 3.13
-- Composer >= 2.8
-- MySQL >= 8.0
+- PHP >= 8.4.7
+- Python >= 3.13.9
+- Composer >= 2.8.9
+- MySQL >= 8.0.42
 
 ---
 
@@ -82,16 +81,21 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
 
 ### Virtual Environment Setup
 
-From the **repository root**:
+From now on, we will execute all commands from the **repository root**.
+
+Create a virtual environment:
 
 ```bash
-# Create virtual environment
 python -m venv .venv
+```
 
-# Activate (Windows)
+Activate:
+
+```bash
+# Windows
 .venv\Scripts\Activate.ps1
 
-# Activate (macOS/Linux)
+# macOS/Linux
 source .venv/bin/activate
 ```
 
@@ -101,9 +105,8 @@ source .venv/bin/activate
 
 #### Python
 
-Run from the **repository root** with the venv activated:
-
 ```bash
+# With the venv activated
 python -m pip install -U pip setuptools wheel
 python -m pip install -e ".[dev]"
 ```
@@ -114,12 +117,11 @@ If you later modify dependencies:
 python -m pip install -e ".[dev]" -U
 ```
 
-#### PHP / Composer
+#### PHP
 
-Composer manages PHP packages for the web app. Run Composer commands from the `src` folder:
+Use system terminal (recommended):
 
 ```bash
-cd src
 composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 ```
 
@@ -129,7 +131,7 @@ composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 
 Create a `.env` file at:
 
-```bash
+```txt
 src/config/.env
 ```
 
@@ -161,7 +163,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```bash
+    ```txt
     http://localhost:3000/auth/GoogleController.php
     ```
 
@@ -181,25 +183,36 @@ php src/db/install.php
 
 ## Run Locally
 
-Start the built-in PHP server:
+### Option A. Start the built-in PHP server (manual) <!-- omit in toc -->
 
 ```bash
+# From the repository root
 php -S localhost:3000 -t src/public
 ```
 
-Open your browser at: `http://localhost:3000`
+Open your browser at: `http://localhost:3000`. You can stop the server with `Ctrl + C`.
+
+---
+
+### Option B. Use a VS Code extension (recommended) <!-- omit in toc -->
+
+1. Install the **PHP Server** extension (brapifra.phpserver), which is listed in `.vscode/extensions.json`.
+2. Open the Command Palette (`Ctrl + Shift + P`).
+3. Run **PHP Server: Serve project**.
+
+To reload or stop the server you can use **PHP Server: Reload project** or **PHP Server: Stop project** respectively.
 
 ---
 
 ## Run Tests
 
-Execute the test suite from the **repository root**:
+Execute the test suite:
 
 ```bash
 pytest
 ```
 
-### Test Results
+### Results <!-- omit in toc -->
 
 After running tests, results are automatically saved to `tests/results/` containing:
 
