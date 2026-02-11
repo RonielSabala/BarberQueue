@@ -3,14 +3,17 @@
   "phpserver.port": 3000,
   "phpserver.relativePath": "src/public",
   "phpserver.autoOpenOnReload": true,
-  // Python config
-  "python.terminal.activateEnvironment": true,
-  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
   // Markdown config
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
   },
   // Project-specific words that should not be flagged as typos
-  "cSpell.words": ["addoption", "appspecific", "barberqueue", "usefixtures"]
+  "cSpell.words": [
+    "addoption",
+    "appspecific",
+    "barberqueue",
+    "pyproject",
+    "usefixtures"
+  ]
 }
