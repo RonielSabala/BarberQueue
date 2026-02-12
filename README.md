@@ -90,7 +90,7 @@ pip install uv
 Use system terminal (recommended):
 
 ```bash
-composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
+composer install
 ```
 
 ---
