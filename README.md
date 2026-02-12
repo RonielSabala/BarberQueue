@@ -19,7 +19,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Run Tests](#run-tests)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
-- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Authors](#authors)
 - [License](#license)
@@ -228,16 +227,6 @@ Full management of one or more barbershops they administer:
 - Upload and manage barbershop photos and content.
 - View business-level dashboards, metrics and historical data.
 - Moderate client reviews.
-
----
-
-## Troubleshooting
-
-- **Database connection error:** Verify `HOST`, `USER`, `PASS` in `src/config/.env` and ensure MySQL is running and accepting connections.
-- **SQL script errors:** Confirm the DB user has the required privileges to create tables and insert data.
-- **OAuth redirect issues:** Confirm the Google redirect URI in the provider console match exactly.
-- **Emails not sent:** Verify that `MAIL_USER` and `MAIL_PASS` are correct and that the account's security settings allow SMTP or app-password usage.
-- **Composer problems in VS Code terminal:** Use the system terminal (`cmd.exe`, Terminal.app, or your preferred shell).
 
 ---
 
