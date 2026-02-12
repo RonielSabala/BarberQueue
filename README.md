@@ -11,8 +11,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
-  - [PowerShell Setup (Windows only)](#powershell-setup-windows-only)
-  - [Virtual Environment Setup](#virtual-environment-setup)
+  - [Install `uv`](#install-uv)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
@@ -20,7 +19,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Run Tests](#run-tests)
 - [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
-- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [Authors](#authors)
 - [License](#license)
@@ -62,67 +60,36 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- PHP >= 8.4.7
-- Python >= 3.13.9
-- Composer >= 2.8.9
-- MySQL >= 8.0.42
+- [PHP](https://www.php.net/downloads.php) >= 8.4.7
+- [Python](https://www.python.org/downloads/) >= 3.13.9
+- [Composer](https://getcomposer.org/download/) >= 2.8.9
+- [MySQL](https://downloads.mysql.com/archives/community/) >= 8.0.42
 
 ---
 
-### PowerShell Setup (Windows only)
+### Install `uv`
 
-Before installation, Windows users need to configure PowerShell to allow script execution. Open **PowerShell as Administrator** and run:
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
-```
-
----
-
-### Virtual Environment Setup
-
-From now on, we will execute all commands from the **repository root**.
-
-Create a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Activate:
+Recommended methods:
 
 ```bash
 # Windows
-.venv\Scripts\Activate.ps1
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
-# macOS/Linux
-source .venv/bin/activate
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or install via pip
+pip install uv
 ```
 
 ---
 
 ### Install Dependencies
 
-#### Python
-
-```bash
-# With the venv activated
-python -m pip install -U pip setuptools wheel
-python -m pip install -e ".[dev]"
-```
-
-If you later modify dependencies:
-
-```bash
-python -m pip install -e ".[dev]" -U
-```
-
-#### PHP
-
 Use system terminal (recommended):
 
 ```bash
-composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
+composer install
 ```
 
 ---
@@ -131,7 +98,7 @@ composer require google/apiclient vlucas/phpdotenv phpmailer/phpmailer
 
 Create a `.env` file at:
 
-```txt
+```plain
 src/config/.env
 ```
 
@@ -163,7 +130,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```txt
+    ```plain
     http://localhost:3000/auth/GoogleController.php
     ```
 
@@ -206,10 +173,8 @@ To reload or stop the server you can use **PHP Server: Reload project** or **PHP
 
 ## Run Tests
 
-Execute the test suite:
-
 ```bash
-pytest
+uv run pytest
 ```
 
 ### Results <!-- omit in toc -->
@@ -262,16 +227,6 @@ Full management of one or more barbershops they administer:
 - Upload and manage barbershop photos and content.
 - View business-level dashboards, metrics and historical data.
 - Moderate client reviews.
-
----
-
-## Troubleshooting
-
-- **Database connection error:** Verify `HOST`, `USER`, `PASS` in `src/config/.env` and ensure MySQL is running and accepting connections.
-- **SQL script errors:** Confirm the DB user has the required privileges to create tables and insert data.
-- **OAuth redirect issues:** Confirm the Google redirect URI in the provider console match exactly.
-- **Emails not sent:** Verify that `MAIL_USER` and `MAIL_PASS` are correct and that the account's security settings allow SMTP or app-password usage.
-- **Composer problems in VS Code terminal:** Use the system terminal (`cmd.exe`, Terminal.app, or your preferred shell).
 
 ---
 

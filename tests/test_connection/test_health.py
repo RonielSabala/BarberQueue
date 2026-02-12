@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pytest
 import requests
 from selenium.webdriver.chromium import webdriver
 from selenium.webdriver.common.by import By
@@ -20,7 +19,7 @@ def _get_health_url(base_url: str) -> str:
     return f"{base_url}/health.php"
 
 
-def test_health_endpoint(base_url: str, capture_dir: Path):
+def test_health_endpoint(base_url: str):
     """
     Assert that the status code is 200.
     """
@@ -37,7 +36,6 @@ def test_health_endpoint(base_url: str, capture_dir: Path):
     assert content_type == HEALTH_CONTENT_TYPE
 
 
-@pytest.mark.usefixtures("driver", "base_url", "capture_dir")
 def test_health_message(
     driver: webdriver.ChromiumDriver, base_url: str, capture_dir: Path
 ) -> None:

@@ -8,5 +8,4 @@ composer.*
 .pytest_cache
 __pycache__
 vendor/
-*.egg-info
 tests/results
