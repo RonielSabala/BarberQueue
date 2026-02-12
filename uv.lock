@@ -24,31 +24,31 @@ wheels = [
 name = "barberqueue-tests"
 version = "0.1.0"
 source = { virtual = "." }
-
-[package.dev-dependencies]
-dev = [
-    { name = "pyright" },
-    { name = "ruff" },
-]
-tests = [
+dependencies = [
     { name = "pytest" },
     { name = "pytest-html" },
     { name = "requests" },
     { name = "selenium" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pyright" },
+    { name = "ruff" },
+]
+
 [package.metadata]
+requires-dist = [
+    { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-html", specifier = ">=4.2.0" },
+    { name = "requests", specifier = ">=2.32.5" },
+    { name = "selenium", specifier = ">=4.40.0" },
+]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "pyright", specifier = ">=1.1.408" },
     { name = "ruff", specifier = ">=0.15.0" },
-]
-tests = [
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-html", specifier = ">=4.2.0" },
-    { name = "requests", specifier = ">=2.32.5" },
-    { name = "selenium", specifier = ">=4.40.0" },
 ]
 
 [[package]]

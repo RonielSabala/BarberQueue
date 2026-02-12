@@ -3,15 +3,15 @@ name = "barberqueue-tests"
 version = "0.1.0"
 description = "Test suite for BarberQueue."
 requires-python = ">=3.13.9"
-
-[dependency-groups]
-dev = ["pyright>=1.1.408", "ruff>=0.15.0"]
-tests = [
+dependencies = [
     "pytest>=9.0.2",
     "pytest-html>=4.2.0",
     "requests>=2.32.5",
     "selenium>=4.40.0",
 ]
+
+[dependency-groups]
+dev = ["pyright>=1.1.408", "ruff>=0.15.0"]
 
 # Tool configs
 
