@@ -8,7 +8,9 @@ use App\Utils\UriUtils;
 use App\Utils\UriCache;
 use App\Utils\GeneralUtils;
 
-const _LEGACY_VIEWS_PATH = "src/public/views/";
+require_once __DIR__ .  '/Template.php';
+
+const _LEGACY_VIEWS_DIR = 'src/public/views/';
 const _PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
 class Router
@@ -17,37 +19,31 @@ class Router
     {
         UriCache::start();
 
-        // Get route and view
+        // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
-        $uri = GeneralUtils::removePrefix($uri, _LEGACY_VIEWS_PATH);
-        [$route, $view] = UriUtils::split($uri);
+        $uri = GeneralUtils::removePrefix($uri, _LEGACY_VIEWS_DIR);
+        $uri = GeneralUtils::removeSuffix($uri, _VIEWS_FILE_EXTENSION);
 
-        // Get uri route
-        $uri_route = _ROUTES[$uri] ?? null;
-        if ($uri_route) {
-            $controller = new $uri_route['controller']();
-            define('CURRENT_PAGE', $uri_route['page'] ?? '');
-        }
-
-        // Validate view access
-        if ($uri_route === null) {
+        // Get route
+        $uriRoute = _URIS[$uri] ?? null;
+        if ($uriRoute === null) {
             http_response_code(404);
             GeneralUtils::echoAlert(_PAGE_NOT_FOUND_TEXT);
             exit;
         }
 
-        // Get final view name
-        if ($view === '' || ($route === '' && $view === 'index.php')) {
-            $view_name = _DEFAULT_VIEW_NAME;
-        } else {
-            $view_name = preg_replace('/\.php$/', '', $view);
+        define('CURRENT_PAGE', $uriRoute->viewName);
+
+        // Get view parts
+        [$viewDir, $viewName] = UriUtils::split($uri);
+        if ($viewName === '' || $viewDir === '' && $viewName === _LEGACY_VIEW_NAME) {
+            $viewName = _DEFAULT_VIEW_NAME;
         }
 
-        // Config template paths
-        Template::$viewPath = $route . '/' . $view_name;
-        Template::$partialViewsPath = $route;
+        Template::config($viewDir, $viewName);
 
-        // Call controller
-        $controller->handle(new Template());
+        $viewTemplate = new Template();
+        $viewController = new $uriRoute->viewController();
+        $viewController->handle($viewTemplate);
     }
 }
