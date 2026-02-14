@@ -6,10 +6,9 @@ namespace App\Controllers;
 
 use App\Core\Template;
 
-
-class HomeController
+class HomeController extends BaseController
 {
-    public function handle(Template $template)
+    public function handle(Template $template): void
     {
         $template->apply();
     }

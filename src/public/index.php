@@ -6,20 +6,20 @@ const SRC_DIR = __DIR__ . '/../';
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . 'config/db.php';
 
-use App\Core\Router;
+use App\Core;
 use App\Controllers;
 
-
-// Controllers and routes
 const _DEFAULT_VIEW_NAME = 'home';
-const _DEFAULT_VIEW_ROUTE = ['view' => _DEFAULT_VIEW_NAME, 'controller' => Controllers\HomeController::class];
-const _ROUTES = [
-    // Default home route
-    ''          => _DEFAULT_VIEW_ROUTE,
-    'home.php'  => _DEFAULT_VIEW_ROUTE,
-    'index.php' => _DEFAULT_VIEW_ROUTE,
+const _LEGACY_VIEW_NAME = 'index';
+const _DEFAULT_ROUTE = new Core\Route(_DEFAULT_VIEW_NAME, new Controllers\HomeController());
+
+const _URIS = [
+    // Valid home uris
+    '' => _DEFAULT_ROUTE,
+    _DEFAULT_VIEW_NAME => _DEFAULT_ROUTE,
+    _LEGACY_VIEW_NAME => _DEFAULT_ROUTE,
 ];
 
 # Create Router singleton
-const _ROUTER = new Router();
+const _ROUTER = new Core\Router();
 _ROUTER->dispatch();
