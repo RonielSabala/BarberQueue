@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Utils;
 
 
+const GO_BACK_TEXT = 'Volver';
+
 class GeneralUtils
 {
     public static function removePrefix(string $text, string $prefix): string
@@ -14,6 +16,15 @@ class GeneralUtils
         }
 
         return substr($text, strlen($prefix));
+    }
+
+    public static function removeSuffix(string $text, string $suffix): string
+    {
+        if (!str_ends_with($text, $suffix)) {
+            return $text;
+        }
+
+        return substr($text, 0, -strlen($suffix));
     }
 
     public static function echoAlert(
@@ -26,12 +37,12 @@ class GeneralUtils
             $returnRoute = UriCache::getIthUri(-2);
         }
 
-        echo "
-        <div class='text-center mt-2'>
-            <div class='alert alert-$type'>$message</div>";
+        echo "<div class='text-center mt-2'>";
+        echo "<div class='alert alert-$type'>$message</div>";
         if ($showReturn) {
-            echo "<a href='$returnRoute' class='btn btn-primary mb-4'>Volver</a>";
+            echo "<a href='$returnRoute' class='btn btn-primary mb-4'>" . GO_BACK_TEXT . "</a>";
         }
+
         echo "</div>";
     }
 }

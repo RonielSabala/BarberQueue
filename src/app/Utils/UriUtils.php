@@ -7,16 +7,16 @@ namespace App\Utils;
 
 class UriUtils
 {
-    public static function split(string $uri): array
+    public static function split(string $viewDir): array
     {
-        $uriParts = explode('/', $uri);
+        $uriParts = explode('/', $viewDir);
         if (count($uriParts) == 1) {
-            return ['', $uri];
+            return ['', $viewDir];
         }
 
-        $uri = implode('/', array_slice($uriParts, 0, -1));
-        $view = end($uriParts);
-        return [$uri, $view];
+        $viewDir = implode('/', array_slice($uriParts, 0, -1));
+        $viewFile = end($uriParts);
+        return [$viewDir, $viewFile];
     }
 
     public static function getCleanUri(string $uri, string $view): string
