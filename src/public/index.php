@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 const SRC_DIR = __DIR__ . '/../';
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . 'config/db.php';

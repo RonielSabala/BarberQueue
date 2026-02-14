@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Utils;
+declare(strict_types=1);
 
+namespace App\Utils;
 
 const _WELL_KNOWN_URI = '/.well-known/appspecific/com.chrome.devtools.json';
 

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 const SRC_DIR = __DIR__ . '/../';
 const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
