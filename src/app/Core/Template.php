@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use Domain\HeaderType\HeaderType;
+use App\Utils\GeneralUtils;
 
 class Constants
 {
@@ -29,14 +30,16 @@ class Constants
 
 class Template
 {
-    static public string $viewDir = '';
-    static public string $viewName = '';
+    public static string $viewDir = '';
+    public static string $viewName = '';
+    private static array $dirSlices = [];
     private static bool $jsonMode = false;
 
     public static function config($viewDir, $viewName): void
     {
         self::$viewDir = $viewDir;
         self::$viewName = $viewName;
+        self::$dirSlices = array_reverse(GeneralUtils::consecutiveSlices('/', self::$viewDir));
     }
 
     public static function enableJsonMode(): void
@@ -60,39 +63,42 @@ class Template
 
     private function findRelativeFilePath(string $baseDir, string $file): string | null
     {
-        $dirParts = explode('/', self::$viewDir);
-
-        $lastElement = '';
-        while ($lastElement !== null) {
-            $joinedDir = join('/', $dirParts);
-            if ($joinedDir !== '') {
-                $joinedDir .= '/';
-            }
-
-            $testDir = $baseDir .  '/' . $joinedDir . $file;
-
-            if (!file_exists($testDir)) {
-                $lastElement = array_pop($dirParts);
+        foreach (self::$dirSlices as $relDir) {
+            $relFile = $relDir . $file;
+            if (!file_exists($baseDir .  '/' . $relFile)) {
                 continue;
             }
 
-            return $joinedDir . $file;
+            return $relFile;
         }
 
         return null;
     }
 
-    private function getViewFilePath(string $viewFilename): string
+    private function getViewFilePath(string $viewFilename, bool $useFallbacks = true): string
     {
         $viewFile = $viewFilename . Constants::VIEWS_FILE_EXT;
-        $relFilePath = self::findRelativeFilePath(Constants::VIEWS_DIR, $viewFile);
+        if ($useFallbacks) {
+            $relFilePath = self::findRelativeFilePath(Constants::VIEWS_DIR, $viewFile);
+        } else {
+            $relFilePath = self::$viewDir . '/' . $viewFile;
+        }
+
         return Constants::VIEWS_DIR . '/' . $relFilePath;
     }
 
-    private function getCSSLink(string $cssFilename): string
+    private function getCSSLink(string $cssFilename, bool $useFallbacks = true): string
     {
         $cssFile = $cssFilename . Constants::CSS_FILE_EXT;
-        $relFilePath = self::findRelativeFilePath(Constants::CSS_DIR, $cssFile);
+        if ($useFallbacks) {
+            $relFilePath = self::findRelativeFilePath(Constants::CSS_DIR, $cssFile);
+        } else {
+            $relFilePath = self::$viewDir . '/' . $cssFile;
+            if (!file_exists(Constants::CSS_DIR . '/' . $relFilePath)) {
+                $relFilePath = null;
+            }
+        }
+
         if ($relFilePath === null) {
             return '';
         }
@@ -100,10 +106,18 @@ class Template
         return '<link rel="stylesheet" href="/' . Constants::CSS_DIR_NAME . '/' . $relFilePath . '">' . "\n";
     }
 
-    private function getJSScript(string $jsFilename): string
+    private function getJSScript(string $jsFilename, bool $useFallbacks = true): string
     {
         $jsFile = $jsFilename . Constants::JS_FILE_EXT;
-        $relFilePath = self::findRelativeFilePath(Constants::JS_DIR, $jsFile);
+        if ($useFallbacks) {
+            $relFilePath = self::findRelativeFilePath(Constants::JS_DIR, $jsFile);
+        } else {
+            $relFilePath = self::$viewDir . '/' . $jsFile;
+            if (!file_exists(Constants::JS_DIR . '/' . $relFilePath)) {
+                $relFilePath = null;
+            }
+        }
+
         if ($relFilePath === null) {
             return '';
         }
@@ -120,7 +134,7 @@ class Template
         // Add css links
         echo self::getCSSLink(Constants::PARTIAL_HEADER_FILENAME);
         echo self::getCSSLink(Constants::PARTIAL_NAV_FILENAME);
-        echo self::getCSSLink(self::$viewName);
+        echo self::getCSSLink(self::$viewName, useFallbacks: false);
         echo self::getCSSLink(Constants::PARTIAL_FOOTER_FILENAME);
 
         // Include header and nav
@@ -135,7 +149,7 @@ class Template
         }
 
         // Include view
-        $viewFilePath = self::getViewFilePath(self::$viewName);
+        $viewFilePath = self::getViewFilePath(self::$viewName, useFallbacks: false);
         if (file_exists($viewFilePath)) {
             extract($data, EXTR_SKIP);
             include $viewFilePath;
@@ -154,7 +168,7 @@ class Template
         // Add js scripts
         echo self::getJSScript(Constants::PARTIAL_HEADER_FILENAME);
         echo self::getJSScript(Constants::PARTIAL_NAV_FILENAME);
-        echo self::getJSScript(self::$viewName);
+        echo self::getJSScript(self::$viewName, useFallbacks: false);
         echo self::getJSScript(Constants::PARTIAL_FOOTER_FILENAME);
     }
 }

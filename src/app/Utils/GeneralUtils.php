@@ -26,6 +26,20 @@ class GeneralUtils
         return substr($text, 0, -strlen($suffix));
     }
 
+    public static function consecutiveSlices(string $separator, string $text): array
+    {
+        $result = [''];
+        $accumulated = '';
+
+        $parts = explode($separator, $text);
+        foreach ($parts as $part) {
+            $accumulated .= $part . $separator;
+            $result[] = $accumulated;
+        }
+
+        return $result;
+    }
+
     public static function echoAlert(
         string $message,
         string $type = 'danger',
