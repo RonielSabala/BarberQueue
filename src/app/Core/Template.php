@@ -4,62 +4,81 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+const _VIEWS_DIR_NAME = 'views';
+const _CSS_DIR_NAME = 'css';
+const _JS_DIR_NAME = 'js';
+const _PARTIALS_DIR_NAME = '_partials';
 
-const _VIEWS_CONTENT_DIR = __DIR__ . "/../../public";
-const _VIEWS_DIR = _VIEWS_CONTENT_DIR . "/" . "views";
-const _JSON_HEADER = "Content-Type: application/json; charset=utf-8";
+const _VIEWS_FILE_EXTENSION = '.php';
+const _CSS_FILE_EXTENSION = '.css';
+const _JS_FILE_EXTENSION = '.js';
+
+const _PUBLIC_DIR = SRC_DIR . '/' . 'public';
+const _VIEWS_DIR = _PUBLIC_DIR . '/' . _VIEWS_DIR_NAME;
+const _CSS_DIR = _PUBLIC_DIR . '/' . _CSS_DIR_NAME;
+const _JS_DIR = _PUBLIC_DIR . '/' . _JS_DIR_NAME;
+
+const _PARTIALS_DIR = _VIEWS_DIR . '/' . _PARTIALS_DIR_NAME;
+const _PARTIAL_HEADER_FILENAME = _PARTIALS_DIR_NAME . '/' . '_header';
+const _PARTIAL_NAV_FILENAME = _PARTIALS_DIR_NAME . '/' . '_nav';
+const _PARTIAL_FOOTER_FILENAME = _PARTIALS_DIR_NAME . '/' . '_footer';
+
+const _JSON_HEADER = 'Content-Type: application/json; charset=utf-8';
 
 class Template
 {
-    static public string $partialViewsPath = '';
-    static public string $viewPath = '';
+    static public string $viewDir = '';
+    static public string $viewName = '';
     private static bool $jsonMode = false;
 
-    public static function enableJsonMode()
+    public static function config($viewDir, $viewName): void
     {
-        self::$jsonMode = true;
-        ob_end_clean();
-        header(_JSON_HEADER);
+        self::$viewDir = $viewDir;
+        self::$viewName = $viewName;
     }
 
-    private static function setPartialsPath()
+    public static function enableJsonMode(): void
     {
-        $relative = trim(self::$partialViewsPath ?? '', '/');
-        $parts = $relative === '' ? [] : explode('/', $relative);
-
-        // Recorremos desde el path completo hacia arriba hasta 0 niveles
-        $found = false;
-        for ($i = count($parts); $i >= 0; $i--) {
-            $sub = $i > 0 ? implode('/', array_slice($parts, 0, $i)) : '';
-            $try = _VIEWS_DIR . ($sub !== '' ? '/' . $sub : '') . '/_partials';
-
-            if (is_dir($try)) {
-                self::$partialViewsPath = $try;
-                $found = true;
-                break;
-            }
-        }
-
-        // Partials por defecto
-        if (!$found) {
-            self::$partialViewsPath = _VIEWS_DIR . '/_partials';
-        }
-    }
-
-    private function includePartialView(string $partialViewPath)
-    {
-        $file_path = self::$partialViewsPath . $partialViewPath;
-
-        // Fallback
-        if (!file_exists($file_path)) {
-            $file_path = _VIEWS_DIR . '/_partials/' . $partialViewPath;
-        }
-
-        if (!file_exists($file_path)) {
+        if (self::$jsonMode) {
             return;
         }
 
-        include $file_path;
+        self::$jsonMode = true;
+
+        // Only clean output buffers if any exist
+        while (ob_get_level() > 0) {
+            @ob_end_clean();
+        }
+
+        // Only send header if not already sent
+        if (!headers_sent()) {
+            header(_JSON_HEADER);
+        }
+    }
+
+    private function getViewFilePath(string $viewFilename): string
+    {
+        return _VIEWS_DIR . '/' . self::$viewDir . '/' . $viewFilename . _VIEWS_FILE_EXTENSION;
+    }
+
+    private function getCSSLink(string $cssFilename): string
+    {
+        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $cssFilename . _CSS_FILE_EXTENSION;
+        if (!file_exists(_CSS_DIR . '/' . $filePath)) {
+            return '';
+        }
+
+        return '<link rel="stylesheet" href="/' . _CSS_DIR_NAME . '/' . $filePath . '">' . "\n";
+    }
+
+    private function getJSScript(string $jsFilename): string
+    {
+        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $jsFilename . _JS_FILE_EXTENSION;
+        if (!file_exists(_JS_DIR . '/' . $filePath)) {
+            return '';
+        }
+
+        return "\n" . '<script src="/' . _JS_DIR_NAME . '/' . $filePath . '"></script>';
     }
 
     public function __construct()
@@ -68,24 +87,28 @@ class Template
             return;
         }
 
-        $path = self::$partialViewsPath;
+        // Add css links
+        echo self::getCSSLink(_PARTIAL_HEADER_FILENAME);
+        echo self::getCSSLink(_PARTIAL_NAV_FILENAME);
+        echo self::getCSSLink(self::$viewName);
+        echo self::getCSSLink(_PARTIAL_FOOTER_FILENAME);
 
-        // Include partials
-        self::setPartialsPath();
-        self::includePartialView('/' . '_header.php');
-        self::includePartialView('/' . '_nav.php');
+        // Include header and nav
+        include self::getViewFilePath(_PARTIAL_HEADER_FILENAME);
+        include self::getViewFilePath(_PARTIAL_NAV_FILENAME);
+    }
 
-        // Include CSS and JS of partials if exits
-        $cssPath = _VIEWS_CONTENT_DIR . '/' . 'css' . '/' . $path . '/' . 'main' . '.css';
-        if (file_exists($cssPath)) {
-            echo '
-            <link rel="stylesheet" href="/css/' . $path . '/main.css">
-            ';
+    public function apply(array $data = []): void
+    {
+        if (self::$jsonMode) {
+            return;
         }
 
-        $jsPath = _VIEWS_CONTENT_DIR . '/' . 'js' . '/' . $path . '/' . 'main' . '.js';
-        if (file_exists($jsPath)) {
-            echo '<script src="/js/' . $path . '/main.js"></script>';
+        // Include view
+        $viewFilePath = self::getViewFilePath(self::$viewName);
+        if (file_exists($viewFilePath)) {
+            extract($data, EXTR_SKIP);
+            include $viewFilePath;
         }
     }
 
@@ -95,40 +118,13 @@ class Template
             return;
         }
 
-        self::includePartialView('/' . '_footer.php');
-    }
+        // Include footer
+        include self::getViewFilePath(_PARTIAL_FOOTER_FILENAME);
 
-    public function apply(array $data = [])
-    {
-        if (self::$jsonMode) {
-            return;
-        }
-
-        $view_path = self::$viewPath;
-
-        // Include view components if exists
-
-        // Include CSS
-        $css_path = _VIEWS_CONTENT_DIR . '/' . 'css' . '/' . $view_path . '.css';
-        if (file_exists($css_path)) {
-            echo '
-            <link rel="stylesheet" href="/css/' . $view_path . '.css">
-            ';
-        }
-
-        // Include view
-        $file_path = _VIEWS_DIR . '/' . $view_path . '.php';
-        if (file_exists($file_path)) {
-            extract($data, EXTR_SKIP);
-            include $file_path;
-        }
-
-        // Include JS
-        $js_path = _VIEWS_CONTENT_DIR . '/' . 'js' . '/' . $view_path . '.js';
-        if (file_exists($js_path)) {
-            echo '
-            <script src="/js/' . $view_path . '.js"></script>
-            ';
-        }
+        // Add js scripts
+        echo self::getJSScript(_PARTIAL_HEADER_FILENAME);
+        echo self::getJSScript(_PARTIAL_NAV_FILENAME);
+        echo self::getJSScript(self::$viewName);
+        echo self::getJSScript(_PARTIAL_FOOTER_FILENAME);
     }
 }
