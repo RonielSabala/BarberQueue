@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use Domain\HeaderType\HeaderType;
+
 class Constants
 {
     private const VIEWS_DIR_NAME = 'views';
@@ -24,7 +26,6 @@ class Constants
     public const PARTIAL_NAV_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_nav';
     public const PARTIAL_FOOTER_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_footer';
 
-    public const JSON_HEADER = 'Content-Type: application/json; charset=utf-8';
 }
 
 class Template
@@ -54,7 +55,7 @@ class Template
 
         // Only send header if not already sent
         if (!headers_sent()) {
-            header(Constants::JSON_HEADER);
+            header(HeaderType::Json->header());
         }
     }
 

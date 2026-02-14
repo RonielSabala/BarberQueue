@@ -1,4 +1,7 @@
 <?php
-header('Content-Type: text/plain; charset=utf-8');
+
+use Domain\HeaderType\HeaderType;
+
+header(HeaderType::PlainText->header());
 http_response_code(200);
 echo "Hello World";
