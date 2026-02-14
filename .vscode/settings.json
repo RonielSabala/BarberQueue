@@ -1,14 +1,11 @@
 {
-  // PHP Server config
   "phpserver.port": 3000,
   "phpserver.relativePath": "src/public",
   "phpserver.autoOpenOnReload": true,
-  // Markdown config
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
   },
-  // Project-specific words that should not be flagged as typos
   "cSpell.words": [
     "addoption",
     "appspecific",
