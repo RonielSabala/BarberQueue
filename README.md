@@ -27,13 +27,15 @@ BarberQueue is a web application designed to improve the waiting experience at b
 
 ## Motivation
 
-Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration and lost time for customers when they cannot know how long they will wait or what position they are in the queue.
+Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration, and lost time for customers when they cannot know how long they will wait or what position they are in the queue.
 
 Current challenges this project addresses:
 
-- Clients cannot easily know how many people are ahead of them unless they are physically in the location.
+- Clients cannot easily know how many people are ahead of them unless they are physically in the barbershop.
 - Groups (families or friends) arriving together increase queue length and complicate ordering.
 - Client preferences for specific barbers alter queue behavior and increase uncertainty for those who arrive later.
+
+---
 
 ## Solution
 
@@ -126,7 +128,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 
 #### Google Setup (Optional)
 
-1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/).
+1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/)
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
@@ -150,20 +152,17 @@ php src/db/install.php
 
 ## Run Locally
 
-### Option A. Start the built-in PHP server (manual) <!-- omit in toc -->
+### Option A. Start manually the built-in PHP server <!-- omit in toc -->
 
 ```bash
-# From the repository root
 php -S localhost:3000 -t src/public
 ```
 
-Open your browser at: `http://localhost:3000`. You can stop the server with `Ctrl + C`.
-
----
+Open your browser at `http://localhost:3000`. You can stop the server with `Ctrl + C`.
 
 ### Option B. Use a VS Code extension (recommended) <!-- omit in toc -->
 
-1. Install the **PHP Server** extension (brapifra.phpserver), which is listed in `.vscode/extensions.json`.
+1. Install the **PHP Server** extension (brapifra.phpserver) which is listed in `.vscode/extensions.json`.
 2. Open the Command Palette (`Ctrl + Shift + P`).
 3. Run **PHP Server: Serve project**.
 
@@ -179,7 +178,7 @@ uv run pytest
 
 ### Results <!-- omit in toc -->
 
-After running tests, results are automatically saved to `tests/results/` containing:
+Test results are automatically saved to `tests/results/` containing:
 
 - **HTML test report**: A detailed pass/fail summary with execution times.
 - **Screenshots**: Visual captures from UI test and key checkpoints.
