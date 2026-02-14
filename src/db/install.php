@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-const SRC_DIR = __DIR__ . '/../';
+const SRC_DIR = __DIR__ . '/..';
 const _CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const _INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 const _SUCCESS_MESSAGE = "✔️  Database created successfully!";
 
 require_once SRC_DIR . '/../vendor/autoload.php';
-require_once SRC_DIR . 'config/db.php';
+require_once SRC_DIR . '/config/db.php';
 
 // Read SQL scripts
 $creationSql = @file_get_contents(_CREATION_FILE_PATH);
