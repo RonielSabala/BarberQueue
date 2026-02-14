@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
-
-const GO_BACK_TEXT = 'Volver';
-
 class GeneralUtils
 {
+    private const GO_BACK_TEXT = 'Volver';
+
     public static function removePrefix(string $text, string $prefix): string
     {
         if (!str_starts_with($text, $prefix)) {
@@ -40,7 +39,7 @@ class GeneralUtils
         echo "<div class='text-center mt-2'>";
         echo "<div class='alert alert-$type'>$message</div>";
         if ($showReturn) {
-            echo "<a href='$returnRoute' class='btn btn-primary mb-4'>" . GO_BACK_TEXT . "</a>";
+            echo "<a href='$returnRoute' class='btn btn-primary mb-4'>" . self::GO_BACK_TEXT . "</a>";
         }
 
         echo "</div>";

@@ -10,25 +10,25 @@ use App\Utils\GeneralUtils;
 
 require_once __DIR__ .  '/Template.php';
 
-const _LEGACY_VIEWS_DIR = 'src/public/views/';
-const _PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
-
 class Router
 {
+    const LEGACY_VIEWS_DIR = 'src/public/views/';
+    const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
+
     public function dispatch()
     {
         UriCache::start();
 
         // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
-        $uri = GeneralUtils::removePrefix($uri, _LEGACY_VIEWS_DIR);
-        $uri = GeneralUtils::removeSuffix($uri, _VIEWS_FILE_EXTENSION);
+        $uri = GeneralUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
+        $uri = GeneralUtils::removeSuffix($uri, Constants::VIEWS_FILE_EXT);
 
         // Get route
-        $uriRoute = _URIS[$uri] ?? null;
+        $uriRoute = URIS[$uri] ?? null;
         if ($uriRoute === null) {
             http_response_code(404);
-            GeneralUtils::echoAlert(_PAGE_NOT_FOUND_TEXT);
+            GeneralUtils::echoAlert(self::PAGE_NOT_FOUND_TEXT);
             exit;
         }
 
@@ -36,8 +36,8 @@ class Router
 
         // Get view parts
         [$viewDir, $viewName] = UriUtils::split($uri);
-        if ($viewName === '' || $viewDir === '' && $viewName === _LEGACY_VIEW_NAME) {
-            $viewName = _DEFAULT_VIEW_NAME;
+        if ($viewName === '' || $viewDir === '' && $viewName === LEGACY_VIEW_NAME) {
+            $viewName = DEFAULT_VIEW_NAME;
         }
 
         Template::config($viewDir, $viewName);

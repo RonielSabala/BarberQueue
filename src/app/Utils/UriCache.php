@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
-const _VAR_NAME = 'uri_cache';
-const _MAX_CACHE = 5;
-const _WELL_KNOWN_URI = '/.well-known/appspecific/com.chrome.devtools.json';
-
 class UriCache
 {
+    private const MAX_CACHE = 5;
+    private const VAR_NAME = 'uri_cache';
+    private const WELL_KNOWN_URI = '/.well-known/appspecific/com.chrome.devtools.json';
+
     public static function start(): void
     {
         // Start history if inactive
-        if (isset($_SESSION[_VAR_NAME])) {
+        if (isset($_SESSION[self::VAR_NAME])) {
             return;
         }
 
-        $_SESSION[_VAR_NAME] = [];
+        $_SESSION[self::VAR_NAME] = [];
     }
 
     public static function count(): int
     {
-        return count($_SESSION[_VAR_NAME]);
+        return count($_SESSION[self::VAR_NAME]);
     }
 
     private static function _append(string $uri): void
     {
-        $_SESSION[_VAR_NAME][] = $uri;
+        $_SESSION[self::VAR_NAME][] = $uri;
     }
 
     private static function limitCache(): void
     {
-        $_SESSION[_VAR_NAME] = array_slice($_SESSION[_VAR_NAME], -_MAX_CACHE);
+        $_SESSION[self::VAR_NAME] = array_slice($_SESSION[self::VAR_NAME], -self::MAX_CACHE);
     }
 
     public static function getIthUri(int $i)
@@ -44,7 +44,7 @@ class UriCache
 
         $lastUri = '';
         if ($count > abs($i)) {
-            $lastUri = $_SESSION[_VAR_NAME][$i];
+            $lastUri = $_SESSION[self::VAR_NAME][$i];
         }
 
         return $lastUri;
@@ -52,7 +52,7 @@ class UriCache
 
     public static function append(string $uri): void
     {
-        if ($uri === _WELL_KNOWN_URI) {
+        if ($uri === self::WELL_KNOWN_URI) {
             return;
         }
 

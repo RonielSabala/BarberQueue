@@ -3,23 +3,22 @@
 declare(strict_types=1);
 
 const SRC_DIR = __DIR__ . '/../';
-const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
-const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
-const SUCCESS_MESSAGE = "✔️  Database created successfully!";
+const _CREATION_FILE_PATH = __DIR__ . '/creation.sql';
+const _INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
+const _SUCCESS_MESSAGE = "✔️  Database created successfully!";
 
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . 'config/db.php';
 
-
 // Read SQL scripts
-$creationSql = @file_get_contents(CREATION_FILE_PATH);
+$creationSql = @file_get_contents(_CREATION_FILE_PATH);
 if ($creationSql === false) {
-    die("Failed to read database creation file: " . CREATION_FILE_PATH);
+    die("Failed to read database creation file: " . _CREATION_FILE_PATH);
 }
 
-$insertionsSql = @file_get_contents(INSERTIONS_FILE_PATH);
+$insertionsSql = @file_get_contents(_INSERTIONS_FILE_PATH);
 if ($insertionsSql === false) {
-    die("Failed to read data insertion file: " . INSERTIONS_FILE_PATH);
+    die("Failed to read data insertion file: " . _INSERTIONS_FILE_PATH);
 }
 
 try {
@@ -46,4 +45,4 @@ try {
     die("DB error: " . $e->getMessage());
 }
 
-echo SUCCESS_MESSAGE;
+echo _SUCCESS_MESSAGE;

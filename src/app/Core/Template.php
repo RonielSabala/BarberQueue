@@ -4,26 +4,28 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-const _VIEWS_DIR_NAME = 'views';
-const _CSS_DIR_NAME = 'css';
-const _JS_DIR_NAME = 'js';
-const _PARTIALS_DIR_NAME = '_partials';
+class Constants
+{
+    private const VIEWS_DIR_NAME = 'views';
+    public const CSS_DIR_NAME = 'css';
+    public const JS_DIR_NAME = 'js';
+    private const PARTIALS_DIR_NAME = '_partials';
 
-const _VIEWS_FILE_EXTENSION = '.php';
-const _CSS_FILE_EXTENSION = '.css';
-const _JS_FILE_EXTENSION = '.js';
+    public const VIEWS_FILE_EXT = '.php';
+    public const CSS_FILE_EXT = '.css';
+    public const JS_FILE_EXT = '.js';
 
-const _PUBLIC_DIR = SRC_DIR . '/' . 'public';
-const _VIEWS_DIR = _PUBLIC_DIR . '/' . _VIEWS_DIR_NAME;
-const _CSS_DIR = _PUBLIC_DIR . '/' . _CSS_DIR_NAME;
-const _JS_DIR = _PUBLIC_DIR . '/' . _JS_DIR_NAME;
+    private const PUBLIC_DIR = SRC_DIR . '/' . 'public';
+    public const VIEWS_DIR = self::PUBLIC_DIR . '/' . self::VIEWS_DIR_NAME;
+    public const CSS_DIR = self::PUBLIC_DIR . '/' . self::CSS_DIR_NAME;
+    public const JS_DIR = self::PUBLIC_DIR . '/' . self::JS_DIR_NAME;
 
-const _PARTIALS_DIR = _VIEWS_DIR . '/' . _PARTIALS_DIR_NAME;
-const _PARTIAL_HEADER_FILENAME = _PARTIALS_DIR_NAME . '/' . '_header';
-const _PARTIAL_NAV_FILENAME = _PARTIALS_DIR_NAME . '/' . '_nav';
-const _PARTIAL_FOOTER_FILENAME = _PARTIALS_DIR_NAME . '/' . '_footer';
+    public const PARTIAL_HEADER_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_header';
+    public const PARTIAL_NAV_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_nav';
+    public const PARTIAL_FOOTER_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_footer';
 
-const _JSON_HEADER = 'Content-Type: application/json; charset=utf-8';
+    public const JSON_HEADER = 'Content-Type: application/json; charset=utf-8';
+}
 
 class Template
 {
@@ -52,33 +54,33 @@ class Template
 
         // Only send header if not already sent
         if (!headers_sent()) {
-            header(_JSON_HEADER);
+            header(Constants::JSON_HEADER);
         }
     }
 
     private function getViewFilePath(string $viewFilename): string
     {
-        return _VIEWS_DIR . '/' . self::$viewDir . '/' . $viewFilename . _VIEWS_FILE_EXTENSION;
+        return Constants::VIEWS_DIR . '/' . self::$viewDir . '/' . $viewFilename . Constants::VIEWS_FILE_EXT;
     }
 
     private function getCSSLink(string $cssFilename): string
     {
-        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $cssFilename . _CSS_FILE_EXTENSION;
-        if (!file_exists(_CSS_DIR . '/' . $filePath)) {
+        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $cssFilename . Constants::CSS_FILE_EXT;
+        if (!file_exists(Constants::CSS_DIR . '/' . $filePath)) {
             return '';
         }
 
-        return '<link rel="stylesheet" href="/' . _CSS_DIR_NAME . '/' . $filePath . '">' . "\n";
+        return '<link rel="stylesheet" href="/' . Constants::CSS_DIR_NAME . '/' . $filePath . '">' . "\n";
     }
 
     private function getJSScript(string $jsFilename): string
     {
-        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $jsFilename . _JS_FILE_EXTENSION;
-        if (!file_exists(_JS_DIR . '/' . $filePath)) {
+        $filePath = self::$viewDir . (self::$viewDir === '' ? '' : '/') . $jsFilename . Constants::JS_FILE_EXT;
+        if (!file_exists(Constants::JS_DIR . '/' . $filePath)) {
             return '';
         }
 
-        return "\n" . '<script src="/' . _JS_DIR_NAME . '/' . $filePath . '"></script>';
+        return "\n" . '<script src="/' . Constants::JS_DIR_NAME . '/' . $filePath . '"></script>';
     }
 
     public function __construct()
@@ -88,14 +90,14 @@ class Template
         }
 
         // Add css links
-        echo self::getCSSLink(_PARTIAL_HEADER_FILENAME);
-        echo self::getCSSLink(_PARTIAL_NAV_FILENAME);
+        echo self::getCSSLink(Constants::PARTIAL_HEADER_FILENAME);
+        echo self::getCSSLink(Constants::PARTIAL_NAV_FILENAME);
         echo self::getCSSLink(self::$viewName);
-        echo self::getCSSLink(_PARTIAL_FOOTER_FILENAME);
+        echo self::getCSSLink(Constants::PARTIAL_FOOTER_FILENAME);
 
         // Include header and nav
-        include self::getViewFilePath(_PARTIAL_HEADER_FILENAME);
-        include self::getViewFilePath(_PARTIAL_NAV_FILENAME);
+        include self::getViewFilePath(Constants::PARTIAL_HEADER_FILENAME);
+        include self::getViewFilePath(Constants::PARTIAL_NAV_FILENAME);
     }
 
     public function apply(array $data = []): void
@@ -119,12 +121,12 @@ class Template
         }
 
         // Include footer
-        include self::getViewFilePath(_PARTIAL_FOOTER_FILENAME);
+        include self::getViewFilePath(Constants::PARTIAL_FOOTER_FILENAME);
 
         // Add js scripts
-        echo self::getJSScript(_PARTIAL_HEADER_FILENAME);
-        echo self::getJSScript(_PARTIAL_NAV_FILENAME);
+        echo self::getJSScript(Constants::PARTIAL_HEADER_FILENAME);
+        echo self::getJSScript(Constants::PARTIAL_NAV_FILENAME);
         echo self::getJSScript(self::$viewName);
-        echo self::getJSScript(_PARTIAL_FOOTER_FILENAME);
+        echo self::getJSScript(Constants::PARTIAL_FOOTER_FILENAME);
     }
 }
