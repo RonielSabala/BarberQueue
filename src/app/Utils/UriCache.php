@@ -79,4 +79,9 @@ class UriCache
         self::persistUri($uri);
         return UriUtils::parse($uri);
     }
+
+    public static function getPreviousUri(): string
+    {
+        return UriCache::getIthUri(-2);
+    }
 }

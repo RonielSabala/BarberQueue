@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Components\Alert;
 use App\Utils\GeneralUtils;
 use App\Utils\UriCache;
 use App\Utils\UriUtils;
@@ -28,7 +29,7 @@ class Router
         $uriRoute = URIS[$uri] ?? null;
         if ($uriRoute === null) {
             http_response_code(404);
-            GeneralUtils::echoAlert(self::PAGE_NOT_FOUND_TEXT);
+            echo Alert::render(self::PAGE_NOT_FOUND_TEXT);
             exit;
         }
 

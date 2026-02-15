@@ -110,7 +110,10 @@ class Template
             return '';
         }
 
-        return '<link rel="stylesheet" href="/' . Constants::CSS_DIR_NAME . '/' . $relFilePath . '">' . "\n";
+        return sprintf(
+            '<link rel="stylesheet" href="/%s">',
+            Constants::CSS_DIR_NAME . '/' . $relFilePath
+        ) . "\n";
     }
 
     private function getJSScript(string $jsFilename, bool $useFallbacks = true): string
@@ -130,7 +133,10 @@ class Template
             return '';
         }
 
-        return "\n" . '<script src="/' . Constants::JS_DIR_NAME . '/' . $relFilePath . '"></script>';
+        return "\n" . sprintf(
+            '<script src="/%s"></script>',
+            Constants::JS_DIR_NAME . '/' . $relFilePath
+        );
     }
 
     public function __construct()
