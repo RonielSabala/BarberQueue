@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use PDOException;
-
 const SRC_DIR = __DIR__ . '/..';
 const _CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const _INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
@@ -43,7 +41,7 @@ try {
             $pdo->exec($stmt);
         }
     }
-} catch (PDOException $e) {
+} catch (\PDOException $e) {
     die("DB error: " . $e->getMessage());
 }
 
