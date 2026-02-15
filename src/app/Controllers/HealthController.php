@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Controllers\Core\BaseController;
+use App\Controllers\Core\Controller;
 use App\Core\Template;
 use App\Domain\HeaderType;
 
-class HealthController extends BaseController
+class HealthController extends Controller
 {
     public function handle(Template $template): void
     {

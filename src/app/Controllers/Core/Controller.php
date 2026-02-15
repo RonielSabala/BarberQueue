@@ -6,7 +6,7 @@ namespace App\Controllers\Core;
 
 use App\Core\Template;
 
-abstract class BaseController
+abstract class Controller
 {
     abstract public function handle(Template $template): void;
 }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Controllers\Core\BaseController;
+use App\Controllers\Core\Controller;
 
 class Route
 {
     public function __construct(
         public readonly string $viewName,
-        public readonly BaseController $viewController,
+        public readonly Controller $viewController,
     ) {}
 }
