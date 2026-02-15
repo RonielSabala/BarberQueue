@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use PDO;
+use PDOException;
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
