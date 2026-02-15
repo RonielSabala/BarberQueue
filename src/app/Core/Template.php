@@ -66,11 +66,11 @@ class Template
         return self::$viewDir . (self::$viewDir === '' ? '' : '/') . $file;
     }
 
-    private function findRelativeFilePath(string $baseDir, string $file): string | null
+    private function findRelativeFilePath(string $baseDir, string $file): ?string
     {
         foreach (self::$dirSlices as $dirSlice) {
             $relFilePath = $dirSlice . $file;
-            if (!file_exists($baseDir .  '/' . $relFilePath)) {
+            if (!file_exists($baseDir . '/' . $relFilePath)) {
                 continue;
             }
 
@@ -112,7 +112,7 @@ class Template
 
         return sprintf(
             '<link rel="stylesheet" href="/%s">',
-            Constants::CSS_DIR_NAME . '/' . $relFilePath
+            Constants::CSS_DIR_NAME . '/' . $relFilePath,
         ) . "\n";
     }
 
@@ -135,7 +135,7 @@ class Template
 
         return "\n" . sprintf(
             '<script src="/%s"></script>',
-            Constants::JS_DIR_NAME . '/' . $relFilePath
+            Constants::JS_DIR_NAME . '/' . $relFilePath,
         );
     }
 

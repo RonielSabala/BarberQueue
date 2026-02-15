@@ -9,12 +9,12 @@ use App\Utils\TextUtils;
 use App\Utils\UriCache;
 use App\Utils\UriUtils;
 
-require_once __DIR__ .  '/Template.php';
+require_once __DIR__ . '/Template.php';
 
 class Router
 {
-    const LEGACY_VIEWS_DIR = 'src/public/views/';
-    const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
+    private const LEGACY_VIEWS_DIR = 'src/public/views/';
+    private const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
     public function dispatch()
     {

@@ -59,7 +59,7 @@ $insertionsSql = readSqlFile(INSERTIONS_FILE_PATH);
 $initStatements = [
     "DROP DATABASE IF EXISTS `$dbName`",
     "CREATE DATABASE `$dbName`",
-    "USE `$dbName`"
+    "USE `$dbName`",
 ];
 $creationStatements = getStatementsFromString($creationSql);
 $insertionStatements = getStatementsFromString($insertionsSql);

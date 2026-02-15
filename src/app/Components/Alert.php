@@ -7,7 +7,6 @@ namespace App\Components;
 use App\Components\Core\Component;
 use App\Utils\UriCache;
 
-
 enum AlertVariant: string
 {
     case Danger = 'danger';
@@ -38,13 +37,13 @@ class Alert extends Component
 
         $html = sprintf(
             '<div class="%s">',
-            self::DEFAULT_CONTAINER_CLASSES
+            self::DEFAULT_CONTAINER_CLASSES,
         );
 
         $html .= sprintf(
             '<div class="alert alert-%s" role="alert">%s</div>',
             $this->variant->value,
-            $escapedMessage
+            $escapedMessage,
         );
 
         if ($this->showBackButton) {
@@ -52,7 +51,7 @@ class Alert extends Component
                 '<a href="%s" class="%s">%s</a>',
                 $escapedUrl,
                 self::DEFAULT_BUTTON_CLASSES,
-                self::BACK_BUTTON_TEXT
+                self::BACK_BUTTON_TEXT,
             );
         }
 
