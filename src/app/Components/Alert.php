@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components;
 
+use App\Components\Core\Component;
 use App\Utils\UriCache;
 
 
@@ -12,24 +13,27 @@ enum AlertVariant: string
     case Danger = 'danger';
 }
 
-class Alert
+class Alert extends Component
 {
     private const BACK_BUTTON_TEXT = 'Volver';
     private const DEFAULT_CONTAINER_CLASSES = 'text-center mt-2';
     private const DEFAULT_BUTTON_CLASSES = 'btn btn-primary mb-4';
 
-    public static function render(
-        string $message,
-        AlertVariant $variant = AlertVariant::Danger,
-        ?string $backUrl = null,
-        bool $showBackButton = true,
-    ): string {
+    public function __construct(
+        private readonly string $message,
+        private readonly AlertVariant $variant = AlertVariant::Danger,
+        private readonly ?string $backUrl = null,
+        private readonly bool $showBackButton = true,
+    ) {}
+
+    public function render(): string
+    {
         // Auto-detect back URL
-        if ($showBackButton && $backUrl === null) {
+        if ($this->showBackButton && $this->backUrl === null) {
             $backUrl = UriCache::getPreviousUri();
         }
 
-        $escapedMessage = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        $escapedMessage = htmlspecialchars($this->message, ENT_QUOTES, 'UTF-8');
         $escapedUrl = htmlspecialchars($backUrl ?? '', ENT_QUOTES, 'UTF-8');
 
         $html = sprintf(
@@ -39,11 +43,11 @@ class Alert
 
         $html .= sprintf(
             '<div class="alert alert-%s" role="alert">%s</div>',
-            $variant->value,
+            $this->variant->value,
             $escapedMessage
         );
 
-        if ($showBackButton) {
+        if ($this->showBackButton) {
             $html .= sprintf(
                 '<a href="%s" class="%s">%s</a>',
                 $escapedUrl,

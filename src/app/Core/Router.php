@@ -29,7 +29,7 @@ class Router
         $uriRoute = URIS[$uri] ?? null;
         if ($uriRoute === null) {
             http_response_code(404);
-            echo Alert::render(self::PAGE_NOT_FOUND_TEXT);
+            echo new Alert(self::PAGE_NOT_FOUND_TEXT);
             exit;
         }
 
