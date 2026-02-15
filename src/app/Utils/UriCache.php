@@ -7,32 +7,32 @@ namespace App\Utils;
 class UriCache
 {
     private const MAX_CACHE = 5;
-    private const VAR_NAME = 'uri_cache';
+    private const SESSION_NAME = 'uriCache';
     private const WELL_KNOWN_URI = '/.well-known/appspecific/com.chrome.devtools.json';
 
     public static function start(): void
     {
         // Start history if inactive
-        if (isset($_SESSION[self::VAR_NAME])) {
+        if (isset($_SESSION[self::SESSION_NAME])) {
             return;
         }
 
-        $_SESSION[self::VAR_NAME] = [];
+        $_SESSION[self::SESSION_NAME] = [];
     }
 
     public static function count(): int
     {
-        return count($_SESSION[self::VAR_NAME]);
+        return count($_SESSION[self::SESSION_NAME]);
     }
 
-    private static function _append(string $uri): void
+    private static function append(string $uri): void
     {
-        $_SESSION[self::VAR_NAME][] = $uri;
+        $_SESSION[self::SESSION_NAME][] = $uri;
     }
 
     private static function limitCache(): void
     {
-        $_SESSION[self::VAR_NAME] = array_slice($_SESSION[self::VAR_NAME], -self::MAX_CACHE);
+        $_SESSION[self::SESSION_NAME] = array_slice($_SESSION[self::SESSION_NAME], -self::MAX_CACHE);
     }
 
     public static function getIthUri(int $i)
@@ -42,22 +42,21 @@ class UriCache
             $i += $count;
         }
 
-        $lastUri = '';
-        if ($count > abs($i)) {
-            $lastUri = $_SESSION[self::VAR_NAME][$i];
+        if (abs($i) >= $count) {
+            return '';
         }
 
-        return $lastUri;
+        return $_SESSION[self::SESSION_NAME][$i];
     }
 
-    public static function append(string $uri): void
+    public static function persistUri(string $uri): void
     {
         if ($uri === self::WELL_KNOWN_URI) {
             return;
         }
 
         if (self::count() === 0) {
-            self::_append($uri);
+            self::append($uri);
             return;
         }
 
@@ -70,14 +69,14 @@ class UriCache
             return;
         }
 
-        self::_append($uri);
+        self::append($uri);
         self::limitCache();
     }
 
     public static function getCurrentUri(): string
     {
         $uri = $_SERVER['REQUEST_URI'];
-        self::append($uri);
+        self::persistUri($uri);
         return UriUtils::parse($uri);
     }
 }
