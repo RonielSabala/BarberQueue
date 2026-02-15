@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Controllers\BaseController;
+use App\Controllers\Core\BaseController;
 
 class Route
 {

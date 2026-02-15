@@ -6,9 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-HEALTH_ELEMENT = "body"
-HEALTH_MESSAGE = "Hello World"
-HEALTH_CONTENT_TYPE = "text/plain;charset=UTF-8"
+EXPECTED_TEXT = "Hello World"
+EXPECTED_ELEMENT_TAG = "body"
+EXPECTED_CONTENT_TYPE = "text/plain; charset=utf-8"
 
 
 def _get_health_url(base_url: str) -> str:
@@ -30,10 +30,10 @@ def test_health_endpoint(base_url: str):
     assert response.status_code == 200, f"status {response.status_code}"
 
     body = response.text
-    assert body == HEALTH_MESSAGE, f"unexpected body: {body!r}"
+    assert body == EXPECTED_TEXT, f"unexpected body: {body!r}"
 
     content_type = response.headers.get("Content-Type", "")
-    assert content_type == HEALTH_CONTENT_TYPE
+    assert content_type == EXPECTED_CONTENT_TYPE
 
 
 def test_health_message(
@@ -50,9 +50,9 @@ def test_health_message(
     wait = WebDriverWait(driver, 5)
 
     body_element = wait.until(
-        EC.presence_of_element_located((By.TAG_NAME, HEALTH_ELEMENT))
+        EC.presence_of_element_located((By.TAG_NAME, EXPECTED_ELEMENT_TAG))
     )
-    assert body_element.text == HEALTH_MESSAGE
+    assert body_element.text == EXPECTED_TEXT
 
     screenshot_path = capture_dir / "health_message.png"
     driver.save_screenshot(screenshot_path)

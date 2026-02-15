@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\HeaderType;
+namespace App\Domain;
 
 enum HeaderType: string
 {

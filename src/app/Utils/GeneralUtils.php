@@ -29,9 +29,13 @@ class GeneralUtils
     public static function consecutiveSlices(string $separator, string $text): array
     {
         $result = [''];
-        $accumulated = '';
+        if ($text === '') {
+            return $result;
+        }
 
         $parts = explode($separator, $text);
+        $accumulated = '';
+
         foreach ($parts as $part) {
             $accumulated .= $part . $separator;
             $result[] = $accumulated;

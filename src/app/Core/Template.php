@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use Domain\HeaderType\HeaderType;
 use App\Utils\GeneralUtils;
+use App\Domain\HeaderType;
 
 class Constants
 {
@@ -61,7 +61,7 @@ class Template
         }
     }
 
-    private function findRelativeFilePath(string $baseDir, string $file): string | null
+    private function findRelativePath(string $baseDir, string $file): string | null
     {
         foreach (self::$dirSlices as $relDir) {
             $relFile = $relDir . $file;
@@ -75,13 +75,19 @@ class Template
         return null;
     }
 
+    private function getSimpleRelativePath(string $file): string
+    {
+        return self::$viewDir . (self::$viewDir === '' ? '' : '/') . $file;
+    }
+
     private function getViewFilePath(string $viewFilename, bool $useFallbacks = true): string
     {
         $viewFile = $viewFilename . Constants::VIEWS_FILE_EXT;
+
         if ($useFallbacks) {
-            $relFilePath = self::findRelativeFilePath(Constants::VIEWS_DIR, $viewFile);
+            $relFilePath = self::findRelativePath(Constants::VIEWS_DIR, $viewFile);
         } else {
-            $relFilePath = self::$viewDir . '/' . $viewFile;
+            $relFilePath = self::getSimpleRelativePath($viewFile);
         }
 
         return Constants::VIEWS_DIR . '/' . $relFilePath;
@@ -90,10 +96,11 @@ class Template
     private function getCSSLink(string $cssFilename, bool $useFallbacks = true): string
     {
         $cssFile = $cssFilename . Constants::CSS_FILE_EXT;
+
         if ($useFallbacks) {
-            $relFilePath = self::findRelativeFilePath(Constants::CSS_DIR, $cssFile);
+            $relFilePath = self::findRelativePath(Constants::CSS_DIR, $cssFile);
         } else {
-            $relFilePath = self::$viewDir . '/' . $cssFile;
+            $relFilePath = self::getSimpleRelativePath($cssFile);
             if (!file_exists(Constants::CSS_DIR . '/' . $relFilePath)) {
                 $relFilePath = null;
             }
@@ -109,10 +116,11 @@ class Template
     private function getJSScript(string $jsFilename, bool $useFallbacks = true): string
     {
         $jsFile = $jsFilename . Constants::JS_FILE_EXT;
+
         if ($useFallbacks) {
-            $relFilePath = self::findRelativeFilePath(Constants::JS_DIR, $jsFile);
+            $relFilePath = self::findRelativePath(Constants::JS_DIR, $jsFile);
         } else {
-            $relFilePath = self::$viewDir . '/' . $jsFile;
+            $relFilePath = self::getSimpleRelativePath($jsFile);
             if (!file_exists(Constants::JS_DIR . '/' . $relFilePath)) {
                 $relFilePath = null;
             }
