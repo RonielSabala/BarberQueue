@@ -20,6 +20,7 @@ const URIS = [
     '' => _DEFAULT_ROUTE,
     DEFAULT_VIEW_NAME => _DEFAULT_ROUTE,
     LEGACY_VIEW_NAME => _DEFAULT_ROUTE,
+    // Health uri
     'health' => new Route('health', new Controllers\HealthController()),
 ];
 

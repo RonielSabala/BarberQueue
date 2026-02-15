@@ -61,23 +61,23 @@ class Template
         }
     }
 
-    private function findRelativePath(string $baseDir, string $file): string | null
+    private function getFilePath(string $file): string
     {
-        foreach (self::$dirSlices as $relDir) {
-            $relFile = $relDir . $file;
-            if (!file_exists($baseDir .  '/' . $relFile)) {
+        return self::$viewDir . (self::$viewDir === '' ? '' : '/') . $file;
+    }
+
+    private function findRelativeFilePath(string $baseDir, string $file): string | null
+    {
+        foreach (self::$dirSlices as $dirSlice) {
+            $relFilePath = $dirSlice . $file;
+            if (!file_exists($baseDir .  '/' . $relFilePath)) {
                 continue;
             }
 
-            return $relFile;
+            return $relFilePath;
         }
 
         return null;
-    }
-
-    private function getSimpleRelativePath(string $file): string
-    {
-        return self::$viewDir . (self::$viewDir === '' ? '' : '/') . $file;
     }
 
     private function getViewFilePath(string $viewFilename, bool $useFallbacks = true): string
@@ -85,9 +85,9 @@ class Template
         $viewFile = $viewFilename . Constants::VIEWS_FILE_EXT;
 
         if ($useFallbacks) {
-            $relFilePath = self::findRelativePath(Constants::VIEWS_DIR, $viewFile);
+            $relFilePath = self::findRelativeFilePath(Constants::VIEWS_DIR, $viewFile);
         } else {
-            $relFilePath = self::getSimpleRelativePath($viewFile);
+            $relFilePath = self::getFilePath($viewFile);
         }
 
         return Constants::VIEWS_DIR . '/' . $relFilePath;
@@ -98,9 +98,9 @@ class Template
         $cssFile = $cssFilename . Constants::CSS_FILE_EXT;
 
         if ($useFallbacks) {
-            $relFilePath = self::findRelativePath(Constants::CSS_DIR, $cssFile);
+            $relFilePath = self::findRelativeFilePath(Constants::CSS_DIR, $cssFile);
         } else {
-            $relFilePath = self::getSimpleRelativePath($cssFile);
+            $relFilePath = self::getFilePath($cssFile);
             if (!file_exists(Constants::CSS_DIR . '/' . $relFilePath)) {
                 $relFilePath = null;
             }
@@ -118,9 +118,9 @@ class Template
         $jsFile = $jsFilename . Constants::JS_FILE_EXT;
 
         if ($useFallbacks) {
-            $relFilePath = self::findRelativePath(Constants::JS_DIR, $jsFile);
+            $relFilePath = self::findRelativeFilePath(Constants::JS_DIR, $jsFile);
         } else {
-            $relFilePath = self::getSimpleRelativePath($jsFile);
+            $relFilePath = self::getFilePath($jsFile);
             if (!file_exists(Constants::JS_DIR . '/' . $relFilePath)) {
                 $relFilePath = null;
             }
