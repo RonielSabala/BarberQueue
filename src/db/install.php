@@ -9,18 +9,18 @@ const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . '/config/db.php';
 
-use App\Utils\Output;
+use App\Utils\ConsoleOutput;
 
 function readSqlFile(string $filepath): string
 {
     if (!file_exists($filepath)) {
-        echo Output::error("File not found: $filepath");
+        echo ConsoleOutput::error("File not found: $filepath");
         die;
     }
 
     $content = file_get_contents($filepath);
     if ($content === false) {
-        echo Output::error("Failed to read file: $filepath");
+        echo ConsoleOutput::error("Failed to read file: $filepath");
         die;
     }
 
@@ -43,12 +43,12 @@ function executeStatements(\PDO $pdo, array $statements): void
 
 // Validate database configuration
 if (!isset($pdo) || !($pdo instanceof \PDO)) {
-    echo Output::error("\PDO connection not available");
+    echo ConsoleOutput::error("\PDO connection not available");
     die;
 }
 
 if (empty($dbName)) {
-    echo Output::error("Database name cannot be empty");
+    echo ConsoleOutput::error("Database name cannot be empty");
     die;
 }
 
@@ -70,8 +70,8 @@ try {
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
 
-    echo Output::success("Database created successfully!");
+    echo ConsoleOutput::success("Database created successfully!");
 } catch (\PDOException $e) {
-    echo Output::error("Database error: " . $e->getMessage());
+    echo ConsoleOutput::error("Database error: " . $e->getMessage());
     die;
 }

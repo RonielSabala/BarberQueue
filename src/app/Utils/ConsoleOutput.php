@@ -10,7 +10,7 @@ enum Color: int
     case Green = 32;
 }
 
-class Output
+class ConsoleOutput
 {
     private static function format(string $text, Color $color): string
     {
