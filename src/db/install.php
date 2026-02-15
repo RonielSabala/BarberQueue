@@ -3,46 +3,75 @@
 declare(strict_types=1);
 
 const SRC_DIR = __DIR__ . '/..';
-const _CREATION_FILE_PATH = __DIR__ . '/creation.sql';
-const _INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
-const _SUCCESS_MESSAGE = "✔️  Database created successfully!";
+const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
+const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . '/config/db.php';
 
-// Read SQL scripts
-$creationSql = @file_get_contents(_CREATION_FILE_PATH);
-if ($creationSql === false) {
-    die("Failed to read database creation file: " . _CREATION_FILE_PATH);
+use App\Utils\Output;
+
+function readSqlFile(string $filepath): string
+{
+    if (!file_exists($filepath)) {
+        echo Output::error("File not found: $filepath");
+        die;
+    }
+
+    $content = file_get_contents($filepath);
+    if ($content === false) {
+        echo Output::error("Failed to read file: $filepath");
+        die;
+    }
+
+    return $content;
 }
 
-$insertionsSql = @file_get_contents(_INSERTIONS_FILE_PATH);
-if ($insertionsSql === false) {
-    die("Failed to read data insertion file: " . _INSERTIONS_FILE_PATH);
+function getStatementsFromString(string $sql): array
+{
+    return array_filter(array_map('trim', explode(';', $sql)));
 }
 
-try {
-    $statements = array_filter(array_map('trim', explode(';', $creationSql)));
+function executeStatements(\PDO $pdo, array $statements): void
+{
     foreach ($statements as $stmt) {
         if (!empty($stmt)) {
             $pdo->exec($stmt);
         }
     }
-
-    // Use db
-    if (!empty($db)) {
-        $pdo->exec("USE `$db`;");
-    }
-
-    // Insert data
-    $insertStatements = array_filter(array_map('trim', explode(';', $insertionsSql)));
-    foreach ($insertStatements as $stmt) {
-        if (!empty($stmt)) {
-            $pdo->exec($stmt);
-        }
-    }
-} catch (\PDOException $e) {
-    die("DB error: " . $e->getMessage());
 }
 
-echo _SUCCESS_MESSAGE;
+// Validate database configuration
+if (!isset($pdo) || !($pdo instanceof \PDO)) {
+    echo Output::error("\PDO connection not available");
+    die;
+}
+
+if (empty($dbName)) {
+    echo Output::error("Database name cannot be empty");
+    die;
+}
+
+$creationSql = readSqlFile(CREATION_FILE_PATH);
+$insertionsSql = readSqlFile(INSERTIONS_FILE_PATH);
+
+// Prepare statements
+$initStatements = [
+    "DROP DATABASE IF EXISTS `$dbName`",
+    "CREATE DATABASE `$dbName`",
+    "USE `$dbName`"
+];
+$creationStatements = getStatementsFromString($creationSql);
+$insertionStatements = getStatementsFromString($insertionsSql);
+
+// Execute installation
+try {
+    executeStatements($pdo, $initStatements);
+    executeStatements($pdo, $creationStatements);
+    executeStatements($pdo, $insertionStatements);
+
+    echo Output::success("Database created successfully!");
+} catch (\PDOException $e) {
+    echo Output::error("Database error: " . $e->getMessage());
+    die;
+}

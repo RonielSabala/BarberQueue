@@ -108,13 +108,15 @@ This file should contain the keys below. Optional values may be left empty, but 
 
 ```env
 # Database (required)
-HOST='YOUR_DB_HOST'
-USER='YOUR_DB_USER'
-PASS='YOUR_DB_PASSWORD'
+DB_HOST='YOUR_DB_HOST'
+DB_PORT='YOUR_DB_PORT'
+DB_USERNAME='YOUR_DB_USERNAME'
+DB_PASSWORD='YOUR_DB_PASSWORD'
+DB_DATABASE=barberqueue_db
 
 # Email (optional)
-MAIL_USER='YOUR_GOOGLE_EMAIL'
-MAIL_PASS='YOUR_APP_PASSWORD'
+MAIL_USERNAME='YOUR_GOOGLE_EMAIL'
+MAIL_PASSWORD='YOUR_APP_PASSWORD'
 
 # Google OAuth (optional)
 GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID'
@@ -123,8 +125,8 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 
 #### Email Setup (Optional)
 
-1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
-2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASS`.
+1. Enable 2-Step Verification for `MAIL_USERNAME` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
+2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASSWORD`.
 
 #### Google Setup (Optional)
 
@@ -188,7 +190,7 @@ Test results are automatically saved to `tests/results/` containing:
 ## Email Notifications
 
 - Password reset uses an email verification code flow.
-- Ensure `MAIL_USER` and `MAIL_PASS` are set in `src/config/.env` for email functionality.
+- Ensure `MAIL_USERNAME` and `MAIL_PASSWORD` are set in `src/config/.env` for email functionality.
 
 ---
 

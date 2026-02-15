@@ -6,10 +6,11 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
 
 // Database connection variables
-$port = 3306;
-$host = $_ENV['HOST'];
-$user = $_ENV['USER'];
-$pass = $_ENV['PASS'];
+$host = $_ENV['DB_HOST'];
+$port = $_ENV['DB_PORT'];
+$user = $_ENV['DB_USERNAME'];
+$pass = $_ENV['DB_PASSWORD'];
+$dbName = $_ENV['DB_DATABASE'];
 
 $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
 
