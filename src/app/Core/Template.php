@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Domain\HeaderType;
-use App\Utils\GeneralUtils;
+use App\Utils\ArrayUtils;
 
 class Constants
 {
@@ -39,7 +39,7 @@ class Template
     {
         self::$viewDir = $viewDir;
         self::$viewName = $viewName;
-        self::$dirSlices = array_reverse(GeneralUtils::consecutiveSlices('/', self::$viewDir));
+        self::$dirSlices = array_reverse(ArrayUtils::consecutiveSlices('/', self::$viewDir));
     }
 
     public static function enableJsonMode(): void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Components\Alert;
-use App\Utils\GeneralUtils;
+use App\Utils\TextUtils;
 use App\Utils\UriCache;
 use App\Utils\UriUtils;
 
@@ -22,8 +22,8 @@ class Router
 
         // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
-        $uri = GeneralUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
-        $uri = GeneralUtils::removeSuffix($uri, Constants::VIEWS_FILE_EXT);
+        $uri = TextUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
+        $uri = TextUtils::removeSuffix($uri, Constants::VIEWS_FILE_EXT);
 
         // Get route
         $uriRoute = URIS[$uri] ?? null;
