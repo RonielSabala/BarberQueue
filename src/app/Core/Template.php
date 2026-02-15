@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Utils\GeneralUtils;
 use App\Domain\HeaderType;
+use App\Utils\GeneralUtils;
 
 class Constants
 {

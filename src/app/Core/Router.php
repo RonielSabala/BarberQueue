@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Utils\UriUtils;
-use App\Utils\UriCache;
 use App\Utils\GeneralUtils;
+use App\Utils\UriCache;
+use App\Utils\UriUtils;
 
 require_once __DIR__ .  '/Template.php';
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Template;
 use App\Controllers\Core\BaseController;
+use App\Core\Template;
 
 class HomeController extends BaseController
 {

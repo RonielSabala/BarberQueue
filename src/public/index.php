@@ -7,9 +7,9 @@ const SRC_DIR = PUBLIC_DIR . '/..';
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . '/config/db.php';
 
+use App\Controllers;
 use App\Core\Route;
 use App\Core\Router;
-use App\Controllers;
 
 const DEFAULT_VIEW_NAME = 'home';
 const LEGACY_VIEW_NAME = 'index';
