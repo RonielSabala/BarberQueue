@@ -4,8 +4,7 @@ composer.*
 
 # Folders
 .venv
-.ruff_cache
-.pytest_cache
+.*cache
 __pycache__
 vendor/
 tests/results
