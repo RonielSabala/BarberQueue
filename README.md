@@ -62,23 +62,13 @@ The following items are explicitly out of scope for the current project:
 ### Requirements
 
 - [PHP](https://www.php.net/downloads.php) >= 8.4.7
-- [Python](https://www.python.org/downloads/) >= 3.13.9
 - [Composer](https://getcomposer.org/download/) >= 2.8.9
+- [Python](https://www.python.org/downloads/) >= 3.13.9
 - [MySQL](https://downloads.mysql.com/archives/community/) >= 8.0.42
 
 ---
 
 ### Install Dependencies
-
-#### Install `pre-commit`
-
-This is the framework that installs and runs the git hooks.
-
-```bash
-python -m pip install --user pre-commit
-```
-
----
 
 #### Install PHP Dependencies
 
@@ -90,9 +80,9 @@ composer install
 
 ---
 
-#### Install Python Dependencies
+#### Install `uv`
 
-First, install `uv` with one of these options:
+This is a fast Python package installer.
 
 ```bash
 # Windows
@@ -105,19 +95,27 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 python -m pip install --user uv
 ```
 
-Then, install the Python toolset:
+#### Install Python Dependencies
 
 ```bash
 uv sync
 ```
 
+This creates a virtual environment and installs all Python development tools.
+
 ---
 
-#### Install the Git Hooks
+#### Install Pre-commit Hooks
 
 ```bash
+# Install pre-commit framework
+python -m pip install --user pre-commit
+
+# Install the git hooks
 pre-commit install
 ```
+
+This automatically runs code quality checks before each commit.
 
 ---
 
