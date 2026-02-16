@@ -1,8 +1,7 @@
 <?php
 $finder = PhpCsFixer\Finder::create()
     ->in([__DIR__ . '/src'])
-    ->name('*.php')
-    ->exclude('.*', 'vendor', 'tests');
+    ->name('*.php');
 
 $config = new PhpCsFixer\Config();
 return $config

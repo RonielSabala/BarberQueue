@@ -21,6 +21,7 @@ python_files = "test_*.py"
 addopts = "--html=tests/results/report.html --self-contained-html -v"
 
 [tool.ruff]
+src = ["tests"]
 fix = true
 preview = true
 line-length = 88

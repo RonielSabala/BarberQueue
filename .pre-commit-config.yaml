@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.1
+    hooks:
+      - id: ruff-check
+        files: '^tests/.*'
+        args: [ --fix ]
+      - id: ruff-format
+        files: '^tests/.*'
+
+  - repo: https://github.com/ComPWA/pyright-pre-commit
+    rev: v1.1.407
+    hooks:
+      - id: pyright
+        files: '^tests/.*'
+
+  - repo: local
+    hooks:
+      - id: php-cs-fixer
+        name: php-cs-fixer
+        entry: ./vendor/bin/php-cs-fixer
+        language: system
+        types: [php]
+        files: \.php$
+        args:
+          - fix
+          - --using-cache=no
+          - --quiet
+          - --config=.php-cs-fixer.php
+          - --path-mode=intersection
+          - --allow-risky=yes

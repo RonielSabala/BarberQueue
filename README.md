@@ -11,7 +11,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
-  - [Install `uv`](#install-uv)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
@@ -69,9 +68,27 @@ The following items are explicitly out of scope for the current project:
 
 ---
 
-### Install `uv`
+### Install Dependencies
 
-Recommended methods:
+#### Install `pre-commit`
+
+This is the framework that installs and runs the git hooks.
+
+```bash
+python -m pip install --user pre-commit
+```
+
+#### Install PHP Dependencies
+
+Use system terminal (recommended):
+
+```bash
+composer install
+```
+
+#### Install Python Dependencies
+
+Install `uv`, choose one of these options:
 
 ```bash
 # Windows
@@ -81,17 +98,19 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Or install via pip
-pip install uv
+python -m pip install --user uv
 ```
 
----
-
-### Install Dependencies
-
-Use system terminal (recommended):
+Then install the Python toolset:
 
 ```bash
-composer install
+uv sync
+```
+
+#### Install the Git Hooks
+
+```bash
+pre-commit install
 ```
 
 ---
