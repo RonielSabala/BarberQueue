@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Components\Alert;
-use App\Utils\TextUtils;
-use App\Utils\UriCache;
-use App\Utils\UriUtils;
+use App\Utils\{TextUtils, UriCache, UriUtils};
 
 require_once __DIR__ . '/Template.php';
 
@@ -16,7 +14,7 @@ class Router
     private const LEGACY_VIEWS_DIR = 'src/public/views/';
     private const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
-    public function dispatch()
+    public function dispatch(): void
     {
         UriCache::start();
 

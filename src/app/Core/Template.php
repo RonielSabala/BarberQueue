@@ -19,9 +19,9 @@ class Constants
     public const JS_FILE_EXT = '.js';
 
     public const PARTIALS_DIR_NAME = '_partials';
-    public const PARTIAL_HEADER_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_header';
-    public const PARTIAL_NAV_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_nav';
-    public const PARTIAL_FOOTER_FILENAME = self::PARTIALS_DIR_NAME . '/' . '_footer';
+    public const PARTIAL_HEADER_FILENAME = self::PARTIALS_DIR_NAME . '/_header';
+    public const PARTIAL_NAV_FILENAME = self::PARTIALS_DIR_NAME . '/_nav';
+    public const PARTIAL_FOOTER_FILENAME = self::PARTIALS_DIR_NAME . '/_footer';
 
     public const VIEWS_DIR = PUBLIC_DIR . '/' . self::VIEWS_DIR_NAME;
     public const CSS_DIR = PUBLIC_DIR . '/' . self::CSS_DIR_NAME;

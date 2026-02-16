@@ -8,8 +8,7 @@ require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . '/config/db.php';
 
 use App\Controllers;
-use App\Core\Route;
-use App\Core\Router;
+use App\Core\{Route, Router};
 
 const DEFAULT_VIEW_NAME = 'home';
 const LEGACY_VIEW_NAME = 'index';
@@ -24,6 +23,6 @@ const URIS = [
     'health' => new Route('health', new Controllers\HealthController()),
 ];
 
-# Create Router singleton
+// Create Router singleton
 const _ROUTER = new Router();
 _ROUTER->dispatch();

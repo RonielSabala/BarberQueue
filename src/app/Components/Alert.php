@@ -23,8 +23,7 @@ class Alert extends Component
         private readonly AlertVariant $variant = AlertVariant::Danger,
         private readonly ?string $backUrl = null,
         private readonly bool $showBackButton = true,
-    ) {
-    }
+    ) {}
 
     public function render(): string
     {

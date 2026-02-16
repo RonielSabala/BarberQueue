@@ -11,6 +11,5 @@ class Route
     public function __construct(
         public readonly string $viewName,
         public readonly Controller $viewController,
-    ) {
-    }
+    ) {}
 }
