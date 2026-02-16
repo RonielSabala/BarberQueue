@@ -1,9 +1,19 @@
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "junstyle.php-cs-fixer",
+  "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+  "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.php",
+  "php-cs-fixer.allowRisky": true,
+  "phpNamespaceResolver.autoSort": false,
+  "phpNamespaceResolver.sortOnSave": true,
+  "phpNamespaceResolver.removeOnSave": true,
   "phpserver.port": 3000,
   "phpserver.relativePath": "src/public",
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
   },
+  "cSpell.language": "en",
+  "cSpell.caseSensitive": true,
   "cSpell.words": ["addoption", "appspecific", "barberqueue", "EXTR"]
 }

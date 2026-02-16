@@ -9,5 +9,8 @@
       "App\\": "src/app/",
       "GetUser\\Client\\": "client/"
     }
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.94"
   }
 }
