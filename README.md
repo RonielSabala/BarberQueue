@@ -134,9 +134,9 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
 3. Choose **Web application** as the Application type and add the authorized redirect URI:
 
-    ```plain
-    http://localhost:3000/auth/GoogleController.php
-    ```
+   ```plain
+   http://localhost:3000/auth/GoogleController.php
+   ```
 
 4. Copy **Client ID** and **Client secret** into `src/config/.env`.
 
@@ -245,12 +245,12 @@ Contributions are welcome. Suggested workflow:
 
 ## Authors
 
-| Name | ID | Contact |
-| --- | ---: | --- |
-| Roniel Antonio Sabala Germán | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com) |
-| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com) |
-| Idelka Regina Rodríguez Jáquez | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
-| Jheinel Jesús Brown Curbata | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com) |
+| Name                            |       ID | Contact                                                    |
+| ------------------------------- | -------: | ---------------------------------------------------------- |
+| Roniel Antonio Sabala Germán    | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com)           |
+| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com)   |
+| Idelka Regina Rodríguez Jáquez  | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
+| Jheinel Jesús Brown Curbata     | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com)           |
 
 ---
 

@@ -9,7 +9,7 @@ return $config
     ->setRules([
         '@PSR12' => true,
         'array_syntax' => ['syntax' => 'short'],
-        'binary_operator_spaces' => ['default' => 'align_single_space'],
+        'binary_operator_spaces' => ['default' => 'single_space'],
         'blank_line_after_namespace' => true,
         'blank_line_after_opening_tag' => true,
         'declare_strict_types' => true,

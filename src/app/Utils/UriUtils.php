@@ -9,7 +9,7 @@ class UriUtils
     public static function split(string $viewDir): array
     {
         $uriParts = explode('/', $viewDir);
-        if (count($uriParts) == 1) {
+        if (count($uriParts) === 1) {
             return ['', $viewDir];
         }
 

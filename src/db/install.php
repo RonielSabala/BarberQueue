@@ -48,7 +48,7 @@ if (!isset($pdo) || !($pdo instanceof \PDO)) {
 }
 
 if (empty($dbName)) {
-    echo ConsoleOutput::error("Database name cannot be empty");
+    echo ConsoleOutput::error('Database name cannot be empty');
     die;
 }
 
@@ -70,8 +70,8 @@ try {
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
 
-    echo ConsoleOutput::success("Database created successfully!");
+    echo ConsoleOutput::success('Database created successfully!');
 } catch (\PDOException $e) {
-    echo ConsoleOutput::error("Database error: " . $e->getMessage());
+    echo ConsoleOutput::error('Database error: ' . $e->getMessage());
     die;
 }

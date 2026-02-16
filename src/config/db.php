@@ -18,6 +18,6 @@ $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
 try {
     $pdo = new \PDO($dsn, $user, $pass);
 } catch (\PDOException $e) {
-    error_log("DB connect error: " . $e->getMessage());
+    error_log('DB connect error: ' . $e->getMessage());
     throw $e;
 }
