@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 EXPECTED_TEXT = "Hello World"
+EXPECTED_BODY_TEXT = EXPECTED_TEXT + "\n"
 EXPECTED_ELEMENT_TAG = "body"
 EXPECTED_CONTENT_TYPE = "text/plain; charset=utf-8"
 
@@ -30,7 +31,7 @@ def test_health_endpoint(base_url: str):
     assert response.status_code == 200, f"status {response.status_code}"
 
     body = response.text
-    assert body == EXPECTED_TEXT, f"unexpected body: {body!r}"
+    assert body == EXPECTED_BODY_TEXT, f"unexpected body: {body!r}"
 
     content_type = response.headers.get("Content-Type", "")
     assert content_type == EXPECTED_CONTENT_TYPE

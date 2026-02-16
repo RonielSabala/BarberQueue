@@ -40,4 +40,6 @@ combine-as-imports = true
 split-on-trailing-comma = false
 
 [tool.pyright]
+venv = ".venv"
+venvPath = "."
 typeCheckingMode = "standard"

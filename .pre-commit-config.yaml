@@ -13,7 +13,6 @@ repos:
         entry: composer cs-fix
         language: system
         types: [php]
-        pass_filenames: true
 
   # Python linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -26,11 +25,15 @@ repos:
         files: "^tests/.*\\.py$"
 
   # Python type checking
-  - repo: https://github.com/ComPWA/pyright-pre-commit
-    rev: v1.1.407
+  - repo: local
     hooks:
       - id: pyright
+        name: pyright
+        entry: pyright
+        language: system
+        types: [python]
         files: "^tests/.*\\.py$"
+        pass_filenames: false
 
   # Other files
   - repo: https://github.com/pre-commit/mirrors-prettier
