@@ -1,21 +1,20 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+  # PHP formatting
+  - repo: local
     hooks:
-      - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
-      - id: end-of-file-fixer
-      - id: check-yaml
-        args: [--allow-multiple-documents]
-      - id: check-json
-      - id: check-toml
-
-  # Formatting for Markdown, JSON, YAML, TOML
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        files: \.(md|json|yaml|toml)$
+      - id: php-cs-fixer
+        name: php-cs-fixer
+        entry: ./vendor/bin/php-cs-fixer
+        language: system
+        types: [php]
+        files: \.php$
+        args:
+          - fix
+          - --using-cache=no
+          - --quiet
+          - --config=.php-cs-fixer.php
+          - --path-mode=intersection
+          - --allow-risky=yes
 
   # Python linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -36,22 +35,24 @@ repos:
       - id: pyright
         files: "^tests/.*\\.py$"
 
-  # PHP code style
-  - repo: local
+  # Formatting for Markdown, JSON, YAML, TOML
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
     hooks:
-      - id: php-cs-fixer
-        name: php-cs-fixer
-        entry: ./vendor/bin/php-cs-fixer
-        language: system
-        types: [php]
-        files: \.php$
-        args:
-          - fix
-          - --using-cache=no
-          - --quiet
-          - --config=.php-cs-fixer.php
-          - --path-mode=intersection
-          - --allow-risky=yes
+      - id: prettier
+        files: \.(md|json|yaml|toml)$
+
+  # General checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+        args: [--allow-multiple-documents]
 
 default_language_version:
   python: python3
