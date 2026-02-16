@@ -8,6 +8,7 @@
     "junstyle.php-cs-fixer",
     "bmewburn.vscode-intelephense-client",
     "mehedidracula.php-namespace-resolver",
+    "redhat.vscode-yaml",
     "tamasfe.even-better-toml",
     "yzhang.markdown-all-in-one",
     "davidanson.vscode-markdownlint",
