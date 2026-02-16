@@ -78,6 +78,8 @@ This is the framework that installs and runs the git hooks.
 python -m pip install --user pre-commit
 ```
 
+---
+
 #### Install PHP Dependencies
 
 Use system terminal (recommended):
@@ -86,9 +88,11 @@ Use system terminal (recommended):
 composer install
 ```
 
+---
+
 #### Install Python Dependencies
 
-Install `uv`, choose one of these options:
+First, install `uv` with one of these options:
 
 ```bash
 # Windows
@@ -101,11 +105,13 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 python -m pip install --user uv
 ```
 
-Then install the Python toolset:
+Then, install the Python toolset:
 
 ```bash
 uv sync
 ```
+
+---
 
 #### Install the Git Hooks
 
