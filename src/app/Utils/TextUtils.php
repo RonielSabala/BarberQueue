@@ -12,7 +12,7 @@ class TextUtils
             return $text;
         }
 
-        return substr($text, strlen($prefix));
+        return substr($text, \strlen($prefix));
     }
 
     public static function removeSuffix(string $text, string $suffix): string
@@ -21,6 +21,6 @@ class TextUtils
             return $text;
         }
 
-        return substr($text, 0, -strlen($suffix));
+        return substr($text, 0, -\strlen($suffix));
     }
 }

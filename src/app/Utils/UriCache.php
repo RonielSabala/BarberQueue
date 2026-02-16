@@ -22,7 +22,7 @@ class UriCache
 
     public static function count(): int
     {
-        return count($_SESSION[self::SESSION_NAME]);
+        return \count($_SESSION[self::SESSION_NAME]);
     }
 
     private static function append(string $uri): void
@@ -32,7 +32,7 @@ class UriCache
 
     private static function limitCache(): void
     {
-        $_SESSION[self::SESSION_NAME] = array_slice($_SESSION[self::SESSION_NAME], -self::MAX_CACHE);
+        $_SESSION[self::SESSION_NAME] = \array_slice($_SESSION[self::SESSION_NAME], -self::MAX_CACHE);
     }
 
     public static function getIthUri(int $i)
@@ -82,6 +82,6 @@ class UriCache
 
     public static function getPreviousUri(): string
     {
-        return UriCache::getIthUri(-2);
+        return self::getIthUri(-2);
     }
 }

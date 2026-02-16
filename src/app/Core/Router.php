@@ -31,7 +31,7 @@ class Router
             exit;
         }
 
-        define('CURRENT_PAGE', $uriRoute->viewName);
+        \define('CURRENT_PAGE', $uriRoute->viewName);
 
         // Get view parts
         [$viewDir, $viewName] = UriUtils::split($uri);

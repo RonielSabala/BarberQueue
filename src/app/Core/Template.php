@@ -110,7 +110,7 @@ class Template
             return '';
         }
 
-        return sprintf(
+        return \sprintf(
             '<link rel="stylesheet" href="/%s">',
             Constants::CSS_DIR_NAME . '/' . $relFilePath,
         ) . "\n";
@@ -133,7 +133,7 @@ class Template
             return '';
         }
 
-        return "\n" . sprintf(
+        return "\n" . \sprintf(
             '<script src="/%s"></script>',
             Constants::JS_DIR_NAME . '/' . $relFilePath,
         );

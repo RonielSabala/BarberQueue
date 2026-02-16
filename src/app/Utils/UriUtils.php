@@ -9,11 +9,11 @@ class UriUtils
     public static function split(string $viewDir): array
     {
         $uriParts = explode('/', $viewDir);
-        if (count($uriParts) === 1) {
+        if (\count($uriParts) === 1) {
             return ['', $viewDir];
         }
 
-        $viewDir = implode('/', array_slice($uriParts, 0, -1));
+        $viewDir = implode('/', \array_slice($uriParts, 0, -1));
         $viewFile = end($uriParts);
         return [$viewDir, $viewFile];
     }

@@ -35,19 +35,19 @@ class Alert extends Component
         $escapedMessage = htmlspecialchars($this->message, ENT_QUOTES, 'UTF-8');
         $escapedUrl = htmlspecialchars($backUrl ?? '', ENT_QUOTES, 'UTF-8');
 
-        $html = sprintf(
+        $html = \sprintf(
             '<div class="%s">',
             self::DEFAULT_CONTAINER_CLASSES,
         );
 
-        $html .= sprintf(
+        $html .= \sprintf(
             '<div class="alert alert-%s" role="alert">%s</div>',
             $this->variant->value,
             $escapedMessage,
         );
 
         if ($this->showBackButton) {
-            $html .= sprintf(
+            $html .= \sprintf(
                 '<a href="%s" class="%s">%s</a>',
                 $escapedUrl,
                 self::DEFAULT_BUTTON_CLASSES,
