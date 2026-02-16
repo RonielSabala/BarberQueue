@@ -3,95 +3,53 @@
 declare(strict_types=1);
 
 use PhpCsFixer\{Config, Finder};
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $finder = Finder::create()
     ->in([__DIR__ . '/src'])
     ->name('*.php')
+    ->ignoreDotFiles(true)
+    ->ignoreVCS(true)
+    ->exclude('vendor')
 ;
 
-$config = new Config();
-return $config
+return (new Config())
+    ->setRiskyAllowed(true)
+    ->setUsingCache(true)
+    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache')
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
-        // Rule sets
-        '@PSR12' => true,
-        '@Symfony' => true,
         '@PhpCsFixer' => true,
+        '@PhpCsFixer:risky' => true,
 
-        // Formatting
-        'array_syntax' => ['syntax' => 'short'],
-        'binary_operator_spaces' => ['default' => 'single_space'],
+        // --- Overrides ---
+
+        // Formatting preferences
+        'yoda_style' => false,
         'concat_space' => ['spacing' => 'one'],
-        'single_quote' => true,
-        'line_ending' => true,
-        'no_trailing_whitespace' => true,
-        'single_blank_line_at_eof' => true,
-        'blank_line_after_namespace' => true,
-        'blank_line_after_opening_tag' => true,
-        'trim_array_spaces' => true,
+        'single_quote' => ['strings_containing_single_quote_chars' => true],
         'blank_line_before_statement' => ['statements' => []],
-        'no_whitespace_before_comma_in_array' => true,
-        'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline'],
-        'yoda_style' => [
-            'equal' => false,
-            'identical' => false,
-            'less_and_greater' => false,
-        ],
+        'no_whitespace_before_comma_in_array' => ['after_heredoc' => true],
+        'method_argument_space' => ['on_multiline' => 'ensure_fully_multiline', 'keep_multiple_spaces_after_comma' => false, 'attribute_placement' => 'ignore', 'after_heredoc' => true],
 
-        // Structure
-        'no_useless_else' => true,
-        'no_useless_return' => true,
-        'control_structure_braces' => true,
-        'no_empty_statement' => true,
-
-        // Imports / ordering / namespaces
-        'no_unused_imports' => true,
-        'ordered_imports' => ['sort_algorithm' => 'alpha'],
-        'ordered_class_elements' => false,
+        // Imports
         'group_import' => true,
         'single_import_per_statement' => false,
-        'fully_qualified_strict_types' => ['leading_backslash_in_global_namespace' => true],
-        'no_leading_import_slash' => true,
-        'no_unneeded_import_alias' => true,
+        'ordered_imports' => ['sort_algorithm' => 'alpha'],
+        'fully_qualified_strict_types' => ['import_symbols' => true, 'leading_backslash_in_global_namespace' => true],
+
+        // Disable overly strict rules
+        'ordered_class_elements' => false,
 
         // Type hints
         'declare_strict_types' => true,
-        'return_type_declaration' => true,
-        'type_declaration_spaces' => ['elements' => ['function', 'property']],
+        'type_declaration_spaces' => ['elements' => ['function', 'property', 'constant']],
         'nullable_type_declaration_for_default_null_value' => true,
         'void_return' => ['fix_lambda' => true],
 
         // Modernization
-        'modernize_strpos' => true,
-        'modernize_types_casting' => true,
         'dir_constant' => true,
         'no_php4_constructor' => true,
-
-        // Strictness
-        'strict_param' => true,
-        'strict_comparison' => true,
-        'no_trailing_whitespace_in_string' => true,
-
-        // PHPDoc hygiene
-        'no_superfluous_phpdoc_tags' => [
-            'allow_hidden_params' => true,
-            'remove_inheritdoc' => true,
-        ],
-        'phpdoc_no_empty_return' => true,
-
-        // Readability
-        'no_unneeded_braces' => ['namespaces' => true],
-        'no_trailing_comma_in_singleline_array' => true,
-
-        // Performance
-        'fopen_flags' => true,
-        'explicit_string_variable' => true,
-        'dir_constant' => true,
-
-        // Safety
-        'no_leading_namespace_whitespace' => true,
-        'no_trailing_whitespace_in_comment' => true,
-        'no_whitespace_in_blank_line' => true,
     ])
     ->setFinder($finder)
-    ->setRiskyAllowed(true)
 ;
