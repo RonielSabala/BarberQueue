@@ -19,17 +19,10 @@ repos:
     hooks:
       - id: php-cs-fixer
         name: php-cs-fixer
-        entry: ./vendor/bin/php-cs-fixer
+        entry: composer cs-fix
         language: system
         types: [php]
         files: \.php$
-        args:
-          - fix
-          - --using-cache=no
-          - --quiet
-          - --config=.php-cs-fixer.php
-          - --path-mode=intersection
-          - --allow-risky=yes
 
   # Python linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -54,7 +47,7 @@ repos:
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        files: \.(md|json|yaml|toml)$
+        files: \.(md|json|yaml|yml|toml)$
 
 default_language_version:
   python: python3
