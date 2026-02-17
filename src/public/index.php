@@ -7,9 +7,6 @@ define('PUBLIC_DIR', __DIR__);
 require_once __DIR__ . '/../bootstrap.php';
 
 use App\Core\Router;
-use Config\DbConfig;
-
-DbConfig::init();
 
 const _ROUTER = new Router();
 _ROUTER->dispatch();

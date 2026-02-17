@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../bootstrap.php';
 
-const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
-const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
-
 use App\Utils\OutputUtils;
 use Config\DbConfig;
 
@@ -35,21 +32,20 @@ function executeStatements(\PDO $pdo, array $statements): void
     }
 }
 
-DbConfig::init();
-$pdo = DbConfig::getPdo();
-$dbName = DbConfig::getDbName();
-
 // Prepare statements
+$dbName = DbConfig::getDbName();
 $initStatements = [
     "DROP DATABASE IF EXISTS `{$dbName}`",
     "CREATE DATABASE `{$dbName}`",
     "USE `{$dbName}`",
 ];
-$creationStatements = getStatementsFromFile(CREATION_FILE_PATH);
-$insertionStatements = getStatementsFromFile(INSERTIONS_FILE_PATH);
+
+$creationStatements = getStatementsFromFile(__DIR__ . '/creation.sql');
+$insertionStatements = getStatementsFromFile(__DIR__ . '/insertions.sql');
 
 // Execute installation
 try {
+    $pdo = DbConfig::getPdo();
     executeStatements($pdo, $initStatements);
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
