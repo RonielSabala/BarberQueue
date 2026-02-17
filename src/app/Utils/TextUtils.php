@@ -23,4 +23,9 @@ class TextUtils
 
         return substr($text, 0, -\strlen($suffix));
     }
+
+    public static function escape(string $text): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
 }

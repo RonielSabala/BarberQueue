@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Components;
 
-use App\Utils\UriCache;
+use App\Utils\{TextUtils, UriCache};
 
 enum AlertVariant: string
 {
@@ -13,48 +13,31 @@ enum AlertVariant: string
 
 class Alert extends BaseComponent
 {
-    private const BACK_BUTTON_TEXT = 'Volver';
-    private const DEFAULT_CONTAINER_CLASSES = 'text-center mt-2';
-    private const DEFAULT_BUTTON_CLASSES = 'btn btn-primary mb-4';
+    private const CONTAINER_TEMPLATE = '<div class="text-center mt-2">%s</div>';
+    private const ALERT_TEMPLATE = '<div class="alert alert-%s" role="alert">%s</div>';
+    private const BACK_BUTTON_TEMPLATE = '<a href="%s" class="btn btn-primary mb-4">Volver</a>';
 
     public function __construct(
-        private readonly string $message,
+        private string $message,
         private readonly AlertVariant $variant = AlertVariant::Danger,
-        private readonly ?string $backUrl = null,
         private readonly bool $showBackButton = true,
-    ) {}
-
-    public function render(): string
-    {
-        // Auto-detect back URL
-        if ($this->showBackButton && $this->backUrl === null) {
+        private ?string $backUrl = null,
+    ) {
+        if ($showBackButton && $backUrl === null) {
             $backUrl = UriCache::getPreviousUri();
         }
 
-        $escapedMessage = htmlspecialchars($this->message, ENT_QUOTES, 'UTF-8');
-        $escapedUrl = htmlspecialchars($backUrl ?? '', ENT_QUOTES, 'UTF-8');
+        $this->backUrl = TextUtils::escape($backUrl ?? '');
+        $this->message = TextUtils::escape($message);
+    }
 
-        $html = \sprintf(
-            '<div class="%s">',
-            self::DEFAULT_CONTAINER_CLASSES,
-        );
-
-        $html .= \sprintf(
-            '<div class="alert alert-%s" role="alert">%s</div>',
-            $this->variant->value,
-            $escapedMessage,
-        );
-
+    public function render(): string
+    {
+        $html = \sprintf(self::ALERT_TEMPLATE, $this->variant->value, $this->message);
         if ($this->showBackButton) {
-            $html .= \sprintf(
-                '<a href="%s" class="%s">%s</a>',
-                $escapedUrl,
-                self::DEFAULT_BUTTON_CLASSES,
-                self::BACK_BUTTON_TEXT,
-            );
+            $html .= \sprintf(self::BACK_BUTTON_TEMPLATE, $this->backUrl);
         }
 
-        $html .= '</div>';
-        return $html;
+        return \sprintf(self::CONTAINER_TEMPLATE, $html);
     }
 }
