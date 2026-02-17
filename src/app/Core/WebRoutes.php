@@ -12,6 +12,18 @@ class Route
         public readonly string $viewRoute,
         public readonly Controller $viewController,
     ) {}
+
+    public function splitViewRoute(): array
+    {
+        $parts = explode('/', $this->viewRoute);
+        if (\count($parts) === 1) {
+            return ['', $this->viewRoute];
+        }
+
+        $viewDir = implode('/', \array_slice($parts, 0, -1));
+        $viewName = end($parts);
+        return [$viewDir, $viewName];
+    }
 }
 
 class WebRoutes

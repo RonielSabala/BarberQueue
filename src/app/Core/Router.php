@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Components\Alert;
-use App\Utils\{TextUtils, UriCache, UriUtils};
+use App\Utils\{TextUtils, UriCache};
 
-require_once __DIR__ . '/Template.php';
+require_once __DIR__ . '/View.php';
 
 class Router
 {
@@ -21,7 +21,7 @@ class Router
         // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
         $uri = TextUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
-        $uri = TextUtils::removeSuffix($uri, Constants::VIEWS_FILE_EXT);
+        $uri = TextUtils::removeSuffix($uri, ViewConstants::FILE_EXT);
 
         // Get route
         $uriRoute = WebRoutes::getByUri($uri);
@@ -38,12 +38,11 @@ class Router
         }
 
         // Get view parts
-        [$viewDir, $viewName] = UriUtils::split($uri);
+        [$viewDir, $viewName] = $uriRoute->splitViewRoute();
         if ($viewName === '' || $viewDir === '' && $viewName === LEGACY_VIEW_NAME) {
             $viewName = DEFAULT_VIEW_NAME;
         }
 
-        Template::config($viewDir, $viewName);
-        $controller->handle(new Template());
+        $controller->handle(new View($viewDir, $viewName));
     }
 }

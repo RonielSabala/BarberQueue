@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Core;
 
-use App\Core\Template;
+use App\Core\View;
 
 abstract class Controller
 {
@@ -12,5 +12,5 @@ abstract class Controller
         public readonly ?string $viewTabName = null,
     ) {}
 
-    abstract public function handle(Template $template): void;
+    abstract public function handle(View $view): void;
 }
