@@ -82,7 +82,7 @@ composer install
 
 #### Install `uv`
 
-This is a fast Python package installer.
+This is a fast Python package manager.
 
 ```bash
 # Windows
@@ -121,13 +121,7 @@ This automatically runs code quality checks before each commit.
 
 ### `.env` Configuration
 
-Create a `.env` file at:
-
-```plain
-src/Config/.env
-```
-
-This file should contain the keys below. Optional values may be left empty, but the keys should exist.
+Create a `.env` file in the project root. All keys listed below must be present, even if their values are left empty.
 
 ```env
 # Database (required)
@@ -170,7 +164,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 Run the DB install script:
 
 ```bash
-php src/db/install.php
+php scripts/install-db.php
 ```
 
 ---

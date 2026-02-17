@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Config;
 
 use App\Utils\OutputUtils;
-use Dotenv\Dotenv;
 
 class DbConfig
 {
@@ -14,9 +13,6 @@ class DbConfig
 
     public static function init(): void
     {
-        $dotenv = Dotenv::createImmutable(__DIR__);
-        $dotenv->safeLoad();
-
         self::$dbName = $_ENV['DB_DATABASE'];
         if (empty(self::$dbName)) {
             echo OutputUtils::error('Database name cannot be empty');

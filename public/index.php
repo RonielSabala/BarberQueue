@@ -8,5 +8,4 @@ require_once __DIR__ . '/../src/bootstrap.php';
 
 use App\Core\Router;
 
-const _ROUTER = new Router();
-_ROUTER->dispatch();
+(new Router())->dispatch();

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../bootstrap.php';
+const ROOT_DIR = __DIR__ . '/..';
+const DB_SCRIPTS_DIR = ROOT_DIR . '/database';
+
+require_once ROOT_DIR . '/src/bootstrap.php';
 
 use App\Utils\OutputUtils;
 use Config\DbConfig;
@@ -40,8 +43,8 @@ $initStatements = [
     "USE `{$dbName}`",
 ];
 
-$creationStatements = getStatementsFromFile(__DIR__ . '/creation.sql');
-$insertionStatements = getStatementsFromFile(__DIR__ . '/insertions.sql');
+$creationStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/creation.sql');
+$insertionStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/insertions.sql');
 
 // Execute installation
 try {
