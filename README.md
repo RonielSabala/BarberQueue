@@ -124,7 +124,7 @@ This automatically runs code quality checks before each commit.
 Create a `.env` file at:
 
 ```plain
-src/config/.env
+src/Config/.env
 ```
 
 This file should contain the keys below. Optional values may be left empty, but the keys should exist.
@@ -161,7 +161,7 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
    http://localhost:3000/auth/GoogleController.php
    ```
 
-4. Copy **Client ID** and **Client secret** into `src/config/.env`.
+4. Copy **Client ID** and **Client secret** into `.env`.
 
 ---
 
@@ -180,7 +180,7 @@ php src/db/install.php
 ### Option A. Start manually the built-in PHP server <!-- omit in toc -->
 
 ```bash
-php -S localhost:3000 -t src/public
+php -S localhost:3000 -t public
 ```
 
 Open your browser at `http://localhost:3000`. You can stop the server with `Ctrl + C`.
@@ -213,7 +213,7 @@ Test results are automatically saved to `tests/results/` containing:
 ## Email Notifications
 
 - Password reset uses an email verification code flow.
-- Ensure `MAIL_USERNAME` and `MAIL_PASSWORD` are set in `src/config/.env` for email functionality.
+- Ensure `MAIL_USERNAME` and `MAIL_PASSWORD` are set in `.env` for email functionality.
 
 ---
 

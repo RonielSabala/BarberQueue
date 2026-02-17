@@ -14,7 +14,7 @@ class Router
 {
     public const LEGACY_VIEW_NAME = 'index';
     public const DEFAULT_VIEW_NAME = 'home';
-    private const LEGACY_VIEWS_DIR = 'src/public/views/';
+    private const LEGACY_VIEWS_DIR = 'public/views/';
     private const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
     public function dispatch(): void
