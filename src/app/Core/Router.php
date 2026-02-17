@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Components\Alert;
-use App\Utils\{TextUtils, UriCache};
+use App\Utils\TextUtils;
 use Config\WebRoutes;
 
 require_once __DIR__ . '/View.php';
@@ -34,8 +34,8 @@ class Router
             exit;
         }
 
-        $controller = $uriRoute->viewController;
-        $viewTabName = $controller->viewTabName;
+        $viewController = $uriRoute->viewController;
+        $viewTabName = $viewController->viewTabName;
         if ($viewTabName !== null) {
             \define('CURRENT_TAB', $viewTabName);
         }
@@ -46,6 +46,6 @@ class Router
             $viewName = self::DEFAULT_VIEW_NAME;
         }
 
-        $controller->handle(new View($viewDir, $viewName));
+        $viewController->handle(new View($viewDir, $viewName));
     }
 }

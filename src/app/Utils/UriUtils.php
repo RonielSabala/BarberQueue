@@ -6,9 +6,9 @@ namespace App\Utils;
 
 class UriUtils
 {
-    public static function getCleanUri(string $uri, string $view): string
+    public static function removeUriParams(string $uri): string
     {
-        return $uri . '/' . explode('?', $view)[0];
+        return explode('?', $uri)[0];
     }
 
     public static function parse(string $uri): string

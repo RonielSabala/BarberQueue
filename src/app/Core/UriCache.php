@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Utils;
+namespace App\Core;
+
+use App\Utils\UriUtils;
 
 class UriCache
 {
@@ -60,12 +62,9 @@ class UriCache
             return;
         }
 
-        [$view_path, $view_name] = UriUtils::split($uri);
-        [$last_view_path, $last_view_name] = UriUtils::split(self::getIthUri(-1));
-
-        $last = UriUtils::getCleanUri($last_view_path, $last_view_name);
-        $current = UriUtils::getCleanUri($view_path, $view_name);
-        if ($current === $last) {
+        $current = UriUtils::removeUriParams($uri);
+        $prev = UriUtils::removeUriParams(self::getIthUri(-1));
+        if ($prev === $current) {
             return;
         }
 
