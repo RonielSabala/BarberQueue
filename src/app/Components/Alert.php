@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Components;
 
-use App\Utils\{TextUtils, UriCache};
+use App\Core\UriCache;
+use App\Utils\TextUtils;
 
 enum AlertVariant: string
 {

@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Config;
 
-use App\Controllers\BaseController;
+use App\Controllers;
+use App\Core\Router;
 
-class WebRoutes
-{
-    private static array $routes = [];
+// Home routes
+const _DEFAULT_CONTROLLER = new Controllers\HomeController(viewTabName: 'home');
+RoutesCollection::add('', _DEFAULT_CONTROLLER);
+RoutesCollection::add(Router::LEGACY_VIEW_NAME, _DEFAULT_CONTROLLER);
+RoutesCollection::add(Router::DEFAULT_VIEW_NAME, _DEFAULT_CONTROLLER);
 
-    public static function add(string $viewRoute, BaseController $viewController): void
-    {
-        $route = new BaseRoute($viewRoute, $viewController);
-        self::$routes[$route->viewRoute] = $route;
-    }
-
-    public static function getByUri(string $viewRoute): ?BaseRoute
-    {
-        return self::$routes[$viewRoute] ?? null;
-    }
-}
+// Health route
+RoutesCollection::add('health', new Controllers\HealthController());

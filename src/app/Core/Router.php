@@ -6,7 +6,7 @@ namespace App\Core;
 
 use App\Components\Alert;
 use App\Utils\TextUtils;
-use Config\WebRoutes;
+use Config\RoutesCollection;
 
 require_once __DIR__ . '/View.php';
 
@@ -27,7 +27,7 @@ class Router
         $uri = TextUtils::removeSuffix($uri, ViewPaths::VIEWS_FILE_EXT);
 
         // Get route
-        $uriRoute = WebRoutes::getByUri($uri);
+        $uriRoute = RoutesCollection::getByUri($uri);
         if ($uriRoute === null) {
             http_response_code(404);
             echo new Alert(self::PAGE_NOT_FOUND_TEXT);
