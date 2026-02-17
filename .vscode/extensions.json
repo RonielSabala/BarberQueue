@@ -6,6 +6,8 @@
     "charliermarsh.ruff",
     "brapifra.phpserver",
     "junstyle.php-cs-fixer",
+    "st-pham.php-refactor-tool",
+    "devsense.composer-php-vscode",
     "bmewburn.vscode-intelephense-client",
     "mehedidracula.php-namespace-resolver",
     "esbenp.prettier-vscode",

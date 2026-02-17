@@ -24,14 +24,18 @@ class Router
         $uri = TextUtils::removeSuffix($uri, Constants::VIEWS_FILE_EXT);
 
         // Get route
-        $uriRoute = URIS[$uri] ?? null;
+        $uriRoute = WebRoutes::getByUri($uri);
         if ($uriRoute === null) {
             http_response_code(404);
             echo new Alert(self::PAGE_NOT_FOUND_TEXT);
             exit;
         }
 
-        \define('CURRENT_PAGE', $uriRoute->viewName);
+        $controller = $uriRoute->viewController;
+        $viewTabName = $controller->viewTabName;
+        if ($viewTabName !== null) {
+            \define('CURRENT_TAB', $viewTabName);
+        }
 
         // Get view parts
         [$viewDir, $viewName] = UriUtils::split($uri);
@@ -40,9 +44,6 @@ class Router
         }
 
         Template::config($viewDir, $viewName);
-
-        $viewTemplate = new Template();
-        $viewController = new $uriRoute->viewController();
-        $viewController->handle($viewTemplate);
+        $controller->handle(new Template());
     }
 }
