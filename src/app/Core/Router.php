@@ -6,11 +6,14 @@ namespace App\Core;
 
 use App\Components\Alert;
 use App\Utils\{TextUtils, UriCache};
+use Config\WebRoutes;
 
 require_once __DIR__ . '/View.php';
 
 class Router
 {
+    public const LEGACY_VIEW_NAME = 'index';
+    public const DEFAULT_VIEW_NAME = 'home';
     private const LEGACY_VIEWS_DIR = 'src/public/views/';
     private const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
@@ -39,8 +42,8 @@ class Router
 
         // Get view parts
         [$viewDir, $viewName] = $uriRoute->splitViewRoute();
-        if ($viewName === '' || $viewDir === '' && $viewName === LEGACY_VIEW_NAME) {
-            $viewName = DEFAULT_VIEW_NAME;
+        if ($viewName === '' || $viewDir === '' && $viewName === self::LEGACY_VIEW_NAME) {
+            $viewName = self::DEFAULT_VIEW_NAME;
         }
 
         $controller->handle(new View($viewDir, $viewName));

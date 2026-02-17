@@ -41,6 +41,7 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, toml, markdown]
+        args: [--no-error-on-unmatched-pattern]
 
   # Final general hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
