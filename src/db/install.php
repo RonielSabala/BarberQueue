@@ -7,51 +7,24 @@ const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 
 require_once SRC_DIR . '/../vendor/autoload.php';
-require_once SRC_DIR . '/config/db.php';
 
-enum Color: int
-{
-    case Red = 31;
-    case Green = 32;
-}
+use App\Utils\OutputUtils;
+use Config\DbConfig;
 
-class ConsoleOutput
-{
-    private static function format(string $text, \Color $color): string
-    {
-        return "\033[{$color->value}m{$text}\033[0m";
-    }
-
-    public static function error(string $text): string
-    {
-        return self::format($text, \Color::Red);
-    }
-
-    public static function success(string $text): string
-    {
-        return self::format($text, \Color::Green);
-    }
-}
-
-function readSqlFile(string $filepath): string
+function getStatementsFromFile(string $filepath): array
 {
     if (!file_exists($filepath)) {
-        echo \ConsoleOutput::error("File not found: {$filepath}");
+        echo OutputUtils::error("File not found: {$filepath}");
         exit;
     }
 
     $content = file_get_contents($filepath);
     if ($content === false) {
-        echo \ConsoleOutput::error("Failed to read file: {$filepath}");
+        echo OutputUtils::error("Failed to read file: {$filepath}");
         exit;
     }
 
-    return $content;
-}
-
-function getStatementsFromString(string $sql): array
-{
-    return array_filter(array_map('trim', explode(';', $sql)));
+    return array_filter(array_map('trim', explode(';', $content)));
 }
 
 function executeStatements(\PDO $pdo, array $statements): void
@@ -63,19 +36,9 @@ function executeStatements(\PDO $pdo, array $statements): void
     }
 }
 
-// Validate database configuration
-if (!isset($pdo) || !($pdo instanceof \PDO)) {
-    echo \ConsoleOutput::error('\PDO connection not available');
-    exit;
-}
-
-if (empty($dbName)) {
-    echo \ConsoleOutput::error('Database name cannot be empty');
-    exit;
-}
-
-$creationSql = readSqlFile(CREATION_FILE_PATH);
-$insertionsSql = readSqlFile(INSERTIONS_FILE_PATH);
+DbConfig::init();
+$pdo = DbConfig::getPdo();
+$dbName = DbConfig::getDbName();
 
 // Prepare statements
 $initStatements = [
@@ -83,8 +46,8 @@ $initStatements = [
     "CREATE DATABASE `{$dbName}`",
     "USE `{$dbName}`",
 ];
-$creationStatements = getStatementsFromString($creationSql);
-$insertionStatements = getStatementsFromString($insertionsSql);
+$creationStatements = getStatementsFromFile(CREATION_FILE_PATH);
+$insertionStatements = getStatementsFromFile(INSERTIONS_FILE_PATH);
 
 // Execute installation
 try {
@@ -92,8 +55,7 @@ try {
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
 
-    echo \ConsoleOutput::success('Database created successfully!');
+    echo OutputUtils::success('Database created successfully!');
 } catch (\PDOException $e) {
-    echo \ConsoleOutput::error('Database error: ' . $e->getMessage());
-    exit;
+    echo OutputUtils::error('Database error: ' . $e->getMessage());
 }
