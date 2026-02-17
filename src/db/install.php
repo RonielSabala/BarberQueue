@@ -9,18 +9,40 @@ const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
 require_once SRC_DIR . '/../vendor/autoload.php';
 require_once SRC_DIR . '/config/db.php';
 
-use App\Utils\ConsoleOutput;
+enum Color: int
+{
+    case Red = 31;
+    case Green = 32;
+}
+
+class ConsoleOutput
+{
+    private static function format(string $text, \Color $color): string
+    {
+        return "\033[{$color->value}m{$text}\033[0m";
+    }
+
+    public static function error(string $text): string
+    {
+        return self::format($text, \Color::Red);
+    }
+
+    public static function success(string $text): string
+    {
+        return self::format($text, \Color::Green);
+    }
+}
 
 function readSqlFile(string $filepath): string
 {
     if (!file_exists($filepath)) {
-        echo ConsoleOutput::error("File not found: {$filepath}");
+        echo \ConsoleOutput::error("File not found: {$filepath}");
         exit;
     }
 
     $content = file_get_contents($filepath);
     if ($content === false) {
-        echo ConsoleOutput::error("Failed to read file: {$filepath}");
+        echo \ConsoleOutput::error("Failed to read file: {$filepath}");
         exit;
     }
 
@@ -43,12 +65,12 @@ function executeStatements(\PDO $pdo, array $statements): void
 
 // Validate database configuration
 if (!isset($pdo) || !($pdo instanceof \PDO)) {
-    echo ConsoleOutput::error('\PDO connection not available');
+    echo \ConsoleOutput::error('\PDO connection not available');
     exit;
 }
 
 if (empty($dbName)) {
-    echo ConsoleOutput::error('Database name cannot be empty');
+    echo \ConsoleOutput::error('Database name cannot be empty');
     exit;
 }
 
@@ -70,8 +92,8 @@ try {
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
 
-    echo ConsoleOutput::success('Database created successfully!');
+    echo \ConsoleOutput::success('Database created successfully!');
 } catch (\PDOException $e) {
-    echo ConsoleOutput::error('Database error: ' . $e->getMessage());
+    echo \ConsoleOutput::error('Database error: ' . $e->getMessage());
     exit;
 }
