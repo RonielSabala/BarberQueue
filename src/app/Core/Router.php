@@ -21,7 +21,7 @@ class Router
         // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
         $uri = TextUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
-        $uri = TextUtils::removeSuffix($uri, ViewConstants::FILE_EXT);
+        $uri = TextUtils::removeSuffix($uri, ViewPaths::VIEWS_FILE_EXT);
 
         // Get route
         $uriRoute = WebRoutes::getByUri($uri);
