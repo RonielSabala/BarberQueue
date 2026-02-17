@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-const SRC_DIR = __DIR__ . '/..';
+require_once __DIR__ . '/../bootstrap.php';
+
 const CREATION_FILE_PATH = __DIR__ . '/creation.sql';
 const INSERTIONS_FILE_PATH = __DIR__ . '/insertions.sql';
-
-require_once SRC_DIR . '/../vendor/autoload.php';
 
 use App\Utils\OutputUtils;
 use Config\DbConfig;

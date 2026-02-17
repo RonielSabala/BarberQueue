@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-const PUBLIC_DIR = __DIR__;
-const SRC_DIR = PUBLIC_DIR . '/..';
+define('PUBLIC_DIR', __DIR__);
 
-require_once SRC_DIR . '/../vendor/autoload.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 use App\Core\Router;
 use Config\DbConfig;
