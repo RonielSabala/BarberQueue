@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\View;
-use App\Domain\HeaderType;
+use App\Core\{HeaderType, View};
 
 class HealthController extends BaseController
 {
