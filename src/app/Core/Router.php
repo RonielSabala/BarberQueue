@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Components\Alert;
+use App\Routing\RoutesCollection;
 use App\Utils\TextUtils;
-use Config\RoutesCollection;
 
 require_once __DIR__ . '/View.php';
 

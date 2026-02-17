@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Config;
+namespace App\Routing;
 
 use App\Controllers\BaseController;
 

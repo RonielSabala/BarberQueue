@@ -6,6 +6,7 @@ namespace Config;
 
 use App\Controllers;
 use App\Core\Router;
+use App\Routing\RoutesCollection;
 
 // Home routes
 const _DEFAULT_CONTROLLER = new Controllers\HomeController(viewTabName: 'home');

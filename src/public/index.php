@@ -6,7 +6,6 @@ const PUBLIC_DIR = __DIR__;
 const SRC_DIR = PUBLIC_DIR . '/..';
 
 require_once SRC_DIR . '/../vendor/autoload.php';
-require_once SRC_DIR . '/config/WebRoutes.php';
 
 use App\Core\Router;
 use Config\DbConfig;
