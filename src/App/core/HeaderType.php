@@ -11,6 +11,6 @@ enum HeaderType: string
 
     public function header(): string
     {
-        return "Content-Type: {$this->value}; charset=utf-8";
+        return "Content-Type: {$this->value}; charset=UTF-8";
     }
 }
