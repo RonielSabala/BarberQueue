@@ -7,4 +7,3 @@ vendor
 .ruff_cache
 __pycache__
 tests/results
-composer.*
