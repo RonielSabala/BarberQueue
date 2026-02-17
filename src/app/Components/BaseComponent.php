@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Components\Core;
+namespace App\Components;
 
-abstract class Component
+abstract class BaseComponent
 {
     abstract public function render(): string;
 

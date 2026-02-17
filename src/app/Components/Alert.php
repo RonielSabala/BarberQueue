@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Components;
 
-use App\Components\Core\Component;
 use App\Utils\UriCache;
 
 enum AlertVariant: string
@@ -12,7 +11,7 @@ enum AlertVariant: string
     case Danger = 'danger';
 }
 
-class Alert extends Component
+class Alert extends BaseComponent
 {
     private const BACK_BUTTON_TEXT = 'Volver';
     private const DEFAULT_CONTAINER_CLASSES = 'text-center mt-2';

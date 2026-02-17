@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Controllers\Core\Controller;
+use App\Controllers\BaseController;
 
 class Route
 {
     public function __construct(
         public readonly string $viewRoute,
-        public readonly Controller $viewController,
+        public readonly BaseController $viewController,
     ) {}
 
     public function splitViewRoute(): array
@@ -30,7 +30,7 @@ class WebRoutes
 {
     private static array $routes = [];
 
-    public static function add(string $viewRoute, Controller $viewController): void
+    public static function add(string $viewRoute, BaseController $viewController): void
     {
         $route = new Route($viewRoute, $viewController);
         self::$routes[$route->viewRoute] = $route;

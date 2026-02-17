@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Controllers\Core\Controller;
 use App\Core\View;
 use App\Domain\HeaderType;
 
-class HealthController extends Controller
+class HealthController extends BaseController
 {
     public function handle(View $view): void
     {

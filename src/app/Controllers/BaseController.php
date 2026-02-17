@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers\Core;
+namespace App\Controllers;
 
 use App\Core\View;
 
-abstract class Controller
+abstract class BaseController
 {
     public function __construct(
         public readonly ?string $viewTabName = null,
