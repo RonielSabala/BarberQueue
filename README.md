@@ -16,7 +16,6 @@ BarberQueue is a web application designed to improve the waiting experience at b
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
-- [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Contributing](#contributing)
 - [Authors](#authors)
@@ -70,9 +69,7 @@ The following items are explicitly out of scope for the current project:
 
 ### Install Dependencies
 
-#### Install PHP Dependencies
-
-Use system terminal (recommended):
+#### PHP
 
 ```bash
 composer install
@@ -80,9 +77,9 @@ composer install
 
 ---
 
-#### Install `uv`
+#### Python
 
-This is a fast Python package manager.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), a fast Python package manager:
 
 ```bash
 # Windows
@@ -90,12 +87,9 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 # macOS / Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Or install via pip
-python -m pip install --user uv
 ```
 
-#### Install Python Dependencies
+Then install all Python dependencies:
 
 ```bash
 uv sync
@@ -105,54 +99,60 @@ This creates a virtual environment and installs all Python development tools.
 
 ---
 
-#### Install Pre-commit Hooks
+#### Pre-commit Hooks
 
 ```bash
 # Install pre-commit framework
 python -m pip install --user pre-commit
 
-# Install the git hooks
+# Install git hooks
 pre-commit install
 ```
 
-This automatically runs code quality checks before each commit.
+Pre-commit runs code quality checks automatically before each commit. To run checks manually:
+
+```bash
+pre-commit run --all-files
+```
 
 ---
 
 ### `.env` Configuration
 
-Create a `.env` file in the project root. All keys listed below must be present, even if their values are left empty.
+Create a `.env` file in the project root:
 
 ```env
 # Database (required)
-DB_HOST='YOUR_DB_HOST'
-DB_PORT='YOUR_DB_PORT'
-DB_USERNAME='YOUR_DB_USERNAME'
-DB_PASSWORD='YOUR_DB_PASSWORD'
+DB_HOST=
+DB_PORT=
+DB_USERNAME=
+DB_PASSWORD=
 DB_DATABASE=barberqueue_db
 
 # Email (optional)
-MAIL_USERNAME='YOUR_GOOGLE_EMAIL'
-MAIL_PASSWORD='YOUR_APP_PASSWORD'
+MAIL_USERNAME=
+MAIL_PASSWORD=
 
 # Google OAuth (optional)
-GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID'
-GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
+
+All keys must be present even if left empty.
 
 #### Email Setup (Optional)
 
-1. Enable 2-Step Verification for `MAIL_USERNAME` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
-2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASSWORD`.
+1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
+2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.
 
-#### Google Setup (Optional)
+#### Google OAuth Setup (Optional)
 
-1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
-3. Choose **Web application** as the Application type and add the authorized redirect URI:
+1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/).
+2. Go to **APIs & Services** > **Credentials** and create an **OAuth client ID**.
+3. Choose **Web application** and add the following authorized redirect URI:
 
    ```plain
-   http://localhost:3000/auth/GoogleController.php
+   http://localhost:3000/auth/GoogleController
    ```
 
 4. Copy **Client ID** and **Client secret** into `.env`.
@@ -160,8 +160,6 @@ GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
 ---
 
 ### Database Setup
-
-Run the DB install script:
 
 ```bash
 php scripts/install-db.php
@@ -177,15 +175,16 @@ php scripts/install-db.php
 php -S localhost:3000 -t public
 ```
 
-Open your browser at `http://localhost:3000`. You can stop the server with `Ctrl + C`.
+Open `http://localhost:3000` in your browser. Stop the server with `Ctrl + C`.
 
-### Option B. Use a VS Code extension (recommended) <!-- omit in toc -->
+---
 
-1. Install the **PHP Server** extension (brapifra.phpserver) which is listed in `.vscode/extensions.json`.
-2. Open the Command Palette (`Ctrl + Shift + P`).
-3. Run **PHP Server: Serve project**.
+### Option B. VS Code extension (recommended) <!-- omit in toc -->
 
-To reload or stop the server you can use **PHP Server: Reload project** or **PHP Server: Stop project** respectively.
+1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
+2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Serve project**.
+
+Use **PHP Server: Reload project** or **PHP Server: Stop project** to reload or stop.
 
 ---
 
@@ -195,19 +194,7 @@ To reload or stop the server you can use **PHP Server: Reload project** or **PHP
 uv run pytest
 ```
 
-### Results <!-- omit in toc -->
-
-Test results are automatically saved to `tests/results/` containing:
-
-- **HTML test report**: A detailed pass/fail summary with execution times.
-- **Screenshots**: Visual captures from UI test and key checkpoints.
-
----
-
-## Email Notifications
-
-- Password reset uses an email verification code flow.
-- Ensure `MAIL_USERNAME` and `MAIL_PASSWORD` are set in `.env` for email functionality.
+Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from UI tests.
 
 ---
 
@@ -253,10 +240,10 @@ Full management of one or more barbershops they administer:
 Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
-2. Create a feature branch: `feat/my-change`
-3. Commit, push, and open a pull request describing the change and reason.
+2. Create a feature branch: `feat/my-change`.
+3. Commit, push, and open a pull request describing the change and the reason for it.
 
-> Please, ensure your code follows the existing style and includes appropriate documentation.
+Please ensure your code follows the existing style and includes appropriate documentation.
 
 ---
 

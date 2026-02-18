@@ -12,6 +12,7 @@ class HealthController extends BaseController
     {
         header(HeaderType::PlainText->header());
         http_response_code(200);
+
         $view->render();
     }
 }

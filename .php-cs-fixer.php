@@ -26,6 +26,7 @@ return (new Config())
 
         // Formatting preferences
         'yoda_style' => false,
+        'echo_tag_syntax' => ['format' => 'short', 'shorten_simple_statements_only' => false],
         'concat_space' => ['spacing' => 'one'],
         'single_quote' => ['strings_containing_single_quote_chars' => true],
         'blank_line_before_statement' => ['statements' => []],

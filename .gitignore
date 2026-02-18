@@ -1,7 +1,7 @@
 .env
 .venv
-node_modules
 vendor
+node_modules
 .php-cs-fixer.cache
 .pytest_cache
 .ruff_cache
