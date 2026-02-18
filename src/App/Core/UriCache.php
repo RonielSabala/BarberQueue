@@ -9,20 +9,19 @@ use App\Utils\UriUtils;
 class UriCache
 {
     private const MAX_CACHE = 5;
-    private const SESSION_NAME = 'uriCache';
+    private const SESSION_NAME = 'uriSession';
     private const WELL_KNOWN_URI = '/.well-known/appspecific/com.chrome.devtools.json';
 
-    public static function start(): void
+    public static function init(): void
     {
-        // Start history if inactive
-        if (isset($_SESSION[self::SESSION_NAME])) {
+        if (isset($_SESSION[self::SESSION_NAME]) && !empty($_SESSION[self::SESSION_NAME])) {
             return;
         }
 
         $_SESSION[self::SESSION_NAME] = [];
     }
 
-    public static function count(): int
+    private static function count(): int
     {
         return \count($_SESSION[self::SESSION_NAME]);
     }
@@ -37,7 +36,7 @@ class UriCache
         $_SESSION[self::SESSION_NAME] = \array_slice($_SESSION[self::SESSION_NAME], -self::MAX_CACHE);
     }
 
-    public static function getIthUri(int $i)
+    private static function getIthUri(int $i)
     {
         $count = self::count();
         if ($i < 0) {
@@ -51,7 +50,7 @@ class UriCache
         return $_SESSION[self::SESSION_NAME][$i];
     }
 
-    public static function persistUri(string $uri): void
+    private static function persistUri(string $uri): void
     {
         if ($uri === self::WELL_KNOWN_URI) {
             return;

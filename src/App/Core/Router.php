@@ -19,8 +19,6 @@ class Router
 
     public function dispatch(): void
     {
-        UriCache::start();
-
         // Get uri and normalize it
         $uri = UriCache::getCurrentUri();
         $uri = TextUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
@@ -34,18 +32,13 @@ class Router
             exit;
         }
 
-        $viewController = $uriRoute->viewController;
-        $viewTabName = $viewController->viewTabName;
-        if ($viewTabName !== null) {
-            \define('CURRENT_TAB', $viewTabName);
-        }
-
         // Get view parts
         [$viewDir, $viewName] = $uriRoute->splitViewRoute();
         if ($viewName === '' || $viewDir === '' && $viewName === self::LEGACY_VIEW_NAME) {
             $viewName = self::DEFAULT_VIEW_NAME;
         }
 
-        $viewController->handle(new View($viewDir, $viewName));
+        $viewController = $uriRoute->viewController;
+        $viewController->handle(new View($viewDir, $viewName, $viewController->viewTabName));
     }
 }
