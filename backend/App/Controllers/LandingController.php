@@ -4,7 +4,4 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-class LandingController extends BaseController
-{
-    public function handle(): void {}
-}
+class LandingController extends BaseController {}
