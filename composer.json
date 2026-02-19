@@ -8,10 +8,7 @@
     "psr-4": {
       "App\\": "backend/App/",
       "Config\\": "backend/Config/"
-    },
-    "files": [
-      "backend/config/RoutesConfig.php"
-    ]
+    }
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.94"
