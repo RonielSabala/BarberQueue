@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Controllers\BaseController;
 use App\Core\Routing\RouteRegistry;
 use App\Utils\{ClassesDiscovery, UriUtils};
 
@@ -33,7 +32,7 @@ class Router
 
         $match = self::$registry->findMatch($httpMethod, $uri);
         if ($match === null) {
-            BaseController::notFound('Route not found');
+            HttpResponse::notFound('Route not found');
             return;
         }
 

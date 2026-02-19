@@ -6,7 +6,4 @@ namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
 
-class SignupController extends BaseController
-{
-    public function handle(): void {}
-}
+class SignupController extends BaseController {}
