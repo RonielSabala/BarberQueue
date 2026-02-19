@@ -17,8 +17,15 @@ class Router
 
     public static function init(): void
     {
-        self::$registry = new RouteRegistry();
-        $controllers = new ClassesDiscovery(self::CONTROLLERS_PATH, self::CONTROLLER_SUFFIX, self::CONTROLLERS_NAMESPACE);
+        $container = new Container();
+        self::$registry = new RouteRegistry($container);
+
+        // Get all controller classes
+        $controllers = new ClassesDiscovery(
+            self::CONTROLLERS_PATH,
+            self::CONTROLLER_SUFFIX,
+            self::CONTROLLERS_NAMESPACE
+        );
 
         foreach ($controllers->discover() as $controllerClass) {
             self::$registry->registerController($controllerClass);

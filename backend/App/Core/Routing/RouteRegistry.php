@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Core\Routing;
 
 use App\Attributes\HttpRoute;
+use App\Core\Container;
 
 class RouteRegistry
 {
     /** @var Route[] */
     private array $routes = [];
 
+    public function __construct(private readonly Container $container) {}
+
     public function registerController(string $controllerClass): void
     {
+        $controller = $this->container->make($controllerClass);
+
         $reflection = new \ReflectionClass($controllerClass);
-        $controller = $reflection->newInstance();
         $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
 
         // Register routes based on method attributes
