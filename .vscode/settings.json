@@ -15,7 +15,5 @@
     "barberqueue",
     "pyproject",
     "usefixtures"
-  ],
-  "fiveServer.php.executable": "C:\\laragon\\bin\\php\\php-8.1.10-Win32-vs16-x64",
-  "fiveServer.php.ini": "C:\\laragon\\bin\\php\\php-8.1.10-Win32-vs16-x64"
+  ]
 }
