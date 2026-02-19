@@ -1,0 +1,41 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  flex: 1 0 auto;
+}
+
+.nav {
+  font-size: 20px;
+  border-bottom: 1px solid black;
+}
+
+.nav-link {
+  color: rgb(6, 112, 206);
+}
+
+.custom-link.nav-link:hover {
+  border-color: rgb(0, 0, 0, 0.2);
+}
+
+.custom-link.nav-link.active {
+  color: black;
+  border-color: black;
+  border-bottom-color: transparent;
+}
+
+.view-content {
+  flex: 1 0 auto;
+  min-height: auto;
+  margin-top: 20px;
+  padding-top: 5px;
+}

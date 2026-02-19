@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Utils\ArrayUtils;
+use App\Components\Alert;
+use App\Utils\{ArrayUtils, TextUtils};
 
 class ViewPaths
 {
@@ -29,7 +30,7 @@ class ViewPaths
 
 class View
 {
-    private const CSS_LINK_TEMPLATE = '<link rel="stylesheet" href="/%s">' . "\n";
+    private const CSS_LINK_TEMPLATE = "\t" . '<link rel="stylesheet" href="/%s" />' . "\n";
     private const SCRIPT_TEMPLATE = "\n" . '<script src="/%s"></script>';
 
     private bool $jsonMode = false;
@@ -37,17 +38,25 @@ class View
 
     public function __construct(
         public string $viewDir,
-        public string $viewName
+        public string $viewName,
+        private readonly ?string $viewTabName
     ) {
-        $this->viewDir = $viewDir . ($viewDir === '' ? '' : '/');
-        $this->viewName = $viewName;
+        $this->viewDir = TextUtils::hyphenToUnderscore($viewDir . ($viewDir === '' ? '' : '/'));
+        $this->viewName = TextUtils::hyphenToUnderscore($viewName);
         $this->pathFallbacks = array_reverse(ArrayUtils::consecutiveSlices('/', $viewDir));
+
+        if ($viewTabName === null) {
+            return;
+        }
+
+        \define('CURRENT_TAB', $viewTabName);
     }
 
     private function resolveRelativePath(string $baseDir, string $file): ?string
     {
         foreach ($this->pathFallbacks as $dirSlice) {
             $relFilePath = $dirSlice . $file;
+
             if (!file_exists($baseDir . '/' . $relFilePath)) {
                 continue;
             }
@@ -142,32 +151,39 @@ class View
             return;
         }
 
-        // Add css links
-        echo $this->buildCSSLinkTag(ViewPaths::PARTIAL_HEADER_FILENAME);
-        echo $this->buildCSSLinkTag(ViewPaths::PARTIAL_NAV_FILENAME);
-        echo $this->buildCSSLinkTag($this->viewName, useFallbacks: false);
-        echo $this->buildCSSLinkTag(ViewPaths::PARTIAL_FOOTER_FILENAME);
+        $viewName = $this->viewName;
 
         // Include header
         include $this->resolveViewFilePath(ViewPaths::PARTIAL_HEADER_FILENAME);
+
+        // Add css links
+        echo "\n" . $this->buildCSSLinkTag(ViewPaths::PARTIAL_HEADER_FILENAME);
+        echo $this->buildCSSLinkTag(ViewPaths::PARTIAL_NAV_FILENAME);
+        echo $this->buildCSSLinkTag($viewName, useFallbacks: false);
+        echo $this->buildCSSLinkTag(ViewPaths::PARTIAL_FOOTER_FILENAME);
 
         // Include nav
         include $this->resolveViewFilePath(ViewPaths::PARTIAL_NAV_FILENAME);
 
         // Include view
-        $viewFilePath = $this->resolveViewFilePath($this->viewName, useFallbacks: false);
+        $viewFilePath = $this->resolveViewFilePath($viewName, useFallbacks: false);
         if (file_exists($viewFilePath)) {
             extract($viewData, EXTR_SKIP);
+            echo "\n";
             include $viewFilePath;
+        } else {
+            echo new Alert(
+                message: 'View file not found: ' . TextUtils::escape($viewName)
+            );
         }
-
-        // Include footer
-        include $this->resolveViewFilePath(ViewPaths::PARTIAL_FOOTER_FILENAME);
 
         // Add js scripts
         echo $this->buildScriptTag(ViewPaths::PARTIAL_HEADER_FILENAME);
         echo $this->buildScriptTag(ViewPaths::PARTIAL_NAV_FILENAME);
-        echo $this->buildScriptTag($this->viewName, useFallbacks: false);
-        echo $this->buildScriptTag(ViewPaths::PARTIAL_FOOTER_FILENAME);
+        echo $this->buildScriptTag($viewName, useFallbacks: false);
+        echo $this->buildScriptTag(ViewPaths::PARTIAL_FOOTER_FILENAME) . "\n";
+
+        // Include footer
+        include $this->resolveViewFilePath(ViewPaths::PARTIAL_FOOTER_FILENAME);
     }
 }
