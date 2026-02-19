@@ -1,8 +1,17 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .container {
-  max-width: 1200px;
-  padding: 0 80px;
-  border-radius: 15px;
-  box-sizing: border-box;
+  flex: 1 0 auto;
 }
 
 .nav {
@@ -25,7 +34,8 @@
 }
 
 .view-content {
-  min-height: 75dvh;
+  flex: 1 0 auto;
+  min-height: auto;
   margin-top: 20px;
   padding-top: 5px;
 }
