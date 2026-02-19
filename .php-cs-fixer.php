@@ -6,7 +6,7 @@ use PhpCsFixer\{Config, Finder};
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $finder = Finder::create()
-    ->in([__DIR__ . '/src'])
+    ->in([__DIR__ . '/backend'])
     ->name('*.php')
     ->ignoreDotFiles(true)
     ->ignoreVCS(true)
