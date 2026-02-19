@@ -14,7 +14,7 @@
   "php-cs-fixer.allowRisky": true,
   "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
-  "phpserver.relativePath": "public",
+  "phpserver.relativePath": "backend",
   "prettier.endOfLine": "lf",
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {

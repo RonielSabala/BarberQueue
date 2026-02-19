@@ -172,7 +172,7 @@ php scripts/install-db.php
 ### Option A. Start manually the built-in PHP server <!-- omit in toc -->
 
 ```bash
-php -S localhost:3000 -t public
+php -S localhost:3000 -t backend
 ```
 
 Open `http://localhost:3000` in your browser. Stop the server with `Ctrl + C`.
