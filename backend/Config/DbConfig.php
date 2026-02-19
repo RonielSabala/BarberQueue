@@ -34,7 +34,7 @@ class DbConfig
         }
     }
 
-    public static function getPdo(): \PDO
+    public static function getConnection(): \PDO
     {
         return self::$pdo;
     }

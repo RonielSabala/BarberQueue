@@ -12,11 +12,6 @@ enum Color: int
 
 class OutputUtils
 {
-    private static function format(string $text, Color $color): string
-    {
-        return "\033[{$color->value}m{$text}\033[0m";
-    }
-
     public static function error(string $text): string
     {
         return self::format($text, Color::Red);
@@ -25,5 +20,10 @@ class OutputUtils
     public static function success(string $text): string
     {
         return self::format($text, Color::Green);
+    }
+
+    private static function format(string $text, Color $color): string
+    {
+        return "\033[{$color->value}m{$text}\033[0m";
     }
 }
