@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from header_type import HeaderType
+from header_type import HttpHeader
 
 EXPECTED_TEXT = "Hello World"
 EXPECTED_BODY_TEXT = EXPECTED_TEXT + "\n"
@@ -37,7 +37,7 @@ def test_health_endpoint(base_url: str):
     assert body == EXPECTED_BODY_TEXT, f"unexpected body: {body!r}"
 
     content_type = response.headers.get("Content-Type")
-    assert content_type == HeaderType.PLAIN_TEXT.content_type
+    assert content_type == HttpHeader.PLAIN_TEXT.content_type
 
 
 def test_health_ui(

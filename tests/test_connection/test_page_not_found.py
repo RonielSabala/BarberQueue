@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from header_type import HeaderType
+from header_type import HttpHeader
 
 EXPECTED_TEXT = "Page Not Found..."
 EXPECTED_UI_SELECTOR = (By.CLASS_NAME, "alert")
@@ -35,7 +35,7 @@ def test_page_not_found_endpoint(base_url: str):
     assert EXPECTED_TEXT in body, f"alert message missing: {body!r}"
 
     content_type = response.headers.get("Content-Type")
-    assert content_type == HeaderType.HTML_TEXT.content_type
+    assert content_type == HttpHeader.HTML_TEXT.content_type
 
 
 def test_page_not_found_ui(

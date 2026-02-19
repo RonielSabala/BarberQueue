@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-enum HeaderType: string
+enum HttpHeader: string
 {
     case Json = 'application/json';
     case PlainText = 'text/plain';
 
-    public function header(): string
+    public function header(): void
     {
-        return "Content-Type: {$this->value}; charset=UTF-8";
+        header("Content-Type: {$this->value}; charset=UTF-8");
     }
 }

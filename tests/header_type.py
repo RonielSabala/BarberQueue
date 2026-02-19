@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class HeaderType(str, Enum):
+class HttpHeader(str, Enum):
     """
     Enum for common content types used in HTTP responses.
     """
