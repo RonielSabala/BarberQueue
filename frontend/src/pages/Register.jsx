@@ -1,9 +1,8 @@
 import { useState } from "react";
-import "../styles/login.css";
 import { Link } from "react-router-dom";
+import "../styles/login.css";
 
 function Register() {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,13 +14,14 @@ function Register() {
 
   return (
     <div className="login-container">
-
       <div className="login-left">
         <div className="brand-container">
-          <img src="/src/assets/logo.png" alt="BarberQueue Logo" className="logo" />
-          <p className="brand-tagline">
-            Gestiona tu tiempo. Olvida las filas.
-          </p>
+          <img
+            src="/src/assets/logo.png"
+            alt="BarberQueue Logo"
+            className="logo"
+          />
+          <p className="brand-tagline">Gestiona tu tiempo. Olvida las filas.</p>
         </div>
       </div>
 
@@ -55,10 +55,8 @@ function Register() {
           <p>
             ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
           </p>
-
         </form>
       </div>
-
     </div>
   );
 }

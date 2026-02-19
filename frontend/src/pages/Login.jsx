@@ -1,11 +1,9 @@
 import { useState } from "react";
-import "../styles/login.css";
-import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
-
+import logo from "../assets/logo.png";
+import "../styles/login.css";
 
 function Login() {
-
   // Estado para guardar lo que el usuario escribe
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,16 +18,12 @@ function Login() {
 
   return (
     <div className="login-container">
-
       <div className="login-left">
         <div className="brand-container">
-         <img src={logo} alt="BarberQueue Logo" className="logo" />
-         <p className="brand-tagline">
-          Gestiona tu tiempo. Olvida las filas.
-         </p>
-       </div>
-    </div>
-
+          <img src={logo} alt="BarberQueue Logo" className="logo" />
+          <p className="brand-tagline">Gestiona tu tiempo. Olvida las filas.</p>
+        </div>
+      </div>
 
       <div className="login-right">
         <form className="login-form" onSubmit={handleSubmit}>
@@ -52,7 +46,7 @@ function Login() {
           <button type="submit">Entrar</button>
 
           <p className="forgot-link">
-           <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+            <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
           </p>
 
           <p className="forgot-link">
@@ -60,12 +54,10 @@ function Login() {
           </p>
 
           <p>
-           ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
+            ¿No tienes cuenta? <Link to="/register">Crear cuenta</Link>
           </p>
-
         </form>
       </div>
-
     </div>
   );
 }

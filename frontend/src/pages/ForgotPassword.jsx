@@ -4,7 +4,6 @@ import logo from "../assets/logo.png";
 import "../styles/login.css";
 
 function ForgotPassword() {
-
   const [email, setEmail] = useState("");
 
   const handleSubmit = (e) => {
@@ -14,14 +13,11 @@ function ForgotPassword() {
 
   return (
     <div className="login-container">
-
       {/* LADO IZQUIERDO */}
       <div className="login-left">
         <div className="brand-container">
           <img src={logo} alt="BarberQueue Logo" className="logo" />
-          <p className="brand-tagline">
-            Recupera el acceso a tu cuenta.
-          </p>
+          <p className="brand-tagline">Recupera el acceso a tu cuenta.</p>
         </div>
       </div>
 
@@ -37,17 +33,13 @@ function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <button type="submit">
-            Enviar enlace
-          </button>
+          <button type="submit">Enviar enlace</button>
 
           <p>
             <Link to="/login">Volver al inicio de sesión</Link>
           </p>
-
         </form>
       </div>
-
     </div>
   );
 }

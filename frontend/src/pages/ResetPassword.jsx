@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import "../styles/login.css";
 
 function ResetPassword() {
-
   const navigate = useNavigate();
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -39,14 +38,11 @@ function ResetPassword() {
 
   return (
     <div className="login-container">
-
       {/* LADO IZQUIERDO */}
       <div className="login-left">
         <div className="brand-container">
           <img src={logo} alt="BarberQueue Logo" className="logo" />
-          <p className="brand-tagline">
-            Establece tu nueva contraseña.
-          </p>
+          <p className="brand-tagline">Establece tu nueva contraseña.</p>
         </div>
       </div>
 
@@ -76,23 +72,15 @@ function ResetPassword() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
-          {message && (
-            <p className="message">
-              {message}
-            </p>
-          )}
+          {message && <p className="message">{message}</p>}
 
-          <button type="submit">
-            Actualizar contraseña
-          </button>
+          <button type="submit">Actualizar contraseña</button>
 
           <p>
             <Link to="/login">Volver al inicio de sesión</Link>
           </p>
-
         </form>
       </div>
-
     </div>
   );
 }

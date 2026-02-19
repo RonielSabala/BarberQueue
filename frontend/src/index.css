@@ -1,15 +1,14 @@
 :root {
-  --primary-light: #89C7F8;
-  --primary: #429EBD;
-  --primary-dark: #053F5C;
+  --primary-light: #89c7f8;
+  --primary: #429ebd;
+  --primary-dark: #053f5c;
 
-  --accent-yellow: #F7AD19;
-  --accent-orange: #F27F0C;
+  --accent-yellow: #f7ad19;
+  --accent-orange: #f27f0c;
 
   --background-light: #f5f7fa;
   --white: #ffffff;
 }
-
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
