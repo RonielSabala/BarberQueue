@@ -173,7 +173,7 @@ class View
             include $viewFilePath;
         } else {
             echo new Alert(
-                message: 'View file not found: ' . htmlspecialchars($viewName)
+                message: 'View file not found: ' . TextUtils::escape($viewName)
             );
         }
 
