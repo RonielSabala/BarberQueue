@@ -4,26 +4,26 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\HeaderType;
+use App\Core\{HeaderType, HttpStatus};
 
 abstract class BaseController
 {
-    public HeaderType $contentType = HeaderType::Json;
+    public static HeaderType $contentType = HeaderType::Json;
 
-    protected function success(string $message = 'OK'): void
+    public static function success(string $message = 'OK'): void
     {
-        $this->json(['message' => $message], 200);
+        self::json(['message' => $message], HttpStatus::Ok);
     }
 
-    protected function notFound(string $message = 'Not found'): void
+    public static function notFound(string $message = 'Not found'): void
     {
-        $this->json(['error' => $message], 404);
+        self::json(['error' => $message], HttpStatus::NotFound);
     }
 
-    protected function json(mixed $data, int $status = 200): void
+    public static function json(mixed $data, HttpStatus $status): void
     {
-        http_response_code($status);
-        header($this->contentType->header());
+        $status->response();
+        header(self::$contentType->header());
         echo json_encode($data);
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Attributes;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class Route
+class HttpRoute
 {
     public function __construct(public readonly string $uri) {}
 
@@ -16,16 +16,16 @@ class Route
 }
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class GET extends Route {}
+class GET extends HttpRoute {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class POST extends Route {}
+class POST extends HttpRoute {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class PUT extends Route {}
+class PUT extends HttpRoute {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class PATCH extends Route {}
+class PATCH extends HttpRoute {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class DELETE extends Route {}
+class DELETE extends HttpRoute {}

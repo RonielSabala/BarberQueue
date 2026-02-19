@@ -9,11 +9,11 @@ use App\Core\HeaderType;
 
 class HealthController extends BaseController
 {
-    public HeaderType $contentType = HeaderType::PlainText;
+    public static HeaderType $contentType = HeaderType::PlainText;
 
     #[GET('/api/health')]
     public function get(): void
     {
-        $this->success();
+        self::success();
     }
 }
