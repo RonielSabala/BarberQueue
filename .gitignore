@@ -1,10 +1,9 @@
-# Files
 .env
-composer.*
-
-# Folders
 .venv
-.*cache
+vendor
+node_modules
+.php-cs-fixer.cache
+.pytest_cache
+.ruff_cache
 __pycache__
-vendor/
 tests/results

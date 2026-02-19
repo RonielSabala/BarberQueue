@@ -1,14 +1,21 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "junstyle.php-cs-fixer",
+  "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
+  "[php]": { "editor.defaultFormatter": "junstyle.php-cs-fixer" },
+  "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
+  "[yaml]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
   "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
-  "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.php",
+  "php-cs-fixer.config": ".php-cs-fixer.php",
+  "php-cs-fixer.onsave": true,
+  "php-cs-fixer.formatHtml": true,
   "php-cs-fixer.allowRisky": true,
-  "phpNamespaceResolver.autoSort": false,
-  "phpNamespaceResolver.sortOnSave": true,
-  "phpNamespaceResolver.removeOnSave": true,
+  "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
-  "phpserver.relativePath": "src/public",
+  "phpserver.relativePath": "backend",
+  "prettier.endOfLine": "lf",
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]

@@ -1,61 +1,54 @@
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
-      - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
-      - id: end-of-file-fixer
-      - id: check-yaml
-        args: [--allow-multiple-documents]
-      - id: check-json
-      - id: check-toml
+fail_fast: true
+exclude: ^(\.pytest_cache|\.ruff_cache|\.venv|vendor|node_modules)/
 
-  # Formatting for Markdown, JSON, YAML, TOML
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
+default_language_version:
+  python: python3.13
+
+repos:
+  # PHP formatting
+  - repo: local
     hooks:
-      - id: prettier
-        types_or: [markdown, json, yaml, toml]
+      - id: php-cs-fixer
+        name: php-cs-fixer
+        entry: composer cs-fix
+        language: system
+        types: [php]
 
   # Python linting and formatting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.1
     hooks:
       - id: ruff-check
-        name: ruff-lint
+        args: [--fix]
         files: "^tests/.*\\.py$"
-        args: [--fix, --exit-non-zero-on-fix]
-
       - id: ruff-format
         files: "^tests/.*\\.py$"
 
   # Python type checking
-  - repo: https://github.com/ComPWA/pyright-pre-commit
-    rev: v1.1.407
-    hooks:
-      - id: pyright
-        files: "^tests/.*\\.py$"
-
-  # PHP code style
   - repo: local
     hooks:
-      - id: php-cs-fixer
-        name: php-cs-fixer
-        entry: ./vendor/bin/php-cs-fixer
+      - id: pyright
+        name: pyright
+        entry: pyright
         language: system
-        types: [php]
-        files: \.php$
-        args:
-          - fix
-          - --using-cache=no
-          - --quiet
-          - --config=.php-cs-fixer.php
-          - --path-mode=intersection
-          - --allow-risky=yes
+        types: [python]
+        files: "^tests/.*\\.py$"
+        pass_filenames: false
 
-default_language_version:
-  python: python3
+  # Other files
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [json, yaml, toml, markdown]
+        args: [--no-error-on-unmatched-pattern]
 
-default_install_hook_types: [pre-commit]
-
-exclude: ^(\.pytest_cache|\.ruff_cache|\.venv|vendor)/
+  # Final general hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]

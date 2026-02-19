@@ -28,10 +28,9 @@ def driver(request: pytest.FixtureRequest) -> Iterator[ChromiumDriver]:
 
 @pytest.fixture(scope="function")
 def capture_dir(request: pytest.FixtureRequest) -> Path:
-    test_name = request.node.name
-    test_path = request.node.fspath
-    test_dir = Path(test_path).parent.name
+    test_file_path = Path(request.node.fspath)
+    test_file_dir = test_file_path.parent.name
 
-    test_capture_dir = SCREENSHOTS_DIR / test_dir / test_name
+    test_capture_dir = SCREENSHOTS_DIR / test_file_dir / test_file_path.stem
     test_capture_dir.mkdir(parents=True, exist_ok=True)
     return test_capture_dir
