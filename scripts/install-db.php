@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-const ROOT_DIR = __DIR__ . '/..';
-const DB_SCRIPTS_DIR = ROOT_DIR . '/database';
+require_once __DIR__ . '/../src/bootstrap.php';
 
-require_once ROOT_DIR . '/src/bootstrap.php';
+const DB_SCRIPTS_DIR = ROOT_DIR . '/database';
 
 use App\Utils\OutputUtils;
 use Config\DbConfig;
@@ -35,8 +34,9 @@ function executeStatements(\PDO $pdo, array $statements): void
     }
 }
 
-// Prepare statements
 $dbName = DbConfig::getDbName();
+
+// Prepare statements
 $initStatements = [
     "DROP DATABASE IF EXISTS `{$dbName}`",
     "CREATE DATABASE `{$dbName}`",

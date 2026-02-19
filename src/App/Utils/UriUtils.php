@@ -6,26 +6,20 @@ namespace App\Utils;
 
 class UriUtils
 {
-    public static function removeUriParams(string $uri): string
-    {
-        return explode('?', $uri)[0];
-    }
-
     public static function parse(string $uri): string
     {
         $parsedUri = parse_url($uri, PHP_URL_PATH);
         return trim($parsedUri, '/');
     }
 
-    public static function getViewParts(string $viewRoute): array
+    public static function getCurrentUri(): string
     {
-        $parts = explode('/', $viewRoute);
-        if (\count($parts) === 1) {
-            return ['', $viewRoute];
-        }
+        $uri = $_SERVER['REQUEST_URI'];
+        return self::parse($uri);
+    }
 
-        $viewDir = implode('/', \array_slice($parts, 0, -1));
-        $viewName = end($parts);
-        return [$viewDir, $viewName];
+    public static function removeUriParams(string $uri): string
+    {
+        return explode('?', $uri)[0];
     }
 }

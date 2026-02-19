@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
-use App\Core\View;
 
 class SignupController extends BaseController
 {
-    public function handle(View $view): void
-    {
-        $view->Render();
-    }
+    public function handle(): void {}
 }

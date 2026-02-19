@@ -4,41 +4,26 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Components\Alert;
 use App\Routing\RoutesCollection;
-use App\Utils\{TextUtils, UriUtils};
-
-require_once __DIR__ . '/View.php';
+use App\Utils\UriUtils;
 
 class Router
 {
-    public const EMPTY_VIEW_NAME = '';
-    public const LEGACY_VIEW_NAME = 'index';
-    public const DEFAULT_VIEW_NAME = 'home';
-    private const LEGACY_VIEWS_DIR = 'public/views/';
     private const PAGE_NOT_FOUND_TEXT = 'Page Not Found...';
 
     public function dispatch(): void
     {
-        // Get uri and normalize it
-        $uri = UriCache::getCurrentUri();
-        $uri = TextUtils::removePrefix($uri, self::LEGACY_VIEWS_DIR);
-        $uri = TextUtils::removeSuffix($uri, ViewPaths::VIEWS_FILE_EXT);
+        $uri = UriUtils::getCurrentUri();
 
         // Get route
         $uriRoute = RoutesCollection::getByUri($uri);
         if ($uriRoute === null) {
             http_response_code(404);
-            echo new Alert(self::PAGE_NOT_FOUND_TEXT);
+            throw new \Exception(self::PAGE_NOT_FOUND_TEXT);
             exit;
         }
 
-        [$viewDir, $viewName] = UriUtils::getViewParts($uriRoute->viewRoute);
-        if ($viewName === '' || $viewDir === '' && $viewName === self::LEGACY_VIEW_NAME) {
-            $viewName = self::DEFAULT_VIEW_NAME;
-        }
-
         $viewController = $uriRoute->viewController;
-        $viewController->handle(new View($viewDir, $viewName, $viewController->viewTabName));
+        $viewController->handle();
     }
 }
