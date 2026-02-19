@@ -11,5 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-(new Router())->dispatch();
 CorsMiddleware::handle();
+
+Router::init();
+Router::dispatch();
