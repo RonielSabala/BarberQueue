@@ -16,4 +16,16 @@ class UriUtils
         $parsedUri = parse_url($uri, PHP_URL_PATH);
         return trim($parsedUri, '/');
     }
+
+    public static function getViewParts(string $viewRoute): array
+    {
+        $parts = explode('/', $viewRoute);
+        if (\count($parts) === 1) {
+            return ['', $viewRoute];
+        }
+
+        $viewDir = implode('/', \array_slice($parts, 0, -1));
+        $viewName = end($parts);
+        return [$viewDir, $viewName];
+    }
 }

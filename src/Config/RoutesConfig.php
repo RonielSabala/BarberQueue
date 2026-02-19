@@ -11,7 +11,7 @@ use App\Routing\RoutesCollection;
 
 // Home
 const _DEFAULT_CONTROLLER = new Controllers\HomeController(viewTabName: 'home');
-RoutesCollection::add('', _DEFAULT_CONTROLLER);
+RoutesCollection::add(Router::EMPTY_VIEW_NAME, _DEFAULT_CONTROLLER);
 RoutesCollection::add(Router::LEGACY_VIEW_NAME, _DEFAULT_CONTROLLER);
 RoutesCollection::add(Router::DEFAULT_VIEW_NAME, _DEFAULT_CONTROLLER);
 

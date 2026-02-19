@@ -6,12 +6,13 @@ namespace App\Core;
 
 use App\Components\Alert;
 use App\Routing\RoutesCollection;
-use App\Utils\TextUtils;
+use App\Utils\{TextUtils, UriUtils};
 
 require_once __DIR__ . '/View.php';
 
 class Router
 {
+    public const EMPTY_VIEW_NAME = '';
     public const LEGACY_VIEW_NAME = 'index';
     public const DEFAULT_VIEW_NAME = 'home';
     private const LEGACY_VIEWS_DIR = 'public/views/';
@@ -32,8 +33,7 @@ class Router
             exit;
         }
 
-        // Get view parts
-        [$viewDir, $viewName] = $uriRoute->splitViewRoute();
+        [$viewDir, $viewName] = UriUtils::getViewParts($uriRoute->viewRoute);
         if ($viewName === '' || $viewDir === '' && $viewName === self::LEGACY_VIEW_NAME) {
             $viewName = self::DEFAULT_VIEW_NAME;
         }

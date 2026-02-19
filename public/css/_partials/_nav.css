@@ -1,0 +1,31 @@
+.container {
+  max-width: 1200px;
+  padding: 0 80px;
+  border-radius: 15px;
+  box-sizing: border-box;
+}
+
+.nav {
+  font-size: 20px;
+  border-bottom: 1px solid black;
+}
+
+.nav-link {
+  color: rgb(6, 112, 206);
+}
+
+.custom-link.nav-link:hover {
+  border-color: rgb(0, 0, 0, 0.2);
+}
+
+.custom-link.nav-link.active {
+  color: black;
+  border-color: black;
+  border-bottom-color: transparent;
+}
+
+.view-content {
+  min-height: 75dvh;
+  margin-top: 20px;
+  padding-top: 5px;
+}
