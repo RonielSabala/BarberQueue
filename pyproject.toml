@@ -20,7 +20,13 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "--html=tests/results/report.html --self-contained-html -v"
 
+[tool.pyright]
+venv = ".venv"
+venvPath = "."
+typeCheckingMode = "standard"
+
 [tool.ruff]
+src = ["tests"]
 fix = true
 preview = true
 line-length = 88
@@ -37,6 +43,3 @@ convention = "google"
 [tool.ruff.lint.isort]
 combine-as-imports = true
 split-on-trailing-comma = false
-
-[tool.pyright]
-typeCheckingMode = "standard"

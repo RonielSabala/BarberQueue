@@ -11,13 +11,11 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Out of Scope](#out-of-scope)
 - [Installation](#installation)
   - [Requirements](#requirements)
-  - [Install `uv`](#install-uv)
   - [Install Dependencies](#install-dependencies)
   - [`.env` Configuration](#env-configuration)
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
-- [Email Notifications](#email-notifications)
 - [Roles \& Permissions](#roles--permissions)
 - [Contributing](#contributing)
 - [Authors](#authors)
@@ -27,13 +25,15 @@ BarberQueue is a web application designed to improve the waiting experience at b
 
 ## Motivation
 
-Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration and lost time for customers when they cannot know how long they will wait or what position they are in the queue.
+Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration, and lost time for customers when they cannot know how long they will wait or what position they are in the queue.
 
 Current challenges this project addresses:
 
-- Clients cannot easily know how many people are ahead of them unless they are physically in the location.
+- Clients cannot easily know how many people are ahead of them unless they are physically in the barbershop.
 - Groups (families or friends) arriving together increase queue length and complicate ordering.
 - Client preferences for specific barbers alter queue behavior and increase uncertainty for those who arrive later.
+
+---
 
 ## Solution
 
@@ -61,32 +61,15 @@ The following items are explicitly out of scope for the current project:
 ### Requirements
 
 - [PHP](https://www.php.net/downloads.php) >= 8.4.7
-- [Python](https://www.python.org/downloads/) >= 3.13.9
 - [Composer](https://getcomposer.org/download/) >= 2.8.9
+- [Python](https://www.python.org/downloads/) >= 3.13.9
 - [MySQL](https://downloads.mysql.com/archives/community/) >= 8.0.42
-
----
-
-### Install `uv`
-
-Recommended methods:
-
-```bash
-# Windows
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# macOS / Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Or install via pip
-pip install uv
-```
 
 ---
 
 ### Install Dependencies
 
-Use system terminal (recommended):
+#### PHP
 
 ```bash
 composer install
@@ -94,80 +77,114 @@ composer install
 
 ---
 
-### `.env` Configuration
+#### Python
 
-Create a `.env` file at:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), a fast Python package manager:
 
-```plain
-src/config/.env
+```bash
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-This file should contain the keys below. Optional values may be left empty, but the keys should exist.
+Then install all Python dependencies:
+
+```bash
+uv sync
+```
+
+This creates a virtual environment and installs all Python development tools.
+
+---
+
+#### Pre-commit Hooks
+
+```bash
+# Install pre-commit framework
+python -m pip install --user pre-commit
+
+# Install git hooks
+pre-commit install
+```
+
+Pre-commit runs code quality checks automatically before each commit. To run checks manually:
+
+```bash
+pre-commit run --all-files
+```
+
+---
+
+### `.env` Configuration
+
+Create a `.env` file in the project root:
 
 ```env
 # Database (required)
-HOST='YOUR_DB_HOST'
-USER='YOUR_DB_USER'
-PASS='YOUR_DB_PASSWORD'
+DB_HOST=
+DB_PORT=
+DB_USERNAME=
+DB_PASSWORD=
+DB_DATABASE=barberqueue_db
 
 # Email (optional)
-MAIL_USER='YOUR_GOOGLE_EMAIL'
-MAIL_PASS='YOUR_APP_PASSWORD'
+MAIL_USERNAME=
+MAIL_PASSWORD=
 
 # Google OAuth (optional)
-GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID'
-GOOGLE_CLIENT_SECRET='YOUR_GOOGLE_CLIENT_SECRET'
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
+
+All keys must be present even if left empty.
 
 #### Email Setup (Optional)
 
-1. Enable 2-Step Verification for `MAIL_USER` at [https://myaccount.google.com/security](https://myaccount.google.com/security)
-2. Generate an App Password at [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and paste it into `MAIL_PASS`.
+1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
+2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.
 
-#### Google Setup (Optional)
+#### Google OAuth Setup (Optional)
 
 1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/).
-2. Go to **APIs & Services** > **Credentials** and create **OAuth client ID**.
-3. Choose **Web application** as the Application type and add the authorized redirect URI:
+2. Go to **APIs & Services** > **Credentials** and create an **OAuth client ID**.
+3. Choose **Web application** and add the following authorized redirect URI:
 
-    ```plain
-    http://localhost:3000/auth/GoogleController.php
-    ```
+   ```plain
+   http://localhost:3000/auth/GoogleController
+   ```
 
-4. Copy **Client ID** and **Client secret** into `src/config/.env`.
+4. Copy **Client ID** and **Client secret** into `.env`.
 
 ---
 
 ### Database Setup
 
-Run the DB install script:
-
 ```bash
-php src/db/install.php
+php scripts/install-db.php
 ```
 
 ---
 
 ## Run Locally
 
-### Option A. Start the built-in PHP server (manual) <!-- omit in toc -->
+### Option A. Start manually the built-in PHP server <!-- omit in toc -->
 
 ```bash
-# From the repository root
-php -S localhost:3000 -t src/public
+php -S localhost:3000 -t backend
 ```
 
-Open your browser at: `http://localhost:3000`. You can stop the server with `Ctrl + C`.
+Open `http://localhost:3000` in your browser. Stop the server with `Ctrl + C`.
 
 ---
 
-### Option B. Use a VS Code extension (recommended) <!-- omit in toc -->
+### Option B. VS Code extension (recommended) <!-- omit in toc -->
 
-1. Install the **PHP Server** extension (brapifra.phpserver), which is listed in `.vscode/extensions.json`.
-2. Open the Command Palette (`Ctrl + Shift + P`).
-3. Run **PHP Server: Serve project**.
+1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
+2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Serve project**.
 
-To reload or stop the server you can use **PHP Server: Reload project** or **PHP Server: Stop project** respectively.
+Use **PHP Server: Reload project** or **PHP Server: Stop project** to reload or stop.
 
 ---
 
@@ -177,19 +194,7 @@ To reload or stop the server you can use **PHP Server: Reload project** or **PHP
 uv run pytest
 ```
 
-### Results <!-- omit in toc -->
-
-After running tests, results are automatically saved to `tests/results/` containing:
-
-- **HTML test report**: A detailed pass/fail summary with execution times.
-- **Screenshots**: Visual captures from UI test and key checkpoints.
-
----
-
-## Email Notifications
-
-- Password reset uses an email verification code flow.
-- Ensure `MAIL_USER` and `MAIL_PASS` are set in `src/config/.env` for email functionality.
+Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from UI tests.
 
 ---
 
@@ -235,21 +240,21 @@ Full management of one or more barbershops they administer:
 Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
-2. Create a feature branch: `feat/my-change`
-3. Commit, push, and open a pull request describing the change and reason.
+2. Create a feature branch: `feat/my-change`.
+3. Commit, push, and open a pull request describing the change and the reason for it.
 
-> Please, ensure your code follows the existing style and includes appropriate documentation.
+Please ensure your code follows the existing style and includes appropriate documentation.
 
 ---
 
 ## Authors
 
-| Name | ID | Contact |
-| --- | ---: | --- |
-| Roniel Antonio Sabala Germán | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com) |
-| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com) |
-| Idelka Regina Rodríguez Jáquez | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
-| Jheinel Jesús Brown Curbata | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com) |
+| Name                            |       ID | Contact                                                    |
+| ------------------------------- | -------: | ---------------------------------------------------------- |
+| Roniel Antonio Sabala Germán    | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com)           |
+| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com)   |
+| Idelka Regina Rodríguez Jáquez  | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
+| Jheinel Jesús Brown Curbata     | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com)           |
 
 ---
 
