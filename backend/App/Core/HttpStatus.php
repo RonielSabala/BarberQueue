@@ -8,6 +8,7 @@ enum HttpStatus: int
 {
     case Ok = 200;
     case NotFound = 404;
+    case InternalServerError = 500;
 
     public function response(): void
     {

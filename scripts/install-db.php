@@ -6,22 +6,16 @@ require_once __DIR__ . '/../backend/bootstrap.php';
 
 const DB_SCRIPTS_DIR = ROOT_DIR . '/database';
 
+use App\Config\DbConfig;
 use App\Utils\OutputUtils;
-use Config\DbConfig;
 
 function getStatementsFromFile(string $filepath): array
 {
     if (!file_exists($filepath)) {
-        echo OutputUtils::error("File not found: {$filepath}");
-        exit;
+        throw new \RuntimeException("File not found: {$filepath}");
     }
 
     $content = file_get_contents($filepath);
-    if ($content === false) {
-        echo OutputUtils::error("Failed to read file: {$filepath}");
-        exit;
-    }
-
     return array_filter(array_map('trim', explode(';', $content)));
 }
 
@@ -34,21 +28,19 @@ function executeStatements(\PDO $pdo, array $statements): void
     }
 }
 
-$dbName = DbConfig::getDbName();
-
-// Prepare statements
-$initStatements = [
-    "DROP DATABASE IF EXISTS `{$dbName}`",
-    "CREATE DATABASE `{$dbName}`",
-    "USE `{$dbName}`",
-];
-
-$creationStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/creation.sql');
-$insertionStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/insertions.sql');
-
-// Execute installation
 try {
-    $pdo = DbConfig::getPdo();
+    DbConfig::init(withDatabase: false);
+    $pdo = DbConfig::getConnection();
+    $dbName = DbConfig::getDbName();
+
+    $initStatements = [
+        "DROP DATABASE IF EXISTS `{$dbName}`",
+        "CREATE DATABASE `{$dbName}`",
+        "USE `{$dbName}`",
+    ];
+    $creationStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/creation.sql');
+    $insertionStatements = getStatementsFromFile(DB_SCRIPTS_DIR . '/insertions.sql');
+
     executeStatements($pdo, $initStatements);
     executeStatements($pdo, $creationStatements);
     executeStatements($pdo, $insertionStatements);
