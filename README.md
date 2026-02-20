@@ -121,7 +121,7 @@ From the **repo root**:
 
 ```bash
 # Install pre-commit framework
-python -m pip install --user pre-commit
+python -m pre_commit install
 
 # Install git hooks
 pre-commit install
