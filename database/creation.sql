@@ -150,51 +150,62 @@ SET
     FOREIGN_KEY_CHECKS = 1;
 
 -- Users
-CREATE INDEX idx_users_role_id ON users(role_id);
-CREATE INDEX idx_users_email ON users(email); 
+CREATE INDEX idx_users_role_id ON users (role_id);
+
+CREATE INDEX idx_users_email ON users (email);
 
 -- Barbershops
-CREATE INDEX idx_barbershops_is_active ON barbershops(is_active);
+CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);
 
 -- Barbershop photos
-CREATE INDEX idx_barbershop_photos_barbershop_id ON barbershop_photos(barbershop_id);
+CREATE INDEX idx_barbershop_photos_barbershop_id ON barbershop_photos (barbershop_id);
 
 -- Barbershop reviews
-CREATE INDEX idx_barbershop_reviews_barbershop_id ON barbershop_reviews(barbershop_id);
-CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews(user_id);
-CREATE INDEX idx_barbershop_reviews_rating ON barbershop_reviews(rating);
+CREATE INDEX idx_barbershop_reviews_barbershop_id ON barbershop_reviews (barbershop_id);
+
+CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (user_id);
+
+CREATE INDEX idx_barbershop_reviews_rating ON barbershop_reviews (rating);
 
 -- Employee barbershops
-CREATE INDEX idx_employee_barbershops_barbershop_id ON employee_barbershops(barbershop_id);
+CREATE INDEX idx_employee_barbershops_barbershop_id ON employee_barbershops (barbershop_id);
 
 -- Working days
-CREATE INDEX idx_working_days_employee_id ON working_days(employee_id);
-CREATE INDEX idx_working_days_day_of_week ON working_days(day_of_week);
+CREATE INDEX idx_working_days_employee_id ON working_days (employee_id);
+
+CREATE INDEX idx_working_days_day_of_week ON working_days (day_of_week);
 
 -- Composite index to check which days an employee works
-CREATE INDEX idx_working_days_employee_day ON working_days(employee_id, day_of_week);
+CREATE INDEX idx_working_days_employee_day ON working_days (employee_id, day_of_week);
 
 -- Client status
-CREATE INDEX idx_client_status_status ON client_status(client_status);
+CREATE INDEX idx_client_status_status ON client_status (client_status);
 
 -- Barber status
-CREATE INDEX idx_barber_status_status ON barber_status(barber_status);
+CREATE INDEX idx_barber_status_status ON barber_status (barber_status);
 
 -- Barber reviews
-CREATE INDEX idx_barber_reviews_barber_id ON barber_reviews(barber_id);
-CREATE INDEX idx_barber_reviews_client_id ON barber_reviews(client_id);
-CREATE INDEX idx_barber_reviews_rating ON barber_reviews(rating);
+CREATE INDEX idx_barber_reviews_barber_id ON barber_reviews (barber_id);
 
--- Client turns (most consulted table in the system)
-CREATE INDEX idx_client_turns_barbershop_id ON client_turns(barbershop_id);
-CREATE INDEX idx_client_turns_client_id ON client_turns(client_id);
-CREATE INDEX idx_client_turns_barber_id ON client_turns(barber_id);
-CREATE INDEX idx_client_turns_group_id ON client_turns(group_id);
-CREATE INDEX idx_client_turns_created_at ON client_turns(created_at);
+CREATE INDEX idx_barber_reviews_client_id ON barber_reviews (client_id);
+
+CREATE INDEX idx_barber_reviews_rating ON barber_reviews (rating);
+
+-- Client turns
+CREATE INDEX idx_client_turns_barbershop_id ON client_turns (barbershop_id);
+
+CREATE INDEX idx_client_turns_client_id ON client_turns (client_id);
+
+CREATE INDEX idx_client_turns_barber_id ON client_turns (barber_id);
+
+CREATE INDEX idx_client_turns_group_id ON client_turns (group_id);
+
+CREATE INDEX idx_client_turns_created_at ON client_turns (created_at);
 
 -- Composite indexes for typical queue/turn queries
-CREATE INDEX idx_client_turns_barbershop_created ON client_turns(barbershop_id, created_at);
-CREATE INDEX idx_client_turns_barbershop_barber ON client_turns(barbershop_id, barber_id);
+CREATE INDEX idx_client_turns_barbershop_created ON client_turns (barbershop_id, created_at);
+
+CREATE INDEX idx_client_turns_barbershop_barber ON client_turns (barbershop_id, barber_id);
 
 -- Client groups
-CREATE INDEX idx_client_groups_leader_id ON client_groups(leader_id);
+CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
