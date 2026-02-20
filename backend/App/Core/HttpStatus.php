@@ -7,6 +7,7 @@ namespace App\Core;
 enum HttpStatus: int
 {
     case Ok = 200;
+    case NoContent = 204;
     case NotFound = 404;
     case InternalServerError = 500;
 

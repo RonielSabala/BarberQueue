@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Test suite for BarberQueue."
 requires-python = ">=3.13.9"
 dependencies = [
+    "dotenv>=0.9.9",
     "pytest>=9.0.2",
     "pytest-html>=4.2.0",
     "requests>=2.32.5",

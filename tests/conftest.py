@@ -1,16 +1,21 @@
+import os
 from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chromium.webdriver import ChromiumDriver
 
-APP_URL = "http://localhost:3000"
+load_dotenv()
+BACKEND_URL = os.getenv("BACKEND_URL")
 SCREENSHOTS_DIR = Path(__file__).resolve().parent / "results" / "captures"
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
-    parser.addoption("--base-url", action="store", default=APP_URL, help="Base app URL")
+    parser.addoption(
+        "--base-url", action="store", default=BACKEND_URL, help="Base app URL"
+    )
 
 
 @pytest.fixture(scope="session")

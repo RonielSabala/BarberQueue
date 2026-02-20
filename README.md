@@ -137,9 +137,13 @@ pre-commit run --all-files
 
 ### `.env` Configuration
 
-Create a `.env` file at the repo root:
+Create a `.env` file at the **repo root**:
 
 ```env
+# App urls (required)
+BACKEND_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:5173
+
 # Database (required)
 DB_HOST=
 DB_PORT=
@@ -199,7 +203,7 @@ From the **repo root**:
 php -S localhost:3000 -t backend
 ```
 
-You can stop the server with `Ctrl + C`.
+Use `Ctrl + C` to stop.
 
 ---
 
@@ -221,7 +225,7 @@ cd frontend
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser. Your can stop the server with `Ctrl + C` as well.
+Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl + C` to stop.
 
 ---
 
