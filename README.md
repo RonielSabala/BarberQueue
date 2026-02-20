@@ -60,7 +60,7 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- [PHP](https://www.php.net/downloads.php) >= 8.4.7
+- [PHP](https://www.php.net/downloads.php) >= 8.0
 - [Composer](https://getcomposer.org/download/) >= 2.8.9
 - [Node.js](https://nodejs.org/en/download) >= 22.0.0
 - [Python](https://www.python.org/downloads/) >= 3.13.9
