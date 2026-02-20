@@ -10,7 +10,7 @@ repos:
     hooks:
       - id: php-cs-fixer
         name: php-cs-fixer
-        entry: composer cs-fix
+        entry: backend/vendor/bin/php-cs-fixer fix --using-cache=no --quiet --config=backend/.php-cs-fixer.php --path-mode=intersection --allow-risky=yes
         language: system
         types: [php]
 
@@ -19,20 +19,21 @@ repos:
     rev: v0.15.1
     hooks:
       - id: ruff-check
-        args: [--fix]
-        files: "^tests/.*\\.py$"
+        args: [--fix, --config, tests/pyproject.toml]
+        files: ".*\\.py$"
       - id: ruff-format
-        files: "^tests/.*\\.py$"
+        args: [--config, tests/pyproject.toml]
+        files: ".*\\.py$"
 
   # Python type checking
   - repo: local
     hooks:
       - id: pyright
         name: pyright
-        entry: pyright
+        entry: pyright --project tests
         language: system
         types: [python]
-        files: "^tests/.*\\.py$"
+        files: ".*\\.py$"
         pass_filenames: false
 
   # Other files

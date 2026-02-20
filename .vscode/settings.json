@@ -7,8 +7,8 @@
   "[sql]": {
     "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
   },
-  "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
-  "php-cs-fixer.config": ".php-cs-fixer.php",
+  "php-cs-fixer.executablePath": "${workspaceFolder}/backend/vendor/bin/php-cs-fixer",
+  "php-cs-fixer.config": "backend/.php-cs-fixer.php",
   "php-cs-fixer.onsave": true,
   "php-cs-fixer.formatHtml": true,
   "php-cs-fixer.allowRisky": true,

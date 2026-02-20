@@ -16,9 +16,8 @@ dev = ["pyright>=1.1.408", "ruff>=0.15.0"]
 # Tool configs
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
 python_files = "test_*.py"
-addopts = "--html=tests/results/report.html --self-contained-html -v"
+addopts = "--html=results/report.html --self-contained-html -v"
 
 [tool.pyright]
 venv = ".venv"
@@ -26,7 +25,6 @@ venvPath = "."
 typeCheckingMode = "standard"
 
 [tool.ruff]
-src = ["tests"]
 fix = true
 preview = true
 line-length = 88

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-const ROOT_DIR = __DIR__ . '/..';
-require_once ROOT_DIR . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
+const ROOT_DIR = __DIR__ . '/..';
 Dotenv::createImmutable(ROOT_DIR)->load();
