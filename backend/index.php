@@ -13,7 +13,7 @@ CorsMiddleware::handle();
 try {
     DbConfig::init();
 } catch (\RuntimeException $e) {
-    HttpResponse::serverError();
+    HttpResponse::serverError($e->getMessage());
     exit;
 }
 
