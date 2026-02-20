@@ -1,6 +1,3 @@
-SET
-    FOREIGN_KEY_CHECKS = 0;
-
 -- ROLES
 INSERT INTO
     roles (id, role_name)
@@ -382,6 +379,3 @@ VALUES
     (14, 8, 5, 'Increíble trabajo, se nota la experiencia.'),
     (15, 4, 4, 'Carlos siempre constante, buen corte como siempre.'),
     (16, 6, 5, 'Miguel muy profesional y rápido, sin sacrificar calidad.');
-
-SET
-    FOREIGN_KEY_CHECKS = 1;

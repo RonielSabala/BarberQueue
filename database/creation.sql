@@ -1,6 +1,3 @@
-SET
-    FOREIGN_KEY_CHECKS = 0;
-
 -- Roles
 CREATE TABLE
     roles (
@@ -136,9 +133,6 @@ CREATE TABLE
         FOREIGN KEY (group_id) REFERENCES client_groups (id),
         FOREIGN KEY (barber_id) REFERENCES users (id)
     );
-
-SET
-    FOREIGN_KEY_CHECKS = 1;
 
 -- Users
 CREATE INDEX idx_users_role_id ON users (role_id);
