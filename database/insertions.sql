@@ -11,12 +11,12 @@ VALUES
     (4, 'admin');
 
 -- USERS
--- IDs 1    -> admin
+-- ID  1    -> admin
 -- IDs 2-3  -> assistants
 -- IDs 4-8  -> barbers
 -- IDs 9-18 -> clients
 INSERT INTO
-    users (id, role_id, username, email, phone, user_address, password_hash)
+    users (id, role_id, username, email, phone, password_hash)
 VALUES
     -- Admin
     (
@@ -25,7 +25,6 @@ VALUES
         'admin_juan',
         'admin@barbershop.com',
         '8091234567',
-        'Calle El Conde 1, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     -- Assistants
@@ -35,7 +34,6 @@ VALUES
         'asistente_maria',
         'maria@barbershop.com',
         '8092345678',
-        'Av. Independencia 45, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -44,7 +42,6 @@ VALUES
         'asistente_pedro',
         'pedro@barbershop.com',
         '8093456789',
-        'Calle Las Damas 12, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     -- Barbers
@@ -54,7 +51,6 @@ VALUES
         'barber_carlos',
         'carlos@barbershop.com',
         '8094567890',
-        'Av. Duarte 78, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -63,7 +59,6 @@ VALUES
         'barber_luis',
         'luis@barbershop.com',
         '8095678901',
-        'Calle Hostos 23, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -72,7 +67,6 @@ VALUES
         'barber_miguel',
         'miguel@barbershop.com',
         '8096789012',
-        'Av. Mella 56, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -81,7 +75,6 @@ VALUES
         'barber_ramon',
         'ramon@barbershop.com',
         '8097890123',
-        'Calle Padre Billini 9, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -90,7 +83,6 @@ VALUES
         'barber_felix',
         'felix@barbershop.com',
         '8098901234',
-        'Av. 27 de Febrero 101, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     -- Clients
@@ -100,7 +92,6 @@ VALUES
         'cliente_andres',
         'andres@gmail.com',
         '8091111111',
-        'Calle 5 #12, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -109,7 +100,6 @@ VALUES
         'cliente_sofia',
         'sofia@gmail.com',
         '8092222222',
-        'Av. Luperón 34, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -118,7 +108,6 @@ VALUES
         'cliente_jose',
         'jose@gmail.com',
         '8093333333',
-        'Calle Restoration 7, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -127,7 +116,6 @@ VALUES
         'cliente_ana',
         'ana@gmail.com',
         '8094444444',
-        'Av. Lincoln 88, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -136,7 +124,6 @@ VALUES
         'cliente_rafael',
         'rafael@gmail.com',
         '8095555555',
-        'Calle Beller 15, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -145,7 +132,6 @@ VALUES
         'cliente_diana',
         'diana@gmail.com',
         '8096666666',
-        'Av. Tiradentes 22, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -154,7 +140,6 @@ VALUES
         'cliente_marcos',
         'marcos@gmail.com',
         '8097777777',
-        'Calle Mercedes 3, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -163,7 +148,6 @@ VALUES
         'cliente_laura',
         'laura@gmail.com',
         '8098888888',
-        'Av. Sarasota 67, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -172,7 +156,6 @@ VALUES
         'cliente_victor',
         'victor@gmail.com',
         '8099999999',
-        'Calle Pasteur 41, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     ),
     (
@@ -181,7 +164,6 @@ VALUES
         'cliente_paola',
         'paola@gmail.com',
         '8090000000',
-        'Av. Churchill 19, Santo Domingo',
         '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
     );
 
@@ -194,9 +176,9 @@ INSERT INTO
         phone,
         barbershop_address,
         photo_url,
-        open_at,
-        close_at,
-        max_concurrent_clients,
+        opens_at,
+        closes_at,
+        capacity,
         is_active
     )
 VALUES
@@ -250,69 +232,68 @@ VALUES
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge'),
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos');
 
--- EMPLOYEE    -> BARBERSHOPS
+-- STAFF -> BARBERSHOP ASSIGNMENTS
 -- Barbers 4-5 -> Barbershop 1
 -- Barbers 6-7 -> Barbershop 2
 -- Barber  8   -> Barbershop 3
+-- Barber  4   -> also covers Barbershop 3 (second shift)
 -- Assistants 2-3 cover two barbershops each
 INSERT INTO
-    employee_barbershops (employee_id, barbershop_id, start_time, end_time)
+    staff_assignments (staff_id, barbershop_id, start_time, end_time)
 VALUES
     (4, 1, '08:00:00', '16:00:00'),
     (5, 1, '12:00:00', '20:00:00'),
     (6, 2, '09:00:00', '17:00:00'),
     (7, 2, '11:00:00', '19:00:00'),
     (8, 3, '07:00:00', '15:00:00'),
-    -- A barber who covers two barbershops
     (4, 3, '16:30:00', '21:00:00'),
-    -- Assistants
     (2, 1, '08:00:00', '20:00:00'),
     (3, 2, '09:00:00', '19:00:00'),
     (3, 3, '07:00:00', '21:00:00');
 
--- WORKING DAYS
--- day_of_week: 1=Lunes ... 7=Domingo
+-- WORKING DAYS (day_of_week: 1=Mon ... 7=Sun)
 INSERT INTO
-    working_days (employee_id, day_of_week)
+    working_days (user_id, day_of_week)
 VALUES
-    -- Barber Carlos (4): Lun-Vie
+    -- Barber Carlos (4): Mon-Fri
     (4, 1),
     (4, 2),
     (4, 3),
     (4, 4),
     (4, 5),
-    -- Barber Luis (5): Mar-Sab
+    -- Barber Luis (5): Tue-Sat
     (5, 2),
     (5, 3),
     (5, 4),
     (5, 5),
     (5, 6),
-    -- Barber Miguel (6): Lun-Sab
+    -- Barber Miguel (6): Mon-Sat
     (6, 1),
     (6, 2),
     (6, 3),
     (6, 4),
     (6, 5),
     (6, 6),
-    -- Barber Ramon (7): Mie-Dom
+    -- Barber Ramon (7): Wed-Sun
     (7, 3),
     (7, 4),
     (7, 5),
     (7, 6),
     (7, 7),
-    -- Barber Felix (8): Lun-Vie
+    -- Barber Felix (8): Mon-Fri
     (8, 1),
     (8, 2),
     (8, 3),
     (8, 4),
     (8, 5),
-    -- Assistants
+    -- Assistant Maria (2): Mon-Sat
     (2, 1),
     (2, 2),
     (2, 3),
     (2, 4),
     (2, 5),
     (2, 6),
+    -- Assistant Pedro (3): Mon-Sun
     (3, 1),
     (3, 2),
     (3, 3),
@@ -323,7 +304,7 @@ VALUES
 
 -- CLIENT STATUS
 INSERT INTO
-    client_status (client_id, client_status)
+    client_status (user_id, current_status)
 VALUES
     (9, 'default'),
     (10, 'on_queue'),
@@ -332,13 +313,13 @@ VALUES
     (13, 'paid'),
     (14, 'waiting'),
     (15, 'default'),
-    (16, 'on_barbershop'),
+    (16, 'at_barbershop'),
     (17, 'default'),
     (18, 'on_queue');
 
 -- BARBER STATUS
 INSERT INTO
-    barber_status (barber_id, barber_status)
+    barber_status (user_id, current_status)
 VALUES
     (4, 'active'),
     (5, 'resting'),
@@ -347,30 +328,32 @@ VALUES
     (8, 'active');
 
 -- CLIENT GROUPS
+-- Group 1: clients 13 & 14 (leader: rafael)
+-- Group 2: clients 9  & 13 (leader: andres)
 INSERT INTO
     client_groups (id, leader_id)
 VALUES
-    (1, 9),
-    (2, 13);
+    (1, 13),
+    (2, 9);
 
--- CLIENT TURNS
+-- TURNS
 INSERT INTO
-    client_turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
+    turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
 VALUES
-    -- Turnos completados (attended + finished)
+    -- Completed turns
     (1, 9, NULL, 4, '2025-02-15 09:00:00', '2025-02-15 09:10:00', '2025-02-15 09:35:00'),
     (1, 10, NULL, 5, '2025-02-15 09:05:00', '2025-02-15 09:20:00', '2025-02-15 09:50:00'),
     (2, 11, NULL, 6, '2025-02-16 10:00:00', '2025-02-16 10:05:00', '2025-02-16 10:30:00'),
     (2, 12, NULL, 7, '2025-02-16 10:30:00', '2025-02-16 10:45:00', '2025-02-16 11:10:00'),
     (3, 13, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:10:00', '2025-02-17 08:40:00'),
     (3, 14, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:45:00', '2025-02-17 09:15:00'),
-    -- Turno en curso (attended pero sin finished)
+    -- Turns currently in progress (attended, not yet finished)
     (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
     (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
-    -- Turnos en cola (sin attended ni finished)
+    -- Turns waiting in queue (not yet attended)
     (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
     (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
-    -- Grupo en cola
+    -- Group waiting in queue
     (3, 9, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
     (3, 13, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
 
