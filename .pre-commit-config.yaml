@@ -1,4 +1,3 @@
-fail_fast: true
 exclude: ^(\.pytest_cache|\.ruff_cache|\.venv|vendor|node_modules)/
 
 default_language_version:
