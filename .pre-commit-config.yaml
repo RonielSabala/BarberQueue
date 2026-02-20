@@ -4,6 +4,14 @@ default_language_version:
   python: python3.13
 
 repos:
+  # Prettier formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [json, yaml, toml, markdown, html, css, jsx]
+        args: [--no-error-on-unmatched-pattern]
+
   # PHP formatting
   - repo: local
     hooks:
@@ -35,15 +43,7 @@ repos:
         files: ".*\\.py$"
         pass_filenames: false
 
-  # Other files
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        types_or: [json, yaml, toml, markdown]
-        args: [--no-error-on-unmatched-pattern]
-
-  # Final general hooks
+  # Final hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
