@@ -5,7 +5,7 @@ SET
 CREATE TABLE
     roles (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        role_name ENUM ('client', 'barber', 'assistant', 'admin') NOT NULL,
+        role_name ENUM ('client', 'barber', 'assistant', 'admin') NOT NULL
     );
 
 -- Users
@@ -35,7 +35,7 @@ CREATE TABLE
         close_at TIME NOT NULL,
         max_concurrent_clients INT DEFAULT 1,
         is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
 -- Barbershop photos [1:N relationship]
@@ -95,7 +95,7 @@ CREATE TABLE
             'attended',
             'paid'
         ) NOT NULL,
-        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- Barber status [1:N relationship]
@@ -104,7 +104,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         barber_id INT NOT NULL UNIQUE,
         barber_status ENUM ('active', 'inactive', 'resting') NOT NULL,
-        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- Barber reviews [1:N relationship]
@@ -117,7 +117,7 @@ CREATE TABLE
         comment TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- Client turns
@@ -134,7 +134,7 @@ CREATE TABLE
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE,
         FOREIGN KEY (client_id) REFERENCES users (id),
         FOREIGN KEY (group_id) REFERENCES client_groups (id),
-        FOREIGN KEY (barber_id) REFERENCES users (id),
+        FOREIGN KEY (barber_id) REFERENCES users (id)
     );
 
 -- Client groups
