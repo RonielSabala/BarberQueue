@@ -94,7 +94,7 @@ npm install
 
 #### Python
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), a fast Python package manager:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```bash
 # Windows
@@ -104,7 +104,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Then install all Python dependencies from the `tests/` folder:
+Install dependencies from the `tests/` folder:
 
 ```bash
 cd tests
