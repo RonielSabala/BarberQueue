@@ -11,21 +11,12 @@ VALUES
     (4, 'admin');
 
 -- USERS
--- Passwords hashed with bcrypt "password123"
--- IDs 1     → admin
--- IDs 2-3   → assistants
--- IDs 4-8   → barbers
--- IDs 9-18  → clients
+-- IDs 1    -> admin
+-- IDs 2-3  -> assistants
+-- IDs 4-8  -> barbers
+-- IDs 9-18 -> clients
 INSERT INTO
-    users (
-        id,
-        role_id,
-        username,
-        email,
-        phone,
-        user_address,
-        password_hash
-    )
+    users (id, role_id, username, email, phone, user_address, password_hash)
 VALUES
     -- Admin
     (
@@ -250,43 +241,19 @@ VALUES
 INSERT INTO
     barbershop_photos (barbershop_id, photo_url)
 VALUES
-    (
-        1,
-        'https://placehold.co/800x600?text=BarberKing+Interior'
-    ),
-    (
-        1,
-        'https://placehold.co/800x600?text=BarberKing+Sillas'
-    ),
-    (
-        1,
-        'https://placehold.co/800x600?text=BarberKing+Fachada'
-    ),
-    (
-        2,
-        'https://placehold.co/800x600?text=GentlemanCut+Interior'
-    ),
-    (
-        2,
-        'https://placehold.co/800x600?text=GentlemanCut+Sillas'
-    ),
-    (
-        3,
-        'https://placehold.co/800x600?text=EliteBarbers+Interior'
-    ),
-    (
-        3,
-        'https://placehold.co/800x600?text=EliteBarbers+Lounge'
-    ),
-    (
-        3,
-        'https://placehold.co/800x600?text=EliteBarbers+Productos'
-    );
+    (1, 'https://placehold.co/800x600?text=BarberKing+Interior'),
+    (1, 'https://placehold.co/800x600?text=BarberKing+Sillas'),
+    (1, 'https://placehold.co/800x600?text=BarberKing+Fachada'),
+    (2, 'https://placehold.co/800x600?text=GentlemanCut+Interior'),
+    (2, 'https://placehold.co/800x600?text=GentlemanCut+Sillas'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Interior'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos');
 
--- EMPLOYEE → BARBERSHOPS (Which barber works at which barbershop?)
--- Barbers 4-5 → Barbershop 1
--- Barbers 6-7 → Barbershop 2
--- Barber  8   → Barbershop 3
+-- EMPLOYEE    -> BARBERSHOPS
+-- Barbers 4-5 -> Barbershop 1
+-- Barbers 6-7 -> Barbershop 2
+-- Barber  8   -> Barbershop 3
 -- Assistants 2-3 cover two barbershops each
 INSERT INTO
     employee_barbershops (employee_id, barbershop_id, start_time, end_time)
@@ -354,7 +321,7 @@ VALUES
     (3, 6),
     (3, 7);
 
--- CLIENT STATUS (one per customer)
+-- CLIENT STATUS
 INSERT INTO
     client_status (client_id, client_status)
 VALUES
@@ -369,7 +336,7 @@ VALUES
     (17, 'default'),
     (18, 'on_queue');
 
--- BARBER STATUS (one per barber)
+-- BARBER STATUS
 INSERT INTO
     barber_status (barber_id, barber_status)
 VALUES
@@ -383,235 +350,55 @@ VALUES
 INSERT INTO
     client_groups (id, leader_id)
 VALUES
-    (1, 9), -- Andres leads a group
+    (1, 9),
     (2, 13);
 
--- Rafael leads a group
--- CLIENT TURNS (varied history: completed, in progress, in queue)
+-- CLIENT TURNS
 INSERT INTO
-    client_turns (
-        barbershop_id,
-        client_id,
-        group_id,
-        barber_id,
-        created_at,
-        attended_at,
-        finished_at
-    )
+    client_turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
 VALUES
     -- Turnos completados (attended + finished)
-    (
-        1,
-        9,
-        NULL,
-        4,
-        '2025-02-15 09:00:00',
-        '2025-02-15 09:10:00',
-        '2025-02-15 09:35:00'
-    ),
-    (
-        1,
-        10,
-        NULL,
-        5,
-        '2025-02-15 09:05:00',
-        '2025-02-15 09:20:00',
-        '2025-02-15 09:50:00'
-    ),
-    (
-        2,
-        11,
-        NULL,
-        6,
-        '2025-02-16 10:00:00',
-        '2025-02-16 10:05:00',
-        '2025-02-16 10:30:00'
-    ),
-    (
-        2,
-        12,
-        NULL,
-        7,
-        '2025-02-16 10:30:00',
-        '2025-02-16 10:45:00',
-        '2025-02-16 11:10:00'
-    ),
-    (
-        3,
-        13,
-        1,
-        8,
-        '2025-02-17 08:00:00',
-        '2025-02-17 08:10:00',
-        '2025-02-17 08:40:00'
-    ),
-    (
-        3,
-        14,
-        1,
-        8,
-        '2025-02-17 08:00:00',
-        '2025-02-17 08:45:00',
-        '2025-02-17 09:15:00'
-    ),
+    (1, 9, NULL, 4, '2025-02-15 09:00:00', '2025-02-15 09:10:00', '2025-02-15 09:35:00'),
+    (1, 10, NULL, 5, '2025-02-15 09:05:00', '2025-02-15 09:20:00', '2025-02-15 09:50:00'),
+    (2, 11, NULL, 6, '2025-02-16 10:00:00', '2025-02-16 10:05:00', '2025-02-16 10:30:00'),
+    (2, 12, NULL, 7, '2025-02-16 10:30:00', '2025-02-16 10:45:00', '2025-02-16 11:10:00'),
+    (3, 13, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:10:00', '2025-02-17 08:40:00'),
+    (3, 14, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:45:00', '2025-02-17 09:15:00'),
     -- Turno en curso (attended pero sin finished)
-    (
-        1,
-        15,
-        NULL,
-        4,
-        NOW () - INTERVAL 15 MINUTE,
-        NOW () - INTERVAL 5 MINUTE,
-        NULL
-    ),
-    (
-        2,
-        16,
-        NULL,
-        6,
-        NOW () - INTERVAL 20 MINUTE,
-        NOW () - INTERVAL 2 MINUTE,
-        NULL
-    ),
+    (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
     -- Turnos en cola (sin attended ni finished)
-    (
-        1,
-        17,
-        NULL,
-        NULL,
-        NOW () - INTERVAL 10 MINUTE,
-        NULL,
-        NULL
-    ),
-    (
-        1,
-        18,
-        NULL,
-        NULL,
-        NOW () - INTERVAL 5 MINUTE,
-        NULL,
-        NULL
-    ),
+    (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
     -- Grupo en cola
-    (
-        3,
-        9,
-        2,
-        NULL,
-        NOW () - INTERVAL 8 MINUTE,
-        NULL,
-        NULL
-    ),
-    (
-        3,
-        13,
-        2,
-        NULL,
-        NOW () - INTERVAL 8 MINUTE,
-        NULL,
-        NULL
-    );
+    (3, 9, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
+    (3, 13, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
 
 -- BARBERSHOP REVIEWS
 INSERT INTO
-    barbershop_reviews (user_id, barbershop_id, rating, comment)
+    barbershop_reviews (user_id, barbershop_id, rating, content)
 VALUES
-    (
-        9,
-        1,
-        5,
-        'Excelente servicio, el lugar siempre limpio y el ambiente genial.'
-    ),
-    (
-        10,
-        1,
-        4,
-        'Muy buena atención, solo un poco de espera al principio.'
-    ),
-    (
-        11,
-        2,
-        5,
-        'La mejor barbería de la Zona Colonial, super recomendada.'
-    ),
-    (
-        12,
-        2,
-        3,
-        'Buen corte pero el local es pequeño y se llena rápido.'
-    ),
-    (
-        13,
-        3,
-        5,
-        'Elite de verdad, ambiente premium y barberos muy profesionales.'
-    ),
-    (
-        14,
-        3,
-        4,
-        'Muy buena experiencia, precios justos para la calidad.'
-    ),
+    (9, 1, 5, 'Excelente servicio, el lugar siempre limpio y el ambiente genial.'),
+    (10, 1, 4, 'Muy buena atención, solo un poco de espera al principio.'),
+    (11, 2, 5, 'La mejor barbería de la Zona Colonial, super recomendada.'),
+    (12, 2, 3, 'Buen corte pero el local es pequeño y se llena rápido.'),
+    (13, 3, 5, 'Elite de verdad, ambiente premium y barberos muy profesionales.'),
+    (14, 3, 4, 'Muy buena experiencia, precios justos para la calidad.'),
     (15, 1, 4, 'Buen servicio, volveré sin duda.'),
-    (
-        16,
-        2,
-        5,
-        'Me encantó, encontré mi barbería fija.'
-    );
+    (16, 2, 5, 'Me encantó, encontré mi barbería fija.');
 
 -- BARBER REVIEWS
 INSERT INTO
-    barber_reviews (client_id, barber_id, rating, comment)
+    barber_reviews (client_id, barber_id, rating, content)
 VALUES
-    (
-        9,
-        4,
-        5,
-        'Carlos es un crack, me dejó el fade perfecto.'
-    ),
-    (
-        10,
-        5,
-        4,
-        'Luis muy detallista, quedé satisfecho con el resultado.'
-    ),
-    (
-        11,
-        6,
-        5,
-        'Miguel tiene manos de artista, 100% recomendado.'
-    ),
-    (
-        12,
-        7,
-        3,
-        'Ramón es bueno pero se tardó más de lo esperado.'
-    ),
-    (
-        13,
-        8,
-        5,
-        'Félix es el mejor barbero que he tenido, un nivel diferente.'
-    ),
-    (
-        14,
-        8,
-        5,
-        'Increíble trabajo, se nota la experiencia.'
-    ),
-    (
-        15,
-        4,
-        4,
-        'Carlos siempre constante, buen corte como siempre.'
-    ),
-    (
-        16,
-        6,
-        5,
-        'Miguel muy profesional y rápido, sin sacrificar calidad.'
-    );
+    (9, 4, 5, 'Carlos es un crack, me dejó el fade perfecto.'),
+    (10, 5, 4, 'Luis muy detallista, quedé satisfecho con el resultado.'),
+    (11, 6, 5, 'Miguel tiene manos de artista, 100% recomendado.'),
+    (12, 7, 3, 'Ramón es bueno pero se tardó más de lo esperado.'),
+    (13, 8, 5, 'Félix es el mejor barbero que he tenido, un nivel diferente.'),
+    (14, 8, 5, 'Increíble trabajo, se nota la experiencia.'),
+    (15, 4, 4, 'Carlos siempre constante, buen corte como siempre.'),
+    (16, 6, 5, 'Miguel muy profesional y rápido, sin sacrificar calidad.');
 
 SET
     FOREIGN_KEY_CHECKS = 1;

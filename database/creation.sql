@@ -5,7 +5,7 @@ SET
 CREATE TABLE
     roles (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        role_name ENUM ('client', 'barber', 'assistant', 'admin') NOT NULL
+        role_name ENUM('client', 'barber', 'assistant', 'admin') NOT NULL
     );
 
 -- Users
@@ -54,7 +54,7 @@ CREATE TABLE
         user_id INT NOT NULL,
         barbershop_id INT NOT NULL,
         rating TINYINT NOT NULL,
-        comment TEXT,
+        content TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
@@ -86,15 +86,7 @@ CREATE TABLE
     client_status (
         id INT PRIMARY KEY AUTO_INCREMENT,
         client_id INT NOT NULL UNIQUE,
-        client_status ENUM (
-            'default',
-            'on_barbershop',
-            'on_queue',
-            'waiting',
-            'in_service',
-            'attended',
-            'paid'
-        ) NOT NULL,
+        client_status ENUM('default', 'on_barbershop', 'on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
@@ -103,7 +95,7 @@ CREATE TABLE
     barber_status (
         id INT PRIMARY KEY AUTO_INCREMENT,
         barber_id INT NOT NULL UNIQUE,
-        barber_status ENUM ('active', 'inactive', 'resting') NOT NULL,
+        barber_status ENUM('active', 'inactive', 'resting') NOT NULL,
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
@@ -114,7 +106,7 @@ CREATE TABLE
         client_id INT NOT NULL,
         barber_id INT NOT NULL,
         rating TINYINT NOT NULL,
-        comment TEXT,
+        content TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE

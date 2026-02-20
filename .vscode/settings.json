@@ -17,6 +17,9 @@
   "phpserver.relativePath": "backend",
   "phpserver.autoOpenOnReload": false,
   "prettier.endOfLine": "lf",
+  "Prettier-SQL.SQLFlavourOverride": "mysql",
+  "Prettier-SQL.keywordCase": "upper",
+  "Prettier-SQL.expressionWidth": 88,
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
