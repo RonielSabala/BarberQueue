@@ -62,6 +62,7 @@ The following items are explicitly out of scope for the current project:
 
 - [PHP](https://www.php.net/downloads.php) >= 8.4.7
 - [Composer](https://getcomposer.org/download/) >= 2.8.9
+- [Node.js](https://nodejs.org/en/download) >= 22.0.0
 - [Python](https://www.python.org/downloads/) >= 3.13.9
 - [MySQL](https://downloads.mysql.com/archives/community/) >= 8.0.42
 
@@ -71,8 +72,22 @@ The following items are explicitly out of scope for the current project:
 
 #### PHP
 
+From the `backend/` folder:
+
 ```bash
+cd backend
 composer install
+```
+
+---
+
+#### JavaScript
+
+From the `frontend/` folder:
+
+```bash
+cd frontend
+npm install
 ```
 
 ---
@@ -89,9 +104,10 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Then install all Python dependencies:
+Then install all Python dependencies from the `tests/` folder:
 
 ```bash
+cd tests
 uv sync
 ```
 
@@ -100,6 +116,8 @@ This creates a virtual environment and installs all Python development tools.
 ---
 
 #### Pre-commit Hooks
+
+From the **repo root**:
 
 ```bash
 # Install pre-commit framework
@@ -119,7 +137,7 @@ pre-commit run --all-files
 
 ### `.env` Configuration
 
-Create a `.env` file in the project root:
+Create a `.env` file at the repo root:
 
 ```env
 # Database (required)
@@ -161,6 +179,8 @@ All keys must be present even if left empty.
 
 ### Database Setup
 
+From the **repo root**:
+
 ```bash
 php scripts/install-db.php
 ```
@@ -169,28 +189,48 @@ php scripts/install-db.php
 
 ## Run Locally
 
-### Option A. Start manually the built-in PHP server <!-- omit in toc -->
+### Backend <!-- omit in toc -->
+
+**Option A. Start manually the built-in PHP server:**
+
+From the **repo root**:
 
 ```bash
 php -S localhost:3000 -t backend
 ```
 
-Open `http://localhost:3000` in your browser. Stop the server with `Ctrl + C`.
+You can stop the server with `Ctrl + C`.
 
 ---
 
-### Option B. VS Code extension (recommended) <!-- omit in toc -->
+**Option B. VS Code extension (recommended):**
 
 1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
-2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Serve project**.
+2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Reload project**.
 
-Use **PHP Server: Reload project** or **PHP Server: Stop project** to reload or stop.
+Use **PHP Server: Stop project** to stop.
+
+---
+
+### Frontend <!-- omit in toc -->
+
+From the `frontend/` folder:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser. Your can stop the server with `Ctrl + C` as well.
 
 ---
 
 ## Run Tests
 
+From the `tests/` folder:
+
 ```bash
+cd tests
 uv run pytest
 ```
 

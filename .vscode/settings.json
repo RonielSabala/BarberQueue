@@ -15,6 +15,7 @@
   "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
   "phpserver.relativePath": "backend",
+  "phpserver.autoOpenOnReload": false,
   "prettier.endOfLine": "lf",
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
