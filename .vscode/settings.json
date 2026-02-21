@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/tests/.venv/Scripts/python.exe",
   "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
   "[php]": { "editor.defaultFormatter": "junstyle.php-cs-fixer" },
   "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },

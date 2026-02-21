@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class HttpHeader(str, Enum):
+class HttpHeader(StrEnum):
     """
-    Enum for common content types used in HTTP responses.
+    Enum for common content types used in http responses.
     """
 
     HTML_TEXT = "text/html"
