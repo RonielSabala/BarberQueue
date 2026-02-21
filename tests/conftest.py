@@ -12,7 +12,7 @@ load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
-SCREENSHOTS_DIR = Path(__file__).resolve().parent / "results" / "captures"
+SCREENSHOTS_DIR = Path(__file__).resolve().parent / "results"
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
