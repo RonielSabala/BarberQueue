@@ -111,7 +111,7 @@ cd tests
 uv sync
 ```
 
-This creates a virtual environment and installs all Python development tools.
+> **VS Code:** open the Command Palette (`Ctrl + Shift + P`), run **Python: Select Interpreter**, and choose the `.venv` inside `tests/`. Reload your terminal afterwards.
 
 ---
 
@@ -207,7 +207,7 @@ Use `Ctrl + C` to stop.
 
 ---
 
-**Option B. VS Code extension (recommended):**
+**Option B. Use a VS Code extension (recommended):**
 
 1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
 2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Reload project**.
