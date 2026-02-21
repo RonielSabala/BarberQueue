@@ -3,31 +3,40 @@ import requests
 from http_header import HttpHeader
 from http_status import HttpStatus
 
-EXPECTED_RESPONSE = {"message": "OK"}
+EXPECTED_BODY = {"message": "OK"}
 
 
-def _get_url(base_url: str) -> str:
+def _get_response(base_url: str) -> requests.Response:
     """
-    Return the health api url from `base_url`.
-    """
-
-    return f"{base_url}/api/health"
-
-
-def test_health_endpoint(base_url: str):
-    """
-    Assert that the server replies with a 200. Ensure the
-    body contains the expected text and the content type
-    is plain text.
+    Return the health api response from `base_url`.
     """
 
-    url = _get_url(base_url)
-    response = requests.get(url, timeout=5)
+    url = f"{base_url}/api/health"
+    return requests.get(url, timeout=5)
 
-    assert response.status_code == HttpStatus.OK, f"status {response.status_code}"
 
-    body = response.text
-    assert body == str(EXPECTED_RESPONSE), f"unexpected body: {body!r}"
+def test_health_status(base_url: str) -> None:
+    """
+    Health endpoint returns 200.
+    """
 
-    content_type = response.headers.get("Content-Type")
-    assert content_type == HttpHeader.PLAIN_TEXT.content_type
+    response = _get_response(base_url)
+    assert response.status_code == HttpStatus.OK
+
+
+def test_health_body(base_url: str) -> None:
+    """
+    Health endpoint body matches expected payload.
+    """
+
+    response = _get_response(base_url)
+    assert response.json() == EXPECTED_BODY
+
+
+def test_health_content_type(base_url: str) -> None:
+    """
+    Health endpoint returns plain text content type.
+    """
+
+    response = _get_response(base_url)
+    assert response.headers.get("Content-Type") == HttpHeader.PLAIN_TEXT.with_charset

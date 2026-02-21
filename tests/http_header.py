@@ -3,11 +3,12 @@ from enum import StrEnum
 
 class HttpHeader(StrEnum):
     """
-    Enum for common content types used in http responses.
+    Common HTTP Content-Type header values.
     """
 
-    HTML_TEXT = "text/html"
+    JSON = "application/json"
     PLAIN_TEXT = "text/plain"
 
-    def __init__(self, content_type: str) -> None:
-        self.content_type = f"{content_type}; charset=UTF-8"
+    @property
+    def with_charset(self) -> str:
+        return f"{self.value}; charset=UTF-8"
