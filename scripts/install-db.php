@@ -21,6 +21,6 @@ try {
     echo OutputUtils::success('Database installed successfully!');
 } catch (\PDOException $e) {
     echo OutputUtils::error('Database error: ' . $e->getMessage());
-} catch (\RuntimeException $e) {
+} catch (\Throwable $e) {
     echo OutputUtils::error($e->getMessage());
 }
