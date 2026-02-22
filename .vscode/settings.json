@@ -1,19 +1,31 @@
 {
-  // PHP Server config
+  "editor.formatOnSave": true,
+  "python.defaultInterpreterPath": "${workspaceFolder}/tests/.venv/Scripts/python.exe",
+  "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
+  "[php]": { "editor.defaultFormatter": "junstyle.php-cs-fixer" },
+  "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
+  "[yaml]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
+  "php-cs-fixer.executablePath": "${workspaceFolder}/backend/vendor/bin/php-cs-fixer",
+  "php-cs-fixer.config": "backend/.php-cs-fixer.php",
+  "php-cs-fixer.onsave": true,
+  "php-cs-fixer.formatHtml": true,
+  "php-cs-fixer.allowRisky": true,
+  "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
-  "phpserver.relativePath": "src/public",
-  "phpserver.autoOpenOnReload": true,
-  // Markdown config
+  "phpserver.relativePath": "backend",
+  "phpserver.autoOpenOnReload": false,
+  "prettier.endOfLine": "lf",
+  "Prettier-SQL.SQLFlavourOverride": "mysql",
+  "Prettier-SQL.keywordCase": "upper",
+  "Prettier-SQL.expressionWidth": 88,
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"]
   },
-  // Project-specific words that should not be flagged as typos
-  "cSpell.words": [
-    "addoption",
-    "appspecific",
-    "barberqueue",
-    "pyproject",
-    "usefixtures"
-  ]
+  "cSpell.language": "en",
+  "cSpell.caseSensitive": true,
+  "cSpell.words": ["addoption", "appspecific", "barberqueue", "EXTR"]
 }
