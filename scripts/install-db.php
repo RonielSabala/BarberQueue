@@ -16,6 +16,7 @@ try {
     $installer->run(DbConfig::getDbName(), [
         DB_DIR . '/creation.sql',
         DB_DIR . '/insertions.sql',
+        DB_DIR . '/triggers.sql',
     ]);
 
     echo OutputUtils::success('Database installed successfully!');
