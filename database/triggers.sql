@@ -1,30 +1,30 @@
-DELIMITER $$
--- USERS — AFTER INSERT
--- When a user is created, automatically create their status based on role:
---   role 1 (client) → client_status  = 'default'
---   role 2 (barber) → barber_status  = 'inactive'
+-- USERS - AFTER INSERT
+DROP TRIGGER IF EXISTS trg_users_after_insert;
+
 CREATE TRIGGER trg_users_after_insert AFTER
 INSERT
-    ON users FOR EACH ROW BEGIN IF NEW.role_id = 1 THEN
+    ON users FOR EACH ROW BEGIN
+    -- role 1 (client)
+    IF NEW.role_id = 1 THEN
 INSERT INTO
-    client_status (client_id, client_status)
+    client_status (user_id, current_status)
 VALUES
     (NEW.id, 'default');
 
+-- role 2 (barber)
 ELSEIF NEW.role_id = 2 THEN
 INSERT INTO
-    barber_status (barber_id, barber_status)
+    barber_status (user_id, current_status)
 VALUES
     (NEW.id, 'inactive');
 
 END IF;
 
-END $$
--- USERS — BEFORE DELETE
--- If the deleted user is the leader of any active group:
---   - Reassign the oldest active member as the new leader
---   - If no members remain, delete the group
---     (trg_client_groups_after_delete will clean up the turns)
+END;
+
+-- USERS - BEFORE DELETE
+DROP TRIGGER IF EXISTS trg_users_before_delete;
+
 CREATE TRIGGER trg_users_before_delete BEFORE DELETE ON users FOR EACH ROW BEGIN DECLARE v_group_id INT DEFAULT NULL;
 
 DECLARE v_new_leader INT DEFAULT NULL;
@@ -40,15 +40,15 @@ LIMIT
 
 IF v_group_id IS NOT NULL THEN
 SELECT
-    ct.client_id INTO v_new_leader
+    t.client_id INTO v_new_leader
 FROM
-    client_turns ct
+    turns t
 WHERE
-    ct.group_id = v_group_id
-    AND ct.client_id != OLD.id
-    AND ct.finished_at IS NULL
+    t.group_id = v_group_id
+    AND t.client_id != OLD.id
+    AND t.finished_at IS NULL
 ORDER BY
-    ct.created_at ASC
+    t.created_at ASC
 LIMIT
     1;
 
@@ -60,7 +60,7 @@ WHERE
     id = v_group_id;
 
 ELSE
--- No remaining members → delete group
+-- No remaining members, delete group
 DELETE FROM client_groups
 WHERE
     id = v_group_id;
@@ -69,12 +69,11 @@ END IF;
 
 END IF;
 
-END $$
--- BARBERSHOP_REVIEWS — BEFORE INSERT
--- 1. Rating must be between 1 and 5
--- 2. Only clients (role 1) can leave reviews
--- 3. The client must have at least one completed turn at that barbershop
--- 4. A client cannot review the same barbershop twice
+END;
+
+-- BARBERSHOP_REVIEWS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_barbershop_reviews_before_insert;
+
 CREATE TRIGGER trg_barbershop_reviews_before_insert BEFORE
 INSERT
     ON barbershop_reviews FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
@@ -83,6 +82,7 @@ DECLARE v_has_turn INT DEFAULT 0;
 
 DECLARE v_has_review INT DEFAULT 0;
 
+-- 1) rating range
 IF NEW.rating < 1
 OR NEW.rating > 5 THEN SIGNAL SQLSTATE '45000'
 SET
@@ -90,6 +90,7 @@ SET
 
 END IF;
 
+-- 2) only clients can leave reviews
 SELECT
     role_id INTO v_role_id
 FROM
@@ -106,10 +107,11 @@ SET
 
 END IF;
 
+-- 3) must have at least one completed turn at that barbershop
 SELECT
     COUNT(*) INTO v_has_turn
 FROM
-    client_turns
+    turns
 WHERE
     client_id = NEW.user_id
     AND barbershop_id = NEW.barbershop_id
@@ -121,6 +123,7 @@ SET
 
 END IF;
 
+-- 4) cannot review same barbershop twice
 SELECT
     COUNT(*) INTO v_has_review
 FROM
@@ -135,12 +138,11 @@ SET
 
 END IF;
 
-END $$
--- BARBER_REVIEWS — BEFORE INSERT
--- 1. Rating must be between 1 and 5
--- 2. Only clients (role 1) can leave reviews
--- 3. The client must have been attended by that barber
--- 4. A client cannot review the same barber twice
+END;
+
+-- BARBER_REVIEWS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_barber_reviews_before_insert;
+
 CREATE TRIGGER trg_barber_reviews_before_insert BEFORE
 INSERT
     ON barber_reviews FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
@@ -149,6 +151,7 @@ DECLARE v_has_turn INT DEFAULT 0;
 
 DECLARE v_has_review INT DEFAULT 0;
 
+-- 1) rating range
 IF NEW.rating < 1
 OR NEW.rating > 5 THEN SIGNAL SQLSTATE '45000'
 SET
@@ -156,6 +159,7 @@ SET
 
 END IF;
 
+-- 2) only clients can leave reviews
 SELECT
     role_id INTO v_role_id
 FROM
@@ -172,10 +176,11 @@ SET
 
 END IF;
 
+-- 3) client must have been attended by that barber
 SELECT
     COUNT(*) INTO v_has_turn
 FROM
-    client_turns
+    turns
 WHERE
     client_id = NEW.client_id
     AND barber_id = NEW.barber_id
@@ -187,6 +192,7 @@ SET
 
 END IF;
 
+-- 4) cannot review same barber twice
 SELECT
     COUNT(*) INTO v_has_review
 FROM
@@ -201,31 +207,36 @@ SET
 
 END IF;
 
-END $$
--- EMPLOYEE_BARBERSHOPS — BEFORE INSERT
--- Only barbers (role 2) and assistants (role 3) can be assigned
-CREATE TRIGGER trg_employee_barbershops_before_insert BEFORE
+END;
+
+-- STAFF_ASSIGNMENTS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_staff_assignments_before_insert;
+
+CREATE TRIGGER trg_staff_assignments_before_insert BEFORE
 INSERT
-    ON employee_barbershops FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
+    ON staff_assignments FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
 
 SELECT
     role_id INTO v_role_id
 FROM
     users
 WHERE
-    id = NEW.employee_id
+    id = NEW.staff_id
 LIMIT
     1;
 
+-- Only barbers and assistants can be assigned
 IF v_role_id NOT IN(2, 3) THEN SIGNAL SQLSTATE '45000'
 SET
     MESSAGE_TEXT = 'Only barbers and assistants can be assigned to a barbershop';
 
 END IF;
 
-END $$
--- BARBER_STATUS — BEFORE INSERT
--- Validate that the user has barber role (role 2)
+END;
+
+-- BARBER_STATUS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_barber_status_before_insert;
+
 CREATE TRIGGER trg_barber_status_before_insert BEFORE
 INSERT
     ON barber_status FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
@@ -235,7 +246,7 @@ SELECT
 FROM
     users
 WHERE
-    id = NEW.barber_id
+    id = NEW.user_id
 LIMIT
     1;
 
@@ -246,9 +257,11 @@ SET
 
 END IF;
 
-END $$
--- CLIENT_STATUS — BEFORE INSERT
--- Validate that the user has client role (role 1)
+END;
+
+-- CLIENT_STATUS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_client_status_before_insert;
+
 CREATE TRIGGER trg_client_status_before_insert BEFORE
 INSERT
     ON client_status FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
@@ -258,7 +271,7 @@ SELECT
 FROM
     users
 WHERE
-    id = NEW.client_id
+    id = NEW.user_id
 LIMIT
     1;
 
@@ -269,18 +282,20 @@ SET
 
 END IF;
 
-END $$
--- CLIENT_TURNS — BEFORE INSERT
--- Validate that the group does not exceed 6 active members
-CREATE TRIGGER trg_client_turns_before_insert BEFORE
+END;
+
+-- TURNS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_turns_before_insert;
+
+CREATE TRIGGER trg_turns_before_insert BEFORE
 INSERT
-    ON client_turns FOR EACH ROW BEGIN DECLARE v_group_size INT DEFAULT 0;
+    ON turns FOR EACH ROW BEGIN DECLARE v_group_size INT DEFAULT 0;
 
 IF NEW.group_id IS NOT NULL THEN
 SELECT
     COUNT(*) INTO v_group_size
 FROM
-    client_turns
+    turns
 WHERE
     group_id = NEW.group_id
     AND finished_at IS NULL;
@@ -293,22 +308,15 @@ END IF;
 
 END IF;
 
-END $$
--- CLIENT_TURNS — BEFORE UPDATE
--- The app only updates barber_id. The trigger handles the rest:
---
---  barber_id assigned for the first time
---    → attended_at  = NOW()
---    → client_status = 'in_service'
---    → barber_status = 'active'
---
---  barber_id removed (set to NULL)
---    → finished_at  = NOW()
---    → client_status = 'attended'
---    → barber_status = 'resting' (if no other active turns exist)
-CREATE TRIGGER trg_client_turns_before_update BEFORE
-UPDATE ON client_turns FOR EACH ROW BEGIN DECLARE v_active_turns INT DEFAULT 0;
+END;
 
+-- TURNS - BEFORE UPDATE
+DROP TRIGGER IF EXISTS trg_turns_before_update;
+
+CREATE TRIGGER trg_turns_before_update BEFORE
+UPDATE ON turns FOR EACH ROW BEGIN DECLARE v_active_turns INT DEFAULT 0;
+
+-- barber_id assigned for the first time
 IF NEW.barber_id IS NOT NULL
 AND OLD.barber_id IS NULL THEN
 SET
@@ -316,16 +324,17 @@ SET
 
 UPDATE client_status
 SET
-    client_status = 'in_service'
+    current_status = 'in_service'
 WHERE
-    client_id = NEW.client_id;
+    user_id = NEW.client_id;
 
 UPDATE barber_status
 SET
-    barber_status = 'active'
+    current_status = 'active'
 WHERE
-    barber_id = NEW.barber_id;
+    user_id = NEW.barber_id;
 
+-- barber_id removed
 ELSEIF NEW.barber_id IS NULL
 AND OLD.barber_id IS NOT NULL THEN
 SET
@@ -333,14 +342,14 @@ SET
 
 UPDATE client_status
 SET
-    client_status = 'attended'
+    current_status = 'attended'
 WHERE
-    client_id = NEW.client_id;
+    user_id = NEW.client_id;
 
 SELECT
     COUNT(*) INTO v_active_turns
 FROM
-    client_turns
+    turns
 WHERE
     barber_id = OLD.barber_id
     AND finished_at IS NULL
@@ -349,17 +358,19 @@ WHERE
 IF v_active_turns = 0 THEN
 UPDATE barber_status
 SET
-    barber_status = 'resting'
+    current_status = 'resting'
 WHERE
-    barber_id = OLD.barber_id;
+    user_id = OLD.barber_id;
 
 END IF;
 
 END IF;
 
-END $$
--- CLIENT_GROUPS — BEFORE INSERT
--- Validate that leader_id is a client (role 1)
+END;
+
+-- CLIENT_GROUPS - BEFORE INSERT
+DROP TRIGGER IF EXISTS trg_client_groups_before_insert;
+
 CREATE TRIGGER trg_client_groups_before_insert BEFORE
 INSERT
     ON client_groups FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
@@ -380,24 +391,26 @@ SET
 
 END IF;
 
-END $$
--- CLIENT_GROUPS — AFTER DELETE
--- When a group is deleted:
---   1. Mark all active group turns as finished
---   2. Reset client_status to 'default' for those clients
+END;
+
+-- CLIENT_GROUPS - AFTER DELETE
+DROP TRIGGER IF EXISTS trg_client_groups_after_delete;
+
 CREATE TRIGGER trg_client_groups_after_delete AFTER DELETE ON client_groups FOR EACH ROW BEGIN
-UPDATE client_turns
+-- 1) Mark all active group turns as finished
+UPDATE turns
 SET
     finished_at = NOW()
 WHERE
     group_id = OLD.id
     AND finished_at IS NULL;
 
+-- 2) Reset client_status to 'default' for those clients
 UPDATE client_status cs
-INNER JOIN client_turns ct ON ct.client_id = cs.client_id
+INNER JOIN turns t ON t.client_id = cs.user_id
 SET
-    cs.client_status = 'default'
+    cs.current_status = 'default'
 WHERE
-    ct.group_id = OLD.id;
+    t.group_id = OLD.id;
 
-END $$ DELIMITER;
+END;
