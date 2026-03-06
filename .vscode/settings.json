@@ -22,5 +22,7 @@
   },
   "cSpell.language": "en",
   "cSpell.caseSensitive": true,
-  "cSpell.words": ["addoption", "appspecific", "barberqueue", "EXTR"]
+  "cSpell.words": ["addoption", "appspecific", "barberqueue", "EXTR"],
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python-envs.pythonProjects": []
 }
