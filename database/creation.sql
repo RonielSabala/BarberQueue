@@ -72,9 +72,9 @@ CREATE TABLE
 CREATE TABLE
     working_days (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
+        staff_id INT NOT NULL,
         day_of_week TINYINT NOT NULL COMMENT '1=Mon, 7=Sun',
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- Client Status (1:1/1:N)
@@ -89,10 +89,10 @@ CREATE TABLE
 -- Barber status (1:1/1:N)
 CREATE TABLE
     barber_status (
-        user_id INT PRIMARY KEY,
+        staff_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- Barber reviews (1:N)
