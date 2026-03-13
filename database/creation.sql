@@ -1,11 +1,11 @@
--- Roles
+-- ROLES
 CREATE TABLE
     roles (
         id INT PRIMARY KEY AUTO_INCREMENT,
         role_name ENUM('client', 'barber', 'assistant', 'admin') NOT NULL
     );
 
--- Users
+-- USERS
 CREATE TABLE
     users (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -18,7 +18,7 @@ CREATE TABLE
         FOREIGN KEY (role_id) REFERENCES roles (id)
     );
 
--- Barbershops
+-- BARBERSHOPS
 CREATE TABLE
     barbershops (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -34,7 +34,7 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
--- Barbershop Photos (1:N)
+-- BARBERSHOP PHOTOS
 CREATE TABLE
     barbershop_photos (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -43,20 +43,26 @@ CREATE TABLE
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
--- Barbershop Reviews (1:N)
+-- CLIENT STATUS
 CREATE TABLE
-    barbershop_reviews (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        barbershop_id INT NOT NULL,
-        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-        content TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
+    client_status (
+        user_id INT PRIMARY KEY,
+        current_status ENUM('default', 'at_barbershop', 'on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
--- Staff Assignments (M:N)
+-- BARBER STATUS
+CREATE TABLE
+    barber_status (
+        staff_id INT PRIMARY KEY,
+        current_status ENUM('active', 'inactive', 'resting') NOT NULL,
+        is_accepting BOOLEAN DEFAULT TRUE,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- STAFF ASSIGNMENTS
 CREATE TABLE
     staff_assignments (
         staff_id INT NOT NULL,
@@ -68,48 +74,16 @@ CREATE TABLE
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
--- Working Days (1:N)
+-- WORKING DAYS
 CREATE TABLE
     working_days (
         id INT PRIMARY KEY AUTO_INCREMENT,
         staff_id INT NOT NULL,
-        day_of_week TINYINT NOT NULL COMMENT '1=Mon, 7=Sun',
+        day_of_week TINYINT NOT NULL COMMENT '1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun',
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
--- Client Status (1:1/1:N)
-CREATE TABLE
-    client_status (
-        user_id INT PRIMARY KEY,
-        current_status ENUM('default', 'at_barbershop', 'on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-    );
-
--- Barber status (1:1/1:N)
-CREATE TABLE
-    barber_status (
-        staff_id INT PRIMARY KEY,
-        current_status ENUM('active', 'inactive', 'resting') NOT NULL,
-        is_accepting BOOLEAN DEFAULT TRUE,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
-    );
-
--- Barber reviews (1:N)
-CREATE TABLE
-    barber_reviews (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        client_id INT NOT NULL,
-        barber_id INT NOT NULL,
-        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-        content TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
-    );
-
--- Client groups
+-- CLIENT GROUPS
 CREATE TABLE
     client_groups (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -118,7 +92,7 @@ CREATE TABLE
         FOREIGN KEY (leader_id) REFERENCES users (id)
     );
 
--- Turns
+-- TURNS
 CREATE TABLE
     turns (
         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -135,45 +109,62 @@ CREATE TABLE
         FOREIGN KEY (barber_id) REFERENCES users (id)
     );
 
--- Users
+-- BARBERSHOP REVIEWS
+CREATE TABLE
+    barbershop_reviews (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        barbershop_id INT NOT NULL,
+        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
+    );
+
+-- BARBER REVIEWS
+CREATE TABLE
+    barber_reviews (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        client_id INT NOT NULL,
+        barber_id INT NOT NULL,
+        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- INDEXES
+-- users
 CREATE INDEX idx_users_role_id ON users (role_id);
 
 CREATE INDEX idx_users_email ON users (email);
 
--- Barbershops
+-- barbershops
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);
 
--- Barbershop Photos
+-- barbershop_photos
 CREATE INDEX idx_barbershop_photos_barbershop_id ON barbershop_photos (barbershop_id);
 
--- Barbershop Reviews
-CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (user_id);
+-- client_status
+CREATE INDEX idx_client_status_status ON client_status (current_status);
 
-CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
+-- barber_status
+CREATE INDEX idx_barber_status_status ON barber_status (current_status);
 
--- Staff Assignments
+-- staff_assignments
 CREATE INDEX idx_staff_assignments_barbershop_id ON staff_assignments (barbershop_id);
 
--- Working Days
+-- working_days
 CREATE INDEX idx_working_days_day_of_week ON working_days (day_of_week);
 
 CREATE INDEX idx_working_days_employee_day ON working_days (staff_id, day_of_week);
 
--- Client Status
-CREATE INDEX idx_client_status_status ON client_status (current_status);
-
--- Barber Status
-CREATE INDEX idx_barber_status_status ON barber_status (current_status);
-
--- Barber Reviews
-CREATE INDEX idx_barber_reviews_client_id ON barber_reviews (client_id);
-
-CREATE INDEX idx_barber_reviews_barber_rating ON barber_reviews (barber_id, rating, created_at);
-
--- Client Groups
+-- client_groups
 CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
 
--- Turns
+-- turns
 CREATE INDEX idx_turns_barbershop_id ON turns (barbershop_id);
 
 CREATE INDEX idx_turns_barber_id ON turns (barber_id);
@@ -187,3 +178,13 @@ CREATE INDEX idx_turns_client_created ON turns (client_id, created_at);
 CREATE INDEX idx_turns_barbershop_barber ON turns (barbershop_id, barber_id);
 
 CREATE INDEX idx_turns_barbershop_created ON turns (barbershop_id, created_at);
+
+-- barbershop_reviews
+CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (user_id);
+
+CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
+
+-- barber_reviews
+CREATE INDEX idx_barber_reviews_client_id ON barber_reviews (client_id);
+
+CREATE INDEX idx_barber_reviews_barber_rating ON barber_reviews (barber_id, rating, created_at);

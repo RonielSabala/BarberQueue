@@ -8,10 +8,6 @@ VALUES
     (4, 'admin');
 
 -- USERS
--- ID  1    -> admin
--- IDs 2-3  -> assistants
--- IDs 4-8  -> barbers
--- IDs 9-18 -> clients
 INSERT INTO
     users (id, role_id, username, email, phone, password_hash)
 VALUES
@@ -229,77 +225,7 @@ VALUES
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge'),
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos');
 
--- STAFF -> BARBERSHOP ASSIGNMENTS
--- Barbers 4-5 -> Barbershop 1
--- Barbers 6-7 -> Barbershop 2
--- Barber  8   -> Barbershop 3
--- Barber  4   -> also covers Barbershop 3 (second shift)
--- Assistants 2-3 cover two barbershops each
-INSERT INTO
-    staff_assignments (staff_id, barbershop_id, start_time, end_time)
-VALUES
-    (4, 1, '08:00:00', '16:00:00'),
-    (5, 1, '12:00:00', '20:00:00'),
-    (6, 2, '09:00:00', '17:00:00'),
-    (7, 2, '11:00:00', '19:00:00'),
-    (8, 3, '07:00:00', '15:00:00'),
-    (4, 3, '16:30:00', '21:00:00'),
-    (2, 1, '08:00:00', '20:00:00'),
-    (3, 2, '09:00:00', '19:00:00'),
-    (3, 3, '07:00:00', '21:00:00');
-
--- WORKING DAYS (day_of_week: 1=Mon ... 7=Sun)
-INSERT INTO
-    working_days (staff_id, day_of_week)
-VALUES
-    -- Barber Carlos (4): Mon-Fri
-    (4, 1),
-    (4, 2),
-    (4, 3),
-    (4, 4),
-    (4, 5),
-    -- Barber Luis (5): Tue-Sat
-    (5, 2),
-    (5, 3),
-    (5, 4),
-    (5, 5),
-    (5, 6),
-    -- Barber Miguel (6): Mon-Sat
-    (6, 1),
-    (6, 2),
-    (6, 3),
-    (6, 4),
-    (6, 5),
-    (6, 6),
-    -- Barber Ramon (7): Wed-Sun
-    (7, 3),
-    (7, 4),
-    (7, 5),
-    (7, 6),
-    (7, 7),
-    -- Barber Felix (8): Mon-Fri
-    (8, 1),
-    (8, 2),
-    (8, 3),
-    (8, 4),
-    (8, 5),
-    -- Assistant Maria (2): Mon-Sat
-    (2, 1),
-    (2, 2),
-    (2, 3),
-    (2, 4),
-    (2, 5),
-    (2, 6),
-    -- Assistant Pedro (3): Mon-Sun
-    (3, 1),
-    (3, 2),
-    (3, 3),
-    (3, 4),
-    (3, 5),
-    (3, 6),
-    (3, 7);
-
--- CLIENT STATUS
+-- CLIENT STATUS OVERRIDES
 UPDATE client_status
 SET
     current_status = 'on_queue'
@@ -342,7 +268,7 @@ SET
 WHERE
     user_id = 18;
 
--- BARBER STATUS
+-- BARBER STATUS OVERRIDES
 UPDATE barber_status
 SET
     current_status = 'active'
@@ -367,9 +293,72 @@ SET
 WHERE
     staff_id = 8;
 
+-- STAFF ASSIGNMENTS
+INSERT INTO
+    staff_assignments (staff_id, barbershop_id, start_time, end_time)
+VALUES
+    (2, 1, '08:00:00', '20:00:00'),
+    (3, 2, '09:00:00', '19:00:00'),
+    (3, 3, '07:00:00', '21:00:00'),
+    (4, 1, '08:00:00', '16:00:00'),
+    (4, 3, '16:30:00', '21:00:00'),
+    (5, 1, '12:00:00', '20:00:00'),
+    (6, 2, '09:00:00', '17:00:00'),
+    (7, 2, '11:00:00', '19:00:00'),
+    (8, 3, '07:00:00', '15:00:00');
+
+-- WORKING DAYS
+INSERT INTO
+    working_days (staff_id, day_of_week)
+VALUES
+    -- Carlos
+    (4, 1),
+    (4, 2),
+    (4, 3),
+    (4, 4),
+    (4, 5),
+    -- Luis
+    (5, 2),
+    (5, 3),
+    (5, 4),
+    (5, 5),
+    (5, 6),
+    -- Miguel
+    (6, 1),
+    (6, 2),
+    (6, 3),
+    (6, 4),
+    (6, 5),
+    (6, 6),
+    -- Ramon
+    (7, 3),
+    (7, 4),
+    (7, 5),
+    (7, 6),
+    (7, 7),
+    -- Felix
+    (8, 1),
+    (8, 2),
+    (8, 3),
+    (8, 4),
+    (8, 5),
+    -- Maria
+    (2, 1),
+    (2, 2),
+    (2, 3),
+    (2, 4),
+    (2, 5),
+    (2, 6),
+    -- Pedro
+    (3, 1),
+    (3, 2),
+    (3, 3),
+    (3, 4),
+    (3, 5),
+    (3, 6),
+    (3, 7);
+
 -- CLIENT GROUPS
--- Group 1: clients 13 & 14 (leader: rafael)
--- Group 2: clients 9  & 13 (leader: andres)
 INSERT INTO
     client_groups (id, leader_id)
 VALUES
@@ -377,23 +366,25 @@ VALUES
     (2, 9);
 
 -- TURNS
+-- Historical completed turns are inserted directly with explicit timestamps.
 INSERT INTO
     turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
 VALUES
-    -- Completed turns
-    (1, 9, NULL, 4, '2026-03-10 09:00:00', '2026-03-10 09:10:00', '2026-03-10 09:35:00'),
-    (1, 10, NULL, 5, '2026-03-10 09:05:00', '2026-03-10 09:20:00', '2026-03-10 09:50:00'),
-    (2, 11, NULL, 6, '2026-03-11 10:00:00', '2026-03-11 10:05:00', '2026-03-11 10:30:00'),
-    (2, 12, NULL, 7, '2026-03-11 10:30:00', '2026-03-11 10:45:00', '2026-03-11 11:10:00'),
-    (3, 13, 1, 8, '2026-03-12 08:00:00', '2026-03-12 08:10:00', '2026-03-12 08:40:00'),
-    (3, 14, 1, 8, '2026-03-12 08:00:00', '2026-03-12 08:45:00', '2026-03-12 09:15:00'),
-    -- Turns currently in progress (attended, not yet finished)
-    (1, 15, NULL, 4, '2026-03-13 10:00:00', '2026-03-13 10:10:00', '2026-03-13 10:40:00'),
-    (2, 16, NULL, 6, '2026-03-13 11:00:00', '2026-03-13 11:10:00', '2026-03-13 11:45:00'),
-    -- Turns waiting in queue (not yet attended)
+    -- Past completed turns
+    (1, 9, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', '2026-03-05 09:35:00'),
+    (1, 10, NULL, 5, '2026-03-05 09:05:00', '2026-03-05 09:20:00', '2026-03-05 09:50:00'),
+    (2, 11, NULL, 6, '2026-03-06 10:00:00', '2026-03-06 10:05:00', '2026-03-06 10:30:00'),
+    (2, 12, NULL, 7, '2026-03-06 10:30:00', '2026-03-06 10:45:00', '2026-03-06 11:10:00'),
+    (3, 13, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
+    (3, 14, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
+    (1, 15, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', '2026-03-08 10:40:00'),
+    (2, 16, NULL, 6, '2026-03-08 11:00:00', '2026-03-08 11:10:00', '2026-03-08 11:45:00'),
+    -- Currently in service
+    (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    -- Waiting in queue
     (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
     (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
-    -- Group waiting in queue
     (3, 9, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
     (3, 13, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
 
