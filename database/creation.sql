@@ -156,7 +156,7 @@ CREATE INDEX idx_staff_assignments_barbershop_id ON staff_assignments (barbersho
 -- Working Days
 CREATE INDEX idx_working_days_day_of_week ON working_days (day_of_week);
 
-CREATE INDEX idx_working_days_employee_day ON working_days (user_id, day_of_week);
+CREATE INDEX idx_working_days_employee_day ON working_days (staff_id, day_of_week);
 
 -- Client Status
 CREATE INDEX idx_client_status_status ON client_status (current_status);

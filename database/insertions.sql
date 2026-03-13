@@ -250,7 +250,7 @@ VALUES
 
 -- WORKING DAYS (day_of_week: 1=Mon ... 7=Sun)
 INSERT INTO
-    working_days (user_id, day_of_week)
+    working_days (staff_id, day_of_week)
 VALUES
     -- Barber Carlos (4): Mon-Fri
     (4, 1),
@@ -300,29 +300,72 @@ VALUES
     (3, 7);
 
 -- CLIENT STATUS
-INSERT INTO
-    client_status (user_id, current_status)
-VALUES
-    (9, 'default'),
-    (10, 'on_queue'),
-    (11, 'in_service'),
-    (12, 'attended'),
-    (13, 'paid'),
-    (14, 'waiting'),
-    (15, 'default'),
-    (16, 'at_barbershop'),
-    (17, 'default'),
-    (18, 'on_queue');
+UPDATE client_status
+SET
+    current_status = 'on_queue'
+WHERE
+    user_id = 10;
+
+UPDATE client_status
+SET
+    current_status = 'in_service'
+WHERE
+    user_id = 11;
+
+UPDATE client_status
+SET
+    current_status = 'attended'
+WHERE
+    user_id = 12;
+
+UPDATE client_status
+SET
+    current_status = 'paid'
+WHERE
+    user_id = 13;
+
+UPDATE client_status
+SET
+    current_status = 'waiting'
+WHERE
+    user_id = 14;
+
+UPDATE client_status
+SET
+    current_status = 'at_barbershop'
+WHERE
+    user_id = 16;
+
+UPDATE client_status
+SET
+    current_status = 'on_queue'
+WHERE
+    user_id = 18;
 
 -- BARBER STATUS
-INSERT INTO
-    barber_status (user_id, current_status)
-VALUES
-    (4, 'active'),
-    (5, 'resting'),
-    (6, 'active'),
-    (7, 'inactive'),
-    (8, 'active');
+UPDATE barber_status
+SET
+    current_status = 'active'
+WHERE
+    staff_id = 4;
+
+UPDATE barber_status
+SET
+    current_status = 'resting'
+WHERE
+    staff_id = 5;
+
+UPDATE barber_status
+SET
+    current_status = 'active'
+WHERE
+    staff_id = 6;
+
+UPDATE barber_status
+SET
+    current_status = 'active'
+WHERE
+    staff_id = 8;
 
 -- CLIENT GROUPS
 -- Group 1: clients 13 & 14 (leader: rafael)
@@ -338,15 +381,15 @@ INSERT INTO
     turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
 VALUES
     -- Completed turns
-    (1, 9, NULL, 4, '2025-02-15 09:00:00', '2025-02-15 09:10:00', '2025-02-15 09:35:00'),
-    (1, 10, NULL, 5, '2025-02-15 09:05:00', '2025-02-15 09:20:00', '2025-02-15 09:50:00'),
-    (2, 11, NULL, 6, '2025-02-16 10:00:00', '2025-02-16 10:05:00', '2025-02-16 10:30:00'),
-    (2, 12, NULL, 7, '2025-02-16 10:30:00', '2025-02-16 10:45:00', '2025-02-16 11:10:00'),
-    (3, 13, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:10:00', '2025-02-17 08:40:00'),
-    (3, 14, 1, 8, '2025-02-17 08:00:00', '2025-02-17 08:45:00', '2025-02-17 09:15:00'),
+    (1, 9, NULL, 4, '2026-03-10 09:00:00', '2026-03-10 09:10:00', '2026-03-10 09:35:00'),
+    (1, 10, NULL, 5, '2026-03-10 09:05:00', '2026-03-10 09:20:00', '2026-03-10 09:50:00'),
+    (2, 11, NULL, 6, '2026-03-11 10:00:00', '2026-03-11 10:05:00', '2026-03-11 10:30:00'),
+    (2, 12, NULL, 7, '2026-03-11 10:30:00', '2026-03-11 10:45:00', '2026-03-11 11:10:00'),
+    (3, 13, 1, 8, '2026-03-12 08:00:00', '2026-03-12 08:10:00', '2026-03-12 08:40:00'),
+    (3, 14, 1, 8, '2026-03-12 08:00:00', '2026-03-12 08:45:00', '2026-03-12 09:15:00'),
     -- Turns currently in progress (attended, not yet finished)
-    (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
-    (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    (1, 15, NULL, 4, '2026-03-13 10:00:00', '2026-03-13 10:10:00', '2026-03-13 10:40:00'),
+    (2, 16, NULL, 6, '2026-03-13 11:00:00', '2026-03-13 11:10:00', '2026-03-13 11:45:00'),
     -- Turns waiting in queue (not yet attended)
     (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
     (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),

@@ -14,7 +14,7 @@ VALUES
 -- role 2 (barber)
 ELSEIF NEW.role_id = 2 THEN
 INSERT INTO
-    barber_status (user_id, current_status)
+    barber_status (staff_id, current_status)
 VALUES
     (NEW.id, 'inactive');
 
@@ -246,7 +246,7 @@ SELECT
 FROM
     users
 WHERE
-    id = NEW.user_id
+    id = NEW.staff_id
 LIMIT
     1;
 
