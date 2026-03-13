@@ -291,6 +291,9 @@ CREATE TRIGGER trg_turns_before_insert BEFORE
 INSERT
     ON turns FOR EACH ROW BEGIN DECLARE v_group_size INT DEFAULT 0;
 
+DECLARE v_is_accepting BOOLEAN DEFAULT TRUE;
+
+-- Group size check
 IF NEW.group_id IS NOT NULL THEN
 SELECT
     COUNT(*) INTO v_group_size
@@ -303,6 +306,25 @@ WHERE
 IF v_group_size >= 6 THEN SIGNAL SQLSTATE '45000'
 SET
     MESSAGE_TEXT = 'Group cannot have more than 6 active members';
+
+END IF;
+
+END IF;
+
+-- Assignment to a closed queue
+IF NEW.barber_id IS NOT NULL THEN
+SELECT
+    is_accepting INTO v_is_accepting
+FROM
+    barber_status
+WHERE
+    staff_id = NEW.barber_id
+LIMIT
+    1;
+
+IF v_is_accepting = FALSE THEN SIGNAL SQLSTATE '45000'
+SET
+    MESSAGE_TEXT = 'This barber is not accepting new clients';
 
 END IF;
 
@@ -358,9 +380,10 @@ WHERE
 IF v_active_turns = 0 THEN
 UPDATE barber_status
 SET
-    current_status = 'resting'
+    current_status = 'resting',
+    is_accepting = TRUE
 WHERE
-    user_id = OLD.barber_id;
+    staff_id = OLD.barber_id;
 
 END IF;
 

@@ -91,6 +91,7 @@ CREATE TABLE
     barber_status (
         staff_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
+        is_accepting BOOLEAN DEFAULT TRUE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
