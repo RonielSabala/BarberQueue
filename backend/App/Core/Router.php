@@ -39,7 +39,7 @@ class Router
 
         $match = self::$registry->findMatch($httpMethod, $uri);
         if ($match === null) {
-            HttpResponse::notFound('Route not found');
+            HttpResponse::error('Route not found', HttpStatus::NotFound);
             return;
         }
 
