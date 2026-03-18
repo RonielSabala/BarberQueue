@@ -25,9 +25,7 @@ function ClientHome() {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        BarberQueue
-      </h1>
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>BarberQueue</h1>
 
       {/* BUSCADOR */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -40,17 +38,14 @@ function ClientHome() {
             width: "300px",
             padding: "10px",
             borderRadius: "20px",
-            border: "1px solid #ccc"
+            border: "1px solid #ccc",
           }}
         />
       </div>
 
       {/* FILTROS */}
       <div style={{ textAlign: "right", marginBottom: "20px" }}>
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
+        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">Todas</option>
           <option value="open">Abiertas</option>
           <option value="closed">Cerradas</option>
@@ -62,7 +57,7 @@ function ClientHome() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "20px"
+          gap: "20px",
         }}
       >
         {filteredShops.map((shop) => (

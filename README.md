@@ -275,13 +275,13 @@ This project uses [pre-commit](https://pre-commit.com/) to enforce code quality 
 
 ```bash
 pip install pre-commit
-pre-commit install
+python3 -m pre_commit install
 ```
 
 After that, checks will run automatically on every `git commit`. To run them manually across all files:
 
 ```bash
-pre-commit run --all-files
+python3 -m pre_commit run --all-files
 ```
 
 ---

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
 
-
 function AssistantProfile() {
   const navigate = useNavigate();
 
