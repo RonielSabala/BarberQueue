@@ -131,6 +131,9 @@ DB_USERNAME=
 DB_PASSWORD=
 DB_DATABASE=barberqueue_db
 
+# Auth
+JWT_SECRET=your-super-secret-key
+
 # Email (optional)
 MAIL_USERNAME=
 MAIL_PASSWORD=
