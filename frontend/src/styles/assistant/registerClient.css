@@ -1,0 +1,87 @@
+.register-form {
+  max-width: 600px;
+  margin: auto;
+}
+
+.title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.subtitle {
+  text-align: center;
+  color: #7b8a97;
+  margin-bottom: 30px;
+}
+
+.client-card {
+  background: #f8f9fb;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.client-header {
+  text-align: right;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.client-card label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.client-card input,
+.client-card select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add {
+  background: #22c55e;
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.btn-remove {
+  background: #ef4444;
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.confirm-btn {
+  margin-top: 20px;
+  width: 200px;
+  padding: 14px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  float: right;
+}
