@@ -115,26 +115,6 @@ uv sync
 
 ---
 
-#### Pre-commit Hooks
-
-From the **repo root**:
-
-```bash
-# Install pre-commit framework
-python -m pre_commit install
-
-# Install git hooks
-pre-commit install
-```
-
-Pre-commit runs code quality checks automatically before each commit. To run checks manually:
-
-```bash
-pre-commit run --all-files
-```
-
----
-
 ### `.env` Configuration
 
 Create a `.env` file at the **repo root**:
@@ -285,9 +265,24 @@ Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
 2. Create a feature branch: `feat/my-change`.
-3. Commit, push, and open a pull request describing the change and the reason for it.
+3. Make your changes, ensuring they follow the existing code style.
+4. Include appropriate documentation or tests.
+5. Commit, push, and open a pull request describing the change and the reason for it.
 
-Please ensure your code follows the existing style and includes appropriate documentation.
+### Pre-commit Hooks <!-- omit in toc -->
+
+This project uses [pre-commit](https://pre-commit.com/) to enforce code quality automatically before each commit. Run the following once from the **repo root** to set it up:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+After that, checks will run automatically on every `git commit`. To run them manually across all files:
+
+```bash
+pre-commit run --all-files
+```
 
 ---
 

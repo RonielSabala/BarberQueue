@@ -15,6 +15,7 @@ try {
     $installer = new DatabaseInstaller(DbConfig::getConnection());
     $installer->run(DbConfig::getDbName(), [
         DB_DIR . '/creation.sql',
+        DB_DIR . '/triggers.sql',
         DB_DIR . '/insertions.sql',
     ]);
 
