@@ -20,36 +20,80 @@ class DatabaseInstaller
             "USE `{$dbName}`",
         ]);
 
-        try {
-            $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 0');
-
-            foreach ($sqlFiles as $file) {
-                $this->executeFromFile($file);
+        $allStatements = [];
+        foreach ($sqlFiles as $file) {
+            if (!is_readable($file)) {
+                throw new \RuntimeException("SQL file not found or not readable: {$file}");
             }
 
-            $this->pdo->exec('SET FOREIGN_KEY_CHECKS = 1');
-        } catch (\Throwable $e) {
-            throw new \RuntimeException("Installation failed: {$e->getMessage()}", previous: $e);
+            $sql = file_get_contents($file);
+
+            // Parse file into executable statements
+            $statements = $this->splitSqlStatements($sql);
+            $allStatements = array_merge($allStatements, $statements);
         }
+
+        $this->executeStatements($allStatements);
     }
 
-    private function executeFromFile(string $filepath): void
+    private function splitSqlStatements(string $sql): array
     {
-        if (!is_file($filepath) || !is_readable($filepath)) {
-            throw new \RuntimeException("File not found or not readable: {$filepath}");
+        $statements = [];
+        $current = '';
+        $inTrigger = false;
+        $lines = preg_split("/\r\n|\n|\r/", $sql);
+
+        foreach ($lines as $rawLine) {
+            $line = rtrim($rawLine, "\r\n");
+
+            // Detect start of CREATE TRIGGER
+            if (!$inTrigger && preg_match('/^\s*CREATE\s+(?:DEFINER\s*=\s*[^ ]+\s+)?TRIGGER\b/i', $line)) {
+                $inTrigger = true;
+            }
+
+            $current .= $line . "\n";
+            if ($inTrigger) {
+                // If line ends with END or END, consider trigger finished
+                if (preg_match('/\bEND\b\s*;?\s*$/i', trim($line))) {
+                    $stmt = trim($current);
+                    $stmt = preg_replace('/;+\s*$/', '', $stmt);
+                    if ($stmt !== '') {
+                        $statements[] = $stmt;
+                    }
+
+                    $current = '';
+                    $inTrigger = false;
+                }
+
+                continue;
+            }
+
+            // Not in trigger
+            if (strpos($line, ';') !== false) {
+                // Append and then explode by semicolon
+                $parts = explode(';', $current);
+                $count = \count($parts);
+                for ($i = 0; $i < $count - 1; ++$i) {
+                    $stmt = trim($parts[$i]);
+                    if ($stmt !== '') {
+                        $statements[] = $stmt;
+                    }
+                }
+
+                $current = $parts[$count - 1];
+            }
         }
 
-        $content = file_get_contents($filepath);
-        if ($content === false) {
-            throw new \RuntimeException("Failed to read file: {$filepath}");
+        $last = trim($current);
+        if ($last !== '') {
+            // Remove trailing semicolon
+            $last = preg_replace('/;+\s*$/', '', $last);
+            if ($last !== '') {
+                $statements[] = $last;
+            }
         }
 
-        $statements = array_filter(array_map('trim', explode(';', $content)));
-        if (empty($statements)) {
-            throw new \RuntimeException("No valid SQL statements found in: {$filepath}");
-        }
-
-        $this->executeStatements($statements);
+        return $statements;
     }
 
     private function executeStatements(array $statements): void
