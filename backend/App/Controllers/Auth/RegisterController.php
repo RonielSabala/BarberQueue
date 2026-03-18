@@ -6,4 +6,4 @@ namespace App\Controllers\Auth;
 
 use App\Controllers\BaseController;
 
-class SignupController extends BaseController {}
+class RegisterController extends BaseController {}

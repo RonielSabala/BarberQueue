@@ -8,12 +8,15 @@ use App\Controllers\BaseController;
 
 class Route
 {
+    private const PATTERN = '/\{[^}]+\}/';
+    private const REPLACEMENT = '([^/]+)';
+
     public function __construct(
         public string $uri,
         public readonly BaseController $controller,
         public readonly string $controllerMethod,
     ) {
-        $escaped = preg_replace('/\{[^}]+\}/', '([^/]+)', $uri);
+        $escaped = preg_replace(self::PATTERN, self::REPLACEMENT, $uri);
         $this->uri = '#^' . $escaped . '$#';
     }
 

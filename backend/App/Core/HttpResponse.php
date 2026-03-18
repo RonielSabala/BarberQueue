@@ -23,7 +23,7 @@ class HttpResponse
         self::json(['error' => $message], HttpStatus::NotFound);
     }
 
-    public static function serverError(
+    public static function internalServerError(
         string $message = 'Service unavailable'
     ): void {
         self::json(['error' => $message], HttpStatus::InternalServerError);
