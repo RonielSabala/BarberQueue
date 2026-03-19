@@ -11,6 +11,7 @@ unless noted otherwise.
 
 - [Success Format](#success-format)
 - [Error Format](#error-format)
+- [Auth](#auth)
 
 ---
 
@@ -60,5 +61,108 @@ All error responses follow this shape:
 | `401`  | **Unauthorized**: missing or invalid token   |
 | `403`  | **Forbidden**: authenticated but not allowed |
 | `404`  | Resource not found                           |
+| `409`  | Conflict error                               |
 | `422`  | Validation failed                            |
 | `500`  | Internal server error                        |
+
+## Auth
+
+### `POST /api/auth/login`
+
+Authenticate with email and password.
+
+- Body
+
+```json
+{
+  "email": "correo@ejemplo.com",
+  "password": "123456"
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "token": "jwt_token",
+  "user": {
+    "id": 1,
+    "username": "Juan",
+    "email": "correo@ejemplo.com",
+    "role": "client"
+  }
+}
+```
+
+---
+
+### `POST /api/auth/register`
+
+Register a new client account.
+
+- Body
+
+```json
+{
+  "username": "Juan Perez",
+  "email": "juan@gmail.com",
+  "phone": "8091234567",
+  "password": "123456"
+}
+```
+
+- Response: `201`
+
+```json
+{
+  "id": 9,
+  "username": "Juan Perez",
+  "email": "juan@gmail.com",
+  "role": "client"
+}
+```
+
+---
+
+### `POST /api/auth/forgot-password`
+
+Send a password recovery email.
+
+- Body
+
+```json
+{
+  "email": "juan@gmail.com"
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Recovery email sent"
+}
+```
+
+---
+
+### `POST /api/auth/reset-password`
+
+Reset password using the token received by email.
+
+- Body
+
+```json
+{
+  "token": "reset_token",
+  "password": "newpassword123"
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Password updated"
+}
+```
