@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Core\Routing\RouteRegistry;
+use App\Exceptions\BaseException;
 use App\Utils\{ClassesDiscovery, UriUtils};
 
 class Router
@@ -43,6 +44,12 @@ class Router
             return;
         }
 
-        $match->dispatch();
+        try {
+            $match->dispatch();
+        } catch (BaseException $e) {
+            HttpResponse::error($e->getMessage(), $e->getStatus());
+        } catch (\Throwable $e) {
+            HttpResponse::error('An unexpected error occurred', HttpStatus::InternalServerError);
+        }
     }
 }

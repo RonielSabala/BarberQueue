@@ -29,9 +29,4 @@ class HttpResponse
     ): void {
         self::json(['error' => $message], $status, HttpHeader::Json);
     }
-
-    public static function fromException(\RuntimeException $exception): void
-    {
-        self::error($exception->getMessage(), HttpStatus::from($exception->getCode()));
-    }
 }
