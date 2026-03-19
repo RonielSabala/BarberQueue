@@ -7,7 +7,7 @@ namespace App\Domain\ValueObjects;
 use App\Core\HttpStatus;
 use App\Exceptions\ValidationException;
 
-abstract readonly class StringField extends BaseField
+abstract class StringField extends BaseField
 {
     protected const ?int MIN_LEN = null;
     protected const ?int MAX_LEN = null;

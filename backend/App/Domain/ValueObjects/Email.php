@@ -7,7 +7,7 @@ namespace App\Domain\ValueObjects;
 use App\Core\HttpStatus;
 use App\Exceptions\ValidationException;
 
-readonly class Email extends StringField
+class Email extends StringField
 {
     protected const MIN_LEN = 5;
     protected const MAX_LEN = 100;
