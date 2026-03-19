@@ -6,6 +6,6 @@ namespace App\Domain\ValueObjects;
 
 class RoleName extends StringField
 {
-    protected const MIN_LEN = 5;
-    protected const MAX_LEN = 9;
+    protected const int MIN_LEN = 5;
+    protected const int MAX_LEN = 9;
 }

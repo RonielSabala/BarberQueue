@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers\Auth;
+namespace App\Controllers;
 
 use App\Attributes\POST;
-use App\Controllers\BaseController;
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Auth\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\Services\AuthService;
 
 class AuthController extends BaseController
 {
-    public function __construct(private readonly AuthService $authService) {}
+    public function __construct(
+        private readonly AuthService $authService
+    ) {}
 
     #[POST('/api/auth/login')]
     public function login(): void

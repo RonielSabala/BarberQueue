@@ -11,7 +11,6 @@ class HttpResponse
 {
     private static function filterForJson(mixed $data): mixed
     {
-        // Handle arrays
         if (\is_array($data)) {
             $result = [];
             foreach ($data as $key => $value) {
@@ -50,14 +49,9 @@ class HttpResponse
         HttpStatus $status = HttpStatus::Ok,
         HttpHeader $header = HttpHeader::Json
     ): void {
+        $data = self::filterForJson($data);
         $status->response();
         $header->send();
-
-        // Filter out properties with #[JsonIgnore]
-        if (\is_object($data)) {
-            $data = self::filterForJson($data);
-        }
-
         echo json_encode($data);
     }
 

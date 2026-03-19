@@ -8,5 +8,7 @@ use App\Domain\ValueObjects\Email;
 
 readonly class ForgotPasswordRequest
 {
-    public function __construct(public Email $email) {}
+    public function __construct(
+        public Email $email
+    ) {}
 }

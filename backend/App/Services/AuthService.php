@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\User;
-use App\Domain\ValueObjects\PasswordHash;
+use App\Domain\ValueObjects\{Id, PasswordHash};
 use App\DTOs\Auth\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\Exceptions\AuthException;
 use App\Repositories\{PasswordResetRepository, UserRepository};
@@ -16,6 +16,7 @@ class AuthService
 {
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
+    private const CLIENT_ROLE_ID = 1;
     private readonly string $jwtSecret;
 
     public function __construct(
@@ -70,7 +71,9 @@ class AuthService
         }
 
         $password = $registerRequest->password->value;
+        $registerRequest->roleId = new Id(self::CLIENT_ROLE_ID);
         $registerRequest->passwordHash = new PasswordHash(password_hash($password, PASSWORD_BCRYPT));
+
         return $this->userRepository->create($registerRequest);
     }
 

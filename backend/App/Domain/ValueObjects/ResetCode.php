@@ -6,9 +6,9 @@ namespace App\Domain\ValueObjects;
 
 class ResetCode extends NumberField
 {
-    private const DIGITS = 6;
-    protected const MIN = 10 ** (self::DIGITS - 1);
-    protected const MAX = 10 ** self::DIGITS - 1;
+    private const int FIXED_DIGITS = 6;
+    protected const int MIN = 10 ** (self::FIXED_DIGITS - 1);
+    protected const int MAX = 10 ** self::FIXED_DIGITS - 1;
 
     public static function getNewCode(): int
     {

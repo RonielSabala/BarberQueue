@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-class Id extends BaseField
+class Id extends NumberField
 {
-    public int $value;
+    protected const int MIN = 0;
 
-    public function __construct(string $value)
+    public function __construct(int|string $value)
     {
-        $this->value = (int) $value;
+        parent::__construct((int) $value);
     }
 }

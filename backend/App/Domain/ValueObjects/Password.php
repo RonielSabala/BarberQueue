@@ -6,6 +6,6 @@ namespace App\Domain\ValueObjects;
 
 class Password extends StringField
 {
-    protected const MIN_LEN = 8;
-    protected const MAX_LEN = 50;
+    protected const int MIN_LEN = 8;
+    protected const int MAX_LEN = 50;
 }

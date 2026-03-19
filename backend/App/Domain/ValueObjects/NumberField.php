@@ -9,8 +9,10 @@ abstract class NumberField extends BaseField
     protected const ?int MIN = null;
     protected const ?int MAX = null;
 
-    public function __construct(public int $value)
+    public function __construct(int $value)
     {
+        $this->value = $value;
+
         $min = static::MIN;
         if ($min !== null && $value < $min) {
             $this->throwValidationException("must be greater or equal than {$min}");

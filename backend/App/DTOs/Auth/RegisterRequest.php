@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DTOs\Auth;
 
 use App\Domain\ValueObjects\{Email, Password, PasswordHash, Phone, Username};
+use App\Domain\ValueObjects\Id;
 
 class RegisterRequest
 {
@@ -14,5 +15,6 @@ class RegisterRequest
         public Phone $phone,
         public Password $password,
         public ?PasswordHash $passwordHash = null,
+        public ?Id $roleId = null,
     ) {}
 }

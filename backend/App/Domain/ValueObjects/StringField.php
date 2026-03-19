@@ -9,9 +9,11 @@ abstract class StringField extends BaseField
     protected const ?int MIN_LEN = null;
     protected const ?int MAX_LEN = null;
 
-    public function __construct(public string $value)
+    public function __construct(string $value)
     {
-        $len = mb_strlen($this->value, 'UTF-8');
+        $this->value = $value;
+        $len = mb_strlen($value, 'UTF-8');
+
         $minLen = static::MIN_LEN;
         if ($minLen !== null && $len < $minLen) {
             $this->throwValidationException("must be at least {$minLen} characters");

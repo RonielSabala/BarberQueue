@@ -14,7 +14,7 @@ class UserRepository extends BaseRepository
         $sql = <<<'SQL'
         SELECT
             u.*,
-            r.role_name AS ROLE
+            r.role_name as role
         FROM
             users u
             JOIN roles r ON u.role_id = r.id
@@ -32,7 +32,7 @@ class UserRepository extends BaseRepository
         $sql = <<<'SQL'
         SELECT
             u.*,
-            r.role_name AS ROLE
+            r.role_name as role
         FROM
             users u
             JOIN roles r ON u.role_id = r.id
@@ -49,14 +49,15 @@ class UserRepository extends BaseRepository
     {
         $sql = <<<'SQL'
         INSERT INTO
-            users (username, email, phone, password_hash)
+            users (role_id, username, email, phone, password_hash)
         VALUES
-            (?, ?, ?, ?)
+            (?, ?, ?, ?, ?)
         SQL;
 
         $this->query(
             $sql,
             [
+                $registerRequest->roleId->value,
                 $registerRequest->username->value,
                 $registerRequest->email->value,
                 $registerRequest->phone->value,

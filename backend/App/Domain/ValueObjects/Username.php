@@ -6,6 +6,6 @@ namespace App\Domain\ValueObjects;
 
 class Username extends StringField
 {
-    protected const MIN_LEN = 5;
-    protected const MAX_LEN = 30;
+    protected const int MIN_LEN = 5;
+    protected const int MAX_LEN = 30;
 }
