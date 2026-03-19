@@ -18,7 +18,7 @@ VALUES
         'admin_juan',
         'admin@barbershop.com',
         '8091234567',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     -- Assistants
     (
@@ -27,7 +27,7 @@ VALUES
         'asistente_maria',
         'maria@barbershop.com',
         '8092345678',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         3,
@@ -35,7 +35,7 @@ VALUES
         'asistente_pedro',
         'pedro@barbershop.com',
         '8093456789',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     -- Barbers
     (
@@ -44,7 +44,7 @@ VALUES
         'barber_carlos',
         'carlos@barbershop.com',
         '8094567890',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         5,
@@ -52,7 +52,7 @@ VALUES
         'barber_luis',
         'luis@barbershop.com',
         '8095678901',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         6,
@@ -60,7 +60,7 @@ VALUES
         'barber_miguel',
         'miguel@barbershop.com',
         '8096789012',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         7,
@@ -68,7 +68,7 @@ VALUES
         'barber_ramon',
         'ramon@barbershop.com',
         '8097890123',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         8,
@@ -76,7 +76,7 @@ VALUES
         'barber_felix',
         'felix@barbershop.com',
         '8098901234',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     -- Clients
     (
@@ -85,7 +85,7 @@ VALUES
         'cliente_andres',
         'andres@gmail.com',
         '8091111111',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         10,
@@ -93,7 +93,7 @@ VALUES
         'cliente_sofia',
         'sofia@gmail.com',
         '8092222222',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         11,
@@ -101,7 +101,7 @@ VALUES
         'cliente_jose',
         'jose@gmail.com',
         '8093333333',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         12,
@@ -109,7 +109,7 @@ VALUES
         'cliente_ana',
         'ana@gmail.com',
         '8094444444',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         13,
@@ -117,7 +117,7 @@ VALUES
         'cliente_rafael',
         'rafael@gmail.com',
         '8095555555',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         14,
@@ -125,7 +125,7 @@ VALUES
         'cliente_diana',
         'diana@gmail.com',
         '8096666666',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         15,
@@ -133,7 +133,7 @@ VALUES
         'cliente_marcos',
         'marcos@gmail.com',
         '8097777777',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         16,
@@ -141,7 +141,7 @@ VALUES
         'cliente_laura',
         'laura@gmail.com',
         '8098888888',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         17,
@@ -149,7 +149,7 @@ VALUES
         'cliente_victor',
         'victor@gmail.com',
         '8099999999',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
         18,
@@ -157,7 +157,7 @@ VALUES
         'cliente_paola',
         'paola@gmail.com',
         '8090000000',
-        '$2b$10$KIX9M5K1z3hQkP0V2xYzUOqrZcM9VJkLm8nWpXvYsD3gT6bN4eA1C'
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     );
 
 -- BARBERSHOPS

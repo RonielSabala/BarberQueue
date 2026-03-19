@@ -17,6 +17,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
 - [Roles \& Permissions](#roles--permissions)
+- [Test Accounts](#test-accounts)
 - [Contributing](#contributing)
 - [Authors](#authors)
 - [License](#license)
@@ -267,6 +268,17 @@ Full management of one or more barbershops they administer:
 - Upload and manage barbershop photos and content.
 - View business-level dashboards, metrics and historical data.
 - Moderate client reviews.
+
+---
+
+## Test Accounts
+
+Four sample users are included for testing. Password for all sample accounts: `app12345`
+
+- [andres@gmail.com](mailto:andres@gmail.com) (`client`)
+- [carlos@barbershop.com](mailto:carlos@barbershop.com) (`barber`)
+- [maria@barbershop.com](mailto:maria@barbershop.com) (`assistant`)
+- [admin@barbershop.com](mailto:admin@barbershop.com) (`admin`)
 
 ---
 
