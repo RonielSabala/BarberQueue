@@ -88,19 +88,19 @@ class AuthService
 
     public function resetPassword(ResetPasswordRequest $resetPasswordRequest): void
     {
-        $token = $resetPasswordRequest->resetToken->value;
-        $passwordReset = $this->passwordResetRepository->findValidToken($token);
+        $resetCode = $resetPasswordRequest->resetCode->value;
+        $passwordReset = $this->passwordResetRepository->findResetCode($resetCode);
 
         if ($passwordReset === null) {
-            throw new AuthException('Invalid or expired token', HttpStatus::BadRequest);
+            throw new AuthException('Invalid or expired reset code', HttpStatus::BadRequest);
         }
 
         $userId = $passwordReset->userId->value;
-        $recordId = $passwordReset->id->value;
+        $passwordResetId = $passwordReset->id->value;
         $newPassword = $resetPasswordRequest->password->value;
         $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
 
         $this->userRepository->updatePassword($userId, $newPasswordHash);
-        $this->passwordResetRepository->markAsUsed($recordId);
+        $this->passwordResetRepository->markAsUsed($passwordResetId);
     }
 }

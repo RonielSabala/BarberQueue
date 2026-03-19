@@ -8,7 +8,7 @@ use App\Domain\Entities\PasswordReset;
 
 class PasswordResetRepository extends BaseRepository
 {
-    public function findValidToken(string $token): ?PasswordReset
+    public function findResetCode(int $resetCode): ?PasswordReset
     {
         $sql = <<<'SQL'
         SELECT
@@ -16,17 +16,17 @@ class PasswordResetRepository extends BaseRepository
         FROM
             password_resets
         WHERE
-            token = ?
+            reset_code = ?
             AND used = FALSE
             AND expires_at > NOW()
         LIMIT
             1
         SQL;
 
-        return $this->fetchOne(PasswordReset::class, $sql, [$token]);
+        return $this->fetchOne(PasswordReset::class, $sql, [$resetCode]);
     }
 
-    public function create(int $userId, string $token, \DateTimeImmutable $expiresAt): void
+    public function create(int $userId, int $resetCode, \DateTimeImmutable $expiresAt): void
     {
         $deleteSql = <<<'SQL'
         DELETE FROM password_resets
@@ -36,13 +36,13 @@ class PasswordResetRepository extends BaseRepository
 
         $insertSql = <<<'SQL'
         INSERT INTO
-            password_resets (user_id, token, expires_at)
+            password_resets (user_id, reset_code, expires_at)
         VALUES
             (?, ?, ?)
         SQL;
 
         $this->query($deleteSql, [$userId]);
-        $this->query($insertSql, [$userId, $token, $expiresAt->format('Y-m-d H:i:s')]);
+        $this->query($insertSql, [$userId, $resetCode, $expiresAt->format('Y-m-d H:i:s')]);
     }
 
     public function markAsUsed(int $id): void

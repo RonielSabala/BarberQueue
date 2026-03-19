@@ -23,7 +23,7 @@ CREATE TABLE
     password_resets (
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id INT NOT NULL,
-        token VARCHAR(255) NOT NULL UNIQUE,
+        reset_code MEDIUMINT NOT NULL UNIQUE,
         expires_at TIMESTAMP NOT NULL,
         used BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -154,7 +154,7 @@ CREATE INDEX idx_users_role_id ON users (role_id);
 CREATE INDEX idx_users_email ON users (email);
 
 -- password_resets
-CREATE INDEX idx_password_resets_token ON password_resets (token);
+CREATE INDEX idx_password_resets_code ON password_resets (reset_code);
 
 -- barbershops
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);

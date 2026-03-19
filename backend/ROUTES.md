@@ -148,14 +148,14 @@ Send a password recovery email.
 
 ### `POST /api/auth/reset-password`
 
-Reset password using the token received by email.
+Reset password using the reset code received by email.
 
 - Body
 
 ```json
 {
-  "token": "reset_token",
-  "password": "newpassword123"
+  "reset_code": "456123",
+  "password": "newpassword100"
 }
 ```
 
