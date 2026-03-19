@@ -15,13 +15,13 @@ abstract class BaseController
         return json_decode($raw ?: '', true) ?? [];
     }
 
-    protected function mapToRequest(string $dtoRequestClass): object
+    protected function mapToRequest(string $requestClass): object
     {
-        $reflection = new \ReflectionClass($dtoRequestClass);
+        $reflection = new \ReflectionClass($requestClass);
         $constructor = $reflection->getConstructor();
 
         if (!$constructor) {
-            return new $dtoRequestClass();
+            return new $requestClass();
         }
 
         $args = [];

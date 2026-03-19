@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Utils;
+namespace App\Core\Routing;
 
 use App\Controllers\BaseController;
+use App\Utils\TextUtils;
 
 class ClassesDiscovery
 {

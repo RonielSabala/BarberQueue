@@ -75,7 +75,7 @@ Authenticate with email and password.
 
 ```json
 {
-  "email": "correo@ejemplo.com",
+  "email": "barber@gmail.com",
   "password": "123456"
 }
 ```
@@ -87,8 +87,8 @@ Authenticate with email and password.
   "token": "jwt_token",
   "user": {
     "id": 1,
-    "username": "Juan",
-    "email": "correo@ejemplo.com",
+    "username": "barber",
+    "email": "barber@gmail.com",
     "role": "client"
   }
 }
@@ -104,8 +104,8 @@ Register a new client account.
 
 ```json
 {
-  "username": "Juan Perez",
-  "email": "juan@gmail.com",
+  "username": "barber",
+  "email": "barber@gmail.com",
   "phone": "8091234567",
   "password": "123456"
 }
@@ -116,8 +116,8 @@ Register a new client account.
 ```json
 {
   "id": 9,
-  "username": "Juan Perez",
-  "email": "juan@gmail.com",
+  "username": "barber",
+  "email": "barber@gmail.com",
   "role": "client"
 }
 ```
@@ -132,7 +132,7 @@ Send a password recovery email.
 
 ```json
 {
-  "email": "juan@gmail.com"
+  "email": "barber@gmail.com"
 }
 ```
 
@@ -154,7 +154,7 @@ Reset password using the reset code received by email.
 
 ```json
 {
-  "reset_code": "456123",
+  "resetCode": 456123,
   "password": "newpassword100"
 }
 ```

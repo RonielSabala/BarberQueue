@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\LoggerProvider;
-use App\Core\Routing\RouteRegistry;
+use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 use App\Exceptions\BaseException;
-use App\Utils\{ClassesDiscovery, UriUtils};
 use Monolog\Logger;
 
 class Router
@@ -40,7 +39,7 @@ class Router
     public static function dispatch(): void
     {
         $httpMethod = $_SERVER['REQUEST_METHOD'];
-        $uri = UriUtils::getCurrentUri();
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         $match = self::$registry->findMatch($httpMethod, $uri);
         if ($match === null) {

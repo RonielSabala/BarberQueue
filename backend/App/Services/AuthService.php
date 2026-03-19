@@ -95,7 +95,7 @@ class AuthService
         $passwordReset = $this->passwordResetRepository->findResetCode($resetCode);
 
         if ($passwordReset === null) {
-            throw new AuthException('Invalid or expired reset code', HttpStatus::BadRequest);
+            throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);
         }
 
         $userId = $passwordReset->userId->value;

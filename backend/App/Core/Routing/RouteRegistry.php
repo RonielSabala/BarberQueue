@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Routing;
 
-use App\Attributes\HttpRoute;
+use App\Attributes\HttpMethod;
 use App\Core\Container;
 
 class RouteRegistry
@@ -24,11 +24,11 @@ class RouteRegistry
         // Register routes based on method attributes
         foreach ($methods as $method) {
             $methodName = $method->getName();
-            $attributes = $method->getAttributes(HttpRoute::class, \ReflectionAttribute::IS_INSTANCEOF);
+            $attributes = $method->getAttributes(HttpMethod::class, \ReflectionAttribute::IS_INSTANCEOF);
 
             foreach ($attributes as $attribute) {
                 $httpRoute = $attribute->newInstance();
-                $this->routes[$httpRoute->getMethod()][] = new Route(
+                $this->routes[$httpRoute->getName()][] = new Route(
                     $httpRoute->uri,
                     $controller,
                     $methodName,

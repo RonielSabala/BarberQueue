@@ -111,20 +111,20 @@ cd tests
 uv sync
 ```
 
-> **VS Code:** open the Command Palette (`Ctrl + Shift + P`), run **Python: Select Interpreter**, and choose the `.venv` inside `tests/`. Reload your terminal afterwards.
+> **VS Code:** open the Command Palette (`Ctrl+Shift+P`), run **Python: Select Interpreter**, and choose the `.venv` inside `tests/`. Reload your terminal afterwards.
 
 ---
 
 ### `.env` Configuration
 
-Create a `.env` file at the **repo root**:
+Create a `.env` file at the **repo root** and fill in the required values:
 
 ```env
-# App urls (required)
+# App URLs
 BACKEND_URL=http://localhost:3000
 FRONTEND_URL=http://localhost:5173
 
-# Database (required)
+# Database
 DB_HOST=
 DB_PORT=
 DB_USERNAME=
@@ -132,9 +132,9 @@ DB_PASSWORD=
 DB_DATABASE=barberqueue_db
 
 # Auth
-JWT_SECRET=your-super-secret-key
+JWT_SECRET=
 
-# Email (optional)
+# Email
 MAIL_USERNAME=
 MAIL_PASSWORD=
 
@@ -143,9 +143,17 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-All keys must be present even if left empty.
+#### JWT Secret
 
-#### Email Setup (Optional)
+Generate a strong random value and set it as `JWT_SECRET`.
+
+You can create one with:
+
+```bash
+openssl rand -base64 32
+```
+
+#### Email Setup
 
 1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
 2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.
@@ -186,14 +194,14 @@ From the **repo root**:
 php -S localhost:3000 -t backend
 ```
 
-Use `Ctrl + C` to stop.
+Use `Ctrl+C` to stop.
 
 ---
 
 **Option B. Use a VS Code extension (recommended):**
 
 1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
-2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Reload project**.
+2. Open the Command Palette (`Ctrl+Shift+P`) and run **PHP Server: Reload project**.
 
 Use **PHP Server: Stop project** to stop.
 
@@ -208,7 +216,7 @@ cd frontend
 npm run dev
 ```
 
-Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl + C` to stop.
+Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl+C` to stop.
 
 ---
 
