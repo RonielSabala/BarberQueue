@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Config\LoggerProvider;
 use App\Core\Routing\RouteRegistry;
 use App\Exceptions\BaseException;
 use App\Utils\{ClassesDiscovery, UriUtils};
+use Monolog\Logger;
 
 class Router
 {
@@ -15,11 +17,13 @@ class Router
     private const CONTROLLERS_NAMESPACE = 'App\Controllers';
 
     private static RouteRegistry $registry;
+    private static Logger $logger;
 
     public static function init(): void
     {
         $container = new Container();
         self::$registry = new RouteRegistry($container);
+        self::$logger = LoggerProvider::get();
 
         // Get all controller classes
         $controllers = new ClassesDiscovery(
@@ -47,8 +51,16 @@ class Router
         try {
             $match->dispatch();
         } catch (BaseException $e) {
+            self::$logger->error($e->getMessage(), [
+                'exception' => $e,
+            ]);
+
             HttpResponse::error($e->getMessage(), $e->getStatus());
         } catch (\Throwable $e) {
+            self::$logger->critical($e->getMessage(), [
+                'exception' => $e,
+            ]);
+
             HttpResponse::error('An unexpected error occurred', HttpStatus::InternalServerError);
         }
     }
