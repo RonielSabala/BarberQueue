@@ -10,7 +10,7 @@ use App\Exceptions\ValidationException;
 class Email extends StringField
 {
     protected const int MIN_LEN = 5;
-    protected const int MAX_LEN = 100;
+    protected const int MAX_LEN = 254;
 
     public function __construct(string $value)
     {

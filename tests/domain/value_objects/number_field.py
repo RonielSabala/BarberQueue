@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import ClassVar
 
 from domain.value_objects.base import BaseField
 
@@ -14,8 +15,8 @@ class NumberField(BaseField[int]):
     field() defaults.
     """
 
-    _min_value: int | None = field(default=None, init=False)
-    _max_value: int | None = field(default=None, init=False)
+    _min_value: ClassVar[int | None] = field(default=None, init=False)
+    _max_value: ClassVar[int | None] = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         min_value = self._min_value

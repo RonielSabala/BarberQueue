@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import ClassVar
 
 from domain.value_objects.base import BaseField
 
@@ -14,8 +15,8 @@ class StringField(BaseField[str]):
     field() defaults.
     """
 
-    _min_len: int | None = field(default=None, init=False)
-    _max_len: int | None = field(default=None, init=False)
+    _min_len: ClassVar[int | None] = field(default=None, init=False)
+    _max_len: ClassVar[int | None] = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         length = len(self.value)

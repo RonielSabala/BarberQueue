@@ -11,7 +11,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         role_id INT NOT NULL,
         username VARCHAR(30) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
         password_hash VARCHAR(60) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -35,7 +35,7 @@ CREATE TABLE
     barbershops (
         id INT PRIMARY KEY AUTO_INCREMENT,
         barbershop_name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
         barbershop_address TEXT NOT NULL,
         photo_url TEXT NOT NULL,
