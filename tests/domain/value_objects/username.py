@@ -7,7 +7,7 @@ from typing import ClassVar
 
 from domain.value_objects.string_field import StringField
 
-_CHARS = string.ascii_letters + string.digits + " "
+_USERNAME_CHARS = string.ascii_letters + string.digits + " "
 
 
 @dataclass(slots=True, frozen=True)
@@ -22,5 +22,5 @@ class Username(StringField):
     @classmethod
     def random(cls) -> Username:
         user_len = random.randint(cls._min_len, cls._max_len)
-        username = "".join(random.choices(_CHARS, k=user_len))
+        username = "".join(random.choices(_USERNAME_CHARS, k=user_len))
         return cls(username)
