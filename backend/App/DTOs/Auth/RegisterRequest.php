@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\DTOs\Auth;
 
-use App\Domain\ValueObjects\{Email, Password, PasswordHash, Phone, Username};
-use App\Domain\ValueObjects\Id;
+use App\Domain\ValueObjects\{Email, Password, Phone, Username};
+use App\DTOs\BaseRequest;
 
-class RegisterRequest
+readonly class RegisterRequest extends BaseRequest
 {
     public function __construct(
         public Username $username,
         public Email $email,
         public Phone $phone,
-        public Password $password,
-        public ?PasswordHash $passwordHash = null,
-        public ?Id $roleId = null,
+        public Password $password
     ) {}
 }

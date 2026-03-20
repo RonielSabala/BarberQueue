@@ -4,41 +4,23 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Attributes\JsonIgnore;
-use App\Domain\ValueObjects\BaseField;
-
 class HttpResponse
 {
     private static function filterForJson(mixed $data): mixed
     {
         if (\is_array($data)) {
-            $result = [];
-            foreach ($data as $key => $value) {
-                $result[$key] = self::filterForJson($value);
-            }
-
-            return $result;
+            return array_map(self::filterForJson(...), $data);
         }
 
         if (!\is_object($data)) {
             return $data;
         }
 
-        if ($data instanceof BaseField) {
-            return $data->value;
-        }
-
         $result = [];
         $reflection = new \ReflectionClass($data);
 
-        foreach ($reflection->getProperties() as $prop) {
-            if ($prop->getAttributes(JsonIgnore::class)) {
-                continue;
-            }
-
-            // Get the value and recursively filter it
-            $val = $prop->getValue($data);
-            $result[$prop->getName()] = self::filterForJson($val);
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+            $result[$prop->getName()] = self::filterForJson($prop->getValue($data));
         }
 
         return $result;

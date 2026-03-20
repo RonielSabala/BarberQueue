@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\DTOs\Auth;
 
 use App\Domain\ValueObjects\{Password, ResetCode};
+use App\DTOs\BaseRequest;
 
-readonly class ResetPasswordRequest
+readonly class ResetPasswordRequest extends BaseRequest
 {
     public function __construct(
         public ResetCode $resetCode,

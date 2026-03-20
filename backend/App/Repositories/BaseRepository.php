@@ -55,7 +55,7 @@ abstract class BaseRepository
         $arguments = [];
         foreach ($constructor->getParameters() as $param) {
             $dbKey = TextUtils::toSnakeCase($param->getName());
-            $dbValue = $row[$dbKey];
+            $dbValue = $row[$dbKey] ?? null;
 
             // Resolve Type
             $type = $param->getType();

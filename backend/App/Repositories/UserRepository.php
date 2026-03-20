@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\User;
-use App\DTOs\Auth\RegisterRequest;
+use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Username};
 
 class UserRepository extends BaseRepository
 {
@@ -45,8 +45,13 @@ class UserRepository extends BaseRepository
         return $this->fetchOne(User::class, $sql, [$email]);
     }
 
-    public function create(RegisterRequest $registerRequest): User
-    {
+    public function create(
+        Username $username,
+        Email $email,
+        Phone $phone,
+        PasswordHash $passwordHash,
+        Id $roleId,
+    ): User {
         $sql = <<<'SQL'
         INSERT INTO
             users (role_id, username, email, phone, password_hash)
@@ -57,11 +62,11 @@ class UserRepository extends BaseRepository
         $this->query(
             $sql,
             [
-                $registerRequest->roleId->value,
-                $registerRequest->username->value,
-                $registerRequest->email->value,
-                $registerRequest->phone->value,
-                $registerRequest->passwordHash->value,
+                $roleId->value,
+                $username->value,
+                $email->value,
+                $phone->value,
+                $passwordHash->value,
             ]
         );
 
