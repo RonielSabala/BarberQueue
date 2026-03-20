@@ -1,42 +1,38 @@
-import requests
-
+from api.client import ApiClient
 from http_header import HttpHeader
+from http_method import HttpMethod
 from http_status import HttpStatus
 
 EXPECTED_BODY = {"error": "Route not found"}
 
 
-def _get_response(base_url: str) -> requests.Response:
+class TestInvalidRoute:
     """
-    Return a api URL that is guaranteed not to exist.
-    """
-
-    url = f"{base_url}/api/this-route-does-not-exist"
-    return requests.get(url, timeout=5)
-
-
-def test_invalid_route_status(base_url: str) -> None:
-    """
-    Unknown routes return 404.
+    Tests for requests to unknown routes.
     """
 
-    response = _get_response(base_url)
-    assert response.status_code == HttpStatus.NOT_FOUND
+    BASE = "/api/this-route-does-not-exist"
 
+    def test_status(self, client: ApiClient) -> None:
+        """
+        Unknown routes return 404.
+        """
 
-def test_invalid_route_body(base_url: str) -> None:
-    """
-    Unknown routes return a structured JSON error.
-    """
+        response = client.request(HttpMethod.GET, self.BASE)
+        assert response.status_code == HttpStatus.NOT_FOUND
 
-    response = _get_response(base_url)
-    assert response.json() == EXPECTED_BODY
+    def test_body(self, client: ApiClient) -> None:
+        """
+        Unknown routes return a structured JSON error.
+        """
 
+        response = client.request(HttpMethod.GET, self.BASE)
+        assert response.json() == EXPECTED_BODY
 
-def test_invalid_route_content_type(base_url: str) -> None:
-    """
-    Unknown routes return JSON content type.
-    """
+    def test_content_type(self, client: ApiClient) -> None:
+        """
+        Unknown routes return JSON content type.
+        """
 
-    response = _get_response(base_url)
-    assert response.headers.get("Content-Type") == HttpHeader.JSON.with_charset
+        response = client.request(HttpMethod.GET, self.BASE)
+        assert response.headers.get("Content-Type") == HttpHeader.JSON.with_charset
