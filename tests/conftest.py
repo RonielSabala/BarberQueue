@@ -3,10 +3,11 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-import requests
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chromium.webdriver import ChromiumDriver
+
+from api.client import ApiClient
 
 load_dotenv()
 
@@ -35,14 +36,12 @@ def frontend_url(request: pytest.FixtureRequest) -> str:
 
 
 @pytest.fixture(scope="session")
-def api(base_url: str) -> requests.Session:
+def client(base_url: str) -> ApiClient:
     """
-    Shared HTTP session for all API tests.
+    Shared typed API client for all backend tests.
     """
 
-    session = requests.Session()
-    session.base_url = base_url  # type: ignore[attr-defined]
-    return session
+    return ApiClient(base_url)
 
 
 @pytest.fixture(scope="function")
