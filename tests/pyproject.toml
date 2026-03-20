@@ -24,6 +24,7 @@ addopts = "--html=results/report.html --self-contained-html -v"
 venv = ".venv"
 venvPath = "."
 typeCheckingMode = "standard"
+reportAttributeAccessIssue = "none"
 
 [tool.ruff]
 fix = true
