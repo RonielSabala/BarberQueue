@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Auth;
+namespace App\DTOs\Auth\Requests;
 
 use App\Domain\ValueObjects\{Password, ResetCode};
 use App\DTOs\BaseRequest;

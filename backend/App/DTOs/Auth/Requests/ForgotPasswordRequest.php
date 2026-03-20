@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Auth;
+namespace App\DTOs\Auth\Requests;
 
 use App\Domain\ValueObjects\Email;
 use App\DTOs\BaseRequest;

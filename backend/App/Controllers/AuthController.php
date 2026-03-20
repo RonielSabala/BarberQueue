@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Attributes\POST;
 use App\Core\{HttpResponse, HttpStatus};
-use App\DTOs\Auth\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
+use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\Services\AuthService;
 
 class AuthController extends BaseController
