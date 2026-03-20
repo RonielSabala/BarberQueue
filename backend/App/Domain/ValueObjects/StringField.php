@@ -11,17 +11,17 @@ abstract class StringField extends BaseField
 
     public function __construct(string $value)
     {
-        $this->value = $value;
         $len = mb_strlen($value, 'UTF-8');
-
         $minLen = static::MIN_LEN;
         if ($minLen !== null && $len < $minLen) {
-            $this->throwValidationException("must be at least {$minLen} characters");
+            throw $this->validationException("must be at least {$minLen} characters");
         }
 
         $maxLen = static::MAX_LEN;
         if ($maxLen !== null && $len > $maxLen) {
-            $this->throwValidationException("must be at most {$maxLen} characters");
+            throw $this->validationException("must be at most {$maxLen} characters");
         }
+
+        $this->value = $value;
     }
 }

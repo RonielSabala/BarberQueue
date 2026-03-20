@@ -11,16 +11,16 @@ abstract class NumberField extends BaseField
 
     public function __construct(int $value)
     {
-        $this->value = $value;
-
         $min = static::MIN;
         if ($min !== null && $value < $min) {
-            $this->throwValidationException("must be greater or equal than {$min}");
+            throw $this->validationException("must be greater or equal than {$min}");
         }
 
         $max = static::MAX;
         if ($max !== null && $value > $max) {
-            $this->throwValidationException("must be less or equal than {$max}");
+            throw $this->validationException("must be less or equal than {$max}");
         }
+
+        $this->value = $value;
     }
 }

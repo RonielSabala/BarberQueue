@@ -11,10 +11,10 @@ abstract class BaseField
 {
     public $value;
 
-    protected function throwValidationException(string $message): void
+    protected function validationException(string $message): ValidationException
     {
         $className = (new \ReflectionClass($this))->getShortName();
-        throw new ValidationException(
+        return new ValidationException(
             "{$className} {$message}",
             HttpStatus::UnprocessableEntity
         );
