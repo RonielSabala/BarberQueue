@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\HttpStatus;
+use App\DTOs\BaseRequest;
 use App\Exceptions\ValidationException;
 
 abstract class BaseController
@@ -17,6 +18,12 @@ abstract class BaseController
 
     protected function mapToRequest(string $requestClass): object
     {
+        $body = $this->getJsonBody();
+        return $this->mapFromArray($requestClass, $body);
+    }
+
+    private function mapFromArray(string $requestClass, array $data, string $path = ''): object
+    {
         $reflection = new \ReflectionClass($requestClass);
         $constructor = $reflection->getConstructor();
 
@@ -25,52 +32,60 @@ abstract class BaseController
         }
 
         $args = [];
-        $body = $this->getJsonBody();
-
         foreach ($constructor->getParameters() as $param) {
-            $name = $param->getName();
-            $type = $param->getType();
-
-            // Determine if the parameter is optional or nullable
-            $allowsNull = $type?->allowsNull() ?? true;
-            $hasDefault = $param->isDefaultValueAvailable();
-
-            // The field is missing from the JSON body
-            if (!\array_key_exists($name, $body)) {
-                if ($hasDefault) {
-                    $args[] = $param->getDefaultValue();
-                    continue;
-                }
-
-                if ($allowsNull) {
-                    $args[] = null;
-                    continue;
-                }
-
-                throw new ValidationException("Field '{$name}' is required", HttpStatus::BadRequest);
-            }
-
-            $value = $body[$name];
-
-            // The field is present but is explicitly null
-            if ($value === null) {
-                if ($allowsNull) {
-                    $args[] = null;
-                    continue;
-                }
-
-                throw new ValidationException("Field '{$name}' cannot be null", HttpStatus::BadRequest);
-            }
-
-            // Handle Value Object instantiation
-            if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
-                $className = $type->getName();
-                $args[] = new $className($value);
-            } else {
-                $args[] = $value;
-            }
+            $args[] = $this->resolveParam($param, $param->getType(), $data, $path);
         }
 
         return $reflection->newInstanceArgs($args);
+    }
+
+    private function resolveParam(
+        \ReflectionParameter $param,
+        ?\ReflectionType $type,
+        array $data,
+        string $path
+    ): mixed {
+        $name = $param->getName();
+        $fullPath = $path !== '' ? "{$path}.{$name}" : $name;
+        $allowsNull = $type?->allowsNull() ?? true;
+
+        if (!\array_key_exists($name, $data)) {
+            if ($param->isDefaultValueAvailable()) {
+                return $param->getDefaultValue();
+            }
+
+            if ($allowsNull) {
+                return null;
+            }
+
+            throw new ValidationException("Field '{$fullPath}' is required", HttpStatus::BadRequest);
+        }
+
+        $value = $data[$name];
+        if ($value === null) {
+            if ($allowsNull) {
+                return null;
+            }
+
+            throw new ValidationException("Field '{$fullPath}' cannot be null", HttpStatus::BadRequest);
+        }
+
+        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            return $value;
+        }
+
+        $className = $type->getName();
+
+        // Value Object
+        if (!is_subclass_of($className, BaseRequest::class)) {
+            return new $className($value);
+        }
+
+        if (!\is_array($value)) {
+            throw new ValidationException("Field '{$fullPath}' must be an object", HttpStatus::BadRequest);
+        }
+
+        // Nested request
+        return $this->mapFromArray($className, $value, $fullPath);
     }
 }
