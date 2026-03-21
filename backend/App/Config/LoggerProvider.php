@@ -12,24 +12,21 @@ class ColoredLineFormatter extends LineFormatter
 {
     private const ANSI_RESET = "\e[0m";
 
-    private static function levelColors(): array
-    {
-        return [
-            Level::Debug->value => "\e[37m",
-            Level::Info->value => "\e[32m",
-            Level::Notice->value => "\e[36m",
-            Level::Warning->value => "\e[33m",
-            Level::Error->value => "\e[31m",
-            Level::Critical->value => "\e[1;31m",
-            Level::Alert->value => "\e[1;33m",
-            Level::Emergency->value => "\e[1;35m",
-        ];
-    }
+    private const LEVEL_COLORS = [
+        Level::Debug->value => "\e[37m",
+        Level::Info->value => "\e[32m",
+        Level::Notice->value => "\e[36m",
+        Level::Warning->value => "\e[33m",
+        Level::Error->value => "\e[31m",
+        Level::Critical->value => "\e[1;31m",
+        Level::Alert->value => "\e[1;33m",
+        Level::Emergency->value => "\e[1;35m",
+    ];
 
     public function format(LogRecord $record): string
     {
         $line = parent::format($record);
-        $color = self::levelColors()[$record->level->value] ?? self::ANSI_RESET;
+        $color = self::LEVEL_COLORS[$record->level->value] ?? self::ANSI_RESET;
         return $color . $line . self::ANSI_RESET;
     }
 }
