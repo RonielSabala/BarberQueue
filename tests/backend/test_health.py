@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from assertions import assert_body, assert_content_type, assert_status
-from domain.dtos.app.responses import HealthResponse
+from domain.dtos.health.responses import HealthResponse
 from http_header import HttpHeader
 from http_method import HttpMethod
 from http_status import HttpStatus

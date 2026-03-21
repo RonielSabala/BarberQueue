@@ -7,8 +7,8 @@ import requests
 
 from api.client import ApiClient
 from assertions import assert_body, assert_status
-from domain.dtos.app.responses import ErrorResponse
 from domain.dtos.auth.requests import ResetPasswordRequest
+from domain.dtos.base_response import ErrorResponse
 from http_status import HttpStatus
 
 

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from domain.dtos.app.responses import MessageResponse
-from domain.dtos.base_response import BaseResponse
+from domain.dtos.base_response import BaseResponse, MessageResponse
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

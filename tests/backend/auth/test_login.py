@@ -11,9 +11,9 @@ from assertions import (
     assert_content_type,
     assert_status,
 )
-from domain.dtos.app.responses import ErrorResponse
 from domain.dtos.auth.requests import LoginRequest, RegisterRequest
 from domain.dtos.auth.responses import LoginResponse
+from domain.dtos.base_response import ErrorResponse
 from domain.value_objects.password import Password
 from http_header import HttpHeader
 from http_status import HttpStatus
