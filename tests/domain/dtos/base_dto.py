@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 
 from domain.utils import to_camel_case
-from domain.value_objects.base import BaseField
+from domain.value_objects.base_field import BaseField
 
 
-@dataclass(slots=True, kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class BaseDto:
     """
     Base DTO class.

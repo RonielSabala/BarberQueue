@@ -1,10 +1,10 @@
 from dataclasses import dataclass, fields
 
 from domain.dtos.base_dto import BaseDto
-from domain.value_objects.base import BaseField
+from domain.value_objects.base_field import BaseField
 
 
-@dataclass(slots=True, kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class BaseRequest(BaseDto):
     """
     Base request DTO.

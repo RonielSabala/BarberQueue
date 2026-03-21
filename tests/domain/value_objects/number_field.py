@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import ClassVar
 
-from domain.value_objects.base import BaseField
+from domain.value_objects.base_field import BaseField
 
 
 @dataclass(slots=True, frozen=True)

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from domain.dtos.base_dto import BaseDto
 
 
-@dataclass(slots=True, kw_only=True, frozen=True)
+@dataclass(frozen=True)
 class BaseResponse(BaseDto):
     """
     Base response DTO.
