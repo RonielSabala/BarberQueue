@@ -8,7 +8,7 @@ from typing import Protocol, get_type_hints
 import requests
 
 from api.core import HttpHeader, HttpStatus
-from domain.dtos.base_response import BaseResponse
+from domain.dtos import BaseResponse
 from domain.utils import to_camel_case
 
 

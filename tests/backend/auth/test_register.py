@@ -7,9 +7,9 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from domain.dtos import ErrorResponse
 from domain.dtos.auth.requests import RegisterRequest
 from domain.dtos.auth.responses import UserResponse
-from domain.dtos.base_response import ErrorResponse
 from helpers.assertions import (
     assert_body,
     assert_body_shape,

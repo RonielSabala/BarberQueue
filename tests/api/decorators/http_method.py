@@ -11,7 +11,7 @@ import requests
 
 from api.base_controller import BaseController
 from api.core import HttpMethod
-from domain.dtos.base_request import BaseRequest
+from domain.dtos import BaseRequest
 from domain.exceptions import RequestError
 
 

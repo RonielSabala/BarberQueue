@@ -6,9 +6,9 @@ import pytest
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from domain.dtos import ErrorResponse
 from domain.dtos.auth.requests import LoginRequest, RegisterRequest
 from domain.dtos.auth.responses import LoginResponse
-from domain.dtos.base_response import ErrorResponse
 from domain.value_objects.password import Password
 from helpers.assertions import (
     assert_body,

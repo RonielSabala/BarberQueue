@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.dtos.base_request import BaseRequest
+from domain.dtos import BaseRequest
 from domain.value_objects import Email, Password, Phone, ResetCode, Username
 
 
