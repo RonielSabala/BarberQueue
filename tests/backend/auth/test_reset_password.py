@@ -18,9 +18,9 @@ def _response(client: ApiClient) -> requests.Response:
     return client.auth.reset_password(request)
 
 
-def test_invalid_code_returns_bad_request(_response: requests.Response) -> None:
+def test_status_on_invalid_code(_response: requests.Response) -> None:
     """
-    An invalid or expired reset code returns 400.
+    An invalid or expired code returns 400.
     """
 
     assert_status(_response, HttpStatus.BAD_REQUEST)
@@ -28,7 +28,7 @@ def test_invalid_code_returns_bad_request(_response: requests.Response) -> None:
 
 def test_body_on_invalid_code(_response: requests.Response) -> None:
     """
-    Invalid code response contains an error field.
+    Response contains an error message.
     """
 
     expected_response = ErrorResponse(error="Invalid or expired code")

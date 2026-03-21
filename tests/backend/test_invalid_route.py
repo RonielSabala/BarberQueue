@@ -38,7 +38,7 @@ def test_content_type(client: ApiClient, _response: requests.Response) -> None:
 
 def test_body(client: ApiClient, _response: requests.Response) -> None:
     """
-    Unknown routes return a structured JSON error.
+    Response contains an error message.
     """
 
     expected_response = ErrorResponse(error="Route not found")

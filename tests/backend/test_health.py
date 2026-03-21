@@ -38,7 +38,7 @@ def test_content_type(client: ApiClient, _response: requests.Response) -> None:
 
 def test_body(client: ApiClient, _response: requests.Response) -> None:
     """
-    Health endpoint body matches expected payload.
+    Response contains an OK message.
     """
 
     expected_response = HealthResponse(message="OK")

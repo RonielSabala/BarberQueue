@@ -10,7 +10,7 @@ from http_method import HttpMethod
 
 class ApiClient:
     """
-    Single entry point for all API calls in tests.
+    Single entry point for all API calls.
     """
 
     TIMEOUT: int = 5

@@ -6,7 +6,13 @@ import pytest
 import requests
 
 from api.client import ApiClient
-from assertions import assert_body_shape, assert_content_type, assert_status
+from assertions import (
+    assert_body,
+    assert_body_shape,
+    assert_content_type,
+    assert_status,
+)
+from domain.dtos.app.responses import ErrorResponse
 from domain.dtos.auth.requests import RegisterRequest
 from domain.dtos.auth.responses import UserResponse
 from http_header import HttpHeader
@@ -52,7 +58,7 @@ def test_role_is_client(_response: requests.Response) -> None:
     assert body["role"] == "client"
 
 
-def test_duplicate_email_returns_conflict(client: ApiClient) -> None:
+def test_status_on_duplicate_email(client: ApiClient) -> None:
     """
     Registering the same email twice returns 409.
     """
@@ -62,3 +68,15 @@ def test_duplicate_email_returns_conflict(client: ApiClient) -> None:
 
     response = client.auth.register(request)
     assert_status(response, HttpStatus.CONFLICT)
+
+
+def test_body_on_duplicate_email(client: ApiClient) -> None:
+    """
+    Response contains an error message.
+    """
+
+    request = RegisterRequest.random()
+    client.auth.register(request)
+
+    response = client.auth.register(request)
+    assert_body(response, ErrorResponse(error="Email already in use"))

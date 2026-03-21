@@ -38,7 +38,7 @@ def frontend_url(request: pytest.FixtureRequest) -> str:
 @pytest.fixture(scope="session")
 def client(base_url: str) -> ApiClient:
     """
-    Shared typed API client for all backend tests.
+    Shared typed API client.
     """
 
     return ApiClient(base_url)
