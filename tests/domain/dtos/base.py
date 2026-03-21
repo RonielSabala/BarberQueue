@@ -2,12 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, fields
 
+from domain.utils import to_camel_case
 from domain.value_objects.base import BaseField
-
-
-def to_camel_case(name: str) -> str:
-    parts = name.lstrip("_").split("_")
-    return parts[0].lower() + "".join(part.capitalize() for part in parts[1:])
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

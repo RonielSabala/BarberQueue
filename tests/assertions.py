@@ -7,8 +7,8 @@ from typing import Protocol, get_type_hints
 
 import requests
 
-from domain.dtos.base import to_camel_case
 from domain.dtos.base_response import BaseResponse
+from domain.utils import to_camel_case
 from http_header import HttpHeader
 from http_status import HttpStatus
 
