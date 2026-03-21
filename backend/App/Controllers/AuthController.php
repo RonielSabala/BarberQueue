@@ -17,33 +17,29 @@ class AuthController extends BaseController
     ) {}
 
     #[POST('/login')]
-    public function login(): void
+    public function login(LoginRequest $request): void
     {
-        $request = $this->mapToRequest(LoginRequest::class);
         $response = $this->authService->login($request);
         HttpResponse::json($response);
     }
 
     #[POST('/register')]
-    public function register(): void
+    public function register(RegisterRequest $request): void
     {
-        $request = $this->mapToRequest(RegisterRequest::class);
         $response = $this->authService->register($request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 
     #[POST('/forgot-password')]
-    public function forgotPassword(): void
+    public function forgotPassword(ForgotPasswordRequest $request): void
     {
-        $request = $this->mapToRequest(ForgotPasswordRequest::class);
         $this->authService->forgotPassword($request);
         HttpResponse::success('Recovery email sent');
     }
 
     #[POST('/reset-password')]
-    public function resetPassword(): void
+    public function resetPassword(ResetPasswordRequest $request): void
     {
-        $request = $this->mapToRequest(ResetPasswordRequest::class);
         $this->authService->resetPassword($request);
         HttpResponse::success('Password updated');
     }

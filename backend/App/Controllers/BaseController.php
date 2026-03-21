@@ -10,19 +10,18 @@ use App\Exceptions\ValidationException;
 
 abstract class BaseController
 {
-    private function getJsonBody(): array
+    public static function mapToRequest(string $requestClass): object
+    {
+        return self::mapFromArray($requestClass, self::getJsonBody());
+    }
+
+    private static function getJsonBody(): array
     {
         $raw = file_get_contents('php://input');
         return json_decode($raw ?: '', true) ?? [];
     }
 
-    protected function mapToRequest(string $requestClass): object
-    {
-        $body = $this->getJsonBody();
-        return $this->mapFromArray($requestClass, $body);
-    }
-
-    private function mapFromArray(string $requestClass, array $data, string $path = ''): object
+    private static function mapFromArray(string $requestClass, array $data, string $path = ''): object
     {
         $reflection = new \ReflectionClass($requestClass);
         $constructor = $reflection->getConstructor();
@@ -33,13 +32,13 @@ abstract class BaseController
 
         $args = [];
         foreach ($constructor->getParameters() as $param) {
-            $args[] = $this->resolveParam($param, $param->getType(), $data, $path);
+            $args[] = self::resolveParam($param, $param->getType(), $data, $path);
         }
 
         return $reflection->newInstanceArgs($args);
     }
 
-    private function resolveParam(
+    private static function resolveParam(
         \ReflectionParameter $param,
         ?\ReflectionType $type,
         array $data,
@@ -86,6 +85,6 @@ abstract class BaseController
         }
 
         // Nested request
-        return $this->mapFromArray($className, $value, $fullPath);
+        return self::mapFromArray($className, $value, $fullPath);
     }
 }
