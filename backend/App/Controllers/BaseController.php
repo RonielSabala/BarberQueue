@@ -10,7 +10,7 @@ use App\Exceptions\ValidationException;
 
 abstract class BaseController
 {
-    public static function mapToRequest(string $requestClass): object
+    public static function buildRequest(string $requestClass): object
     {
         return self::mapFromArray($requestClass, self::getJsonBody());
     }
