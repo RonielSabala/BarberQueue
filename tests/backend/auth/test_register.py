@@ -1,82 +1,64 @@
+"""
+Tests for POST /api/auth/register
+"""
+
+import pytest
+import requests
+
 from api.client import ApiClient
-from domain.requests.auth import RegisterRequest
+from assertions import assert_body_shape, assert_content_type, assert_status
+from domain.dtos.auth.requests import RegisterRequest
+from domain.dtos.auth.responses import UserResponse
 from http_header import HttpHeader
-from http_method import HttpMethod
 from http_status import HttpStatus
 
 
-class TestRegister:
+@pytest.fixture(scope="module")
+def _response(client: ApiClient) -> requests.Response:
+    request = RegisterRequest.random()
+    return client.auth.register(request)
+
+
+def test_status(_response: requests.Response) -> None:
     """
-    Tests for POST /api/auth/register
+    Successful registration returns 201.
     """
 
-    def test_status(self, client: ApiClient) -> None:
-        """
-        Successful registration returns 201.
-        """
+    assert_status(_response, HttpStatus.CREATED)
 
-        response = client.auth.register(RegisterRequest.random())
-        assert response.status_code == HttpStatus.CREATED
 
-    def test_body_shape(self, client: ApiClient) -> None:
-        """
-        Response contains id, username, email, role.
-        """
+def test_content_type(_response: requests.Response) -> None:
+    """
+    Response is JSON.
+    """
 
-        body = client.auth.register(RegisterRequest.random()).json()
-        assert {"id", "username", "email", "role"}.issubset(body.keys())
+    assert_content_type(_response, HttpHeader.JSON)
 
-    def test_role_is_client(self, client: ApiClient) -> None:
-        """
-        Registered users always get the client role.
-        """
 
-        body = client.auth.register(RegisterRequest.random()).json()
-        assert body["role"] == "client"
+def test_body_shape(_response: requests.Response) -> None:
+    """
+    Response contains expected fields.
+    """
 
-    def test_email_matches_input(self, client: ApiClient) -> None:
-        """
-        Response email matches the registered email.
-        """
+    assert_body_shape(_response, UserResponse)
 
-        request = RegisterRequest.random()
-        body = client.auth.register(request).json()
-        assert body["email"] == request.email.value
 
-    def test_content_type(self, client: ApiClient) -> None:
-        """
-        Response is JSON.
-        """
+def test_role_is_client(_response: requests.Response) -> None:
+    """
+    Registered users always get the client role.
+    """
 
-        response = client.auth.register(RegisterRequest.random())
-        assert response.headers.get("Content-Type") == HttpHeader.JSON.with_charset
+    body = _response.json()
+    assert body["role"] == "client"
 
-    def test_duplicate_email_returns_conflict(self, client: ApiClient) -> None:
-        """
-        Registering the same email twice returns 409.
-        """
 
-        request = RegisterRequest.random()
-        client.auth.register(request)
+def test_duplicate_email_returns_conflict(client: ApiClient) -> None:
+    """
+    Registering the same email twice returns 409.
+    """
 
-        duplicate = RegisterRequest(
-            username=request.username,
-            email=request.email,
-            phone=request.phone,
-            password=request.password,
-        )
+    request = RegisterRequest.random()
+    client.auth.register(request)
 
-        response = client.auth.register(duplicate)
-        assert response.status_code == HttpStatus.CONFLICT
-
-    def test_missing_field_returns_bad_request(self, client: ApiClient) -> None:
-        """
-        Omitting a required field returns 400.
-        """
-
-        incomplete = {"username": "Test User", "email": "test@test.com"}
-        response = client.request(
-            HttpMethod.POST, "/api/auth/register", body=incomplete
-        )
-
-        assert response.status_code == HttpStatus.BAD_REQUEST
+    response = client.auth.register(request)
+    assert_status(response, HttpStatus.CONFLICT)

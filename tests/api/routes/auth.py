@@ -4,7 +4,7 @@ import requests
 
 from api.decorators import POST
 from api.routes.base import BaseRoutes
-from domain.requests.auth import (
+from domain.dtos.auth.requests import (
     ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,

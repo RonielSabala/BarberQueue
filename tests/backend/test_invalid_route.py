@@ -1,38 +1,46 @@
+"""
+Tests for requests to unknown routes.
+"""
+
+import requests
+
 from api.client import ApiClient
+from assertions import assert_body, assert_content_type, assert_status
+from domain.dtos.app.responses import ErrorResponse
 from http_header import HttpHeader
 from http_method import HttpMethod
 from http_status import HttpStatus
 
-EXPECTED_BODY = {"error": "Route not found"}
+BASE = "/api/this-route-does-not-exist"
 
 
-class TestInvalidRoute:
+def _get_response(client: ApiClient) -> requests.Response:
+    return client.request(HttpMethod.GET, BASE)
+
+
+def test_status(client: ApiClient) -> None:
     """
-    Tests for requests to unknown routes.
+    Unknown routes return 404.
     """
 
-    BASE = "/api/this-route-does-not-exist"
+    response = _get_response(client)
+    assert_status(response, HttpStatus.NOT_FOUND)
 
-    def test_status(self, client: ApiClient) -> None:
-        """
-        Unknown routes return 404.
-        """
 
-        response = client.request(HttpMethod.GET, self.BASE)
-        assert response.status_code == HttpStatus.NOT_FOUND
+def test_content_type(client: ApiClient) -> None:
+    """
+    Unknown routes return JSON content type.
+    """
 
-    def test_body(self, client: ApiClient) -> None:
-        """
-        Unknown routes return a structured JSON error.
-        """
+    response = _get_response(client)
+    assert_content_type(response, HttpHeader.JSON)
 
-        response = client.request(HttpMethod.GET, self.BASE)
-        assert response.json() == EXPECTED_BODY
 
-    def test_content_type(self, client: ApiClient) -> None:
-        """
-        Unknown routes return JSON content type.
-        """
+def test_body(client: ApiClient) -> None:
+    """
+    Unknown routes return a structured JSON error.
+    """
 
-        response = client.request(HttpMethod.GET, self.BASE)
-        assert response.headers.get("Content-Type") == HttpHeader.JSON.with_charset
+    response = _get_response(client)
+    expected_response = ErrorResponse(error="Route not found")
+    assert_body(response, expected_response)

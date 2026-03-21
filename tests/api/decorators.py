@@ -10,7 +10,7 @@ from collections.abc import Callable
 import requests
 
 from api.routes.base import BaseRoutes
-from domain.requests.base import BaseRequest
+from domain.dtos.base_request import BaseRequest
 from http_method import HttpMethod
 
 

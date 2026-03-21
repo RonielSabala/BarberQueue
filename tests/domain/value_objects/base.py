@@ -14,8 +14,9 @@ class BaseField[T]:
 
     value: T
 
-    def _validation_error(self, message: str) -> ValueError:
-        return ValueError(f"{self.__class__.__name__}: {message}")
+    @classmethod
+    def _validation_error(cls, message: str) -> ValueError:
+        return ValueError(f"{cls.__name__} {message}")
 
     @classmethod
     def random(cls) -> BaseField[T]:

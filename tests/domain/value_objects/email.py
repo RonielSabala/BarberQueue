@@ -8,7 +8,7 @@ from typing import ClassVar
 
 from domain.value_objects.string_field import StringField
 
-_EMAIL_CHARS = string.ascii_letters + string.digits + "._%+-"
+_EMAIL_CHARS = string.ascii_letters + string.digits + "_%+-"
 _EMAIL_DOMAINS = ("gmail.com", "yahoo.com", "outlook.com", "hotmail.com")
 _EMAIL_PATTERN = re.compile(
     r"^(?=.{1,254}$)"
@@ -32,17 +32,11 @@ class Email(StringField):
 
         value = self.value.strip()
         if value != self.value or not _EMAIL_PATTERN.fullmatch(value):
-            raise self._validation_error("Invalid email format")
+            raise ValueError("Invalid email format")
 
     @classmethod
     def random(cls) -> Email:
         user_len = random.randint(cls._min_local_len, cls._max_local_len)
-        while True:
-            user = "".join(random.choices(_EMAIL_CHARS, k=user_len))
-            if user[0] == "." or user[-1] == "." or ".." in user:
-                continue
-
-            break
-
+        user = "".join(random.choices(_EMAIL_CHARS, k=user_len))
         domain = random.choice(_EMAIL_DOMAINS)
         return cls(f"{user}@{domain}")
