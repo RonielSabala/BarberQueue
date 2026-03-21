@@ -4,8 +4,8 @@ from typing import Any
 
 import requests
 
-from api.routes.auth import AuthRoutes
-from api_http import HttpMethod
+from api.controllers import AuthController
+from api.core import HttpMethod
 
 
 class ApiClient:
@@ -20,7 +20,7 @@ class ApiClient:
         self._session = requests.Session()
 
         # Route groups
-        self.auth = AuthRoutes(self)
+        self.auth = AuthController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"

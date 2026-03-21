@@ -5,10 +5,10 @@ Tests for POST /api/auth/forgot-password
 import pytest
 
 from api.client import ApiClient
-from api_http import HttpHeader, HttpStatus
-from assertions import assert_body, assert_content_type, assert_status
+from api.core import HttpHeader, HttpStatus
 from domain.dtos.auth.requests import ForgotPasswordRequest, RegisterRequest
 from domain.dtos.auth.responses import ForgotPasswordResponse
+from helpers.assertions import assert_body, assert_content_type, assert_status
 
 
 @pytest.fixture(scope="module")

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import requests
 
+from api.base_controller import BaseController
 from api.decorators import POST, route_prefix
-from api.routes.base import BaseRoutes
 from domain.dtos.auth.requests import (
     ForgotPasswordRequest,
     LoginRequest,
@@ -13,7 +13,7 @@ from domain.dtos.auth.requests import (
 
 
 @route_prefix("/api/auth")
-class AuthRoutes(BaseRoutes):
+class AuthController(BaseController):
     @POST("/login")
     def login(self, request: LoginRequest) -> requests.Response: ...
 

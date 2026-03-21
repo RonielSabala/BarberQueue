@@ -6,16 +6,14 @@ import pytest
 import requests
 
 from api.client import ApiClient
-from api_http import HttpHeader, HttpMethod, HttpStatus
-from assertions import assert_body, assert_content_type, assert_status
+from api.core import HttpHeader, HttpMethod, HttpStatus
 from domain.dtos.base_response import ErrorResponse
-
-BASE = "/api/this-route-does-not-exist"
+from helpers.assertions import assert_body, assert_content_type, assert_status
 
 
 @pytest.fixture(scope="module")
 def _response(client: ApiClient) -> requests.Response:
-    return client.request(HttpMethod.GET, BASE)
+    return client.request(HttpMethod.GET, "/api/this-route-does-not-exist")
 
 
 def test_status(client: ApiClient, _response: requests.Response) -> None:

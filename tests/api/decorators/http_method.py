@@ -9,8 +9,8 @@ from collections.abc import Callable
 
 import requests
 
-from api.routes.base import BaseRoutes
-from api_http import HttpMethod
+from api.base_controller import BaseController
+from api.core import HttpMethod
 from domain.dtos.base_request import BaseRequest
 from domain.exceptions import RequestError
 
@@ -19,7 +19,7 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(
-            self: BaseRoutes, *args, token: str | None = None, **kwargs
+            self: BaseController, *args, token: str | None = None, **kwargs
         ) -> requests.Response:
             url = self.prefix + path
             if not body:
@@ -34,14 +34,6 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
             )
 
         return wrapper
-
-    return decorator
-
-
-def route_prefix[T: type[BaseRoutes]](prefix: str) -> Callable[[T], T]:
-    def decorator(cls: T) -> T:
-        cls.prefix = prefix
-        return cls
 
     return decorator
 
