@@ -4,7 +4,7 @@ import requests
 
 from api.base_controller import BaseController
 from api.decorators import POST, route_prefix
-from domain.dtos.auth.requests import (
+from domain.dtos.auth import (
     ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, fields
 from typing import Protocol
 
-from domain.dtos.base_dto import BaseDto
+from domain.dtos import BaseDto
 
 
 class Randomizable(Protocol):
