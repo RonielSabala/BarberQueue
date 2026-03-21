@@ -18,8 +18,8 @@ class AuthService
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
     private const CLIENT_ROLE_ID = 1;
-    private readonly string $jwtSecret;
     private ?MailService $mailService;
+    private readonly string $jwtSecret;
 
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -109,8 +109,6 @@ class AuthService
             throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);
         }
 
-        $userId = $passwordReset->userId->value;
-
         $user = $this->userRepository->findById($passwordReset->userId->value);
         $oldPasswordHash = $user->passwordHash->value;
         $newPassword = $request->password->value;
@@ -119,6 +117,7 @@ class AuthService
             throw new AuthException('New password must be different from the current password', HttpStatus::UnprocessableEntity);
         }
 
+        $userId = $passwordReset->userId->value;
         $passwordResetId = $passwordReset->id->value;
         $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
 

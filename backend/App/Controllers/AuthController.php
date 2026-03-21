@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\POST;
+use App\Attributes\{POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\Services\AuthService;
 
+#[RoutePrefix('/api/auth')]
 class AuthController extends BaseController
 {
     public function __construct(
         private readonly AuthService $authService
     ) {}
 
-    #[POST('/api/auth/login')]
+    #[POST('/login')]
     public function login(): void
     {
         $request = $this->mapToRequest(LoginRequest::class);
@@ -23,7 +24,7 @@ class AuthController extends BaseController
         HttpResponse::json($response);
     }
 
-    #[POST('/api/auth/register')]
+    #[POST('/register')]
     public function register(): void
     {
         $request = $this->mapToRequest(RegisterRequest::class);
@@ -31,7 +32,7 @@ class AuthController extends BaseController
         HttpResponse::json($response, HttpStatus::Created);
     }
 
-    #[POST('/api/auth/forgot-password')]
+    #[POST('/forgot-password')]
     public function forgotPassword(): void
     {
         $request = $this->mapToRequest(ForgotPasswordRequest::class);
@@ -39,7 +40,7 @@ class AuthController extends BaseController
         HttpResponse::success('Recovery email sent');
     }
 
-    #[POST('/api/auth/reset-password')]
+    #[POST('/reset-password')]
     public function resetPassword(): void
     {
         $request = $this->mapToRequest(ResetPasswordRequest::class);
