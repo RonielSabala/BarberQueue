@@ -1,7 +1,12 @@
 from dataclasses import dataclass, fields
+from typing import Protocol
 
 from domain.dtos.base_dto import BaseDto
-from domain.value_objects.base_field import BaseField
+
+
+class Randomizable(Protocol):
+    @classmethod
+    def random(cls) -> type: ...
 
 
 @dataclass(frozen=True)
@@ -14,7 +19,7 @@ class BaseRequest(BaseDto):
     def random(cls):
         kwargs = {}
         for field in fields(cls):
-            field_type: BaseField = field.type  # type: ignore
+            field_type: Randomizable = field.type  # type: ignore
             kwargs[field.name] = field_type.random()
 
         return cls(**kwargs)
