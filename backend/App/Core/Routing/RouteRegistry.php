@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Routing;
 
-use App\Attributes\HttpRoute;
+use App\Attributes\{HttpMethod, RoutePrefix};
 use App\Core\Container;
 
 class RouteRegistry
@@ -16,20 +16,23 @@ class RouteRegistry
 
     public function registerController(string $controllerClass): void
     {
-        $controller = $this->container->make($controllerClass);
-
         $reflection = new \ReflectionClass($controllerClass);
+
         $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $prefixAttributes = $reflection->getAttributes(RoutePrefix::class);
+
+        $controller = $this->container->make($controllerClass);
+        $routePrefix = $prefixAttributes ? $prefixAttributes[0]->newInstance()->prefix : '';
 
         // Register routes based on method attributes
         foreach ($methods as $method) {
             $methodName = $method->getName();
-            $attributes = $method->getAttributes(HttpRoute::class, \ReflectionAttribute::IS_INSTANCEOF);
+            $attributes = $method->getAttributes(HttpMethod::class, \ReflectionAttribute::IS_INSTANCEOF);
 
             foreach ($attributes as $attribute) {
                 $httpRoute = $attribute->newInstance();
-                $this->routes[$httpRoute->getMethod()][] = new Route(
-                    $httpRoute->uri,
+                $this->routes[$httpRoute->getName()][] = new Route(
+                    $routePrefix . $httpRoute->uri,
                     $controller,
                     $methodName,
                 );

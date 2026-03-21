@@ -10,12 +10,24 @@ CREATE TABLE
     users (
         id INT PRIMARY KEY AUTO_INCREMENT,
         role_id INT NOT NULL,
-        username VARCHAR(50) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
+        username VARCHAR(30) NOT NULL,
+        email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
+        password_hash VARCHAR(60) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (role_id) REFERENCES roles (id)
+    );
+
+-- PASSWORD_RESETS
+CREATE TABLE
+    password_resets (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id INT NOT NULL,
+        reset_code MEDIUMINT NOT NULL UNIQUE,
+        expires_at TIMESTAMP NOT NULL,
+        used BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- BARBERSHOPS
@@ -23,7 +35,7 @@ CREATE TABLE
     barbershops (
         id INT PRIMARY KEY AUTO_INCREMENT,
         barbershop_name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
         barbershop_address TEXT NOT NULL,
         photo_url TEXT NOT NULL,
@@ -140,6 +152,9 @@ CREATE TABLE
 CREATE INDEX idx_users_role_id ON users (role_id);
 
 CREATE INDEX idx_users_email ON users (email);
+
+-- password_resets
+CREATE INDEX idx_password_resets_code ON password_resets (reset_code);
 
 -- barbershops
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);

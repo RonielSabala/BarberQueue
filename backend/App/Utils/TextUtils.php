@@ -23,4 +23,9 @@ class TextUtils
 
         return substr($text, 0, -\strlen($suffix));
     }
+
+    public static function toSnakeCase(string $text): string
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $text));
+    }
 }

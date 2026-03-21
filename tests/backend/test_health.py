@@ -1,42 +1,45 @@
+"""
+Tests for GET /api/health.
+"""
+
+import pytest
 import requests
 
+from api.client import ApiClient
+from assertions import assert_body, assert_content_type, assert_status
+from domain.dtos.health.responses import HealthResponse
 from http_header import HttpHeader
+from http_method import HttpMethod
 from http_status import HttpStatus
 
-EXPECTED_BODY = {"message": "OK"}
+BASE = "/api/health"
 
 
-def _get_response(base_url: str) -> requests.Response:
-    """
-    Return the health api response from `base_url`.
-    """
-
-    url = f"{base_url}/api/health"
-    return requests.get(url, timeout=5)
+@pytest.fixture(scope="module")
+def _response(client: ApiClient) -> requests.Response:
+    return client.request(HttpMethod.GET, BASE)
 
 
-def test_health_status(base_url: str) -> None:
+def test_status(client: ApiClient, _response: requests.Response) -> None:
     """
     Health endpoint returns 200.
     """
 
-    response = _get_response(base_url)
-    assert response.status_code == HttpStatus.OK
+    assert_status(_response, HttpStatus.OK)
 
 
-def test_health_body(base_url: str) -> None:
-    """
-    Health endpoint body matches expected payload.
-    """
-
-    response = _get_response(base_url)
-    assert response.json() == EXPECTED_BODY
-
-
-def test_health_content_type(base_url: str) -> None:
+def test_content_type(client: ApiClient, _response: requests.Response) -> None:
     """
     Health endpoint returns plain text content type.
     """
 
-    response = _get_response(base_url)
-    assert response.headers.get("Content-Type") == HttpHeader.PLAIN_TEXT.with_charset
+    assert_content_type(_response, HttpHeader.PLAIN_TEXT)
+
+
+def test_body(client: ApiClient, _response: requests.Response) -> None:
+    """
+    Response contains an OK message.
+    """
+
+    expected_response = HealthResponse(message="OK")
+    assert_body(_response, expected_response)
