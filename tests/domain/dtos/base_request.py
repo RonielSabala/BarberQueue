@@ -1,6 +1,6 @@
 from dataclasses import dataclass, fields
 
-from domain.dtos.base import BaseDto
+from domain.dtos.base_dto import BaseDto
 from domain.value_objects.base import BaseField
 
 

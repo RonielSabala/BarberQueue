@@ -9,7 +9,7 @@ from domain.value_objects.base import BaseField
 @dataclass(slots=True, kw_only=True, frozen=True)
 class BaseDto:
     """
-    Base DTO object.
+    Base DTO class.
     """
 
     def to_json(self) -> dict:

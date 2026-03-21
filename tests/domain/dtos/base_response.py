@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.dtos.base import BaseDto
+from domain.dtos.base_dto import BaseDto
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
