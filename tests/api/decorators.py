@@ -11,6 +11,7 @@ import requests
 
 from api.routes.base import BaseRoutes
 from domain.dtos.base_request import BaseRequest
+from domain.exceptions import RequestError
 from http_method import HttpMethod
 
 
@@ -26,7 +27,7 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
 
             request = args[0]
             if not isinstance(request, BaseRequest):
-                raise TypeError("Expected a BaseRequest object as first argument")
+                raise RequestError("Expected a BaseRequest object as first argument")
 
             return self._client.request(
                 method, url, body=request.to_json(), token=token

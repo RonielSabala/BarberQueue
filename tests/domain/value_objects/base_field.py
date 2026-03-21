@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
+from domain.exceptions import ValidationError
 
 
 @dataclass(frozen=True)
-class BaseField[T]:
+class BaseField[T](ABC):
     """
     Root of all value objects.
 
@@ -15,9 +18,9 @@ class BaseField[T]:
     value: T
 
     @classmethod
-    def _validation_error(cls, message: str) -> ValueError:
-        return ValueError(f"{cls.__name__} {message}")
+    def _validation_error(cls, message: str) -> ValidationError:
+        return ValidationError(f"{cls.__name__} {message}")
 
     @classmethod
-    def random(cls) -> BaseField[T]:
-        raise NotImplementedError(f"{cls.__name__} must implement random()")
+    @abstractmethod
+    def random(cls) -> BaseField[T]: ...

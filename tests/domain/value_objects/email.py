@@ -6,6 +6,7 @@ import string
 from dataclasses import dataclass
 from typing import ClassVar
 
+from domain.exceptions import ValidationError
 from domain.value_objects.string_field import StringField
 
 _EMAIL_CHARS = string.ascii_letters + string.digits + "_%+-"
@@ -32,7 +33,7 @@ class Email(StringField):
 
         value = self.value.strip()
         if value != self.value or not _EMAIL_PATTERN.fullmatch(value):
-            raise ValueError("Invalid email format")
+            raise ValidationError("Invalid email format")
 
     @classmethod
     def random(cls) -> Email:
