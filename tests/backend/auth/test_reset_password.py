@@ -6,10 +6,10 @@ import pytest
 import requests
 
 from api.client import ApiClient
+from api_http import HttpStatus
 from assertions import assert_body, assert_status
 from domain.dtos.auth.requests import ResetPasswordRequest
 from domain.dtos.base_response import ErrorResponse
-from http_status import HttpStatus
 
 
 @pytest.fixture(scope="module")

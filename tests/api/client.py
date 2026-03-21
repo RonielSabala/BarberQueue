@@ -5,7 +5,7 @@ from typing import Any
 import requests
 
 from api.routes.auth import AuthRoutes
-from http_method import HttpMethod
+from api_http import HttpMethod
 
 
 class ApiClient:

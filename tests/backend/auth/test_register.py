@@ -6,6 +6,7 @@ import pytest
 import requests
 
 from api.client import ApiClient
+from api_http import HttpHeader, HttpStatus
 from assertions import (
     assert_body,
     assert_body_shape,
@@ -15,8 +16,6 @@ from assertions import (
 from domain.dtos.auth.requests import RegisterRequest
 from domain.dtos.auth.responses import UserResponse
 from domain.dtos.base_response import ErrorResponse
-from http_header import HttpHeader
-from http_status import HttpStatus
 
 
 @pytest.fixture(scope="module")

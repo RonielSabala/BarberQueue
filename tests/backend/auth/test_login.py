@@ -5,6 +5,7 @@ Tests for POST /api/auth/login
 import pytest
 
 from api.client import ApiClient
+from api_http import HttpHeader, HttpStatus
 from assertions import (
     assert_body,
     assert_body_shape,
@@ -15,8 +16,6 @@ from domain.dtos.auth.requests import LoginRequest, RegisterRequest
 from domain.dtos.auth.responses import LoginResponse
 from domain.dtos.base_response import ErrorResponse
 from domain.value_objects.password import Password
-from http_header import HttpHeader
-from http_status import HttpStatus
 
 
 @pytest.fixture(scope="module")

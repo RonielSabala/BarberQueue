@@ -7,10 +7,9 @@ from typing import Protocol, get_type_hints
 
 import requests
 
+from api_http import HttpHeader, HttpStatus
 from domain.dtos.base_response import BaseResponse
 from domain.utils import to_camel_case
-from http_header import HttpHeader
-from http_status import HttpStatus
 
 
 class JSONSerializable(Protocol):

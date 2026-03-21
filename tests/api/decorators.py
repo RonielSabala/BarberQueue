@@ -10,9 +10,9 @@ from collections.abc import Callable
 import requests
 
 from api.routes.base import BaseRoutes
+from api_http import HttpMethod
 from domain.dtos.base_request import BaseRequest
 from domain.exceptions import RequestError
-from http_method import HttpMethod
 
 
 def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
