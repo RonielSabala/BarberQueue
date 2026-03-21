@@ -2,8 +2,6 @@
 HTTP route prefix decorator for route controllers.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable
 
 from api.base_controller import BaseController

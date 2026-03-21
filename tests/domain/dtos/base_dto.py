@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass, fields
 
 from domain.utils import to_camel_case

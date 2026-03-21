@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import requests
 
 from api.base_controller import BaseController
