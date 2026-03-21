@@ -21,7 +21,7 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
         def wrapper(
             self: BaseRoutes, *args, token: str | None = None, **kwargs
         ) -> requests.Response:
-            url = self._BASE + path
+            url = self.prefix + path
             if not body:
                 return self._client.request(method, url, token=token)
 
@@ -34,6 +34,14 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
             )
 
         return wrapper
+
+    return decorator
+
+
+def route_prefix[T: type[BaseRoutes]](prefix: str) -> Callable[[T], T]:
+    def decorator(cls: T) -> T:
+        cls.prefix = prefix
+        return cls
 
     return decorator
 
