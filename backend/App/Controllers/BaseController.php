@@ -21,6 +21,15 @@ abstract class BaseController
         return json_decode($raw ?: '', true) ?? [];
     }
 
+    private static function joinWithDot(string $a, string $b = '')
+    {
+        if ($a === '') {
+            return $b;
+        }
+
+        return $a . '.' . $b;
+    }
+
     private static function mapFromArray(string $requestClass, array $data, string $path = ''): object
     {
         $reflection = new \ReflectionClass($requestClass);
@@ -31,8 +40,18 @@ abstract class BaseController
         }
 
         $args = [];
+        $expectedKeys = [];
+
         foreach ($constructor->getParameters() as $param) {
-            $args[] = self::resolveParam($param, $param->getType(), $data, $path);
+            $args[] = self::resolveParam($param, $data, $path);
+            $expectedKeys[] = $param->getName();
+        }
+
+        $unexpectedKeys = array_diff(array_keys($data), $expectedKeys);
+        if (!empty($unexpectedKeys)) {
+            $prefix = self::joinWithDot($path);
+            $fields = implode(', ', array_map(static fn ($k) => "'{$prefix}{$k}'", $unexpectedKeys));
+            throw new ValidationException("Unexpected field(s): {$fields}", HttpStatus::BadRequest);
         }
 
         return $reflection->newInstanceArgs($args);
@@ -40,15 +59,15 @@ abstract class BaseController
 
     private static function resolveParam(
         \ReflectionParameter $param,
-        ?\ReflectionType $type,
         array $data,
         string $path
     ): mixed {
-        $name = $param->getName();
-        $fullPath = $path !== '' ? "{$path}.{$name}" : $name;
-        $allowsNull = $type?->allowsNull() ?? true;
+        $fieldName = $param->getName();
+        $fieldType = $param->getType();
+        $fieldPath = self::joinWithDot($path, $fieldName);
+        $allowsNull = $fieldType?->allowsNull() ?? true;
 
-        if (!\array_key_exists($name, $data)) {
+        if (!\array_key_exists($fieldName, $data)) {
             if ($param->isDefaultValueAvailable()) {
                 return $param->getDefaultValue();
             }
@@ -57,23 +76,23 @@ abstract class BaseController
                 return null;
             }
 
-            throw new ValidationException("Field '{$fullPath}' is required", HttpStatus::BadRequest);
+            throw new ValidationException("Field '{$fieldPath}' is required", HttpStatus::BadRequest);
         }
 
-        $value = $data[$name];
+        $value = $data[$fieldName];
         if ($value === null) {
             if ($allowsNull) {
                 return null;
             }
 
-            throw new ValidationException("Field '{$fullPath}' cannot be null", HttpStatus::BadRequest);
+            throw new ValidationException("Field '{$fieldPath}' cannot be null", HttpStatus::BadRequest);
         }
 
-        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+        if (!$fieldType instanceof \ReflectionNamedType || $fieldType->isBuiltin()) {
             return $value;
         }
 
-        $className = $type->getName();
+        $className = $fieldType->getName();
 
         // Value Object
         if (!is_subclass_of($className, BaseRequest::class)) {
@@ -81,10 +100,10 @@ abstract class BaseController
         }
 
         if (!\is_array($value)) {
-            throw new ValidationException("Field '{$fullPath}' must be an object", HttpStatus::BadRequest);
+            throw new ValidationException("Field '{$fieldPath}' must be an object", HttpStatus::BadRequest);
         }
 
         // Nested request
-        return self::mapFromArray($className, $value, $fullPath);
+        return self::mapFromArray($className, $value, $fieldPath);
     }
 }

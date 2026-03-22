@@ -9,11 +9,11 @@ from api.client import ApiClient
 from api.core import HttpStatus
 from domain.dtos import ErrorResponse
 from helpers.assertions import assert_body, assert_status
-from helpers.requests_testing import BadFieldCase, missing_field_cases, nested_notation
+from helpers.requests_testing import BadFieldCase, missing_field_cases, nested_case_id
 from helpers.route_discovery import BodyRoute, discover_body_routes
 
 _CASES = {
-    nested_notation(route.method_name, case.test_id): (route, case)
+    nested_case_id(route.method_name, case.case_id): (route, case)
     for route in discover_body_routes()
     for case in missing_field_cases(route.request_class)
 }
