@@ -76,7 +76,7 @@ Authenticate with email and password.
 ```json
 {
   "email": "barber@gmail.com",
-  "password": "123456"
+  "password": "12345678"
 }
 ```
 
@@ -107,7 +107,7 @@ Register a new client account.
   "username": "barber",
   "email": "barber@gmail.com",
   "phone": "8091234567",
-  "password": "123456"
+  "password": "12345678"
 }
 ```
 

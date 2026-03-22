@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Routing;
 
 use App\DTOs\BaseRequest;
+use App\Utils\TypeCoercion;
 
 class RouteMatch
 {
@@ -38,14 +39,8 @@ class RouteMatch
                 continue;
             }
 
-            // Cast route param to the declared type
             $raw = array_shift($params);
-            $args[] = match ($typeName) {
-                'int' => (int) $raw,
-                'float' => (float) $raw,
-                'bool' => filter_var($raw, FILTER_VALIDATE_BOOLEAN),
-                default => $raw,
-            };
+            $args[] = TypeCoercion::coerce($raw, $typeName);
         }
 
         $controller->{$methodName}(...$args);
