@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import random
 import string
 from dataclasses import dataclass
 from typing import ClassVar
 
+from domain.utils import random_string_len
 from domain.value_objects.string_field import StringField
 
 _PASSWORD_CHARS = string.ascii_letters + string.digits
@@ -17,6 +17,5 @@ class Password(StringField):
 
     @classmethod
     def random(cls) -> Password:
-        length = random.randint(cls._min_len, cls._max_len)
-        password = "".join(random.choices(_PASSWORD_CHARS, k=length))
+        password = random_string_len(_PASSWORD_CHARS, cls._min_len, cls._max_len)
         return cls(password)

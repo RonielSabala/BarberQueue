@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import random
 import string
 from dataclasses import dataclass
 from typing import ClassVar
 
+from domain.utils import random_string_len
 from domain.value_objects.string_field import StringField
 
 _USERNAME_CHARS = string.ascii_letters + string.digits + " "
@@ -21,6 +21,5 @@ class Username(StringField):
 
     @classmethod
     def random(cls) -> Username:
-        user_len = random.randint(cls._min_len, cls._max_len)
-        username = "".join(random.choices(_USERNAME_CHARS, k=user_len))
+        username = random_string_len(_USERNAME_CHARS, cls._min_len, cls._max_len)
         return cls(username)

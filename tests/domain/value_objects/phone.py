@@ -6,6 +6,7 @@ import string
 from dataclasses import dataclass
 from typing import ClassVar
 
+from domain.utils import random_string
 from domain.value_objects.string_field import StringField
 
 _SUFFIX_PHONE_LEN = 7
@@ -28,6 +29,6 @@ class Phone(StringField):
     @classmethod
     def random(cls) -> Phone:
         prefix = random.choice(_PHONE_PREFIXES)
-        suffix = "".join(random.choices(string.digits, k=_SUFFIX_PHONE_LEN))
+        suffix = random_string(string.digits, _SUFFIX_PHONE_LEN)
         phone = f"{prefix}{suffix}"
         return cls(phone)

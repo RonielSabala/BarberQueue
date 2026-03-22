@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import random
 import re
 import string
 from dataclasses import dataclass
 from typing import ClassVar
 
+from domain.utils import random_string_len
 from domain.value_objects.string_field import StringField
 
-_CHARS = string.ascii_letters + "_"
+_FIELD_CHARS = string.ascii_letters + "_"
 _PATTERN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
 
 
@@ -25,6 +25,5 @@ class FieldName(StringField):
 
     @classmethod
     def random(cls) -> FieldName:
-        length = random.randint(cls._min_len, cls._max_len)
-        field_name = "".join(random.choices(_CHARS, k=length))
+        field_name = random_string_len(_FIELD_CHARS, cls._min_len, cls._max_len)
         return cls(field_name)

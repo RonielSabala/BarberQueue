@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.exceptions import ValidationError
+from domain.utils import random_string_len
 from domain.value_objects.string_field import StringField
 
 _EMAIL_CHARS = string.ascii_letters + string.digits + "_%+-"
@@ -37,7 +38,6 @@ class Email(StringField):
 
     @classmethod
     def random(cls) -> Email:
-        user_len = random.randint(cls._min_local_len, cls._max_local_len)
-        user = "".join(random.choices(_EMAIL_CHARS, k=user_len))
+        user = random_string_len(_EMAIL_CHARS, cls._min_local_len, cls._max_local_len)
         domain = random.choice(_EMAIL_DOMAINS)
         return cls(f"{user}@{domain}")

@@ -8,7 +8,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos import ErrorResponse
 from domain.dtos.auth import LoginRequest, LoginResponse, RegisterRequest
-from domain.value_objects.password import Password
+from domain.value_objects import Password
 from helpers.assertions import (
     assert_body,
     assert_body_shape,
