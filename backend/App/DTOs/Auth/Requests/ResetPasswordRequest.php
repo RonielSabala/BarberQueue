@@ -11,6 +11,6 @@ readonly class ResetPasswordRequest extends BaseRequest
 {
     public function __construct(
         public ResetCode $resetCode,
-        public Password $password
+        public Password $newPassword
     ) {}
 }

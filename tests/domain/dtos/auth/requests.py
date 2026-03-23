@@ -26,4 +26,4 @@ class ForgotPasswordRequest(BaseRequest):
 @dataclass(slots=True, kw_only=True, frozen=True)
 class ResetPasswordRequest(BaseRequest):
     reset_code: ResetCode
-    password: Password
+    new_password: Password

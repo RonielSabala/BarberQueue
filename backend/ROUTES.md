@@ -65,6 +65,8 @@ All error responses follow this shape:
 | `422`  | Validation failed                            |
 | `500`  | Internal server error                        |
 
+---
+
 ## Auth
 
 ### `POST /api/auth/login`
@@ -75,7 +77,7 @@ Authenticate with email and password.
 
 ```json
 {
-  "email": "barber@gmail.com",
+  "email": "user_example@gmail.com",
   "password": "12345678"
 }
 ```
@@ -87,9 +89,9 @@ Authenticate with email and password.
   "token": "jwt_token",
   "user": {
     "id": 1,
-    "username": "barber",
-    "email": "barber@gmail.com",
-    "role": "client"
+    "username": "user_example",
+    "email": "user_example@gmail.com",
+    "role": "admin"
   }
 }
 ```
@@ -104,8 +106,8 @@ Register a new client account.
 
 ```json
 {
-  "username": "barber",
-  "email": "barber@gmail.com",
+  "username": "client_example",
+  "email": "client_example@gmail.com",
   "phone": "8091234567",
   "password": "12345678"
 }
@@ -115,9 +117,9 @@ Register a new client account.
 
 ```json
 {
-  "id": 9,
-  "username": "barber",
-  "email": "barber@gmail.com",
+  "id": 1,
+  "username": "client_example",
+  "email": "client_example@gmail.com",
   "role": "client"
 }
 ```
@@ -132,7 +134,7 @@ Send a password recovery email.
 
 ```json
 {
-  "email": "barber@gmail.com"
+  "email": "user_example@gmail.com"
 }
 ```
 
@@ -154,8 +156,8 @@ Reset password using the reset code received by email.
 
 ```json
 {
-  "resetCode": 456123,
-  "password": "newpassword100"
+  "resetCode": 123456,
+  "newPassword": "new_password"
 }
 ```
 

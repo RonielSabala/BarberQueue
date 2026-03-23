@@ -111,7 +111,7 @@ class AuthService
 
         $user = $this->userRepository->findById($passwordReset->userId->value);
         $oldPasswordHash = $user->passwordHash->value;
-        $newPassword = $request->password->value;
+        $newPassword = $request->newPassword->value;
 
         if (password_verify($newPassword, $oldPasswordHash)) {
             throw new AuthException('New password must be different from the current password', HttpStatus::UnprocessableEntity);
