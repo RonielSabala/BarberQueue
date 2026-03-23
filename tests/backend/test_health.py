@@ -7,10 +7,10 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpMethod, HttpStatus
-from domain.dtos.health import HealthResponse
+from domain.dtos import MessageResponse
 from helpers.assertions import assert_body, assert_content_type, assert_status
 
-_OK = HealthResponse(message="OK")
+_OK = MessageResponse(message="OK")
 
 
 @pytest.fixture(scope="module")

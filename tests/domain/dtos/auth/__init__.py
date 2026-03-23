@@ -8,18 +8,13 @@ from domain.dtos.auth.requests import (
     RegisterRequest,
     ResetPasswordRequest,
 )
-from domain.dtos.auth.responses import (
-    ForgotPasswordResponse,
-    LoginResponse,
-    UserResponse,
-)
+from domain.dtos.auth.responses import LoginResponse, UserResponse
 
 __all__ = [
     "ForgotPasswordRequest",
     "LoginRequest",
     "RegisterRequest",
     "ResetPasswordRequest",
-    "ForgotPasswordResponse",
     "LoginResponse",
     "UserResponse",
 ]

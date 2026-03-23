@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.dtos import BaseResponse, MessageResponse
+from domain.dtos import BaseResponse
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -10,11 +10,3 @@ class GetUserResponse(BaseResponse):
     email: str
     phone: str
     role: str
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
-class UpdateUserResponse(MessageResponse): ...
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
-class UpdateUserPasswordResponse(MessageResponse): ...

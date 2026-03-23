@@ -7,14 +7,11 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos.auth import (
-    ForgotPasswordRequest,
-    ForgotPasswordResponse,
-    RegisterRequest,
-)
+from domain.dtos import MessageResponse
+from domain.dtos.auth import ForgotPasswordRequest, RegisterRequest
 from helpers.assertions import assert_body, assert_content_type, assert_status
 
-_RECOVERY_EMAIL_SENT = ForgotPasswordResponse(message="Recovery email sent")
+_RECOVERY_EMAIL_SENT = MessageResponse(message="Recovery email sent")
 
 
 @pytest.fixture(scope="module")

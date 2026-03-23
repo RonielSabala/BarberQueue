@@ -9,15 +9,15 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos import ErrorResponse
+from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.auth import RegisterRequest
-from domain.dtos.users import UpdateUserRequest, UpdateUserResponse
+from domain.dtos.users import UpdateUserRequest
 from domain.utils import to_camel_case
 from domain.value_objects.base_field import BaseField
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import USER_NOT_FOUND
 
-_USER_UPDATED = UpdateUserResponse(message="User updated")
+_USER_UPDATED = MessageResponse(message="User updated")
 _ONE_FIELD_MUST_BE_PROVIDED = ErrorResponse(error="At least one field must be provided")
 
 

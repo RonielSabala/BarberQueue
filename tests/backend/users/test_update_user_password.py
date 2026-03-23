@@ -9,14 +9,14 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos import ErrorResponse
+from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.auth import LoginRequest, RegisterRequest
-from domain.dtos.users import UpdateUserPasswordRequest, UpdateUserPasswordResponse
+from domain.dtos.users import UpdateUserPasswordRequest
 from domain.value_objects import Password
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import USER_NOT_FOUND
 
-_PASSWORD_UPDATED = UpdateUserPasswordResponse(message="Password updated")
+_PASSWORD_UPDATED = MessageResponse(message="Password updated")
 _CURRENT_PASSWORD_IS_INCORRECT = ErrorResponse(error="Current password is incorrect")
 _NEW_PASSWORD_MUST_BE_DIFFERENT = ErrorResponse(
     error="New password must differ from the current one"
