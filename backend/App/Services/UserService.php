@@ -22,7 +22,7 @@ class UserService
     {
         $user = $this->userRepository->findById($userId);
         if ($user === null) {
-            throw new UserException('User not found', HttpStatus::BadRequest);
+            throw new UserException('User not found', HttpStatus::NotFound);
         }
 
         return $user;

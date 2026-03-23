@@ -8,6 +8,7 @@ from typing import Any, Iterator, Self, get_type_hints
 from domain.dtos import BaseRequest
 from domain.utils import to_camel_case
 from domain.value_objects.field_name import FieldName
+from helpers.unwrap_type import is_optional
 
 
 def _join_with_dot(a: str | None, b: str):
@@ -130,9 +131,12 @@ def missing_field_cases(
     nested_fields: list[_FieldMetadata] = []
 
     for f in dataclasses.fields(request_class):
+        optional, _ = is_optional(hints[f.name])
+
         # Skip optional fields
         if (
-            f.default is not dataclasses.MISSING
+            optional
+            or f.default is not dataclasses.MISSING
             or f.default_factory is not dataclasses.MISSING
         ):
             continue

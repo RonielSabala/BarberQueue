@@ -3,6 +3,7 @@ HTTP verb decorators for route methods.
 """
 
 import functools
+import re
 from collections.abc import Callable
 
 import requests
@@ -13,22 +14,36 @@ from domain.dtos import BaseRequest
 from domain.exceptions import RequestError
 from helpers.body_route import BodyRoute
 
+_PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
+
+
+def _build_url(path: str, args: tuple) -> str:
+    """
+    Replace placeholders in path with positional args
+    in order.
+    """
+
+    params = iter(args)
+    return _PATH_PARAM_PATTERN.sub(lambda _: str(next(params)), path)
+
 
 def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
+    param_count = len(_PATH_PARAM_PATTERN.findall(path))
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(self: BaseController, *args) -> requests.Response:
-            url = self.prefix + path
             request_body = None
             if body:
-                request = args[0]
-                if not isinstance(request, BaseRequest):
+                body_args = args[param_count:]
+                if not body_args or not isinstance(body_args[0], BaseRequest):
                     raise RequestError(
-                        "Expected a BaseRequest object as first argument"
+                        "Expected a BaseRequest object after path params"
                     )
 
-                request_body = request.to_json()
+                request_body = body_args[0].to_json()
 
+            url = self.prefix + _build_url(path, args[:param_count])
             return self._client.request(method, url, body=request_body)
 
         # Store metadata for route discovery

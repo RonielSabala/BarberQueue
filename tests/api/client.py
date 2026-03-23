@@ -2,7 +2,7 @@ from typing import Any
 
 import requests
 
-from api.controllers import AuthController
+from api.controllers import AuthController, UserController
 from api.core import HttpMethod
 
 
@@ -19,6 +19,7 @@ class ApiClient:
 
         # Route groups
         self.auth = AuthController(self)
+        self.users = UserController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"
