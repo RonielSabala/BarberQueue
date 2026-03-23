@@ -23,7 +23,7 @@ class AuthService extends BaseService
     private readonly string $jwtSecret;
 
     public function __construct(
-        private readonly PasswordService $passwordService,
+        private readonly UserService $userService,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
         private readonly Container $container,
@@ -107,16 +107,9 @@ class AuthService extends BaseService
         }
 
         $userId = $passwordReset->userId->value;
-        $user = $this->userRepository->findById($userId);
-        if ($user === null) {
-            throw new AuthException('User not found', HttpStatus::BadRequest);
-        }
+        $user = $this->userService->validateUserExists($userId);
 
-        $newPassword = $request->newPassword->value;
-        $userPasswordHash = $user->passwordHash->value;
-
-        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
-        $this->userRepository->updatePassword($userId, $this->passwordService->hash($newPassword));
+        $this->userService->updatePassword($userId, $request->newPassword->value, $user->passwordHash->value);
         $this->passwordResetRepository->markAsUsed($passwordReset->id->value);
     }
 }

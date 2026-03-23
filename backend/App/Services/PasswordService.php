@@ -9,20 +9,22 @@ use App\Exceptions\PasswordException;
 
 class PasswordService extends BaseService
 {
-    private const INVALID_PASSWORD_MSG = 'Current password is incorrect';
-    private const SAME_PASSWORD_MSG = 'New password must differ from the current one';
+    private function exception(string $message): PasswordException
+    {
+        return new PasswordException($message, HttpStatus::UnprocessableEntity);
+    }
 
     public function validateMatch(string $password, string $hash): void
     {
         if (!password_verify($password, $hash)) {
-            throw new PasswordException(self::INVALID_PASSWORD_MSG, HttpStatus::UnprocessableEntity);
+            throw $this->exception('Current password is incorrect');
         }
     }
 
     public function validateDiffers(string $newPassword, string $currentHash): void
     {
         if (password_verify($newPassword, $currentHash)) {
-            throw new PasswordException(self::SAME_PASSWORD_MSG, HttpStatus::UnprocessableEntity);
+            throw $this->exception('New password must differ from the current one');
         }
     }
 
