@@ -53,27 +53,20 @@ def test_body_shape(client: ApiClient, _registered: LoginRequest) -> None:
     assert_body_shape(response, LoginResponse)
 
 
-def test_status_on_unknown_email(client: ApiClient) -> None:
+def test_unknown_email(client: ApiClient) -> None:
     """
     Non-existent email returns 401.
     """
 
     request = LoginRequest.random()
     response = client.auth.login(request)
+    expected_response = ErrorResponse(error="Invalid credentials")
+
+    assert_body(response, expected_response)
     assert_status(response, HttpStatus.UNAUTHORIZED)
 
 
-def test_body_on_unknown_email(client: ApiClient) -> None:
-    """
-    Response contains an error message.
-    """
-
-    request = LoginRequest.random()
-    response = client.auth.login(request)
-    assert_body(response, ErrorResponse(error="Invalid credentials"))
-
-
-def test_status_on_wrong_password(client: ApiClient, _registered: LoginRequest) -> None:
+def test_wrong_password(client: ApiClient, _registered: LoginRequest) -> None:
     """
     Wrong password returns 401.
     """
@@ -83,4 +76,7 @@ def test_status_on_wrong_password(client: ApiClient, _registered: LoginRequest) 
     )
 
     response = client.auth.login(wrong_request)
+    expected_response = ErrorResponse(error="Invalid credentials")
+
+    assert_body(response, expected_response)
     assert_status(response, HttpStatus.UNAUTHORIZED)

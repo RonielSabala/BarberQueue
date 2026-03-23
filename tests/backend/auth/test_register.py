@@ -56,7 +56,7 @@ def test_role_is_client(_response: requests.Response) -> None:
     assert body["role"] == "client"
 
 
-def test_status_on_duplicate_email(client: ApiClient) -> None:
+def test_duplicate_email(client: ApiClient) -> None:
     """
     Registering the same email twice returns 409.
     """
@@ -65,16 +65,7 @@ def test_status_on_duplicate_email(client: ApiClient) -> None:
     client.auth.register(request)
 
     response = client.auth.register(request)
+    expected_response = ErrorResponse(error="Email already in use")
+
+    assert_body(response, expected_response)
     assert_status(response, HttpStatus.CONFLICT)
-
-
-def test_body_on_duplicate_email(client: ApiClient) -> None:
-    """
-    Response contains an error message.
-    """
-
-    request = RegisterRequest.random()
-    client.auth.register(request)
-
-    response = client.auth.register(request)
-    assert_body(response, ErrorResponse(error="Email already in use"))
