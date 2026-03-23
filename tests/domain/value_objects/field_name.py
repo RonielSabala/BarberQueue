@@ -18,7 +18,7 @@ class FieldName(StringField):
     _max_len: ClassVar[int] = 25
 
     def __post_init__(self) -> None:
-        super().__post_init__()
+        StringField.__post_init__(self)
 
         if not _PATTERN.match(self.value):
             raise self._validation_error("must be a valid field name")

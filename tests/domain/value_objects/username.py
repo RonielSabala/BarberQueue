@@ -16,6 +16,8 @@ class Username(StringField):
     _max_len: ClassVar[int] = 30
 
     def __post_init__(self) -> None:
+        StringField.__post_init__(self)
+
         if not self.value.strip():
             raise self._validation_error("cannot be blank")
 

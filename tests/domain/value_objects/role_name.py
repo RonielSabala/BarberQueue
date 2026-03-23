@@ -12,7 +12,8 @@ _ROLES = ("client", "barber", "assistant", "admin")
 class RoleName(BaseField):
     def __post_init__(self) -> None:
         if self.value not in _ROLES:
-            raise self._validation_error(f"must be one of: {', '.join(sorted(_ROLES))}")
+            allowed = ", ".join(sorted(_ROLES))
+            raise self._validation_error(f"must be one of: {allowed}")
 
     @classmethod
     def random(cls) -> RoleName:
