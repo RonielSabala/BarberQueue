@@ -8,6 +8,8 @@ from domain.dtos import ErrorResponse
 from domain.dtos.auth import ResetPasswordRequest
 from helpers.assertions import assert_body, assert_status
 
+_INVALID_OR_EXPIRED_CODE = ErrorResponse(error="Invalid or expired code")
+
 
 def test_invalid_code(client: ApiClient) -> None:
     """
@@ -16,7 +18,6 @@ def test_invalid_code(client: ApiClient) -> None:
 
     request = ResetPasswordRequest.random()
     response = client.auth.reset_password(request)
-    expected_response = ErrorResponse(error="Invalid or expired code")
 
-    assert_body(response, expected_response)
+    assert_body(response, _INVALID_OR_EXPIRED_CODE)
     assert_status(response, HttpStatus.BAD_REQUEST)

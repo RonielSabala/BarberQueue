@@ -10,6 +10,8 @@ from api.core import HttpHeader, HttpMethod, HttpStatus
 from domain.dtos.health import HealthResponse
 from helpers.assertions import assert_body, assert_content_type, assert_status
 
+_OK = HealthResponse(message="OK")
+
 
 @pytest.fixture(scope="module")
 def _response(client: ApiClient) -> requests.Response:
@@ -37,5 +39,4 @@ def test_body(client: ApiClient, _response: requests.Response) -> None:
     Response contains an OK message.
     """
 
-    expected_response = HealthResponse(message="OK")
-    assert_body(_response, expected_response)
+    assert_body(_response, _OK)

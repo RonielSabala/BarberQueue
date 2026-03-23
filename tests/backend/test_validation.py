@@ -30,5 +30,6 @@ def test_field_validation(
 
     response = client.request(route.http_method, route.full_path, body=case.payload)
     expected_response = ErrorResponse(error=case.expected_error_msg)
-    assert_status(response, HttpStatus.BAD_REQUEST)
+
     assert_body(response, expected_response)
+    assert_status(response, HttpStatus.BAD_REQUEST)

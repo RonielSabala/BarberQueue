@@ -3,6 +3,7 @@ Tests for POST /api/auth/login
 """
 
 import pytest
+import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
@@ -16,9 +17,11 @@ from helpers.assertions import (
     assert_status,
 )
 
+_INVALID_CREDENTIALS = ErrorResponse(error="Invalid credentials")
+
 
 @pytest.fixture(scope="module")
-def _registered(client: ApiClient) -> LoginRequest:
+def registered(client: ApiClient) -> LoginRequest:
     register_request = RegisterRequest.random()
     client.auth.register(register_request)
     return LoginRequest(
@@ -26,30 +29,32 @@ def _registered(client: ApiClient) -> LoginRequest:
     )
 
 
-def test_status(client: ApiClient, _registered: LoginRequest) -> None:
+@pytest.fixture(scope="module")
+def response(client: ApiClient, registered: LoginRequest) -> requests.Response:
+    return client.auth.login(registered)
+
+
+def test_status(response: requests.Response) -> None:
     """
     Successful login returns 200.
     """
 
-    response = client.auth.login(_registered)
     assert_status(response, HttpStatus.OK)
 
 
-def test_content_type(client: ApiClient, _registered: LoginRequest) -> None:
+def test_content_type(response: requests.Response) -> None:
     """
     Response is JSON.
     """
 
-    response = client.auth.login(_registered)
     assert_content_type(response, HttpHeader.JSON)
 
 
-def test_body_shape(client: ApiClient, _registered: LoginRequest) -> None:
+def test_body_shape(response: requests.Response) -> None:
     """
     Response contains expected fields.
     """
 
-    response = client.auth.login(_registered)
     assert_body_shape(response, LoginResponse)
 
 
@@ -60,23 +65,20 @@ def test_unknown_email(client: ApiClient) -> None:
 
     request = LoginRequest.random()
     response = client.auth.login(request)
-    expected_response = ErrorResponse(error="Invalid credentials")
 
-    assert_body(response, expected_response)
+    assert_body(response, _INVALID_CREDENTIALS)
     assert_status(response, HttpStatus.UNAUTHORIZED)
 
 
-def test_wrong_password(client: ApiClient, _registered: LoginRequest) -> None:
+def test_wrong_password(client: ApiClient, registered: LoginRequest) -> None:
     """
     Wrong password returns 401.
     """
 
     wrong_request = LoginRequest(
-        email=_registered.email, password=Password("wrongpassword123")
+        email=registered.email, password=Password("wrongpassword123")
     )
-
     response = client.auth.login(wrong_request)
-    expected_response = ErrorResponse(error="Invalid credentials")
 
-    assert_body(response, expected_response)
+    assert_body(response, _INVALID_CREDENTIALS)
     assert_status(response, HttpStatus.UNAUTHORIZED)

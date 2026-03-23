@@ -11,10 +11,16 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos import ErrorResponse
 from domain.dtos.auth import LoginRequest, RegisterRequest
-from domain.dtos.users import UpdateUserPasswordRequest
-from domain.dtos.users.responses import UpdateUserPasswordResponse
+from domain.dtos.users import UpdateUserPasswordRequest, UpdateUserPasswordResponse
 from domain.value_objects import Password
 from helpers.assertions import assert_body, assert_content_type, assert_status
+from helpers.common_responses import USER_NOT_FOUND
+
+_PASSWORD_UPDATED = UpdateUserPasswordResponse(message="Password updated")
+_CURRENT_PASSWORD_IS_INCORRECT = ErrorResponse(error="Current password is incorrect")
+_NEW_PASSWORD_MUST_BE_DIFFERENT = ErrorResponse(
+    error="New password must differ from the current one"
+)
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -24,21 +30,21 @@ class Registered:
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class Operation:
+class PasswordUpdate:
     request: UpdateUserPasswordRequest
     register_request: RegisterRequest
     api_response: requests.Response
 
 
 @pytest.fixture(scope="module")
-def _registered(client: ApiClient) -> Registered:
+def registered(client: ApiClient) -> Registered:
     register_request = RegisterRequest.random()
     response = client.auth.register(register_request)
     return Registered(user_id=response.json()["id"], request=register_request)
 
 
 @pytest.fixture(scope="module")
-def _operation(client: ApiClient) -> Operation:
+def password_update(client: ApiClient) -> PasswordUpdate:
     register_request = RegisterRequest.random()
     request = UpdateUserPasswordRequest(
         current_password=register_request.password, new_password=Password.random()
@@ -49,34 +55,33 @@ def _operation(client: ApiClient) -> Operation:
         register_response.json()["id"], request
     )
 
-    return Operation(
+    return PasswordUpdate(
         request=request, register_request=register_request, api_response=response
     )
 
 
-def test_status(_operation: Operation) -> None:
+def test_status(password_update: PasswordUpdate) -> None:
     """
     Successful password update returns 200.
     """
 
-    assert_status(_operation.api_response, HttpStatus.OK)
+    assert_status(password_update.api_response, HttpStatus.OK)
 
 
-def test_content_type(_operation: Operation) -> None:
+def test_content_type(password_update: PasswordUpdate) -> None:
     """
     Response is JSON.
     """
 
-    assert_content_type(_operation.api_response, HttpHeader.JSON)
+    assert_content_type(password_update.api_response, HttpHeader.JSON)
 
 
-def test_body(_operation: Operation) -> None:
+def test_body(password_update: PasswordUpdate) -> None:
     """
     Response contains a confirmation message.
     """
 
-    expected_response = UpdateUserPasswordResponse(message="Password updated")
-    assert_body(_operation.api_response, expected_response)
+    assert_body(password_update.api_response, _PASSWORD_UPDATED)
 
 
 def test_nonexistent_user(client: ApiClient) -> None:
@@ -87,15 +92,13 @@ def test_nonexistent_user(client: ApiClient) -> None:
     request = UpdateUserPasswordRequest(
         current_password=Password.random(), new_password=Password.random()
     )
-
     response = client.users.update_user_password(999_999, request)
-    expected_response = ErrorResponse(error="User not found")
 
-    assert_body(response, expected_response)
+    assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
 
 
-def test_wrong_current_password(client: ApiClient, _registered: Registered) -> None:
+def test_wrong_current_password(client: ApiClient, registered: Registered) -> None:
     """
     Wrong current password returns 422.
     """
@@ -103,39 +106,33 @@ def test_wrong_current_password(client: ApiClient, _registered: Registered) -> N
     request = UpdateUserPasswordRequest(
         current_password=Password.random(), new_password=Password.random()
     )
+    response = client.users.update_user_password(registered.user_id, request)
 
-    response = client.users.update_user_password(_registered.user_id, request)
-    expected_response = ErrorResponse(error="Current password is incorrect")
-
-    assert_body(response, expected_response)
+    assert_body(response, _CURRENT_PASSWORD_IS_INCORRECT)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
 
 
-def test_same_password(client: ApiClient, _registered: Registered) -> None:
+def test_same_password(client: ApiClient, registered: Registered) -> None:
     """
     New password identical to current returns 422.
     """
 
-    password = _registered.request.password
+    password = registered.request.password
     request = UpdateUserPasswordRequest(
         current_password=password, new_password=password
     )
+    response = client.users.update_user_password(registered.user_id, request)
 
-    response = client.users.update_user_password(_registered.user_id, request)
-    expected_response = ErrorResponse(
-        error="New password must differ from the current one"
-    )
-
-    assert_body(response, expected_response)
+    assert_body(response, _NEW_PASSWORD_MUST_BE_DIFFERENT)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
 
 
-def test_old_password(client: ApiClient, _operation: Operation) -> None:
+def test_old_password(client: ApiClient, password_update: PasswordUpdate) -> None:
     """
     After update, the old password is rejected.
     """
 
-    register_request = _operation.register_request
+    register_request = password_update.register_request
     login_request = LoginRequest(
         email=register_request.email, password=register_request.password
     )
@@ -144,14 +141,14 @@ def test_old_password(client: ApiClient, _operation: Operation) -> None:
     assert_status(response, HttpStatus.UNAUTHORIZED)
 
 
-def test_new_password_works(client: ApiClient, _operation: Operation) -> None:
+def test_new_password_works(client: ApiClient, password_update: PasswordUpdate) -> None:
     """
     After update, the new password is accepted.
     """
 
     login_request = LoginRequest(
-        email=_operation.register_request.email,
-        password=_operation.request.new_password,
+        email=password_update.register_request.email,
+        password=password_update.request.new_password,
     )
 
     response = client.auth.login(login_request)
