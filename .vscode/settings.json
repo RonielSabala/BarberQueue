@@ -23,7 +23,8 @@
   "Prettier-SQL.expressionWidth": 88,
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
-    "README.md": ["## Table of Contents"]
+    "README.md": ["## Table of Contents"],
+    "backend/ROUTES.md": ["## Table of Contents"]
   },
   "cSpell.language": "en",
   "cSpell.caseSensitive": true,

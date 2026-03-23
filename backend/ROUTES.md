@@ -70,7 +70,7 @@ All error responses follow this shape:
 
 ## Auth
 
-### `POST /api/auth/login`
+### `POST /api/auth/login` <!-- omit from toc -->
 
 Authenticate with email and password.
 
@@ -99,7 +99,7 @@ Authenticate with email and password.
 
 ---
 
-### `POST /api/auth/register`
+### `POST /api/auth/register` <!-- omit from toc -->
 
 Register a new client account.
 
@@ -127,7 +127,7 @@ Register a new client account.
 
 ---
 
-### `POST /api/auth/forgot-password`
+### `POST /api/auth/forgot-password` <!-- omit from toc -->
 
 Send a password recovery email.
 
@@ -149,7 +149,7 @@ Send a password recovery email.
 
 ---
 
-### `POST /api/auth/reset-password`
+### `POST /api/auth/reset-password` <!-- omit from toc -->
 
 Reset password using the reset code received by email.
 
@@ -174,7 +174,7 @@ Reset password using the reset code received by email.
 
 ## Users
 
-### `GET /api/users/{id}`
+### `GET /api/users/{id}` <!-- omit from toc -->
 
 Get a user's profile.
 
@@ -192,7 +192,7 @@ Get a user's profile.
 
 ---
 
-### `PATCH /api/users/{id}`
+### `PATCH /api/users/{id}` <!-- omit from toc -->
 
 Update a user's profile fields. All fields are optional.
 
@@ -216,7 +216,7 @@ Update a user's profile fields. All fields are optional.
 
 ---
 
-### `PATCH /api/users/{id}/password`
+### `PATCH /api/users/{id}/password` <!-- omit from toc -->
 
 Update a user's password.
 
