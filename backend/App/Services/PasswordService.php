@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Exceptions\PasswordException;
 
-class PasswordService
+class PasswordService extends BaseService
 {
     private const INVALID_PASSWORD_MSG = 'Current password is incorrect';
     private const SAME_PASSWORD_MSG = 'New password must differ from the current one';

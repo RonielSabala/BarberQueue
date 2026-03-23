@@ -11,7 +11,7 @@ use App\DTOs\Users\Responses\GetUserResponse;
 use App\Exceptions\UserException;
 use App\Repositories\UserRepository;
 
-class UserService
+class UserService extends BaseService
 {
     public function __construct(
         private readonly PasswordService $passwordService,

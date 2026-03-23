@@ -13,11 +13,12 @@ use App\Exceptions\AuthException;
 use App\Repositories\{PasswordResetRepository, UserRepository};
 use Firebase\JWT\JWT;
 
-class AuthService
+class AuthService extends BaseService
 {
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
     private const CLIENT_ROLE_ID = 1;
+
     private ?MailService $mailService;
     private readonly string $jwtSecret;
 
@@ -27,13 +28,8 @@ class AuthService
         private readonly PasswordResetRepository $passwordResetRepository,
         private readonly Container $container,
     ) {
-        $jwtSecret = $_ENV['JWT_SECRET'] ?? null;
-        if (!$jwtSecret) {
-            throw new AuthException('`JWT_SECRET` is not defined in the environment.', HttpStatus::InternalServerError);
-        }
-
         $this->mailService = null;
-        $this->jwtSecret = $jwtSecret;
+        $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
     }
 
     private function generateJwt(User $user): string

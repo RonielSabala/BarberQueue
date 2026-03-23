@@ -11,7 +11,7 @@ use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class MailService
+class MailService extends BaseService
 {
     private const PORT = 587;
     private const HOST = 'smtp.gmail.com';
@@ -24,18 +24,8 @@ class MailService
     public function __construct(
         private readonly PasswordResetRepository $passwordResetRepository,
     ) {
-        $username = $_ENV['MAIL_USERNAME'] ?? null;
-        if (!$username) {
-            throw new MailException('`MAIL_USERNAME` is not defined in the environment.', HttpStatus::InternalServerError);
-        }
-
-        $password = $_ENV['MAIL_PASSWORD'] ?? null;
-        if (!$password) {
-            throw new MailException('`MAIL_PASSWORD` is not defined in the environment.', HttpStatus::InternalServerError);
-        }
-
-        $this->username = $username;
-        $this->password = $password;
+        $this->username = $this->getEnvVariable('MAIL_USERNAME');
+        $this->password = $this->getEnvVariable('MAIL_PASSWORD');
     }
 
     private function sendEmail(PHPMailer $mail, string $to, string $subject, string $body): void
