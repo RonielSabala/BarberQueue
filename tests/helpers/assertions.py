@@ -2,7 +2,7 @@
 Reusable assertion helpers for API response testing.
 """
 
-from dataclasses import fields
+import dataclasses
 from typing import Protocol, get_type_hints
 
 import requests
@@ -37,9 +37,10 @@ def assert_body_shape(
 def _assert_shape(data: dict, response_class: type[BaseResponse]) -> None:
     hints = get_type_hints(response_class)
 
-    for field in fields(response_class):
-        key = to_camel_case(field.name)
-        expected_type = hints[field.name]
+    for field in dataclasses.fields(response_class):
+        field_name = field.name
+        key = to_camel_case(field_name)
+        expected_type = hints[field_name]
 
         assert key in data, f"Missing key {key!r} in response"
 

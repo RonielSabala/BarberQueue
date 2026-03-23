@@ -1,5 +1,6 @@
+import dataclasses
 import random
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from typing import get_type_hints
 
 from domain.dtos import BaseDto
@@ -31,7 +32,7 @@ class BaseRequest(BaseDto):
         hints = get_type_hints(cls)
         kwargs = {}
 
-        for field in fields(cls):
+        for field in dataclasses.fields(cls):
             field_name = field.name
             optional, field_type = is_optional(hints[field_name])
 

@@ -26,14 +26,11 @@ class _FieldMetadata:
     json_key: str
 
     @classmethod
-    def from_data(
-        cls, field: dataclasses.Field, hints: dict[str, Any], path: str | None
-    ) -> _FieldMetadata:
-        name = field.name
+    def from_data(cls, name: str, field_type: Any, path: str | None) -> _FieldMetadata:
         json_key = to_camel_case(name)
         return cls(
             name=name,
-            field_type=hints[name],
+            field_type=field_type,
             full_path=_join_with_dot(path, json_key),
             json_key=json_key,
         )
@@ -52,7 +49,8 @@ class BadFieldCase:
 
     def build_inner_case(self, field: _FieldMetadata, payload: dict) -> Self:
         inner_payload = {**payload, field.json_key: self.payload}
-        return self.__class__(
+        cls = type(self)
+        return cls(
             nested_case_id(field.name, self.case_id),
             inner_payload,
             self.expected_error_msg,
@@ -131,7 +129,9 @@ def missing_field_cases(
     nested_fields: list[_FieldMetadata] = []
 
     for f in dataclasses.fields(request_class):
-        optional, _ = is_optional(hints[f.name])
+        field_name = f.name
+        field_type = hints[field_name]
+        optional, _ = is_optional(field_type)
 
         # Skip optional fields
         if (
@@ -141,7 +141,7 @@ def missing_field_cases(
         ):
             continue
 
-        field = _FieldMetadata.from_data(f, hints, _path)
+        field = _FieldMetadata.from_data(field_name, field_type, _path)
         yield _get_missing_field_case(field, payload)
 
         if field.is_nested():
