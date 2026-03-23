@@ -12,6 +12,7 @@ unless noted otherwise.
 - [Success Format](#success-format)
 - [Error Format](#error-format)
 - [Auth](#auth)
+- [Users](#users)
 
 ---
 
@@ -157,6 +158,73 @@ Reset password using the reset code received by email.
 ```json
 {
   "resetCode": 123456,
+  "newPassword": "new_password"
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Password updated"
+}
+```
+
+---
+
+## Users
+
+### `GET /api/users/{id}`
+
+Get a user's profile.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "username": "user_example",
+  "email": "user_example@gmail.com",
+  "phone": "8091234567",
+  "role": "admin"
+}
+```
+
+---
+
+### `PATCH /api/users/{id}`
+
+Update a user's profile fields. All fields are optional.
+
+- Body
+
+```json
+{
+  "username": "new_username",
+  "email": "new_email@gmail.com",
+  "phone": "8091234567"
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "User updated"
+}
+```
+
+---
+
+### `PATCH /api/users/{id}/password`
+
+Update a user's password.
+
+- Body
+
+```json
+{
+  "currentPassword": "current_password",
   "newPassword": "new_password"
 }
 ```

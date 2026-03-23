@@ -22,6 +22,7 @@ class AuthService
     private readonly string $jwtSecret;
 
     public function __construct(
+        private readonly PasswordService $passwordService,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
         private readonly Container $container,
@@ -109,19 +110,17 @@ class AuthService
             throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);
         }
 
-        $user = $this->userRepository->findById($passwordReset->userId->value);
-        $oldPasswordHash = $user->passwordHash->value;
-        $newPassword = $request->newPassword->value;
-
-        if (password_verify($newPassword, $oldPasswordHash)) {
-            throw new AuthException('New password must be different from the current password', HttpStatus::UnprocessableEntity);
+        $userId = $passwordReset->userId->value;
+        $user = $this->userRepository->findById($userId);
+        if ($user === null) {
+            throw new AuthException('User not found', HttpStatus::BadRequest);
         }
 
-        $userId = $passwordReset->userId->value;
-        $passwordResetId = $passwordReset->id->value;
-        $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+        $newPassword = $request->newPassword->value;
+        $userPasswordHash = $user->passwordHash->value;
 
-        $this->userRepository->updatePassword($userId, $newPasswordHash);
-        $this->passwordResetRepository->markAsUsed($passwordResetId);
+        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
+        $this->userRepository->updatePassword($userId, $this->passwordService->hash($newPassword));
+        $this->passwordResetRepository->markAsUsed($passwordReset->id->value);
     }
 }
