@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\DTOs\Barbershops\Responses\BarbershopResponse;
+use App\Core\HttpStatus;
+use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
+use App\DTOs\Barbershops\Responses\{BarbershopResponse, CreateBarbershopResponse};
+use App\Exceptions\BarbershopException;
 use App\Repositories\BarbershopRepository;
 
 class BarbershopService extends BaseService
@@ -15,10 +18,33 @@ class BarbershopService extends BaseService
 
     public function getAll(?string $search, ?bool $isOpen): array
     {
-        $entities = $this->barbershopRepository->findAll($search, $isOpen);
+        $barbershops = $this->barbershopRepository->findAll($search, $isOpen);
         return array_map(
-            static fn ($entity) => BarbershopResponse::fromEntity($entity),
-            $entities
+            static fn ($barbershop) => BarbershopResponse::fromEntity($barbershop),
+            $barbershops
         );
+    }
+
+    public function create(CreateBarbershopRequest $request): CreateBarbershopResponse
+    {
+        $email = $request->email->value;
+        $existing = $this->barbershopRepository->findByEmail($email);
+
+        if ($existing !== null) {
+            throw new BarbershopException('Email already in use', HttpStatus::Conflict);
+        }
+
+        $barbershop = $this->barbershopRepository->create(
+            $request->barbershopName,
+            $request->email,
+            $request->phone,
+            $request->barbershopAddress,
+            $request->photoUrl,
+            $request->opensAt,
+            $request->closesAt,
+            $request->capacity
+        );
+
+        return CreateBarbershopResponse::fromEntity($barbershop);
     }
 }

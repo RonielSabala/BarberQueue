@@ -272,7 +272,7 @@ List all active barbershops. Supports optional filters.
 
 ### `POST /api/barbershops` <!-- omit from toc -->
 
-Create a new barbershop.
+Create a new barbershop. The only optional field is `capacity`, defaults to 1.
 
 - Body
 
@@ -383,7 +383,7 @@ Toggle a barbershop open or closed status.
 
 ---
 
-### `POST /api/barbershops/{id}/photo` <!-- omit from toc -->
+### `PATCH /api/barbershops/{id}/photo` <!-- omit from toc -->
 
 Replace the barbershop's main photo. Accepts `multipart/form-data`.
 

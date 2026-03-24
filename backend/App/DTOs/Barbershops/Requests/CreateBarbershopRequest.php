@@ -2,26 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Entities;
+namespace App\DTOs\Barbershops\Requests;
 
 use App\Domain\ValueObjects\{
     Address,
-    AverageRating,
     BarbershopName,
     Capacity,
     Email,
-    Id,
     Phone,
     PhotoUrl,
     TimeOfDay
 };
+use App\DTOs\BaseRequest;
 
-readonly class Barbershop extends BaseEntity
+readonly class CreateBarbershopRequest extends BaseRequest
 {
-    public bool $isOpen;
-
     public function __construct(
-        public Id $id,
         public BarbershopName $barbershopName,
         public Email $email,
         public Phone $phone,
@@ -29,11 +25,6 @@ readonly class Barbershop extends BaseEntity
         public PhotoUrl $photoUrl,
         public TimeOfDay $opensAt,
         public TimeOfDay $closesAt,
-        public Capacity $capacity,
-        public bool $isActive,
-        public ?AverageRating $averageRating,
-    ) {
-        $now = date('H:i:s');
-        $this->isOpen = $now >= $this->opensAt->value && $now <= $this->closesAt->value;
-    }
+        public ?Capacity $capacity
+    ) {}
 }

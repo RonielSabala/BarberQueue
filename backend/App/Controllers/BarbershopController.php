@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{GET, RoutePrefix};
-use App\Core\HttpResponse;
+use App\Attributes\{GET, POST, RoutePrefix};
+use App\Core\{HttpResponse, HttpStatus};
+use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
 use App\Services\BarbershopService;
 
 #[RoutePrefix('/api/barbershops')]
@@ -20,5 +21,12 @@ class BarbershopController extends BaseController
     {
         $response = $this->barbershopService->getAll($search, $isOpen);
         HttpResponse::json($response);
+    }
+
+    #[POST('')]
+    public function create(CreateBarbershopRequest $request): void
+    {
+        $response = $this->barbershopService->create($request);
+        HttpResponse::json($response, HttpStatus::Created);
     }
 }

@@ -41,7 +41,7 @@ CREATE TABLE
         photo_url TEXT NOT NULL,
         opens_at TIME NOT NULL,
         closes_at TIME NOT NULL,
-        capacity TINYINT UNSIGNED DEFAULT 1,
+        capacity TINYINT UNSIGNED NOT NULL,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

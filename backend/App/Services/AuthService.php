@@ -23,6 +23,7 @@ class AuthService extends BaseService
     private readonly string $jwtSecret;
 
     public function __construct(
+        private readonly PasswordService $passwordService,
         private readonly UserService $userService,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
@@ -70,12 +71,12 @@ class AuthService extends BaseService
             throw new AuthException('Email already in use', HttpStatus::Conflict);
         }
 
-        $passwordHash = new PasswordHash(password_hash($request->password->value, PASSWORD_BCRYPT));
+        $passwordHash = $this->passwordService->hash($request->password->value);
         $user = $this->userRepository->create(
             username: $request->username,
             email: $request->email,
             phone: $request->phone,
-            passwordHash: $passwordHash,
+            passwordHash: new PasswordHash($passwordHash),
             roleId: new Id(self::CLIENT_ROLE_ID),
         );
 
