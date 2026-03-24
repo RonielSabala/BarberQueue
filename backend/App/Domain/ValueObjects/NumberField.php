@@ -6,10 +6,10 @@ namespace App\Domain\ValueObjects;
 
 abstract class NumberField extends BaseField
 {
-    protected const ?int MIN = null;
-    protected const ?int MAX = null;
+    protected const int|float|null MIN = null;
+    protected const int|float|null MAX = null;
 
-    public function __construct(int $value)
+    public function __construct(float|int $value)
     {
         $min = static::MIN;
         if ($min !== null && $value < $min) {

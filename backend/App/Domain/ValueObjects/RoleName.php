@@ -17,7 +17,7 @@ enum Role: string
     }
 }
 
-class RoleName extends BaseField
+final class RoleName extends BaseField
 {
     public function __construct(string $value)
     {

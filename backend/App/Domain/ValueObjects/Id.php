@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-class Id extends NumberField
+final class Id extends NumberField
 {
     protected const int MIN = 0;
 

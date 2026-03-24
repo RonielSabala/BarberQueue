@@ -263,7 +263,7 @@ List all active barbershops. Supports optional filters.
     "photoUrl": "https://example.com/photo.jpg",
     "rating": 4.8,
     "isOpen": true,
-    "address": "123 Main Street"
+    "barbershopAddress": "123 Main Street"
   }
 ]
 ```
