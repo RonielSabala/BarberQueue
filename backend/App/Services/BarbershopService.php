@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
+use App\Domain\Entities\Barbershop;
 use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
-use App\DTOs\Barbershops\Responses\{BarbershopResponse, CreateBarbershopResponse};
+use App\DTOs\Barbershops\Responses\{BarbershopDetailResponse, BarbershopResponse, CreateBarbershopResponse};
 use App\Exceptions\BarbershopException;
 use App\Repositories\BarbershopRepository;
 
@@ -15,6 +16,16 @@ class BarbershopService extends BaseService
     public function __construct(
         private readonly BarbershopRepository $barbershopRepository,
     ) {}
+
+    private function validateBarbershopExists(int $barbershopId): Barbershop
+    {
+        $barbershop = $this->barbershopRepository->findById($barbershopId);
+        if ($barbershop === null) {
+            throw new BarbershopException('Barbershop not found', HttpStatus::NotFound);
+        }
+
+        return $barbershop;
+    }
 
     public function getAll(?string $search, ?bool $isOpen): array
     {
@@ -46,5 +57,11 @@ class BarbershopService extends BaseService
         );
 
         return CreateBarbershopResponse::fromEntity($barbershop);
+    }
+
+    public function getBarbershop(int $barbershopId): BarbershopDetailResponse
+    {
+        $barbershop = $this->validateBarbershopExists($barbershopId);
+        return BarbershopDetailResponse::fromEntity($barbershop);
     }
 }

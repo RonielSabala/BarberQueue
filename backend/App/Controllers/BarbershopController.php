@@ -29,4 +29,11 @@ class BarbershopController extends BaseController
         $response = $this->barbershopService->create($request);
         HttpResponse::json($response, HttpStatus::Created);
     }
+
+    #[GET('/{id}')]
+    public function getBarbershop(int $id): void
+    {
+        $response = $this->barbershopService->getBarbershop($id);
+        HttpResponse::json($response);
+    }
 }
