@@ -13,6 +13,7 @@ unless noted otherwise.
 - [Error Format](#error-format)
 - [Auth](#auth)
 - [Users](#users)
+- [Barbershops](#barbershops)
 
 ---
 
@@ -235,4 +236,267 @@ Update a user's password.
 {
   "message": "Password updated"
 }
+```
+
+---
+
+## Barbershops
+
+### `GET /api/barbershops` <!-- omit from toc -->
+
+List all active barbershops. Supports optional filters.
+
+**Query params**
+
+| Param    | Type                   | Description                         |
+| -------- | ---------------------- | ----------------------------------- |
+| `search` | string                 | Filter by name                      |
+| `status` | **open** \| **closed** | Filter by current open/closed state |
+
+- Response: `200`
+
+```json
+[
+  {
+    "id": 1,
+    "barbershopName": "barbershop_name_example",
+    "photoUrl": "https://example.com/photo.jpg",
+    "rating": 4.8,
+    "isOpen": true,
+    "address": "123 Main Street"
+  }
+]
+```
+
+---
+
+### `POST /api/barbershops` <!-- omit from toc -->
+
+Create a new barbershop.
+
+- Body
+
+```json
+{
+  "barbershopName": "barbershop_name_example",
+  "email": "barbershop_example@gmail.com",
+  "phone": "8091234567",
+  "barbershopAddress": "123 Main Street",
+  "photoUrl": "https://example.com/photo.jpg",
+  "opensAt": "08:00:00",
+  "closesAt": "20:00:00",
+  "capacity": 3
+}
+```
+
+- Response: `201`
+
+```json
+{
+  "id": 1,
+  "barbershopName": "barbershop_name_example",
+  "email": "barbershop_example@gmail.com",
+  "phone": "8091234567",
+  "barbershopAddress": "123 Main Street",
+  "photoUrl": "https://example.com/photo.jpg",
+  "opensAt": "08:00:00",
+  "closesAt": "20:00:00",
+  "capacity": 3,
+  "isActive": true
+}
+```
+
+---
+
+### `GET /api/barbershops/{id}` <!-- omit from toc -->
+
+Get full detail of a barbershop.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "barbershopName": "barbershop_name_example",
+  "email": "barbershop_example@gmail.com",
+  "phone": "8091234567",
+  "barbershopAddress": "123 Main Street",
+  "photoUrl": "https://example.com/photo.jpg",
+  "opensAt": "08:00:00",
+  "closesAt": "20:00:00",
+  "capacity": 3,
+  "isActive": true,
+  "isOpen": true,
+  "rating": 4.8
+}
+```
+
+---
+
+### `PATCH /api/barbershops/{id}` <!-- omit from toc -->
+
+Update a barbershop's profile fields. All fields are optional.
+
+- Body
+
+```json
+{
+  "barbershopName": "new_barbershop_name",
+  "email": "new_email@gmail.com",
+  "phone": "8097654321",
+  "barbershopAddress": "456 New Street",
+  "opensAt": "09:00:00",
+  "closesAt": "18:00:00",
+  "capacity": 5
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Barbershop updated"
+}
+```
+
+---
+
+### `PATCH /api/barbershops/{id}/status` <!-- omit from toc -->
+
+Toggle a barbershop open or closed status.
+
+- Body
+
+```json
+{
+  "isActive": false
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Barbershop status updated"
+}
+```
+
+---
+
+### `POST /api/barbershops/{id}/photo` <!-- omit from toc -->
+
+Replace the barbershop's main photo. Accepts `multipart/form-data`.
+
+| Field   | Type                  |
+| ------- | --------------------- |
+| `photo` | file (jpg, png, webp) |
+
+- Response: `200`
+
+```json
+{
+  "photoUrl": "https://example.com/photo.jpg"
+}
+```
+
+---
+
+### `POST /api/barbershops/{id}/photos` <!-- omit from toc -->
+
+Add one or more photos to the barbershop gallery. Accepts `multipart/form-data`.
+
+| Field      | Type                    |
+| ---------- | ----------------------- |
+| `photos[]` | file[] (jpg, png, webp) |
+
+- Response: `201`
+
+```json
+{
+  "uploaded": [
+    "https://example.com/photo_1.jpg",
+    "https://example.com/photo_2.jpg"
+  ]
+}
+```
+
+---
+
+### `DELETE /api/barbershops/{id}/photos/{photoId}` <!-- omit from toc -->
+
+Remove a photo from the gallery.
+
+- Response: `204`
+
+---
+
+### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
+
+List all reviews for a barbershop.
+
+- Response: `200`
+
+```json
+[
+  {
+    "id": 1,
+    "userId": 1,
+    "username": "user_example",
+    "rating": 5,
+    "content": "Great service, highly recommended.",
+    "createdAt": "2026-03-05T09:00:00"
+  }
+]
+```
+
+---
+
+### `POST /api/barbershops/{id}/reviews` <!-- omit from toc -->
+
+Submit a review for a barbershop.
+
+- Body
+
+```json
+{
+  "userId": 1,
+  "rating": 5,
+  "content": "Great service, highly recommended."
+}
+```
+
+- Response: `201`
+
+```json
+{
+  "id": 1,
+  "userId": 1,
+  "username": "user_example",
+  "rating": 5,
+  "content": "Great service, highly recommended.",
+  "createdAt": "2026-03-05T09:00:00"
+}
+```
+
+---
+
+### `GET /api/barbershops/{id}/employees` <!-- omit from toc -->
+
+List all employees assigned to a barbershop.
+
+- Response: `200`
+
+```json
+[
+  {
+    "id": 1,
+    "username": "barber_example",
+    "email": "barber_example@gmail.com",
+    "phone": "8091234567",
+    "role": "barber",
+    "startTime": "08:00:00",
+    "endTime": "16:00:00",
+    "workingDays": [1, 2, 3, 4, 5]
+  }
+]
 ```
