@@ -5,6 +5,6 @@ from domain.value_objects.base import NameField
 
 
 @dataclass(slots=True, frozen=True)
-class Username(NameField):
+class BarbershopName(NameField):
     _min_len: ClassVar[int] = 5
-    _max_len: ClassVar[int] = 30
+    _max_len: ClassVar[int] = 100

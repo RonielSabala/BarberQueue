@@ -5,16 +5,16 @@ from domain.value_objects.base.base_field import BaseField
 
 
 @dataclass(slots=True, frozen=True)
-class NumberField(BaseField[int]):
+class NumberField[T: int | float](BaseField[T]):
     """
-    Base for all integer value objects.
+    Base for all number value objects.
 
     Subclasses set `_min_value` and `_max_value` as class-level
     field() defaults.
     """
 
-    _min_value: ClassVar[int | None] = field(default=None, init=False)
-    _max_value: ClassVar[int | None] = field(default=None, init=False)
+    _min_value: ClassVar[int | float | None] = field(default=None, init=False)
+    _max_value: ClassVar[int | float | None] = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         min_value = self._min_value

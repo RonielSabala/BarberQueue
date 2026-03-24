@@ -41,7 +41,7 @@ CREATE TABLE
         photo_url TEXT NOT NULL,
         opens_at TIME NOT NULL,
         closes_at TIME NOT NULL,
-        capacity INT DEFAULT 1,
+        capacity TINYINT UNSIGNED DEFAULT 1,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -91,7 +91,7 @@ CREATE TABLE
     working_days (
         id INT PRIMARY KEY AUTO_INCREMENT,
         staff_id INT NOT NULL,
-        day_of_week TINYINT NOT NULL COMMENT '1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun',
+        day_of_week TINYINT UNSIGNED NOT NULL COMMENT '1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun',
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
@@ -127,7 +127,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         user_id INT NOT NULL,
         barbershop_id INT NOT NULL,
-        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
         content TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
@@ -140,7 +140,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         client_id INT NOT NULL,
         barber_id INT NOT NULL,
-        rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
         content TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,

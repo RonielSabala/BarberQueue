@@ -261,7 +261,7 @@ List all active barbershops. Supports optional filters.
     "id": 1,
     "barbershopName": "barbershop_name_example",
     "photoUrl": "https://example.com/photo.jpg",
-    "rating": 4.8,
+    "averageRating": 4.8,
     "isOpen": true,
     "barbershopAddress": "123 Main Street"
   }
@@ -327,7 +327,7 @@ Get full detail of a barbershop.
   "capacity": 3,
   "isActive": true,
   "isOpen": true,
-  "rating": 4.8
+  "averageRating": 4.8
 }
 ```
 

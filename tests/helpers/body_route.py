@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import get_type_hints
+from typing import Self, get_type_hints
 
 from api.core import HttpMethod
 from domain.dtos import BaseRequest
@@ -35,9 +33,7 @@ class BodyRoute:
     request_class: type[BaseRequest]
 
     @classmethod
-    def from_function(
-        cls, func: Callable, http_method: HttpMethod, path: str
-    ) -> BodyRoute:
+    def from_function(cls, func: Callable, http_method: HttpMethod, path: str) -> Self:
         request_class = _extract_request_class(func)
         if request_class is None:
             raise ValueError(

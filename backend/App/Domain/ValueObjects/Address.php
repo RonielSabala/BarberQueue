@@ -9,5 +9,4 @@ use App\Domain\ValueObjects\Base\StringField;
 final class Address extends StringField
 {
     protected const int MIN_LEN = 12;
-    protected const int MAX_LEN = 255;
 }

@@ -8,12 +8,13 @@ use App\Domain\ValueObjects\Base\BaseField;
 
 final class Phone extends BaseField
 {
-    private const string PHONE_PATTERN = '/^\d{10}$/';
+    private const int PHONE_LENGTH = 10;
+    private const string PHONE_PATTERN = '/^\d{' . self::PHONE_LENGTH . '}$/';
 
     public function __construct(string $value)
     {
         if (!preg_match(self::PHONE_PATTERN, $value)) {
-            throw $this->validationException('must contain exactly 10 digits');
+            throw $this->validationException('must contain exactly ' . self::PHONE_LENGTH . ' digits');
         }
 
         $this->value = $value;

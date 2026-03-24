@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import string
 from dataclasses import dataclass
 from typing import ClassVar
@@ -19,7 +17,6 @@ class PasswordHash(StringField):
     _max_len: ClassVar[int] = _FIXED_HASH_LENGTH
 
     @classmethod
-    def random(cls) -> PasswordHash:
+    def random_value(cls) -> str:
         body = random_string(_BCRYPT_CHARS, _BCRYPT_BODY_LEN)
-        password_hash = f"{_BCRYPT_PREFIX}{body}"
-        return cls(password_hash)
+        return f"{_BCRYPT_PREFIX}{body}"

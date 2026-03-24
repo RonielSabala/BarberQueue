@@ -8,7 +8,7 @@ use App\Domain\ValueObjects\Base\NumberField;
 
 final class Id extends NumberField
 {
-    protected const int MIN = 0;
+    protected const int MIN_VALUE = 0;
 
     public function __construct(int|string $value)
     {

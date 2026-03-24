@@ -1,14 +1,12 @@
-from __future__ import annotations
-
 import dataclasses
 import random
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Self
+from typing import ClassVar, Self
 
 from domain.dtos import BaseRequest
 from domain.utils import to_camel_case
-from domain.value_objects.base import FieldName
+from domain.value_objects.base import NameField
 
 
 def _join_with_dot(a: str | None, b: str):
@@ -26,7 +24,7 @@ class _FieldMetadata:
     json_key: str
 
     @classmethod
-    def from_data(cls, name: str, field_type: type, path: str | None) -> _FieldMetadata:
+    def from_data(cls, name: str, field_type: type, path: str | None) -> Self:
         json_key = to_camel_case(name)
         return cls(
             name=name,
@@ -55,6 +53,12 @@ class BadFieldCase:
             inner_payload,
             self.expected_error_msg,
         )
+
+
+@dataclass(slots=True, frozen=True)
+class _UnexpectedKey(NameField):
+    _min_len: ClassVar[int] = 1
+    _max_len: ClassVar[int] = 25
 
 
 @dataclass(slots=True)
@@ -102,7 +106,7 @@ def _get_wrong_type_case(field: _FieldMetadata, payload: dict) -> BadFieldCase:
 
 
 def _get_unexpected_field_case(path: str | None, payload: dict) -> BadFieldCase:
-    unexpected_key = FieldName.random().value
+    unexpected_key = _UnexpectedKey.random_value()
     key_path = _join_with_dot(path, unexpected_key)
     return BadFieldCase(
         _case_id("unexpected_key", unexpected_key),

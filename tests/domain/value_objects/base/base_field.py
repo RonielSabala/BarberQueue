@@ -1,12 +1,11 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Self
 
 from domain.exceptions import ValidationError
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class BaseField[T](ABC):
     """
     Root of all value objects.
@@ -23,4 +22,8 @@ class BaseField[T](ABC):
 
     @classmethod
     @abstractmethod
-    def random(cls) -> BaseField[T]: ...
+    def random_value(cls) -> T: ...
+
+    @classmethod
+    def random(cls) -> Self:
+        return cls(cls.random_value())
