@@ -7,9 +7,9 @@ namespace App\Domain\ValueObjects\Base;
 use App\Core\HttpStatus;
 use App\Exceptions\ValidationException;
 
-abstract class BaseField
+abstract readonly class BaseField
 {
-    public $value;
+    public mixed $value;
 
     protected function validationException(string $message): ValidationException
     {

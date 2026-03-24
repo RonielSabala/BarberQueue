@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects\Base;
 
-abstract class StringField extends BaseField
+abstract readonly class StringField extends BaseField
 {
     protected const ?int MIN_LEN = null;
     protected const ?int MAX_LEN = null;

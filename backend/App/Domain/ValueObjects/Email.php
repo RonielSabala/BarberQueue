@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
 
-final class Email extends StringField
+final readonly class Email extends StringField
 {
     protected const int MIN_LEN = 5;
     protected const int MAX_LEN = 254;

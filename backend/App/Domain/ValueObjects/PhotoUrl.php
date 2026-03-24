@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
 
-final class PhotoUrl extends StringField
+final readonly class PhotoUrl extends StringField
 {
     protected const int MIN_LEN = 12;
 

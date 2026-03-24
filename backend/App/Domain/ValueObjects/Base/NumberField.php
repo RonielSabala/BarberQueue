@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects\Base;
 
-abstract class NumberField extends BaseField
+abstract readonly class NumberField extends BaseField
 {
     protected const int|float|null MIN_VALUE = null;
     protected const int|float|null MAX_VALUE = null;

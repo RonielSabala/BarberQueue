@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\NameField;
 
-final class Username extends NameField
+final readonly class Username extends NameField
 {
     protected const int MIN_LEN = 5;
     protected const int MAX_LEN = 30;

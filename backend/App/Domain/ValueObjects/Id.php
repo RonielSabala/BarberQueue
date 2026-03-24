@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\NumberField;
 
-final class Id extends NumberField
+final readonly class Id extends NumberField
 {
     protected const int MIN_VALUE = 1;
 

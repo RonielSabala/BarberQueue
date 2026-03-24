@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\NumberField;
 
-final class ResetCode extends NumberField
+final readonly class ResetCode extends NumberField
 {
     private const int FIXED_CODE_DIGITS = 6;
     protected const int MIN_VALUE = 10 ** (self::FIXED_CODE_DIGITS - 1);

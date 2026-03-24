@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects\Base;
 
-abstract class NameField extends StringField
+abstract readonly class NameField extends StringField
 {
     private const string NAME_PATTERN = '/^[a-zA-Z_][a-zA-Z0-9_]*(?: [a-zA-Z0-9_]+)*$/';
 

@@ -7,7 +7,7 @@ namespace App\DTOs;
 use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\Base\BaseField;
 
-readonly class BaseResponse
+abstract readonly class BaseResponse
 {
     public static function fromEntity(BaseEntity $entity): static
     {

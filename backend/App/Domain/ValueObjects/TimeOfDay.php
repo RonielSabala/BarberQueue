@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\BaseField;
 
-final class TimeOfDay extends BaseField
+final readonly class TimeOfDay extends BaseField
 {
     private const int MIN_HOUR = 0;
     private const int MAX_HOUR = 23;

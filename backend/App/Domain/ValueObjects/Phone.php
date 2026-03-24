@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\BaseField;
 
-final class Phone extends BaseField
+final readonly class Phone extends BaseField
 {
     private const int PHONE_LENGTH = 10;
     private const string PHONE_PATTERN = '/^\d{' . self::PHONE_LENGTH . '}$/';
