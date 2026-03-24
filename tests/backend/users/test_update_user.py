@@ -22,7 +22,9 @@ from helpers.assertions import (
 from helpers.common_responses import USER_NOT_FOUND
 
 _USER_UPDATED = MessageResponse(message="User updated")
-_ONE_FIELD_MUST_BE_PROVIDED = ErrorResponse(error="At least one field must be provided")
+_ONE_FIELD_MUST_BE_PROVIDED = ErrorResponse(
+    error="At least one field must be provided for update"
+)
 
 
 @pytest.fixture(scope="module")

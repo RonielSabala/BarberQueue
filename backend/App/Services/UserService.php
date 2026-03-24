@@ -37,17 +37,7 @@ class UserService extends BaseService
     public function updateUser(int $userId, UpdateUserRequest $request): void
     {
         $this->validateUserExists($userId);
-
-        $fields = array_filter([
-            'username' => $request->username?->value,
-            'email' => $request->email?->value,
-            'phone' => $request->phone?->value,
-        ], static fn (mixed $value) => $value !== null);
-
-        if (empty($fields)) {
-            throw new UserException('At least one field must be provided', HttpStatus::BadRequest);
-        }
-
+        $fields = $this->validateFieldsToUpdate($request);
         $this->userRepository->updateFields($userId, $fields);
     }
 

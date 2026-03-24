@@ -9,34 +9,13 @@ use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Username};
 
 class UserRepository extends BaseRepository
 {
-    private const ALLOWED_FIELDS = [
+    protected const string TABLE_NAME = 'users';
+    protected const array ALLOWED_FIELDS = [
         'username' => 'username',
         'email' => 'email',
         'phone' => 'phone',
         'password_hash' => 'password_hash',
     ];
-
-    public function updateFields(int $id, array $fields): void
-    {
-        if (empty($fields)) {
-            return;
-        }
-
-        $keys = array_keys($fields);
-        foreach ($keys as $field) {
-            if (!\array_key_exists($field, self::ALLOWED_FIELDS)) {
-                throw new \InvalidArgumentException("Unknown field: '{$field}'");
-            }
-        }
-
-        $setClauses = implode(', ', array_map(
-            static fn (string $field) => "{$field} = ?",
-            $keys
-        ));
-
-        $sql = "UPDATE users SET {$setClauses} WHERE id = ?";
-        $this->query($sql, [...array_values($fields), $id]);
-    }
 
     public function findById(int $id): ?User
     {

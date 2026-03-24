@@ -11,9 +11,45 @@ abstract class BaseRepository
 {
     protected \PDO $db;
 
+    protected const ?string TABLE_NAME = null;
+    protected const ?array ALLOWED_FIELDS = null;
+
     public function __construct()
     {
         $this->db = DbConfig::getConnection();
+    }
+
+    private function missingVariablesException(string $varName): \RuntimeException
+    {
+        return new \RuntimeException("Repository `{$varName}` variable is not set");
+    }
+
+    protected function mapToEntity(string $entityClass, array $row): object
+    {
+        $reflection = new \ReflectionClass($entityClass);
+        $constructor = $reflection->getConstructor();
+
+        if (!$constructor) {
+            return new $entityClass();
+        }
+
+        $arguments = [];
+        foreach ($constructor->getParameters() as $param) {
+            $dbKey = TextUtils::toSnakeCase($param->getName());
+            $dbValue = $row[$dbKey] ?? null;
+
+            // Resolve Type
+            $type = $param->getType();
+            if ($type && !$type->isBuiltin() && $dbValue !== null) {
+                // Instantiate Value Object
+                $className = $type->getName();
+                $arguments[] = new $className($dbValue);
+            } else {
+                $arguments[] = $dbValue;
+            }
+        }
+
+        return $reflection->newInstanceArgs($arguments);
     }
 
     protected function query(string $sql, array $params = []): \PDOStatement
@@ -43,31 +79,35 @@ abstract class BaseRepository
         return $results;
     }
 
-    protected function mapToEntity(string $entityClass, array $row): object
+    public function updateFields(int $entityId, array $entityFields): void
     {
-        $reflection = new \ReflectionClass($entityClass);
-        $constructor = $reflection->getConstructor();
-
-        if (!$constructor) {
-            return new $entityClass();
+        if (empty($entityFields)) {
+            return;
         }
 
-        $arguments = [];
-        foreach ($constructor->getParameters() as $param) {
-            $dbKey = TextUtils::toSnakeCase($param->getName());
-            $dbValue = $row[$dbKey] ?? null;
+        $tableName = static::TABLE_NAME;
+        if ($tableName === null) {
+            throw $this->missingVariablesException('TABLE_NAME');
+        }
 
-            // Resolve Type
-            $type = $param->getType();
-            if ($type && !$type->isBuiltin() && $dbValue !== null) {
-                // Instantiate Value Object
-                $className = $type->getName();
-                $arguments[] = new $className($dbValue);
-            } else {
-                $arguments[] = $dbValue;
+        $allowedFields = static::ALLOWED_FIELDS;
+        if ($allowedFields === null) {
+            throw $this->missingVariablesException('ALLOWED_FIELDS');
+        }
+
+        $keys = array_keys($entityFields);
+        foreach ($keys as $field) {
+            if (!\array_key_exists($field, $allowedFields)) {
+                throw new \InvalidArgumentException("Unknown field: '{$field}'");
             }
         }
 
-        return $reflection->newInstanceArgs($arguments);
+        $setClauses = implode(', ', array_map(
+            static fn (string $field) => "{$field} = ?",
+            $keys
+        ));
+
+        $sql = 'UPDATE ' . $tableName . " SET {$setClauses} WHERE id = ?";
+        $this->query($sql, [...array_values($entityFields), $entityId]);
     }
 }
