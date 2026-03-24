@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
+use App\Domain\ValueObjects\Base\BaseField;
+
 final class Phone extends BaseField
 {
     private const string PHONE_PATTERN = '/^\d{10}$/';

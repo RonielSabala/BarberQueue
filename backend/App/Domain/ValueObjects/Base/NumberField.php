@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\ValueObjects;
+namespace App\Domain\ValueObjects\Base;
 
 abstract class NumberField extends BaseField
 {

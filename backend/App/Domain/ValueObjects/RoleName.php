@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
+use App\Domain\ValueObjects\Base\BaseField;
+
 enum Role: string
 {
     case Client = 'client';

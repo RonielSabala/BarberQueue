@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
+use App\Domain\ValueObjects\Base\BaseField;
+
 final class TimeOfDay extends BaseField
 {
     private const TIME_PATTERN = '/^\d{2}:\d{2}:\d{2}$/';

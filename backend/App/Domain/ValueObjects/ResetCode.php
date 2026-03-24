@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
+use App\Domain\ValueObjects\Base\NumberField;
+
 final class ResetCode extends NumberField
 {
     private const int FIXED_CODE_DIGITS = 6;
