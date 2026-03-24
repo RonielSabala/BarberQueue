@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Attributes\{GET, POST, RoutePrefix};
+use App\Attributes\PATCH;
 use App\Core\{HttpResponse, HttpStatus};
-use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
+use App\DTOs\Barbershops\Requests\{CreateBarbershopRequest, UpdateBarbershopRequest};
 use App\Services\BarbershopService;
 
 #[RoutePrefix('/api/barbershops')]
@@ -35,5 +36,12 @@ class BarbershopController extends BaseController
     {
         $response = $this->barbershopService->getBarbershop($id);
         HttpResponse::json($response);
+    }
+
+    #[PATCH('/{id}')]
+    public function updateBarbershop(int $id, UpdateBarbershopRequest $request): void
+    {
+        $this->barbershopService->updateBarbershop($id, $request);
+        HttpResponse::success('Barbershop updated');
     }
 }

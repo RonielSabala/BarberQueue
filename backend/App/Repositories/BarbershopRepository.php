@@ -17,6 +17,17 @@ use App\Domain\ValueObjects\{
 
 class BarbershopRepository extends BaseRepository
 {
+    protected const string TABLE_NAME = 'barbershops';
+    protected const array ALLOWED_FIELDS = [
+        'barbershop_name' => 'barbershop_name',
+        'email' => 'email',
+        'phone' => 'phone',
+        'barbershop_address' => 'barbershop_address',
+        'opens_at' => 'opens_at',
+        'closes_at' => 'closes_at',
+        'capacity' => 'capacity',
+    ];
+
     public function findById(int $id): ?Barbershop
     {
         $sql = <<<'SQL'
