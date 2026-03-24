@@ -248,10 +248,10 @@ List all active barbershops. Supports optional filters.
 
 **Query params**
 
-| Param    | Type                   | Description                         |
-| -------- | ---------------------- | ----------------------------------- |
-| `search` | string                 | Filter by name                      |
-| `status` | **open** \| **closed** | Filter by current open/closed state |
+| Param    | Type                  | Description                         |
+| -------- | --------------------- | ----------------------------------- |
+| `search` | string                | Filter by name                      |
+| `isOpen` | **true** \| **false** | Filter by current open/closed state |
 
 - Response: `200`
 
@@ -260,10 +260,10 @@ List all active barbershops. Supports optional filters.
   {
     "id": 1,
     "barbershopName": "barbershop_name_example",
+    "barbershopAddress": "123 Main Street",
     "photoUrl": "https://example.com/photo.jpg",
     "averageRating": 4.8,
-    "isOpen": true,
-    "barbershopAddress": "123 Main Street"
+    "isOpen": true
   }
 ]
 ```

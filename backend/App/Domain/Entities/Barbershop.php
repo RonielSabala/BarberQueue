@@ -8,6 +8,8 @@ use App\Domain\ValueObjects\{Address, AverageRating, BarbershopName, Capacity, E
 
 readonly class Barbershop extends BaseEntity
 {
+    public bool $isOpen;
+
     public function __construct(
         public Id $id,
         public BarbershopName $barbershopName,
@@ -19,7 +21,9 @@ readonly class Barbershop extends BaseEntity
         public TimeOfDay $closesAt,
         public Capacity $capacity,
         public bool $isActive,
-        public bool $isOpen,
-        public AverageRating $rating,
-    ) {}
+        public ?AverageRating $averageRating,
+    ) {
+        $now = date('H:i:s');
+        $this->isOpen = ($now >= $this->opensAt->value && $now <= $this->closesAt->value);
+    }
 }

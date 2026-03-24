@@ -18,29 +18,32 @@ class RouteMatch
     {
         $controller = $this->route->controller;
         $methodName = $this->route->controllerMethod;
-        $params = $this->params;
+        $routeParams = $this->params;
 
         $reflection = new \ReflectionMethod($controller, $methodName);
         $args = [];
 
         foreach ($reflection->getParameters() as $param) {
             $type = $param->getType();
-
-            if (!$type instanceof \ReflectionNamedType) {
-                $args[] = array_shift($params);
-                continue;
-            }
-
             $typeName = $type->getName();
+            $isReflectionType = $type instanceof \ReflectionNamedType;
 
             // Map request class from JSON body
-            if (is_subclass_of($typeName, BaseRequest::class)) {
+            if ($isReflectionType && is_subclass_of($typeName, BaseRequest::class)) {
                 $args[] = $controller->buildRequest($typeName);
                 continue;
             }
 
-            $raw = array_shift($params);
-            $args[] = TypeCoercion::coerce($raw, $typeName);
+            // Query param
+            if ($param->isDefaultValueAvailable() && $param->getDefaultValue() === null) {
+                $value = $_GET[$param->getName()] ?? null;
+                $args[] = $value === null ? $value : TypeCoercion::coerce($value, $typeName);
+                continue;
+            }
+
+            // Route param
+            $raw = array_shift($routeParams);
+            $args[] = $isReflectionType ? TypeCoercion::coerce($raw, $typeName) : $raw;
         }
 
         $controller->{$methodName}(...$args);
