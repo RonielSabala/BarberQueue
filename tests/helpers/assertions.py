@@ -2,8 +2,7 @@
 Reusable assertion helpers for API response testing.
 """
 
-import dataclasses
-from typing import Protocol, get_type_hints
+from typing import Any, Protocol
 
 import requests
 
@@ -20,6 +19,12 @@ def assert_status(response: requests.Response, status: HttpStatus) -> None:
     assert response.status_code == status
 
 
+def assert_type(value: Any, expected: type, name_on_error: str) -> None:
+    assert isinstance(value, expected), (
+        f"Expected '{name_on_error!r}' to be {expected.__name__}, got {type(value).__name__}"
+    )
+
+
 def assert_content_type(response: requests.Response, header: HttpHeader) -> None:
     assert response.headers.get("Content-Type") == header.with_charset
 
@@ -34,28 +39,15 @@ def assert_body_shape(
     _assert_shape(response.json(), expected)
 
 
-def _assert_shape(data: dict, response_class: type[BaseResponse]) -> None:
-    hints = get_type_hints(response_class)
+def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
+    for field_name, field_type, _ in response_class.iter_field_types():
+        json_key = to_camel_case(field_name)
+        assert json_key in json, f"Missing key '{json_key!r}' in response"
 
-    for field in dataclasses.fields(response_class):
-        field_name = field.name
-        key = to_camel_case(field_name)
-        expected_type = hints[field_name]
-
-        assert key in data, f"Missing key {key!r} in response"
-
-        value = data[key]
-        if not isinstance(expected_type, type) or not issubclass(
-            expected_type, BaseResponse
-        ):
-            assert isinstance(value, expected_type), (
-                f"Expected {key!r} to be {expected_type.__name__}, got {type(value).__name__}"
-            )
-
+        value = json[json_key]
+        if not issubclass(field_type, BaseResponse):
+            assert_type(value, field_type, json_key)
             return
 
-        assert isinstance(value, dict), (
-            f"Expected {key!r} to be a dict, got {type(value).__name__}"
-        )
-
-        _assert_shape(value, expected_type)
+        assert_type(value, dict, json_key)
+        _assert_shape(value, field_type)

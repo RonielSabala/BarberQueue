@@ -17,11 +17,10 @@ def _extract_request_class(func: Callable) -> type[BaseRequest] | None:
     hints = get_type_hints(func)
     return next(
         (
-            unwrapped
+            hint_type
             for key, hint in hints.items()
             if key != "return"
-            and (unwrapped := unwrap_type(hint)) is not None
-            and issubclass(unwrapped, BaseRequest)
+            and issubclass(hint_type := unwrap_type(hint), BaseRequest)
         ),
         None,
     )

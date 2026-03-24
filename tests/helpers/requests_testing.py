@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import dataclasses
 import random
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, Iterator, Self, get_type_hints
+from typing import Self
 
 from domain.dtos import BaseRequest
 from domain.utils import to_camel_case
 from domain.value_objects.field_name import FieldName
-from helpers.unwrap_type import is_optional
 
 
 def _join_with_dot(a: str | None, b: str):
@@ -26,7 +26,7 @@ class _FieldMetadata:
     json_key: str
 
     @classmethod
-    def from_data(cls, name: str, field_type: Any, path: str | None) -> _FieldMetadata:
+    def from_data(cls, name: str, field_type: type, path: str | None) -> _FieldMetadata:
         json_key = to_camel_case(name)
         return cls(
             name=name,
@@ -35,10 +35,10 @@ class _FieldMetadata:
             json_key=json_key,
         )
 
+    @property
     def is_nested(self) -> bool:
-        return isinstance(self.field_type, type) and issubclass(
-            self.field_type, BaseRequest
-        )
+        field_type = self.field_type
+        return isinstance(field_type, type) and issubclass(field_type, BaseRequest)
 
 
 @dataclass(slots=True, frozen=True)
@@ -125,26 +125,16 @@ def missing_field_cases(
         _mark = _OnceMark()
 
     payload = request_class.random().to_json()
-    hints = get_type_hints(request_class)
     nested_fields: list[_FieldMetadata] = []
 
-    for f in dataclasses.fields(request_class):
-        field_name = f.name
-        field_type = hints[field_name]
-        optional, _ = is_optional(field_type)
-
-        # Skip optional fields
-        if (
-            optional
-            or f.default is not dataclasses.MISSING
-            or f.default_factory is not dataclasses.MISSING
-        ):
+    for field_name, field_type, is_optional in request_class.iter_field_types():
+        if is_optional:
             continue
 
         field = _FieldMetadata.from_data(field_name, field_type, _path)
         yield _get_missing_field_case(field, payload)
 
-        if field.is_nested():
+        if field.is_nested:
             nested_fields.append(field)
 
     is_leaf = not nested_fields

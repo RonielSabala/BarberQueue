@@ -1,15 +1,15 @@
-import dataclasses
 import random
 from dataclasses import dataclass
-from typing import get_type_hints
 
 from domain.dtos import BaseDto
-from helpers.unwrap_type import is_optional
+from domain.value_objects.base_field import BaseField
 
 
 @dataclass(frozen=True)
 class BaseRequest(BaseDto):
-    """Base request DTO."""
+    """
+    Base request DTO.
+    """
 
     @classmethod
     def random(cls, optional_chance: float = 0.5):
@@ -29,19 +29,14 @@ class BaseRequest(BaseDto):
                 f"optional_chance ({optional_chance}) must be between 0 and 1."
             )
 
-        hints = get_type_hints(cls)
-        kwargs = {}
-
-        for field in dataclasses.fields(cls):
-            field_name = field.name
-            optional, field_type = is_optional(hints[field_name])
-
-            field_value = None
-            if field_type is not None and (
-                not optional or random.random() < optional_chance
-            ):
-                field_value = field_type.random()
-
-            kwargs[field_name] = field_value
+        kwargs = {
+            field_name: (
+                field_type.random()
+                if issubclass(field_type, BaseField)
+                and (not is_optional or random.random() < optional_chance)
+                else None
+            )
+            for field_name, field_type, is_optional in cls.iter_field_types()
+        }
 
         return cls(**kwargs)

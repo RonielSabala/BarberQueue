@@ -2,8 +2,6 @@
 Tests for PATCH /api/users/{id}
 """
 
-import dataclasses
-
 import pytest
 import requests
 
@@ -13,8 +11,14 @@ from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.users import UpdateUserRequest
 from domain.utils import to_camel_case
+from domain.value_objects import Username
 from domain.value_objects.base_field import BaseField
-from helpers.assertions import assert_body, assert_content_type, assert_status
+from helpers.assertions import (
+    assert_body,
+    assert_content_type,
+    assert_status,
+    assert_type,
+)
 from helpers.common_responses import USER_NOT_FOUND
 
 _USER_UPDATED = MessageResponse(message="User updated")
@@ -31,6 +35,9 @@ def user_id(client: ApiClient) -> int:
 @pytest.fixture(scope="module")
 def response(client: ApiClient, user_id: int) -> requests.Response:
     request = UpdateUserRequest.random()
+    if request.all_none:
+        request = UpdateUserRequest(username=Username.random(), email=None, phone=None)
+
     return client.users.update_user(user_id, request)
 
 
@@ -68,14 +75,12 @@ def test_updated_fields_persists(client: ApiClient, user_id: int) -> None:
 
     user_body = client.users.get_user(user_id).json()
 
-    for field in dataclasses.fields(request):
-        field_name = field.name
-        field_value: BaseField | None = getattr(request, field_name)
-        if field_value is None:
+    for key, value in request.items():
+        if value is None:
             continue
 
-        json_key = to_camel_case(field_name)
-        assert user_body[json_key] == field_value.value
+        assert_type(value, BaseField, key)
+        assert user_body[to_camel_case(key)] == value.value
 
 
 def test_nonexistent_user(client: ApiClient) -> None:
