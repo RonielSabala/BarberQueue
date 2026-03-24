@@ -15,15 +15,16 @@ class MailService extends BaseService
 {
     private const PORT = 587;
     private const HOST = 'smtp.gmail.com';
-    private const FROM_NAME = 'BarberQueue';
     private const RESET_EXPIRY_MINUTES = 30;
 
+    private readonly string $appName;
     private readonly string $username;
     private readonly string $password;
 
     public function __construct(
         private readonly PasswordResetRepository $passwordResetRepository,
     ) {
+        $this->appName = $this->getEnvVariable('APP_NAME');
         $this->username = $this->getEnvVariable('MAIL_USERNAME');
         $this->password = $this->getEnvVariable('MAIL_PASSWORD');
     }
@@ -40,7 +41,7 @@ class MailService extends BaseService
         $mail->Port = self::PORT;
 
         // Recipients
-        $mail->setFrom($this->username, self::FROM_NAME);
+        $mail->setFrom($this->username, $this->appName);
         $mail->addAddress($to);
 
         // Send
