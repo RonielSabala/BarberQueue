@@ -51,7 +51,7 @@ class BadFieldCase:
         inner_payload = {**payload, field.json_key: self.payload}
         cls = type(self)
         return cls(
-            nested_case_id(field.name, self.case_id),
+            _nested_case_id(field.name, self.case_id),
             inner_payload,
             self.expected_error_msg,
         )
@@ -78,7 +78,7 @@ def _case_id(attribute: str, field: str):
     return f"{attribute}_{field}"
 
 
-def nested_case_id(parent: str, child: str):
+def _nested_case_id(parent: str, child: str):
     return f"{parent}__{child}"
 
 
