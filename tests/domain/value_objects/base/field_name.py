@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.utils import random_string_len
-from domain.value_objects.string_field import StringField
+from domain.value_objects.base.string_field import StringField
 
 _FIELD_CHARS = string.ascii_letters + "_"
 _PATTERN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")

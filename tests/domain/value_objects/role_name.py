@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass
 
-from domain.value_objects.base_field import BaseField
+from domain.value_objects.base import BaseField
 
 _ROLES = ("client", "barber", "assistant", "admin")
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.utils import random_string
-from domain.value_objects.string_field import StringField
+from domain.value_objects.base import StringField
 
 _SUFFIX_PHONE_LEN = 7
 _FIXED_PHONE_LENGTH = 10

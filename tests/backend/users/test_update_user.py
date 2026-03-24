@@ -12,7 +12,7 @@ from domain.dtos.auth import RegisterRequest
 from domain.dtos.users import UpdateUserRequest
 from domain.utils import to_camel_case
 from domain.value_objects import Username
-from domain.value_objects.base_field import BaseField
+from domain.value_objects.base import BaseField
 from helpers.assertions import (
     assert_body,
     assert_content_type,

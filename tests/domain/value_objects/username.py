@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.utils import random_string_len
-from domain.value_objects.string_field import StringField
+from domain.value_objects.base import StringField
 
 _USERNAME_CHARS = string.ascii_letters + string.digits + " "
 

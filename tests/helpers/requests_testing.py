@@ -8,7 +8,7 @@ from typing import Self
 
 from domain.dtos import BaseRequest
 from domain.utils import to_camel_case
-from domain.value_objects.field_name import FieldName
+from domain.value_objects.base import FieldName
 
 
 def _join_with_dot(a: str | None, b: str):

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.utils import random_string
-from domain.value_objects.string_field import StringField
+from domain.value_objects.base import StringField
 
 _FIXED_HASH_LENGTH = 60
 _BCRYPT_PREFIX = "$2b$10$"

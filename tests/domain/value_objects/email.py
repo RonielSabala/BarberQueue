@@ -8,7 +8,7 @@ from typing import ClassVar
 
 from domain.exceptions import ValidationError
 from domain.utils import random_string_len
-from domain.value_objects.string_field import StringField
+from domain.value_objects.base import StringField
 
 _EMAIL_CHARS = string.ascii_letters + string.digits + "_%+-"
 _EMAIL_DOMAINS = ("gmail.com", "yahoo.com", "outlook.com", "hotmail.com")

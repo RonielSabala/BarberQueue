@@ -2,7 +2,7 @@ import random
 from dataclasses import dataclass
 
 from domain.dtos import BaseDto
-from domain.value_objects.base_field import BaseField
+from domain.value_objects.base import BaseField
 
 
 @dataclass(frozen=True)

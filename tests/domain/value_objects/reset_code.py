@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass
 from typing import ClassVar
 
-from domain.value_objects.number_field import NumberField
+from domain.value_objects.base import NumberField
 
 _FIXED_CODE_DIGITS = 6
 

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any, get_type_hints
 
 from domain.utils import to_camel_case
-from domain.value_objects.base_field import BaseField
+from domain.value_objects.base import BaseField
 from helpers.unwrap_type import is_union, unwrap_type
 
 
