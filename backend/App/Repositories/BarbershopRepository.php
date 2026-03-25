@@ -18,16 +18,16 @@ use App\Domain\ValueObjects\{
 class BarbershopRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barbershops';
-    protected const array ALLOWED_FIELDS = [
-        'barbershop_name' => 'barbershop_name',
-        'email' => 'email',
-        'phone' => 'phone',
-        'barbershop_address' => 'barbershop_address',
-        'photo_url' => 'photo_url',
-        'opens_at' => 'opens_at',
-        'closes_at' => 'closes_at',
-        'capacity' => 'capacity',
-        'is_active' => 'is_active',
+    protected const array UPDATABLE_FIELDS = [
+        'barbershop_name',
+        'email',
+        'phone',
+        'barbershop_address',
+        'photo_url',
+        'opens_at',
+        'closes_at',
+        'capacity',
+        'is_active',
     ];
 
     public function findById(int $id): ?Barbershop

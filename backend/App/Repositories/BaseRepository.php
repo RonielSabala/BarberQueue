@@ -12,7 +12,7 @@ abstract class BaseRepository
     protected \PDO $db;
 
     protected const ?string TABLE_NAME = null;
-    protected const ?array ALLOWED_FIELDS = null;
+    protected const ?array UPDATABLE_FIELDS = [];
 
     public function __construct()
     {
@@ -90,15 +90,12 @@ abstract class BaseRepository
             throw $this->missingVariablesException('TABLE_NAME');
         }
 
-        $allowedFields = static::ALLOWED_FIELDS;
-        if ($allowedFields === null) {
-            throw $this->missingVariablesException('ALLOWED_FIELDS');
-        }
-
+        $updatableFields = static::UPDATABLE_FIELDS;
         $keys = array_keys($entityFields);
+
         foreach ($keys as $field) {
-            if (!\array_key_exists($field, $allowedFields)) {
-                throw new \InvalidArgumentException("Unknown field: '{$field}'");
+            if (!\in_array($field, $updatableFields, true)) {
+                throw new \InvalidArgumentException("Field '{$field}' is not allowed for updates in {$tableName}");
             }
         }
 
@@ -107,6 +104,7 @@ abstract class BaseRepository
             $keys
         ));
 
+        // Execute the query
         $sql = 'UPDATE ' . $tableName . " SET {$setClauses} WHERE id = ?";
         $this->query($sql, [...array_values($entityFields), $entityId]);
     }

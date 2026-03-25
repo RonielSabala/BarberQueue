@@ -10,11 +10,11 @@ use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Username};
 class UserRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'users';
-    protected const array ALLOWED_FIELDS = [
-        'username' => 'username',
-        'email' => 'email',
-        'phone' => 'phone',
-        'password_hash' => 'password_hash',
+    protected const array UPDATABLE_FIELDS = [
+        'username',
+        'email',
+        'phone',
+        'password_hash',
     ];
 
     public function findById(int $id): ?User
