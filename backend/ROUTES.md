@@ -468,7 +468,7 @@ Remove a photo from the gallery.
 
 ### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
 
-List all reviews for a barbershop.
+List all reviews of a barbershop.
 
 - Response: `200`
 
@@ -480,7 +480,7 @@ List all reviews for a barbershop.
     "username": "user_example",
     "rating": 5,
     "content": "Great service, highly recommended.",
-    "createdAt": "2026-03-05T09:00:00"
+    "createdAt": "2026-03-05 09:00:00"
   }
 ]
 ```
@@ -510,9 +510,17 @@ Submit a review for a barbershop.
   "username": "user_example",
   "rating": 5,
   "content": "Great service, highly recommended.",
-  "createdAt": "2026-03-05T09:00:00"
+  "createdAt": "2026-03-05 09:00:00"
 }
 ```
+
+---
+
+### `DELETE /api/barbershops/{id}/reviews/{reviewId}` <!-- omit from toc -->
+
+Remove a review from a barbershop's reviews.
+
+- Response: `204`
 
 ---
 

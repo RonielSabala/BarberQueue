@@ -13,6 +13,7 @@ use App\DTOs\Barbershops\Requests\{
 };
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopRequest,
+    CreateBarbershopReviewRequest,
     UpdateBarbershopPhotoRequest,
     UpdateBarbershopRequest
 };
@@ -86,7 +87,33 @@ class BarbershopController extends BaseController
     {
         $deleted = $this->barbershopService->deleteBarbershopPhoto($id, $photoId);
         if (!$deleted) {
-            HttpResponse::error('Photo not found', HttpStatus::NotFound);
+            HttpResponse::error('Barbershop photo not found', HttpStatus::NotFound);
+            return;
+        }
+
+        HttpResponse::json(null, HttpStatus::NoContent);
+    }
+
+    #[GET('/{id}/reviews')]
+    public function getReviews(int $id): void
+    {
+        $response = $this->barbershopService->getReviews($id);
+        HttpResponse::json($response);
+    }
+
+    #[POST('/{id}/reviews')]
+    public function addReview(int $id, CreateBarbershopReviewRequest $request): void
+    {
+        $response = $this->barbershopService->addReview($id, $request);
+        HttpResponse::json($response, HttpStatus::Created);
+    }
+
+    #[DELETE('/{id}/reviews/{reviewId}')]
+    public function deleteReview(int $id, int $reviewId): void
+    {
+        $deleted = $this->barbershopService->deleteReview($id, $reviewId);
+        if (!$deleted) {
+            HttpResponse::error('Barbershop review not found', HttpStatus::NotFound);
             return;
         }
 

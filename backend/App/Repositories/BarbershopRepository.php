@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\{Barbershop, BarbershopPhoto};
+use App\Domain\Entities\{Barbershop, BarbershopPhoto, BarbershopReview};
 use App\Domain\ValueObjects\{
     Address,
     BarbershopName,
@@ -186,6 +186,65 @@ class BarbershopRepository extends BaseRepository
         SQL;
 
         $stmt = $this->query($sql, [$photoId, $barbershopId]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function getReviews(int $barbershopId): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                br.*,
+                u.username
+            FROM
+                barbershop_reviews br
+                JOIN users u ON br.user_id = u.id
+            WHERE
+                br.barbershop_id = ?
+            ORDER BY
+                br.created_at DESC
+        SQL;
+
+        return $this->fetchAll(BarbershopReview::class, $sql, [$barbershopId]);
+    }
+
+    public function addReview(int $userId, int $barbershopId, int $rating, string $content): ?BarbershopReview
+    {
+        $sql = <<<'SQL'
+            INSERT INTO
+                barbershop_reviews (user_id, barbershop_id, rating, content)
+            VALUES
+                (?, ?, ?, ?)
+        SQL;
+
+        $fetchSql = <<<'SQL'
+            SELECT
+                br.*,
+                u.username
+            FROM
+                barbershop_reviews br
+                JOIN users u ON br.user_id = u.id
+            WHERE
+                br.id = ?
+            LIMIT
+                1
+        SQL;
+
+        $this->query($sql, [$userId, $barbershopId, $rating, $content]);
+
+        $id = (int) $this->db->lastInsertId();
+        return $this->fetchOne(BarbershopReview::class, $fetchSql, [$id]);
+    }
+
+    public function deleteReview(int $barbershopId, int $reviewId): bool
+    {
+        $sql = <<<'SQL'
+            DELETE FROM barbershop_reviews
+            WHERE
+                id = ?
+                AND barbershop_id = ?
+        SQL;
+
+        $stmt = $this->query($sql, [$reviewId, $barbershopId]);
         return $stmt->rowCount() > 0;
     }
 }

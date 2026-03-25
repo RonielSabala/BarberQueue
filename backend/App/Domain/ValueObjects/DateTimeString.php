@@ -31,9 +31,6 @@ final readonly class DateTimeString extends BaseField
             return false;
         }
 
-        $errors = \DateTimeImmutable::getLastErrors();
-        return $errors['warning_count'] === 0
-            && $errors['error_count'] === 0
-            && $dateTime->format(self::DATETIME_FORMAT) === $value;
+        return $dateTime->format(self::DATETIME_FORMAT) === $value;
     }
 }

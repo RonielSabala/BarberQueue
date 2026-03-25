@@ -6,15 +6,18 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop;
+use App\Domain\ValueObjects\Role;
 use App\DTOs\Barbershops\Requests\{
     AddBarbershopPhotosRequest,
-    CreateBarbershopRequest
+    CreateBarbershopRequest,
+    CreateBarbershopReviewRequest
 };
 use App\DTOs\Barbershops\Responses\{
     AddBarbershopPhotosResponse,
     BarbershopDetailResponse,
     BarbershopPhotoResponse,
     BarbershopResponse,
+    BarbershopReviewResponse,
     CreateBarbershopResponse,
     GetBarbershopPhotosResponse
 };
@@ -25,6 +28,7 @@ use App\Repositories\BarbershopRepository;
 class BarbershopService extends BaseService
 {
     public function __construct(
+        private readonly UserService $userService,
         private readonly BarbershopRepository $barbershopRepository,
     ) {}
 
@@ -111,5 +115,47 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         return $this->barbershopRepository->deletePhoto($barbershopId, $photoId);
+    }
+
+    public function getReviews(int $barbershopId): array
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $barbershopReviews = $this->barbershopRepository->getReviews($barbershopId);
+
+        return array_map(
+            static fn ($barbershopReview) => BarbershopReviewResponse::fromEntity($barbershopReview),
+            $barbershopReviews
+        );
+    }
+
+    public function addReview(int $barbershopId, CreateBarbershopReviewRequest $request): BarbershopReviewResponse
+    {
+        $this->validateBarbershopExists($barbershopId);
+
+        $userId = $request->userId->value;
+        $user = $this->userService->validateUserExists($userId);
+
+        if ($user->role->value !== Role::Client->value) {
+            throw new BarbershopException('Only clients can leave barbershop reviews', HttpStatus::Forbidden);
+        }
+
+        $barbershopReview = $this->barbershopRepository->addReview(
+            $userId,
+            $barbershopId,
+            $request->rating->value,
+            $request->content->value
+        );
+
+        if ($barbershopReview === null) {
+            throw new \RuntimeException('Failed to save barbershop review');
+        }
+
+        return BarbershopReviewResponse::fromEntity($barbershopReview);
+    }
+
+    public function deleteReview(int $barbershopId, int $reviewId): bool
+    {
+        $this->validateBarbershopExists($barbershopId);
+        return $this->barbershopRepository->deleteReview($barbershopId, $reviewId);
     }
 }
