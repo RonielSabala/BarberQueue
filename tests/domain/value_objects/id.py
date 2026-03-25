@@ -2,13 +2,13 @@ import random
 from dataclasses import dataclass
 from typing import ClassVar
 
-from domain.value_objects.base import NumberField
+from domain.value_objects.base import IntegerField
 
 _RANDOM_MAX = 10_000
 
 
 @dataclass(slots=True, frozen=True)
-class Id(NumberField[int]):
+class Id(IntegerField):
     _min_value: ClassVar[int] = 1
 
     @classmethod

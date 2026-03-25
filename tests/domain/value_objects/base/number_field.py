@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+import random
+from dataclasses import dataclass
 from typing import ClassVar
 
 from domain.value_objects.base.base_field import BaseField
@@ -13,14 +14,52 @@ class NumberField[T: int | float](BaseField[T]):
     field() defaults.
     """
 
-    _min_value: ClassVar[int | float | None] = field(default=None, init=False)
-    _max_value: ClassVar[int | float | None] = field(default=None, init=False)
+    _min_value: T
+    _max_value: T
 
     def __post_init__(self) -> None:
+        value = self.value
         min_value = self._min_value
-        if min_value is not None and self.value < min_value:
-            raise self._validation_error(f"must be greater or equal than {min_value}")
-
         max_value = self._max_value
-        if max_value is not None and self.value > max_value:
-            raise self._validation_error(f"must be less or equal than {max_value}")
+
+        if min_value is not None and value < min_value:
+            raise self._validation_error(f"must be >= {min_value} (got {value})")
+
+        if max_value is not None and value > max_value:
+            raise self._validation_error(f"must be <= {max_value} (got {value})")
+
+
+@dataclass(slots=True, frozen=True)
+class IntegerField(BaseField[int]):
+    _min_value: ClassVar[int | None]
+    _max_value: ClassVar[int | None]
+
+    @classmethod
+    def random_value(cls) -> int:
+        min_value = cls._min_value
+        max_value = cls._max_value
+
+        if min_value is None or max_value is None:
+            raise NotImplementedError(
+                f"{cls.__name__}.random_value() requires both _min_value and _max_value"
+            )
+
+        return random.randint(min_value, max_value)
+
+
+@dataclass(slots=True, frozen=True)
+class DecimalField(BaseField[float]):
+    _min_value: ClassVar[float | None]
+    _max_value: ClassVar[float | None]
+
+    @classmethod
+    def random_value(cls) -> float:
+        min_value = cls._min_value
+        max_value = cls._max_value
+
+        if min_value is None or max_value is None:
+            raise NotImplementedError(
+                f"{cls.__name__}.random_value() requires both _min_value and _max_value"
+            )
+
+        return random.uniform(min_value, max_value)

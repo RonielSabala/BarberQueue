@@ -11,14 +11,15 @@ abstract readonly class NumberField extends BaseField
 
     public function __construct(float|int $value)
     {
-        $min = static::MIN_VALUE;
-        if ($min !== null && $value < $min) {
-            throw $this->validationException("must be greater or equal than {$min}");
+        $minValue = static::MIN_VALUE;
+        $maxValue = static::MAX_VALUE;
+
+        if ($minValue !== null && $value < $minValue) {
+            throw $this->validationException("must be >= {$minValue} (got {$value})");
         }
 
-        $max = static::MAX_VALUE;
-        if ($max !== null && $value > $max) {
-            throw $this->validationException("must be less or equal than {$max}");
+        if ($maxValue !== null && $value > $maxValue) {
+            throw $this->validationException("must be <= {$maxValue} (got {$value})");
         }
 
         $this->value = $value;
