@@ -6,7 +6,7 @@ namespace App\DTOs\Barbershops\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class AddBarbershopPhotosResponse extends BaseResponse
+readonly class CreateBarbershopPhotosResponse extends BaseResponse
 {
     /** @param BarbershopPhotoResponse[] $uploaded */
     public function __construct(

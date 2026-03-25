@@ -8,16 +8,16 @@ use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop;
 use App\Domain\ValueObjects\Role;
 use App\DTOs\Barbershops\Requests\{
-    AddBarbershopPhotosRequest,
+    CreateBarbershopPhotosRequest,
     CreateBarbershopRequest,
     CreateBarbershopReviewRequest
 };
 use App\DTOs\Barbershops\Responses\{
-    AddBarbershopPhotosResponse,
     BarbershopDetailResponse,
     BarbershopPhotoResponse,
     BarbershopResponse,
     BarbershopReviewResponse,
+    CreateBarbershopPhotosResponse,
     CreateBarbershopResponse,
     GetBarbershopPhotosResponse
 };
@@ -99,7 +99,7 @@ class BarbershopService extends BaseService
         return new GetBarbershopPhotosResponse(photos: $photos);
     }
 
-    public function addPhotos(int $barbershopId, AddBarbershopPhotosRequest $request): AddBarbershopPhotosResponse
+    public function addPhotos(int $barbershopId, CreateBarbershopPhotosRequest $request): CreateBarbershopPhotosResponse
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopRepository->addPhotos($barbershopId, $request->photoUrls);
@@ -108,7 +108,7 @@ class BarbershopService extends BaseService
             $barbershopPhotos
         );
 
-        return new AddBarbershopPhotosResponse(uploaded: $uploadedPhotos);
+        return new CreateBarbershopPhotosResponse(uploaded: $uploadedPhotos);
     }
 
     public function deletePhoto(int $barbershopId, int $photoId): bool

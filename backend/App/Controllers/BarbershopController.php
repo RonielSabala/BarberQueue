@@ -8,7 +8,7 @@ use App\Attributes\{DELETE, GET, POST, RoutePrefix};
 use App\Attributes\PATCH;
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
-    AddBarbershopPhotosRequest,
+    CreateBarbershopPhotosRequest,
     UpdateBarbershopStatusRequest
 };
 use App\DTOs\Barbershops\Requests\{
@@ -76,7 +76,7 @@ class BarbershopController extends BaseController
     }
 
     #[POST('/{id}/photos')]
-    public function addPhotos(int $id, AddBarbershopPhotosRequest $request): void
+    public function addPhotos(int $id, CreateBarbershopPhotosRequest $request): void
     {
         $response = $this->barbershopService->addPhotos($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
