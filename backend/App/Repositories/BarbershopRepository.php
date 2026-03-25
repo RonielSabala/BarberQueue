@@ -23,6 +23,7 @@ class BarbershopRepository extends BaseRepository
         'email' => 'email',
         'phone' => 'phone',
         'barbershop_address' => 'barbershop_address',
+        'photo_url' => 'photo_url',
         'opens_at' => 'opens_at',
         'closes_at' => 'closes_at',
         'capacity' => 'capacity',

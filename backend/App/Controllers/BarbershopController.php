@@ -9,6 +9,7 @@ use App\Attributes\PATCH;
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopRequest,
+    UpdateBarbershopPhotoRequest,
     UpdateBarbershopRequest
 };
 use App\DTOs\Barbershops\Requests\UpdateBarbershopStatusRequest;
@@ -45,14 +46,21 @@ class BarbershopController extends BaseController
     #[PATCH('/{id}')]
     public function updateBarbershop(int $id, UpdateBarbershopRequest $request): void
     {
-        $this->barbershopService->updateBarbershop($id, $request);
+        $this->barbershopService->updateBarbershopFields($id, $request);
         HttpResponse::success('Barbershop updated');
     }
 
     #[PATCH('/{id}/status')]
     public function updateBarbershopStatus(int $id, UpdateBarbershopStatusRequest $request): void
     {
-        $this->barbershopService->updateBarbershopStatus($id, $request);
+        $this->barbershopService->updateBarbershopFields($id, $request);
         HttpResponse::success('Barbershop status updated');
+    }
+
+    #[PATCH('/{id}/photo')]
+    public function updateBarbershopPhoto(int $id, UpdateBarbershopPhotoRequest $request): void
+    {
+        $this->barbershopService->updateBarbershopFields($id, $request);
+        HttpResponse::success('Barbershop photo updated');
     }
 }

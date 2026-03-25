@@ -385,17 +385,21 @@ Toggle a barbershop open or closed status.
 
 ### `PATCH /api/barbershops/{id}/photo` <!-- omit from toc -->
 
-Replace the barbershop's main photo. Accepts `multipart/form-data`.
+Replace the barbershop's main photo.
 
-| Field   | Type                  |
-| ------- | --------------------- |
-| `photo` | file (jpg, png, webp) |
+- Body
+
+```json
+{
+  "photoUrl": "https://example.com/photo.jpg"
+}
+```
 
 - Response: `200`
 
 ```json
 {
-  "photoUrl": "https://example.com/photo.jpg"
+  "message": "Barbershop photo updated"
 }
 ```
 
