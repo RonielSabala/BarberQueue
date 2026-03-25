@@ -26,6 +26,7 @@ class BarbershopRepository extends BaseRepository
         'opens_at' => 'opens_at',
         'closes_at' => 'closes_at',
         'capacity' => 'capacity',
+        'is_active' => 'is_active',
     ];
 
     public function findById(int $id): ?Barbershop

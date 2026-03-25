@@ -195,7 +195,7 @@ Get a user's profile.
 
 ### `PATCH /api/users/{id}` <!-- omit from toc -->
 
-Update a user's profile fields. All fields are optional.
+Update a user's profile fields. All fields are optional, but at least one must be provided.
 
 - Body
 
@@ -335,7 +335,7 @@ Get full detail of a barbershop.
 
 ### `PATCH /api/barbershops/{id}` <!-- omit from toc -->
 
-Update a barbershop's profile fields. All fields are optional.
+Update a barbershop's profile fields. All fields are optional, but at least one must be provided.
 
 - Body
 

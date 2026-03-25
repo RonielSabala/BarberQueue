@@ -22,13 +22,19 @@ abstract readonly class BaseRequest
             }
 
             $key = TextUtils::toSnakeCase($property->getName());
-            $array[$key] = match (true) {
-                $value instanceof BaseField => $value->value,
-                $value instanceof self => $value->toUpdateArray(),
-                default => $value,
-            };
+            $array[$key] = $this->parseValue($value);
         }
 
         return $array;
+    }
+
+    private function parseValue($value): mixed
+    {
+        return match (true) {
+            $value instanceof BaseField => $value->value,
+            $value instanceof self => $value->toUpdateArray(),
+            \is_bool($value) => $value ? 1 : 0,
+            default => $value,
+        };
     }
 }

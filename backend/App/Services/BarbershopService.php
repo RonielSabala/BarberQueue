@@ -6,8 +6,16 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop;
-use App\DTOs\Barbershops\Requests\{CreateBarbershopRequest, UpdateBarbershopRequest};
-use App\DTOs\Barbershops\Responses\{BarbershopDetailResponse, BarbershopResponse, CreateBarbershopResponse};
+use App\DTOs\Barbershops\Requests\{
+    CreateBarbershopRequest,
+    UpdateBarbershopRequest,
+    UpdateBarbershopStatusRequest
+};
+use App\DTOs\Barbershops\Responses\{
+    BarbershopDetailResponse,
+    BarbershopResponse,
+    CreateBarbershopResponse
+};
 use App\Exceptions\BarbershopException;
 use App\Repositories\BarbershopRepository;
 
@@ -66,6 +74,13 @@ class BarbershopService extends BaseService
     }
 
     public function updateBarbershop(int $barbershopId, UpdateBarbershopRequest $request): void
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $fields = $this->validateFieldsToUpdate($request);
+        $this->barbershopRepository->updateFields($barbershopId, $fields);
+    }
+
+    public function updateBarbershopStatus(int $barbershopId, UpdateBarbershopStatusRequest $request): void
     {
         $this->validateBarbershopExists($barbershopId);
         $fields = $this->validateFieldsToUpdate($request);

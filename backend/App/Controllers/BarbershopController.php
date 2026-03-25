@@ -7,7 +7,11 @@ namespace App\Controllers;
 use App\Attributes\{GET, POST, RoutePrefix};
 use App\Attributes\PATCH;
 use App\Core\{HttpResponse, HttpStatus};
-use App\DTOs\Barbershops\Requests\{CreateBarbershopRequest, UpdateBarbershopRequest};
+use App\DTOs\Barbershops\Requests\{
+    CreateBarbershopRequest,
+    UpdateBarbershopRequest
+};
+use App\DTOs\Barbershops\Requests\UpdateBarbershopStatusRequest;
 use App\Services\BarbershopService;
 
 #[RoutePrefix('/api/barbershops')]
@@ -43,5 +47,12 @@ class BarbershopController extends BaseController
     {
         $this->barbershopService->updateBarbershop($id, $request);
         HttpResponse::success('Barbershop updated');
+    }
+
+    #[PATCH('/{id}/status')]
+    public function updateBarbershopStatus(int $id, UpdateBarbershopStatusRequest $request): void
+    {
+        $this->barbershopService->updateBarbershopStatus($id, $request);
+        HttpResponse::success('Barbershop status updated');
     }
 }
