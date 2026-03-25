@@ -5,16 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\{Barbershop, BarbershopPhoto, BarbershopReview};
-use App\Domain\ValueObjects\{
-    Address,
-    BarbershopName,
-    Capacity,
-    Email,
-    Id,
-    Phone,
-    PhotoUrl,
-    TimeOfDay
-};
+use App\Domain\ValueObjects\{Id, PhotoUrl};
 
 class BarbershopRepository extends BaseRepository
 {
@@ -101,14 +92,14 @@ class BarbershopRepository extends BaseRepository
     }
 
     public function create(
-        BarbershopName $barbershopName,
-        Email $email,
-        Phone $phone,
-        Address $barbershopAddress,
-        PhotoUrl $photoUrl,
-        TimeOfDay $opensAt,
-        TimeOfDay $closesAt,
-        ?Capacity $capacity
+        string $barbershopName,
+        string $email,
+        string $phone,
+        string $barbershopAddress,
+        string $photoUrl,
+        string $opensAt,
+        string $closesAt,
+        int $capacity
     ): ?Barbershop {
         $sql = <<<'SQL'
             INSERT INTO barbershops (
@@ -124,14 +115,14 @@ class BarbershopRepository extends BaseRepository
         SQL;
 
         $this->query($sql, [
-            $barbershopName->value,
-            $email->value,
-            $phone->value,
-            $barbershopAddress->value,
-            $photoUrl->value,
-            $opensAt->value,
-            $closesAt->value,
-            $capacity?->value ?? 1,
+            $barbershopName,
+            $email,
+            $phone,
+            $barbershopAddress,
+            $photoUrl,
+            $opensAt,
+            $closesAt,
+            $capacity,
         ]);
 
         $id = (int) $this->db->lastInsertId();

@@ -61,14 +61,14 @@ class BarbershopService extends BaseService
         }
 
         $barbershop = $this->barbershopRepository->create(
-            $request->barbershopName,
-            $request->email,
-            $request->phone,
-            $request->barbershopAddress,
-            $request->photoUrl,
-            $request->opensAt,
-            $request->closesAt,
-            $request->capacity
+            barbershopName: $request->barbershopName->value,
+            email: $email,
+            phone: $request->phone->value,
+            barbershopAddress: $request->barbershopAddress->value,
+            photoUrl: $request->photoUrl->value,
+            opensAt: $request->opensAt->value,
+            closesAt: $request->closesAt->value,
+            capacity: $request->capacity?->value ?? 1
         );
 
         if ($barbershop === null) {

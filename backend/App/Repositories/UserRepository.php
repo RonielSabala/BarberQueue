@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\User;
-use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Username};
 
 class UserRepository extends BaseRepository
 {
@@ -54,11 +53,11 @@ class UserRepository extends BaseRepository
     }
 
     public function create(
-        Username $username,
-        Email $email,
-        Phone $phone,
-        PasswordHash $passwordHash,
-        Id $roleId,
+        int $roleId,
+        string $username,
+        string $email,
+        string $phone,
+        string $passwordHash,
     ): ?User {
         $sql = <<<'SQL'
         INSERT INTO
@@ -70,11 +69,11 @@ class UserRepository extends BaseRepository
         $this->query(
             $sql,
             [
-                $roleId->value,
-                $username->value,
-                $email->value,
-                $phone->value,
-                $passwordHash->value,
+                $roleId,
+                $username,
+                $email,
+                $phone,
+                $passwordHash,
             ]
         );
 

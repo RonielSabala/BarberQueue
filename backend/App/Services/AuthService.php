@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Core\{Container, HttpStatus};
 use App\Domain\Entities\User;
-use App\Domain\ValueObjects\{Id, PasswordHash};
 use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
 use App\Exceptions\AuthException;
@@ -71,13 +70,12 @@ class AuthService extends BaseService
             throw new AuthException('Email already in use', HttpStatus::Conflict);
         }
 
-        $passwordHash = $this->passwordService->hash($request->password->value);
         $user = $this->userRepository->create(
-            username: $request->username,
-            email: $request->email,
-            phone: $request->phone,
-            passwordHash: new PasswordHash($passwordHash),
-            roleId: new Id(self::CLIENT_ROLE_ID),
+            roleId: self::CLIENT_ROLE_ID,
+            username: $request->username->value,
+            email: $email,
+            phone: $request->phone->value,
+            passwordHash: $this->passwordService->hash($request->password->value),
         );
 
         if ($user === null) {
