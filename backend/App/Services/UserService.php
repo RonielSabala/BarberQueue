@@ -28,27 +28,27 @@ class UserService extends BaseService
         return $user;
     }
 
-    public function getUser(int $userId): GetUserResponse
-    {
-        $user = $this->validateUserExists($userId);
-        return GetUserResponse::fromEntity($user);
-    }
-
-    public function updateUser(int $userId, UpdateUserRequest $request): void
-    {
-        $this->validateUserExists($userId);
-        $fields = $this->validateFieldsToUpdate($request);
-        $this->userRepository->updateFields($userId, $fields);
-    }
-
-    public function updatePassword(int $userId, string $newPassword, $userPasswordHash): void
+    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
     {
         $newPasswordHash = $this->passwordService->hash($newPassword);
         $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
         $this->userRepository->updatePassword($userId, $newPasswordHash);
     }
 
-    public function updateUserPassword(int $userId, UpdateUserPasswordRequest $request): void
+    public function get(int $userId): GetUserResponse
+    {
+        $user = $this->validateUserExists($userId);
+        return GetUserResponse::fromEntity($user);
+    }
+
+    public function update(int $userId, UpdateUserRequest $request): void
+    {
+        $this->validateUserExists($userId);
+        $fields = $this->validateFieldsToUpdate($request);
+        $this->userRepository->updateFields($userId, $fields);
+    }
+
+    public function updatePassword(int $userId, UpdateUserPasswordRequest $request): void
     {
         $user = $this->validateUserExists($userId);
 
@@ -57,6 +57,6 @@ class UserService extends BaseService
         $userPasswordHash = $user->passwordHash->value;
 
         $this->passwordService->validateMatch($currentPassword, $userPasswordHash);
-        $this->updatePassword($userId, $newPassword, $userPasswordHash);
+        $this->updateUserPassword($userId, $newPassword, $userPasswordHash);
     }
 }

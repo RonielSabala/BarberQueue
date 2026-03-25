@@ -44,7 +44,7 @@ class BarbershopService extends BaseService
 
     public function getAll(?string $search, ?bool $isOpen): array
     {
-        $barbershops = $this->barbershopRepository->findAll($search, $isOpen);
+        $barbershops = $this->barbershopRepository->getAll($search, $isOpen);
         return array_map(
             static fn ($barbershop) => BarbershopResponse::fromEntity($barbershop),
             $barbershops
@@ -74,20 +74,20 @@ class BarbershopService extends BaseService
         return CreateBarbershopResponse::fromEntity($barbershop);
     }
 
-    public function getBarbershop(int $barbershopId): BarbershopDetailResponse
+    public function get(int $barbershopId): BarbershopDetailResponse
     {
         $barbershop = $this->validateBarbershopExists($barbershopId);
         return BarbershopDetailResponse::fromEntity($barbershop);
     }
 
-    public function updateBarbershopFields(int $barbershopId, BaseRequest $request): void
+    public function updateFields(int $barbershopId, BaseRequest $request): void
     {
         $this->validateBarbershopExists($barbershopId);
         $fields = $this->validateFieldsToUpdate($request);
         $this->barbershopRepository->updateFields($barbershopId, $fields);
     }
 
-    public function getBarbershopPhotos(int $barbershopId): GetBarbershopPhotosResponse
+    public function getPhotos(int $barbershopId): GetBarbershopPhotosResponse
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopRepository->getPhotos($barbershopId);
@@ -99,7 +99,7 @@ class BarbershopService extends BaseService
         return new GetBarbershopPhotosResponse(photos: $photos);
     }
 
-    public function addBarbershopPhotos(int $barbershopId, AddBarbershopPhotosRequest $request): AddBarbershopPhotosResponse
+    public function addPhotos(int $barbershopId, AddBarbershopPhotosRequest $request): AddBarbershopPhotosResponse
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopRepository->addPhotos($barbershopId, $request->photoUrls);
@@ -111,7 +111,7 @@ class BarbershopService extends BaseService
         return new AddBarbershopPhotosResponse(uploaded: $uploadedPhotos);
     }
 
-    public function deleteBarbershopPhoto(int $barbershopId, int $photoId): bool
+    public function deletePhoto(int $barbershopId, int $photoId): bool
     {
         $this->validateBarbershopExists($barbershopId);
         return $this->barbershopRepository->deletePhoto($barbershopId, $photoId);

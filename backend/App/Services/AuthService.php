@@ -101,7 +101,7 @@ class AuthService extends BaseService
     public function resetPassword(ResetPasswordRequest $request): void
     {
         $resetCode = $request->resetCode->value;
-        $passwordReset = $this->passwordResetRepository->findResetCode($resetCode);
+        $passwordReset = $this->passwordResetRepository->findByValue($resetCode);
 
         if ($passwordReset === null) {
             throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);
@@ -110,7 +110,7 @@ class AuthService extends BaseService
         $userId = $passwordReset->userId->value;
         $user = $this->userService->validateUserExists($userId);
 
-        $this->userService->updatePassword($userId, $request->newPassword->value, $user->passwordHash->value);
+        $this->userService->updateUserPassword($userId, $request->newPassword->value, $user->passwordHash->value);
         $this->passwordResetRepository->markAsUsed($passwordReset->id->value);
     }
 }

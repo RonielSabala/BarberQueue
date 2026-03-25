@@ -17,23 +17,23 @@ class UserController extends BaseController
     ) {}
 
     #[GET('/{id}')]
-    public function getUser(int $id): void
+    public function get(int $id): void
     {
-        $response = $this->userService->getUser($id);
+        $response = $this->userService->get($id);
         HttpResponse::json($response);
     }
 
     #[PATCH('/{id}')]
-    public function updateUser(int $id, UpdateUserRequest $request): void
+    public function update(int $id, UpdateUserRequest $request): void
     {
-        $this->userService->updateUser($id, $request);
+        $this->userService->update($id, $request);
         HttpResponse::success('User updated');
     }
 
     #[PATCH('/{id}/password')]
-    public function updateUserPassword(int $id, UpdateUserPasswordRequest $request): void
+    public function updatePassword(int $id, UpdateUserPasswordRequest $request): void
     {
-        $this->userService->updateUserPassword($id, $request);
+        $this->userService->updatePassword($id, $request);
         HttpResponse::success('Password updated');
     }
 }

@@ -8,7 +8,7 @@ use App\Domain\Entities\PasswordReset;
 
 class PasswordResetRepository extends BaseRepository
 {
-    public function findResetCode(int $resetCode): ?PasswordReset
+    public function findByValue(int $resetCodeValue): ?PasswordReset
     {
         $sql = <<<'SQL'
         SELECT
@@ -23,7 +23,7 @@ class PasswordResetRepository extends BaseRepository
             1
         SQL;
 
-        return $this->fetchOne(PasswordReset::class, $sql, [$resetCode]);
+        return $this->fetchOne(PasswordReset::class, $sql, [$resetCodeValue]);
     }
 
     public function create(int $userId, int $resetCode, \DateTimeImmutable $expiresAt): void

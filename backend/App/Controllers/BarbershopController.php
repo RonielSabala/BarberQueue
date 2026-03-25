@@ -41,51 +41,51 @@ class BarbershopController extends BaseController
     }
 
     #[GET('/{id}')]
-    public function getBarbershop(int $id): void
+    public function get(int $id): void
     {
-        $response = $this->barbershopService->getBarbershop($id);
+        $response = $this->barbershopService->get($id);
         HttpResponse::json($response);
     }
 
     #[PATCH('/{id}')]
-    public function updateBarbershop(int $id, UpdateBarbershopRequest $request): void
+    public function update(int $id, UpdateBarbershopRequest $request): void
     {
-        $this->barbershopService->updateBarbershopFields($id, $request);
+        $this->barbershopService->updateFields($id, $request);
         HttpResponse::success('Barbershop updated');
     }
 
     #[PATCH('/{id}/status')]
-    public function updateBarbershopStatus(int $id, UpdateBarbershopStatusRequest $request): void
+    public function updateStatus(int $id, UpdateBarbershopStatusRequest $request): void
     {
-        $this->barbershopService->updateBarbershopFields($id, $request);
+        $this->barbershopService->updateFields($id, $request);
         HttpResponse::success('Barbershop status updated');
     }
 
     #[PATCH('/{id}/photo')]
-    public function updateBarbershopPhoto(int $id, UpdateBarbershopPhotoRequest $request): void
+    public function updatePhoto(int $id, UpdateBarbershopPhotoRequest $request): void
     {
-        $this->barbershopService->updateBarbershopFields($id, $request);
+        $this->barbershopService->updateFields($id, $request);
         HttpResponse::success('Barbershop photo updated');
     }
 
     #[GET('/{id}/photos')]
-    public function getBarbershopPhotos(int $id): void
+    public function getPhotos(int $id): void
     {
-        $response = $this->barbershopService->getBarbershopPhotos($id);
+        $response = $this->barbershopService->getPhotos($id);
         HttpResponse::json($response);
     }
 
     #[POST('/{id}/photos')]
-    public function addBarbershopPhotos(int $id, AddBarbershopPhotosRequest $request): void
+    public function addPhotos(int $id, AddBarbershopPhotosRequest $request): void
     {
-        $response = $this->barbershopService->addBarbershopPhotos($id, $request);
+        $response = $this->barbershopService->addPhotos($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 
     #[DELETE('/{id}/photos/{photoId}')]
-    public function deleteBarbershopPhoto(int $id, int $photoId): void
+    public function deletePhoto(int $id, int $photoId): void
     {
-        $deleted = $this->barbershopService->deleteBarbershopPhoto($id, $photoId);
+        $deleted = $this->barbershopService->deletePhoto($id, $photoId);
         if (!$deleted) {
             HttpResponse::error('Barbershop photo not found', HttpStatus::NotFound);
             return;

@@ -71,7 +71,7 @@ class BarbershopRepository extends BaseRepository
         return $this->fetchOne(Barbershop::class, $sql, [$email]);
     }
 
-    public function findAll(?string $search = null, ?bool $isOpen = null): array
+    public function getAll(?string $search = null, ?bool $isOpen = null): array
     {
         $sql = <<<'SQL'
             SELECT
