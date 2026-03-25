@@ -7,7 +7,7 @@ from domain.value_objects.base import NumberField
 
 @dataclass(slots=True, frozen=True)
 class AverageRating(NumberField[float]):
-    _min_value: ClassVar[float] = 0.0
+    _min_value: ClassVar[float] = 1.0
     _max_value: ClassVar[float] = 5.0
 
     @classmethod
