@@ -166,8 +166,9 @@ class BarbershopRepository extends BaseRepository
             $photoUrlValue = $url->value;
             $this->query($sql, [$barbershopId, $photoUrlValue]);
 
+            $id = $this->db->lastInsertId();
             $insertedPhotos[] = new BarbershopPhoto(
-                id: new Id((int) $this->db->lastInsertId()),
+                id: new Id($id),
                 barbershopId: new Id($barbershopId),
                 photoUrl: new PhotoUrl($photoUrlValue)
             );
@@ -231,7 +232,7 @@ class BarbershopRepository extends BaseRepository
 
         $this->query($sql, [$userId, $barbershopId, $rating, $content]);
 
-        $id = (int) $this->db->lastInsertId();
+        $id = $this->db->lastInsertId();
         return $this->fetchOne(BarbershopReview::class, $fetchSql, [$id]);
     }
 

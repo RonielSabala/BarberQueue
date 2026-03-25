@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Config\DbConfig;
+use App\Domain\Entities\BaseEntity;
 use App\Utils\TextUtils;
 
 abstract class BaseRepository
@@ -24,7 +25,7 @@ abstract class BaseRepository
         return new \RuntimeException("Repository `{$varName}` variable is not set");
     }
 
-    protected function mapToEntity(string $entityClass, array $row): object
+    protected function mapToEntity(string $entityClass, array $row): BaseEntity
     {
         $reflection = new \ReflectionClass($entityClass);
         $constructor = $reflection->getConstructor();
@@ -59,7 +60,7 @@ abstract class BaseRepository
         return $stmt;
     }
 
-    protected function fetchOne(string $entityClass, string $sql, array $params = []): ?object
+    protected function fetchOne(string $entityClass, string $sql, array $params = []): ?BaseEntity
     {
         $stmt = $this->query($sql, $params);
         $row = $stmt->fetch();

@@ -71,6 +71,10 @@ class BarbershopService extends BaseService
             $request->capacity
         );
 
+        if ($barbershop === null) {
+            throw new \RuntimeException('Failed to save barbershop');
+        }
+
         return CreateBarbershopResponse::fromEntity($barbershop);
     }
 

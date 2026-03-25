@@ -80,6 +80,10 @@ class AuthService extends BaseService
             roleId: new Id(self::CLIENT_ROLE_ID),
         );
 
+        if ($user === null) {
+            throw new \RuntimeException('Failed to save user');
+        }
+
         return UserResponse::fromEntity($user);
     }
 

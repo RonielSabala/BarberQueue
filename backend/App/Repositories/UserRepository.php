@@ -59,7 +59,7 @@ class UserRepository extends BaseRepository
         Phone $phone,
         PasswordHash $passwordHash,
         Id $roleId,
-    ): User {
+    ): ?User {
         $sql = <<<'SQL'
         INSERT INTO
             users (role_id, username, email, phone, password_hash)
@@ -78,8 +78,8 @@ class UserRepository extends BaseRepository
             ]
         );
 
-        $userId = (int) $this->db->lastInsertId();
-        return $this->findById($userId);
+        $id = (int) $this->db->lastInsertId();
+        return $this->findById($id);
     }
 
     public function updatePassword(int $id, string $passwordHash): void
