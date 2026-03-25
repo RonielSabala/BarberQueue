@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\ArrayOf;
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
 use App\Exceptions\ValidationException;
@@ -11,15 +12,15 @@ use App\Utils\{TextUtils, TypeCoercion};
 
 abstract class BaseController
 {
-    public static function buildRequest(string $requestClass): object
-    {
-        return self::mapFromArray($requestClass, self::getJsonBody());
-    }
-
     private static function getJsonBody(): array
     {
         $raw = file_get_contents('php://input');
         return json_decode($raw ?: '', true) ?? [];
+    }
+
+    public static function buildRequest(string $requestClass): object
+    {
+        return self::mapFromArray($requestClass, self::getJsonBody());
     }
 
     private static function mapFromArray(string $requestClass, array $data, string $path = ''): object
@@ -35,13 +36,13 @@ abstract class BaseController
         $expectedKeys = [];
 
         foreach ($constructor->getParameters() as $param) {
-            $fieldType = $param->getType();
             $fieldName = $param->getName();
+            $fieldType = $param->getType();
             $fieldPath = TextUtils::joinWithDot($path, $fieldName);
             $expectedKeys[] = $fieldName;
 
             $value = self::extractValue($param, $fieldType, $fieldName, $fieldPath, $data);
-            $args[] = self::resolveParam($fieldType, $fieldPath, $value);
+            $args[] = self::resolveParam($param, $fieldType, $value, $fieldPath);
         }
 
         $unexpectedKeys = array_diff(array_keys($data), $expectedKeys);
@@ -83,15 +84,21 @@ abstract class BaseController
     }
 
     private static function resolveParam(
+        \ReflectionParameter $param,
         \ReflectionNamedType $fieldType,
-        string $fieldPath,
-        mixed $value
+        mixed $value,
+        string $fieldPath
     ): mixed {
         if ($value === null) {
             return null;
         }
 
-        if (!$fieldType instanceof \ReflectionNamedType || $fieldType->isBuiltin()) {
+        $isReflectionType = $fieldType instanceof \ReflectionNamedType;
+        if ($isReflectionType && $fieldType->getName() === 'array') {
+            return self::resolveArray($param, $value, $fieldPath);
+        }
+
+        if (!$isReflectionType || $fieldType->isBuiltin()) {
             return $value;
         }
 
@@ -103,11 +110,52 @@ abstract class BaseController
         }
 
         if (!\is_array($value)) {
-            throw new ValidationException("Field '{$fieldPath}' must be an object", HttpStatus::BadRequest);
+            throw new ValidationException(
+                "Field '{$fieldPath}' must be an object",
+                HttpStatus::BadRequest
+            );
         }
 
         // Nested request
         return self::mapFromArray($className, $value, $fieldPath);
+    }
+
+    private static function resolveArray(
+        \ReflectionParameter $param,
+        mixed $value,
+        string $fieldPath
+    ): mixed {
+        $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+        if ($arrayOf === null) {
+            // Plain array with no attribute
+            return $value;
+        }
+
+        if (!\is_array($value)) {
+            throw new ValidationException(
+                "Field '{$fieldPath}' must be an array",
+                HttpStatus::BadRequest
+            );
+        }
+
+        $itemType = $arrayOf->newInstance()->type;
+        return array_map(
+            static function (mixed $item) use ($itemType, $fieldPath): mixed {
+                if (!is_subclass_of($itemType, BaseRequest::class)) {
+                    return new $itemType($item);
+                }
+
+                if (!\is_array($item)) {
+                    throw new ValidationException(
+                        "Field '{$fieldPath}[]' must be an object",
+                        HttpStatus::BadRequest
+                    );
+                }
+
+                return self::mapFromArray($itemType, $item, $fieldPath);
+            },
+            $value
+        );
     }
 
     private static function coerceForValueObject(string $className, mixed $value): mixed
