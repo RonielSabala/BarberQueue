@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\Barbershop;
+use App\Domain\Entities\{Barbershop, BarbershopPhoto};
 use App\Domain\ValueObjects\{
     Address,
     BarbershopName,
     Capacity,
     Email,
+    Id,
     Phone,
     PhotoUrl,
     TimeOfDay
@@ -135,5 +136,56 @@ class BarbershopRepository extends BaseRepository
 
         $id = (int) $this->db->lastInsertId();
         return $this->findById($id);
+    }
+
+    public function getPhotos(int $barbershopId): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                *
+            FROM
+                barbershop_photos
+            WHERE
+                barbershop_id = ?
+        SQL;
+
+        return $this->fetchAll(BarbershopPhoto::class, $sql, [$barbershopId]);
+    }
+
+    public function addPhotos(int $barbershopId, array $photoUrls): array
+    {
+        $insertedPhotos = [];
+        $sql = <<<'SQL'
+            INSERT INTO
+                barbershop_photos (barbershop_id, photo_url)
+            VALUES
+                (?, ?)
+        SQL;
+
+        foreach ($photoUrls as $url) {
+            $photoUrlValue = $url->value;
+            $this->query($sql, [$barbershopId, $photoUrlValue]);
+
+            $insertedPhotos[] = new BarbershopPhoto(
+                id: new Id((int) $this->db->lastInsertId()),
+                barbershopId: new Id($barbershopId),
+                photoUrl: new PhotoUrl($photoUrlValue)
+            );
+        }
+
+        return $insertedPhotos;
+    }
+
+    public function deletePhoto(int $barbershopId, int $photoId): bool
+    {
+        $sql = <<<'SQL'
+            DELETE FROM barbershop_photos
+            WHERE
+                id = ?
+                AND barbershop_id = ?
+        SQL;
+
+        $stmt = $this->query($sql, [$photoId, $barbershopId]);
+        return $stmt->rowCount() > 0;
     }
 }

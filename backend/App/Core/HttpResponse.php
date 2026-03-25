@@ -31,9 +31,13 @@ class HttpResponse
         HttpStatus $status = HttpStatus::Ok,
         HttpHeader $header = HttpHeader::Json
     ): void {
-        $data = self::filterForJson($data);
         $status->response();
+        if ($status === HttpStatus::NoContent) {
+            return;
+        }
+
         $header->send();
+        $data = self::filterForJson($data);
         echo json_encode($data);
     }
 

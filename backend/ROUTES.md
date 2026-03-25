@@ -405,21 +405,53 @@ Replace the barbershop's main photo.
 
 ---
 
+### `GET /api/barbershops/{id}/photos` <!-- omit from toc -->
+
+Get all photos of a barbershop.
+
+- Response: `200`
+
+```json
+{
+  "photos": [
+    {
+      "id": 1,
+      "photoUrl": "https://example.com/photo_1.jpg"
+    }
+  ]
+}
+```
+
+---
+
 ### `POST /api/barbershops/{id}/photos` <!-- omit from toc -->
 
-Add one or more photos to the barbershop gallery. Accepts `multipart/form-data`.
+Add one or more photos to the barbershop gallery.
 
-| Field      | Type                    |
-| ---------- | ----------------------- |
-| `photos[]` | file[] (jpg, png, webp) |
+- Body
+
+```json
+{
+  "photoUrls": [
+    "https://example.com/photo_1.jpg",
+    "https://example.com/photo_2.jpg"
+  ]
+}
+```
 
 - Response: `201`
 
 ```json
 {
   "uploaded": [
-    "https://example.com/photo_1.jpg",
-    "https://example.com/photo_2.jpg"
+    {
+      "id": 1,
+      "photoUrl": "https://example.com/photo_1.jpg"
+    },
+    {
+      "id": 2,
+      "photoUrl": "https://example.com/photo_2.jpg"
+    }
   ]
 }
 ```

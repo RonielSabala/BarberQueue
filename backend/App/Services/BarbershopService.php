@@ -6,11 +6,17 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop;
-use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
+use App\DTOs\Barbershops\Requests\{
+    AddBarbershopPhotosRequest,
+    CreateBarbershopRequest
+};
 use App\DTOs\Barbershops\Responses\{
+    AddBarbershopPhotosResponse,
     BarbershopDetailResponse,
+    BarbershopPhotoResponse,
     BarbershopResponse,
-    CreateBarbershopResponse
+    CreateBarbershopResponse,
+    GetBarbershopPhotosResponse
 };
 use App\DTOs\BaseRequest;
 use App\Exceptions\BarbershopException;
@@ -75,5 +81,35 @@ class BarbershopService extends BaseService
         $this->validateBarbershopExists($barbershopId);
         $fields = $this->validateFieldsToUpdate($request);
         $this->barbershopRepository->updateFields($barbershopId, $fields);
+    }
+
+    public function getBarbershopPhotos(int $barbershopId): GetBarbershopPhotosResponse
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $barbershopPhotos = $this->barbershopRepository->getPhotos($barbershopId);
+        $photos = array_map(
+            static fn ($barbershopPhoto) => BarbershopPhotoResponse::fromEntity($barbershopPhoto),
+            $barbershopPhotos
+        );
+
+        return new GetBarbershopPhotosResponse(photos: $photos);
+    }
+
+    public function addBarbershopPhotos(int $barbershopId, AddBarbershopPhotosRequest $request): AddBarbershopPhotosResponse
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $barbershopPhotos = $this->barbershopRepository->addPhotos($barbershopId, $request->photoUrls);
+        $uploadedPhotos = array_map(
+            static fn ($barbershopPhoto) => BarbershopPhotoResponse::fromEntity($barbershopPhoto),
+            $barbershopPhotos
+        );
+
+        return new AddBarbershopPhotosResponse(uploaded: $uploadedPhotos);
+    }
+
+    public function deleteBarbershopPhoto(int $barbershopId, int $photoId): bool
+    {
+        $this->validateBarbershopExists($barbershopId);
+        return $this->barbershopRepository->deletePhoto($barbershopId, $photoId);
     }
 }
