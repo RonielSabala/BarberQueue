@@ -69,7 +69,7 @@ class DatabaseInstaller
             }
 
             // Not in trigger
-            if (strpos($line, ';') !== false) {
+            if (str_contains($line, ';')) {
                 // Append and then explode by semicolon
                 $parts = explode(';', $current);
                 $count = \count($parts);
