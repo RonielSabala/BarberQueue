@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-use App\Domain\ValueObjects\Base\BaseField;
+use App\Domain\ValueObjects\Base\StringField;
 
-final readonly class Phone extends BaseField
+final readonly class Phone extends StringField
 {
-    private const int PHONE_LENGTH = 10;
-    private const string PHONE_PATTERN = '/^\d{' . self::PHONE_LENGTH . '}$/';
+    private const int FIXED_PHONE_LENGTH = 10;
 
-    public function __construct(string $value)
-    {
-        if (!preg_match(self::PHONE_PATTERN, $value)) {
-            throw $this->validationException('must contain exactly ' . self::PHONE_LENGTH . ' digits');
-        }
-
-        $this->value = $value;
-    }
+    protected const int MIN_LEN = self::FIXED_PHONE_LENGTH;
+    protected const int MAX_LEN = self::FIXED_PHONE_LENGTH;
+    protected const string PATTERN = '/^\d{' . self::FIXED_PHONE_LENGTH . '}$/';
+    protected const string PATTER_ERROR_MSG = 'must contain exactly ' . self::FIXED_PHONE_LENGTH . ' digits';
 }

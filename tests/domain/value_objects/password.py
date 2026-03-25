@@ -1,18 +1,11 @@
 import string
 from dataclasses import dataclass
-from typing import ClassVar
 
-from domain.utils import random_string_len
 from domain.value_objects.base import StringField
-
-_PASSWORD_CHARS = string.ascii_letters + string.digits
 
 
 @dataclass(slots=True, frozen=True)
 class Password(StringField):
-    _min_len: ClassVar[int] = 8
-    _max_len: ClassVar[int] = 50
-
-    @classmethod
-    def random_value(cls) -> str:
-        return random_string_len(_PASSWORD_CHARS, cls._min_len, cls._max_len)
+    _min_len = 8
+    _max_len = 50
+    _allowed_chars = string.ascii_letters + string.digits

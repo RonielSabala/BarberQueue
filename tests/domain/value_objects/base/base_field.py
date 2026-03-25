@@ -9,16 +9,9 @@ from domain.exceptions import ValidationError
 class BaseField[T](ABC):
     """
     Root of all value objects.
-
-    Subclasses validate in `__post_init__` and expose a `random()`
-    factory.
     """
 
     value: T
-
-    @classmethod
-    def _validation_error(cls, message: str) -> ValidationError:
-        return ValidationError(f"{cls.__name__} {message}")
 
     @classmethod
     @abstractmethod
@@ -27,3 +20,13 @@ class BaseField[T](ABC):
     @classmethod
     def random(cls) -> Self:
         return cls(cls.random_value())
+
+    @classmethod
+    def _validation_error(cls, message: str) -> ValidationError:
+        return ValidationError(f"{cls.__name__} {message}")
+
+    @classmethod
+    def _random_value_error(cls, name: str) -> NotImplementedError:
+        return NotImplementedError(
+            f"{cls.__name__}.random_value() requires {name} to be set"
+        )

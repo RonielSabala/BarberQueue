@@ -9,21 +9,18 @@ from domain.value_objects.base.string_field import StringField
 
 _FIRST_CHARS = string.ascii_letters + "_"
 _NAME_CHARS = _FIRST_CHARS + string.digits + " "
-_NAME_PATTERN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*(?: [a-zA-Z0-9_]+)*$")
 
 
 @dataclass(slots=True, frozen=True)
 class NameField(StringField):
+    """
+    Base for all value objects that are usernames/nicknames.
+    """
+
     _min_len: ClassVar[int]
     _max_len: ClassVar[int]
-
-    def __post_init__(self) -> None:
-        StringField.__post_init__(self)
-
-        if not _NAME_PATTERN.fullmatch(self.value):
-            raise self._validation_error(
-                "must start with a letter or underscore and contain only letters, numbers, underscores or spaces"
-            )
+    _pattern = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*(?: [a-zA-Z0-9_]+)*$")
+    _pattern_error_msg = "must start with a letter or underscore and contain only letters, numbers, underscores or spaces"
 
     @classmethod
     def random_value(cls) -> str:

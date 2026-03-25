@@ -33,13 +33,8 @@ class Email(StringField):
     _max_len: ClassVar[int] = _MAX_EMAIL_LENGTH
     _min_local_len: ClassVar[int] = _MIN_EMAIL_LOCAL_LENGTH
     _max_local_len: ClassVar[int] = _MAX_EMAIL_LOCAL_LENGTH
-
-    def __post_init__(self) -> None:
-        StringField.__post_init__(self)
-
-        value = self.value.strip()
-        if value != self.value or not _EMAIL_PATTERN.fullmatch(value):
-            raise self._validation_error("must be a valid email in format user@domain")
+    _pattern = _EMAIL_PATTERN
+    _pattern_error_msg = "must be a valid email in format user@domain"
 
     @classmethod
     def random_value(cls) -> str:
