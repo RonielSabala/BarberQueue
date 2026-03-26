@@ -3,13 +3,15 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpStatus
+from domain.dtos import MessageResponse
 from domain.dtos.barbershops import (
-    BarbershopResponse,
     CreateBarbershopRequest,
     UpdateBarbershopPhotoRequest,
 )
 from domain.value_objects.photo_url import PhotoUrl
-from helpers.assertions import assert_body_shape, assert_status
+from helpers.assertions import assert_body, assert_status
+
+BARBERSHOP_PHOTO_UPDATED = MessageResponse(message="Barbershop photo updated")
 
 
 @pytest.fixture(scope="module")
@@ -36,4 +38,4 @@ def test_body_shape(response: requests.Response) -> None:
     Response contains expected fields.
     """
 
-    assert_body_shape(response, BarbershopResponse)
+    assert_body(response, BARBERSHOP_PHOTO_UPDATED)

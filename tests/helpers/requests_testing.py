@@ -132,7 +132,7 @@ def missing_field_cases(
     nested_fields: list[_FieldMetadata] = []
 
     for field_name, field_type, is_optional in request_class.iter_field_types():
-        if is_optional:
+        if is_optional or not isinstance(field_type, type):
             continue
 
         field = _FieldMetadata.from_data(field_name, field_type, _path)

@@ -8,7 +8,7 @@ from domain.utils import random_string_len
 from domain.value_objects.base.string_field import StringField
 
 _FIRST_CHARS = string.ascii_letters + "_"
-_NAME_CHARS = _FIRST_CHARS + string.digits + " "
+_NAME_CHARS = _FIRST_CHARS + string.digits
 
 
 @dataclass(slots=True, frozen=True)

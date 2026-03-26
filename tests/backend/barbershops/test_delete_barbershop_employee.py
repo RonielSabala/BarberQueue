@@ -6,17 +6,23 @@ from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
     CreateBarbershopRequest,
 )
+from domain.value_objects.role_name import Role
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import ASSIGNMENT_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
 def emp_context(client: ApiClient):
-    shop_id = client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
-    emp_res = client.barbershops.create_employee(
-        shop_id, CreateBarbershopEmployeeRequest.random()
+    employee_request = CreateBarbershopEmployeeRequest.random(role=Role.BARBER)
+    barbershop_request = CreateBarbershopRequest.random()
+
+    barbershop_response = client.barbershops.create(barbershop_request)
+    employee_response = client.barbershops.create_employee(
+        barbershop_id := barbershop_response.json()["id"], employee_request
     )
-    return {"shop_id": shop_id, "emp_id": emp_res.json()["id"]}
+
+    employee_id = employee_response.json()["id"]
+    return {"shop_id": barbershop_id, "emp_id": employee_id}
 
 
 def test_status(client: ApiClient, emp_context: dict) -> None:

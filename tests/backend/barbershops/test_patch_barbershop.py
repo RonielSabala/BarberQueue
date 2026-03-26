@@ -3,17 +3,18 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos.barbershops import (
-    BarbershopResponse,
-    CreateBarbershopRequest,
-    UpdateBarbershopRequest,
-)
-from helpers.assertions import assert_body_shape, assert_content_type, assert_status
+from domain.dtos import MessageResponse
+from domain.dtos.barbershops import CreateBarbershopRequest, UpdateBarbershopRequest
+from helpers.assertions import assert_body, assert_content_type, assert_status
+
+BARBERSHOP_UPDATED = MessageResponse(message="Barbershop updated")
 
 
 @pytest.fixture(scope="module")
 def barbershop_id(client: ApiClient) -> int:
-    return client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
+    request = CreateBarbershopRequest.random()
+    response = client.barbershops.create(request)
+    return response.json()["id"]
 
 
 @pytest.fixture(scope="module")
@@ -43,4 +44,4 @@ def test_body_shape(response: requests.Response) -> None:
     Response contains expected fields.
     """
 
-    assert_body_shape(response, BarbershopResponse)
+    assert_body(response, BARBERSHOP_UPDATED)

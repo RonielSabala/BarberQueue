@@ -13,12 +13,16 @@ from helpers.common_responses import PHOTO_NOT_FOUND
 
 @pytest.fixture(scope="module")
 def photo_context(client: ApiClient):
-    shop_id = client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
-    photo_res = client.barbershops.add_photos(
-        shop_id, CreateBarbershopPhotosRequest(photo_urls=[PhotoUrl.random()])
-    )
-    photo_id = photo_res.json()["photos"][0]["id"]
-    return {"shop_id": shop_id, "photo_id": photo_id}
+    barbershop_request = CreateBarbershopRequest.random()
+    photos_request = CreateBarbershopPhotosRequest(photo_urls=[PhotoUrl.random()])
+
+    barbershop_response = client.barbershops.create(barbershop_request)
+
+    barbershop_id = barbershop_response.json()["id"]
+    photos_response = client.barbershops.add_photos(barbershop_id, photos_request)
+
+    photo_id = photos_response.json()["uploaded"][0]["id"]
+    return {"shop_id": barbershop_id, "photo_id": photo_id}
 
 
 def test_status(client: ApiClient, photo_context: dict) -> None:

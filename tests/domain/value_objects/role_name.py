@@ -1,9 +1,18 @@
 import random
 from dataclasses import dataclass
+from enum import StrEnum
 
 from domain.value_objects.base import BaseField
 
-_ROLE_NAMES = ("client", "barber", "assistant", "admin")
+
+class Role(StrEnum):
+    CLIENT = "client"
+    BARBER = "barber"
+    ASSISTANT = "assistant"
+    ADMIN = "admin"
+
+
+_ROLE_NAMES = tuple(Role)
 
 
 @dataclass(slots=True, frozen=True)

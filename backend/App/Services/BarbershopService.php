@@ -186,6 +186,14 @@ class BarbershopService extends BaseService
         $this->userService->validateInexistentUserEmail($email);
 
         $role = $this->roleRepository->findByValue($request->role->value);
+        $roleName = $role->roleName->value;
+        if ($roleName === Role::Client->value || $roleName === Role::Admin->value) {
+            throw new BarbershopException(
+                'Only barbers and assistants can be assigned to a barbershop',
+                HttpStatus::UnprocessableEntity
+            );
+        }
+
         $username = $request->username->value;
         $phone = $request->phone->value;
         $passwordHash = $this->passwordService->hash($request->password->value);

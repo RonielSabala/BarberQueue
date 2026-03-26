@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from typing import Annotated
 
 from domain.dtos import BaseResponse
+from domain.value_objects.base import ListOf
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -67,7 +69,10 @@ class CreateBarbershopEmployeeResponse(BaseResponse):
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopPhotosResponse(BaseResponse):
-    uploaded: list[str]
+    uploaded: Annotated[
+        list[BarbershopPhotoResponse],
+        ListOf(base_type=BarbershopPhotoResponse, min_items=1),
+    ]
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -86,4 +91,7 @@ class CreateBarbershopResponse(BaseResponse):
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class GetBarbershopPhotosResponse(BaseResponse):
-    photos: list[BarbershopPhotoResponse]
+    photos: Annotated[
+        list[BarbershopPhotoResponse],
+        ListOf(base_type=BarbershopPhotoResponse, min_items=0),
+    ]

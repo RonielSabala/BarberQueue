@@ -5,17 +5,18 @@ from domain.value_objects import (
     Address,
     BarbershopName,
     Capacity,
-    DayOfWeek,
     Email,
     Id,
     Password,
     Phone,
     PhotoUrl,
+    PhotoUrls,
     Rating,
     ReviewContent,
     RoleName,
     TimeOfDay,
     Username,
+    WorkingDays,
 )
 
 
@@ -28,12 +29,12 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
     role: RoleName
     start_time: TimeOfDay
     end_time: TimeOfDay
-    working_days: list[DayOfWeek]
+    working_days: WorkingDays
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopPhotosRequest(BaseRequest):
-    photo_urls: list[PhotoUrl]
+    photo_urls: PhotoUrls
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
