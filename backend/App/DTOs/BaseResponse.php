@@ -32,7 +32,8 @@ abstract readonly class BaseResponse
                 continue;
             }
 
-            $value = $entityReflection->getProperty($name)->getValue($entity);
+            $property = $entityReflection->getProperty($name);
+            $value = $property->getValue($entity);
             $args[] = self::unwrapValue($value);
         }
 
@@ -41,8 +42,17 @@ abstract readonly class BaseResponse
 
     private static function unwrapValue(mixed $value): mixed
     {
+        if ($value === null) {
+            return null;
+        }
+
         if ($value instanceof BaseField) {
             return $value->value;
+        }
+
+        // Unwrap array
+        if (\is_array($value)) {
+            return array_map(static fn (mixed $item) => self::unwrapValue($item), $value);
         }
 
         return $value;

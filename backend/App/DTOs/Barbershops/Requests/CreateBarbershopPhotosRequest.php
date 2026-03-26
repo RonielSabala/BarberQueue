@@ -11,7 +11,7 @@ use App\DTOs\BaseRequest;
 readonly class CreateBarbershopPhotosRequest extends BaseRequest
 {
     public function __construct(
-        #[ArrayOf(PhotoUrl::class)]
+        #[ArrayOf(PhotoUrl::class, minItems: 1)]
         public array $photoUrls
     ) {}
 }

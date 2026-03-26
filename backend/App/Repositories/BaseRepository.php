@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Attributes\ArrayOf;
 use App\Config\DbConfig;
 use App\Domain\Entities\BaseEntity;
 use App\Utils\TextUtils;
@@ -38,16 +39,37 @@ abstract class BaseRepository
         foreach ($constructor->getParameters() as $param) {
             $dbKey = TextUtils::toSnakeCase($param->getName());
             $dbValue = $row[$dbKey] ?? null;
-
-            // Resolve Type
+            $valueExists = $dbValue !== null;
             $type = $param->getType();
-            if ($type && !$type->isBuiltin() && $dbValue !== null) {
-                // Instantiate Value Object
+
+            // Handle #[ArrayOf]
+            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+            if ($arrayOf !== null) {
+                $itemType = $arrayOf->newInstance()->type;
+                $items = $valueExists
+                    ? array_map('trim', explode(',', (string) $dbValue))
+                    : [];
+
+                $arguments[] = array_map(
+                    static fn (string $item) => new $itemType($item),
+                    $items
+                );
+
+                continue;
+            }
+
+            // Value Object
+            if (
+                $valueExists
+                && $type instanceof \ReflectionNamedType
+                && !$type->isBuiltin()
+            ) {
                 $className = $type->getName();
                 $arguments[] = new $className($dbValue);
-            } else {
-                $arguments[] = $dbValue;
+                continue;
             }
+
+            $arguments[] = $dbValue;
         }
 
         return $reflection->newInstanceArgs($arguments);
@@ -64,7 +86,6 @@ abstract class BaseRepository
     {
         $stmt = $this->query($sql, $params);
         $row = $stmt->fetch();
-
         return $row ? $this->mapToEntity($entityClass, $row) : null;
     }
 

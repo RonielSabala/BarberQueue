@@ -7,5 +7,9 @@ namespace App\Attributes;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_PARAMETER)]
 class ArrayOf
 {
-    public function __construct(public readonly string $type) {}
+    public function __construct(
+        public readonly string $type,
+        public readonly ?int $minItems = null,
+        public readonly ?int $maxItems = null,
+    ) {}
 }

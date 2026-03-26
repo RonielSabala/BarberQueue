@@ -138,6 +138,23 @@ abstract class BaseController
             );
         }
 
+        $count = \count($value);
+        $instance = $arrayOf->newInstance();
+
+        if ($instance->minItems !== null && $count < $instance->minItems) {
+            throw new ValidationException(
+                "Field '{$fieldPath}[]' must have at least {$instance->minItems} item(s)",
+                HttpStatus::BadRequest
+            );
+        }
+
+        if ($instance->maxItems !== null && $count > $instance->maxItems) {
+            throw new ValidationException(
+                "Field '{$fieldPath}[]' must have at most {$instance->maxItems} item(s)",
+                HttpStatus::BadRequest
+            );
+        }
+
         $itemType = $arrayOf->newInstance()->type;
         return array_map(
             static function (mixed $item) use ($itemType, $fieldPath): mixed {
