@@ -7,6 +7,7 @@ from domain.value_objects.average_rating import AverageRating
 from domain.value_objects.barbershop_name import BarbershopName
 from domain.value_objects.capacity import Capacity
 from domain.value_objects.datetime_string import DateTimeString
+from domain.value_objects.day_of_week import DayOfWeek
 from domain.value_objects.email import Email
 from domain.value_objects.id import Id
 from domain.value_objects.password import Password
@@ -26,6 +27,7 @@ __all__ = [
     "BarbershopName",
     "Capacity",
     "DateTimeString",
+    "DayOfWeek",
     "Email",
     "Id",
     "Password",

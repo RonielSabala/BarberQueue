@@ -19,12 +19,6 @@ def assert_status(response: requests.Response, status: HttpStatus) -> None:
     assert response.status_code == status
 
 
-def assert_type(value: Any, expected: type, name_on_error: str) -> None:
-    assert isinstance(value, expected), (
-        f"Expected '{name_on_error!r}' to be {expected.__name__}, got {type(value).__name__}"
-    )
-
-
 def assert_content_type(response: requests.Response, header: HttpHeader) -> None:
     assert response.headers.get("Content-Type") == header.with_charset
 
@@ -33,10 +27,10 @@ def assert_body(response: requests.Response, expected: JSONSerializable) -> None
     assert response.json() == expected.to_json()
 
 
-def assert_body_shape(
-    response: requests.Response, expected: type[BaseResponse]
-) -> None:
-    _assert_shape(response.json(), expected)
+def assert_type(value: Any, expected: type, *, name_on_error: str) -> None:
+    assert isinstance(value, expected), (
+        f"Expected '{name_on_error!r}' to be {expected.__name__}, got {type(value).__name__}"
+    )
 
 
 def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
@@ -46,8 +40,25 @@ def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
 
         value = json[json_key]
         if not issubclass(field_type, BaseResponse):
-            assert_type(value, field_type, json_key)
+            assert_type(value, field_type, name_on_error=json_key)
             return
 
-        assert_type(value, dict, json_key)
+        assert_type(value, dict, name_on_error=json_key)
         _assert_shape(value, field_type)
+
+
+def assert_body_shape(
+    response: requests.Response, expected: type[BaseResponse]
+) -> None:
+    _assert_shape(response.json(), expected)
+
+
+def assert_list_body_shape(
+    response: requests.Response, expected: type[BaseResponse]
+) -> None:
+    data = response.json()
+    assert_type(data, list, name_on_error="Response body")
+
+    for i, item in enumerate(data):
+        assert_type(item, dict, name_on_error=f"Response body[{i}]")
+        _assert_shape(item, expected)

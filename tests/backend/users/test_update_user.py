@@ -81,7 +81,7 @@ def test_updated_fields_persists(client: ApiClient, user_id: int) -> None:
         if value is None:
             continue
 
-        assert_type(value, BaseField, key)
+        assert_type(value, BaseField, name_on_error=key)
         assert user_body[to_camel_case(key)] == value.value
 
 

@@ -12,7 +12,7 @@ class BaseRequest(BaseDto):
     """
 
     @classmethod
-    def random(cls, optional_chance: float = 0.5):
+    def random(cls, optional_chance: float = 0.5, **fields):
         """
         Generates a random request.
 
@@ -31,10 +31,14 @@ class BaseRequest(BaseDto):
 
         kwargs = {
             field_name: (
-                field_type.random()
-                if issubclass(field_type, BaseField)
-                and (not is_optional or random.random() < optional_chance)
-                else None
+                fields[field_name]
+                if field_name in fields
+                else (
+                    field_type.random()
+                    if issubclass(field_type, BaseField)
+                    and (not is_optional or random.random() < optional_chance)
+                    else None
+                )
             )
             for field_name, field_type, is_optional in cls.iter_field_types()
         }
