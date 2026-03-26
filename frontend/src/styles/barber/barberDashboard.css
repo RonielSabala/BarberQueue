@@ -1,0 +1,106 @@
+.barber-dashboard {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.status-card {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.status {
+  font-weight: 600;
+}
+
+.status.active {
+  color: #22c55e;
+}
+
+.status.resting {
+  color: #f59e0b;
+}
+
+.status.inactive {
+  color: #ef4444;
+}
+
+.dashboard-main {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.client-card {
+  flex: 1;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.queue-card {
+  flex: 1;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  background: white;
+  margin-top: 10px;
+}
+
+.queue-item.current {
+  border: 2px solid #f59e0b;
+  background: #fff7ed;
+}
+
+.number {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finish-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #f59e0b;
+  color: white;
+  font-weight: 600;
+}
+
+.next-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #22c55e;
+  color: white;
+  font-weight: 600;
+}
+
+.end-day-btn {
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: white;
+  font-weight: 600;
+}

@@ -1,7 +1,10 @@
 import logo from "../assets/logo.png";
-import "../styles/login.css";
+import "../styles/auth/login.css";
 
-function AuthLayout({ children, tagline = "Gestiona tu tiempo. Olvida las filas." }) {
+function AuthLayout({
+  children,
+  tagline = "Gestiona tu tiempo. Olvida las filas.",
+}) {
   return (
     <div className="login-container">
       <div className="login-left">

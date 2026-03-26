@@ -9,7 +9,7 @@ enum HttpHeader: string
     case Json = 'application/json';
     case PlainText = 'text/plain';
 
-    public function header(): void
+    public function send(): void
     {
         header("Content-Type: {$this->value}; charset=UTF-8");
     }

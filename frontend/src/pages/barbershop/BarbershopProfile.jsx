@@ -1,91 +1,137 @@
-import { useParams, Link } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import "../../styles/barbershop/barbershopProfile.css";
 
 function BarbershopProfile() {
+  const navigate = useNavigate();
   const { id } = useParams();
 
-  // datos simulados (luego vendrán del backend)
-  const shop = {
-    id: id,
+  const barbershop = {
     name: "Barbería 1",
-    rating: 4.8,
+    branch: "Sucursal de Santiago",
+    rating: 4,
+    queue: 5,
+    capacity: 10,
     address: "Av. Los Próceres",
-    schedule: "6:00 a.m - 5:00 p.m",
-    status: "Abierto",
+    opens: "8:00 a.m.",
+    closes: "5:00 p.m.",
     email: "barberia1@gmail.com",
-    phone: "+1 (809) 111-3233",
-    queueStats: "5 / 10 clientes",
-    services: [
-      "Fade",
-      "Beard Trim",
-      "Classic Cut"
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: "Roniel Sabala",
-        rating: 4,
-        comment: "uff, la mejor barbería"
-      }
-    ]
+    phone: "+1 (899) 111-3223",
+    status: "Abierto",
   };
 
+  const haircuts = [
+    {
+      name: "Fade",
+      image: "https://images.unsplash.com/photo-1621605815971-fbc98d665033",
+    },
+    {
+      name: "Pompadour",
+      image: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c",
+    },
+  ];
+
+  const reviews = [
+    {
+      name: "Roniel Sabala",
+      rating: 4,
+      comment: "Uff, la mejor barbería, no bultoken.",
+    },
+    {
+      name: "María López",
+      rating: 5,
+      comment: "Excelente servicio, siempre salgo contento.",
+    },
+  ];
+
   return (
-    <div>
-
+    <div className="barbershop-profile">
       {/* HEADER */}
-      <h1>{shop.name}</h1>
 
-      <p>⭐ Rating: {shop.rating}</p>
+      <div className="profile-header">
+        <div>
+          <h1>{barbershop.name}</h1>
+          <span className="branch">({barbershop.branch})</span>
 
-      <Link to={`/barbershops/${shop.id}/queue`}>
-        <button>Cola en tiempo real</button>
-      </Link>
+          <div className="rating">{"⭐".repeat(barbershop.rating)}</div>
+        </div>
 
-      <p>{shop.queueStats}</p>
+        <div className="queue-box">
+          <span className="live">● Cola en tiempo real</span>
+          <h2>
+            {barbershop.queue}/{barbershop.capacity} clientes
+          </h2>
 
-      <hr />
+          <button
+            className="queue-btn"
+            onClick={() => navigate(`/barbershops/${id}/queue`)}
+          >
+            Ver cola en vivo
+          </button>
+        </div>
+      </div>
 
-      {/* INFO BARBERIA */}
-      <h2>Información</h2>
+      {/* MAIN */}
 
-      <p>📍 Dirección: {shop.address}</p>
+      <div className="profile-main">
+        {/* FOTO BARBERÍA */}
 
-      <p>🕒 Horario: {shop.schedule}</p>
+        <img
+          className="main-photo"
+          src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1"
+        />
 
-      <p>🟢 Estado: {shop.status}</p>
+        {/* TIPOS DE CORTE */}
 
-      <p>📧 Email: {shop.email}</p>
+        <div className="haircuts">
+          <h3>Tipos de Cortes</h3>
 
-      <p>📞 Teléfono: {shop.phone}</p>
+          <div className="haircut-list">
+            {haircuts.map((cut, index) => (
+              <div key={index} className="haircut-card">
+                <img src={cut.image} />
 
-      <hr />
+                <p>{cut.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {/* TIPOS DE CORTE */}
-      <h2>Tipos de cortes</h2>
+      {/* INFO BARBERÍA */}
 
-      {shop.services.map((service, index) => (
-        <p key={index}>💈 {service}</p>
-      ))}
+      <div className="info-box">
+        <p>📍 {barbershop.address}</p>
 
-      <hr />
+        <p>
+          🕐 {barbershop.opens} - {barbershop.closes}
+        </p>
+
+        <p className="status">🟢 {barbershop.status}</p>
+
+        <p>✉️ {barbershop.email}</p>
+
+        <p>📞 {barbershop.phone}</p>
+      </div>
 
       {/* RESEÑAS */}
-      <h2>Reseñas</h2>
 
-      {shop.reviews.map((review) => (
-        <div key={review.id}>
+      <div className="reviews">
+        <h2>Reseñas</h2>
 
-          <p>⭐ {review.rating}</p>
+        {reviews.map((review, index) => (
+          <div key={index} className="review-card">
+            <div className="avatar"></div>
 
-          <p>{review.user}</p>
+            <div>
+              <strong>{review.name}</strong>
 
-          <p>{review.comment}</p>
+              <div className="rating">{"⭐".repeat(review.rating)}</div>
 
-          <hr />
-
-        </div>
-      ))}
-
+              <p>{review.comment}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

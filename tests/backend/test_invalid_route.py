@@ -1,42 +1,42 @@
+"""
+Tests for requests to unknown routes.
+"""
+
+import pytest
 import requests
 
-from http_header import HttpHeader
-from http_status import HttpStatus
+from api.client import ApiClient
+from api.core import HttpHeader, HttpMethod, HttpStatus
+from domain.dtos import ErrorResponse
+from helpers.assertions import assert_body, assert_content_type, assert_status
 
-EXPECTED_BODY = {"error": "Route not found"}
-
-
-def _get_response(base_url: str) -> requests.Response:
-    """
-    Return a api URL that is guaranteed not to exist.
-    """
-
-    url = f"{base_url}/api/this-route-does-not-exist"
-    return requests.get(url, timeout=5)
+_ROUTE_NOT_FOUND = ErrorResponse(error="Route not found")
 
 
-def test_invalid_route_status(base_url: str) -> None:
+@pytest.fixture(scope="module")
+def _response(client: ApiClient) -> requests.Response:
+    return client.request(HttpMethod.GET, "/api/this-route-does-not-exist")
+
+
+def test_status(client: ApiClient, _response: requests.Response) -> None:
     """
     Unknown routes return 404.
     """
 
-    response = _get_response(base_url)
-    assert response.status_code == HttpStatus.NOT_FOUND
+    assert_status(_response, HttpStatus.NOT_FOUND)
 
 
-def test_invalid_route_body(base_url: str) -> None:
-    """
-    Unknown routes return a structured JSON error.
-    """
-
-    response = _get_response(base_url)
-    assert response.json() == EXPECTED_BODY
-
-
-def test_invalid_route_content_type(base_url: str) -> None:
+def test_content_type(client: ApiClient, _response: requests.Response) -> None:
     """
     Unknown routes return JSON content type.
     """
 
-    response = _get_response(base_url)
-    assert response.headers.get("Content-Type") == HttpHeader.JSON.with_charset
+    assert_content_type(_response, HttpHeader.JSON)
+
+
+def test_body(client: ApiClient, _response: requests.Response) -> None:
+    """
+    Response contains an error message.
+    """
+
+    assert_body(_response, _ROUTE_NOT_FOUND)

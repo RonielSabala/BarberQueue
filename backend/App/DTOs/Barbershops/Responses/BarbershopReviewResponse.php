@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DTOs\Barbershops\Responses;
+
+use App\DTOs\BaseResponse;
+
+readonly class BarbershopReviewResponse extends BaseResponse
+{
+    public function __construct(
+        public int $id,
+        public int $userId,
+        public string $username,
+        public int $rating,
+        public string $content,
+        public string $createdAt,
+    ) {}
+}

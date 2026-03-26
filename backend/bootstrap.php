@@ -8,3 +8,6 @@ use Dotenv\Dotenv;
 
 const ROOT_DIR = __DIR__ . '/..';
 Dotenv::createImmutable(ROOT_DIR)->load();
+
+// Set timezone
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'UTC');

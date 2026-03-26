@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Attributes\{GET, PATCH, RoutePrefix};
+use App\Core\HttpResponse;
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
+use App\Services\UserService;
+
+#[RoutePrefix('/api/users')]
+class UserController extends BaseController
+{
+    public function __construct(
+        private readonly UserService $userService
+    ) {}
+
+    #[GET('/{id}')]
+    public function get(int $id): void
+    {
+        $response = $this->userService->get($id);
+        HttpResponse::json($response);
+    }
+
+    #[PATCH('/{id}')]
+    public function update(int $id, UpdateUserRequest $request): void
+    {
+        $this->userService->update($id, $request);
+        HttpResponse::success('User updated');
+    }
+
+    #[PATCH('/{id}/password')]
+    public function updatePassword(int $id, UpdateUserPasswordRequest $request): void
+    {
+        $this->userService->updatePassword($id, $request);
+        HttpResponse::success('Password updated');
+    }
+}

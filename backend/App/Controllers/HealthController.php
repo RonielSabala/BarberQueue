@@ -12,6 +12,6 @@ class HealthController extends BaseController
     #[GET('/api/health')]
     public function get(): void
     {
-        HttpResponse::success(header: HttpHeader::PlainText);
+        HttpResponse::success('OK', HttpHeader::PlainText);
     }
 }
