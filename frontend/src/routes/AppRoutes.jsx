@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
-// Public
-import Landing from "../pages/Landing";
-
 // Auth
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+
+// Public
+import Landing from "../pages/Landing";
 
 // System
 import ClientHome from "../pages/client/ClientHome";
@@ -42,11 +42,11 @@ function AppRoutes() {
       {/* LANDING */}
       <Route path="/" element={<Landing />} />
 
-      {/* AUTH */}
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* APP (con layout) */}
       <Route element={<MainLayout />}>

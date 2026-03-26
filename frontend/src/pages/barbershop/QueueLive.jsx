@@ -4,21 +4,19 @@ import QueueColumn from "../../components/queue/QueueColumn";
 
 function QueueLive() {
   const { id } = useParams();
-  const { barbers } = useQueue();
+  const { barbers = [] } = useQueue() || {};
 
   const activeBarbers = barbers.filter((b) => b.status === "active");
   const restingBarbers = barbers.filter((b) => b.status === "resting");
 
-  // Calcular totales
   const totalActivos = activeBarbers.reduce(
-    (acc, b) => acc + (b.current ? 1 : 0) + b.queue.length,
+    (acc, b) => acc + (b.current ? 1 : 0) + (b.queue?.length || 0),
     0,
   );
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-display font-bold tracking-tight mb-1">
@@ -46,17 +44,18 @@ function QueueLive() {
           </div>
         </div>
 
-        {/* Main Grid Layout */}
         <div className="flex flex-col xl:flex-row gap-8">
-          {/* Active Barbers Columns */}
           <div className="flex-grow">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeBarbers.map((barber) => (
-                <QueueColumn key={barber.id} barber={barber} />
-              ))}
+              {activeBarbers.length === 0 ? (
+                <p className="text-slate-500">No hay barberos activos.</p>
+              ) : (
+                activeBarbers.map((barber) => (
+                  <QueueColumn key={barber.id} barber={barber} />
+                ))
+              )}
             </div>
 
-            {/* Espera General */}
             <div className="mt-8 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <h2 className="font-display font-bold text-xl mb-6 flex items-center gap-2">
                 <span className="material-icons-round text-primary">
@@ -66,7 +65,6 @@ function QueueLive() {
               </h2>
 
               <div className="flex flex-wrap gap-4">
-                {/* Dummy placeholders for visual similarity to the template */}
                 <div className="flex flex-col items-center gap-2">
                   <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                     <span className="material-icons-round text-slate-400">
@@ -77,31 +75,10 @@ function QueueLive() {
                     Cliente #
                   </span>
                 </div>
-                <div className="flex flex-col items-center gap-2 hidden sm:flex">
-                  <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                    <span className="material-icons-round text-slate-400">
-                      person
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium text-slate-500">
-                    Cliente #
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-2 opacity-50">
-                  <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                    <span className="material-icons-round text-slate-400">
-                      more_horiz
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium text-slate-500">
-                    ...
-                  </span>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Sidebar (Resting Barbers & Estimation) */}
           <div className="w-full xl:w-80 space-y-6">
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
