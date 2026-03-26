@@ -28,4 +28,13 @@ class TextUtils
     {
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $text));
     }
+
+    public static function joinWithDot(string $a, string $b = '')
+    {
+        if ($a === '') {
+            return $b;
+        }
+
+        return $a . '.' . $b;
+    }
 }

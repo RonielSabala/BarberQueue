@@ -121,7 +121,11 @@ uv sync
 Create a `.env` file at the **repo root** and fill in the required values:
 
 ```env
-# App URLs
+# Application
+APP_NAME=BarberQueue
+APP_TIMEZONE=America/Santo_Domingo
+
+# URLs
 BACKEND_URL=http://localhost:3000
 FRONTEND_URL=http://localhost:5173
 
@@ -132,14 +136,14 @@ DB_USERNAME=
 DB_PASSWORD=
 DB_DATABASE=barberqueue_db
 
-# Auth
+# Security & Authentication
 JWT_SECRET=
 
-# Email
+# Mail Service
 MAIL_USERNAME=
 MAIL_PASSWORD=
 
-# Google OAuth (optional)
+# External Services (optional)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
@@ -154,7 +158,7 @@ You can create one with:
 openssl rand -base64 32
 ```
 
-#### Email Setup
+#### Mail Service Setup
 
 1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
 2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.

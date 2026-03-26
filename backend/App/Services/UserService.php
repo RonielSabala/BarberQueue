@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Core\HttpStatus;
+use App\Domain\Entities\User;
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
+use App\DTOs\Users\Responses\GetUserResponse;
+use App\Exceptions\UserException;
+use App\Repositories\UserRepository;
+
+class UserService extends BaseService
+{
+    public function __construct(
+        private readonly PasswordService $passwordService,
+        private readonly UserRepository $userRepository,
+    ) {}
+
+    public function validateUserExists(int $userId): User
+    {
+        $user = $this->userRepository->findById($userId);
+        if ($user === null) {
+            throw new UserException('User not found', HttpStatus::NotFound);
+        }
+
+        return $user;
+    }
+
+    public function validateInexistentUserEmail(string $userEmail): void
+    {
+        $user = $this->userRepository->findByEmail($userEmail);
+        if ($user) {
+            throw new UserException('User email already in use', HttpStatus::Conflict);
+        }
+    }
+
+    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
+    {
+        $newPasswordHash = $this->passwordService->hash($newPassword);
+        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
+        $this->userRepository->updatePassword($userId, $newPasswordHash);
+    }
+
+    public function get(int $userId): GetUserResponse
+    {
+        $user = $this->validateUserExists($userId);
+        return GetUserResponse::fromEntity($user);
+    }
+
+    public function update(int $userId, UpdateUserRequest $request): void
+    {
+        $this->validateUserExists($userId);
+        $fields = $this->validateFieldsToUpdate($request);
+        $this->userRepository->updateFields($userId, $fields);
+    }
+
+    public function updatePassword(int $userId, UpdateUserPasswordRequest $request): void
+    {
+        $user = $this->validateUserExists($userId);
+
+        $currentPassword = $request->currentPassword->value;
+        $newPassword = $request->newPassword->value;
+        $userPasswordHash = $user->passwordHash->value;
+
+        $this->passwordService->validateMatch($currentPassword, $userPasswordHash);
+        $this->updateUserPassword($userId, $newPassword, $userPasswordHash);
+    }
+}

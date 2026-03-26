@@ -1,26 +1,10 @@
-from __future__ import annotations
-
-import random
-import string
 from dataclasses import dataclass
 from typing import ClassVar
 
-from domain.value_objects.string_field import StringField
-
-_USERNAME_CHARS = string.ascii_letters + string.digits + " "
+from domain.value_objects.base import NameField
 
 
 @dataclass(slots=True, frozen=True)
-class Username(StringField):
+class Username(NameField):
     _min_len: ClassVar[int] = 5
     _max_len: ClassVar[int] = 30
-
-    def __post_init__(self) -> None:
-        if not self.value.strip():
-            raise self._validation_error("cannot be blank")
-
-    @classmethod
-    def random(cls) -> Username:
-        user_len = random.randint(cls._min_len, cls._max_len)
-        username = "".join(random.choices(_USERNAME_CHARS, k=user_len))
-        return cls(username)

@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-class AuthException extends BaseException {}
+class AuthException extends ServiceException {}

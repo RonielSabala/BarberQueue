@@ -6,33 +6,30 @@ namespace App\Services;
 
 use App\Core\{Container, HttpStatus};
 use App\Domain\Entities\User;
-use App\Domain\ValueObjects\{Id, PasswordHash};
 use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
 use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
 use App\Exceptions\AuthException;
 use App\Repositories\{PasswordResetRepository, UserRepository};
 use Firebase\JWT\JWT;
 
-class AuthService
+class AuthService extends BaseService
 {
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
     private const CLIENT_ROLE_ID = 1;
+
     private ?MailService $mailService;
     private readonly string $jwtSecret;
 
     public function __construct(
+        private readonly PasswordService $passwordService,
+        private readonly UserService $userService,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
         private readonly Container $container,
     ) {
-        $jwtSecret = $_ENV['JWT_SECRET'] ?? null;
-        if (!$jwtSecret) {
-            throw new AuthException('`JWT_SECRET` is not defined in the environment.', HttpStatus::InternalServerError);
-        }
-
         $this->mailService = null;
-        $this->jwtSecret = $jwtSecret;
+        $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
     }
 
     private function generateJwt(User $user): string
@@ -67,20 +64,19 @@ class AuthService
     public function register(RegisterRequest $request): UserResponse
     {
         $email = $request->email->value;
-        $existing = $this->userRepository->findByEmail($email);
+        $this->userService->validateInexistentUserEmail($email);
 
-        if ($existing !== null) {
-            throw new AuthException('Email already in use', HttpStatus::Conflict);
-        }
-
-        $passwordHash = new PasswordHash(password_hash($request->password->value, PASSWORD_BCRYPT));
         $user = $this->userRepository->create(
-            username: $request->username,
-            email: $request->email,
-            phone: $request->phone,
-            passwordHash: $passwordHash,
-            roleId: new Id(self::CLIENT_ROLE_ID),
+            roleId: self::CLIENT_ROLE_ID,
+            username: $request->username->value,
+            email: $email,
+            phone: $request->phone->value,
+            passwordHash: $this->passwordService->hash($request->password->value),
         );
+
+        if ($user === null) {
+            throw new \RuntimeException('Failed to save user');
+        }
 
         return UserResponse::fromEntity($user);
     }
@@ -103,25 +99,16 @@ class AuthService
     public function resetPassword(ResetPasswordRequest $request): void
     {
         $resetCode = $request->resetCode->value;
-        $passwordReset = $this->passwordResetRepository->findResetCode($resetCode);
+        $passwordReset = $this->passwordResetRepository->findByValue($resetCode);
 
         if ($passwordReset === null) {
             throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);
         }
 
-        $user = $this->userRepository->findById($passwordReset->userId->value);
-        $oldPasswordHash = $user->passwordHash->value;
-        $newPassword = $request->password->value;
-
-        if (password_verify($newPassword, $oldPasswordHash)) {
-            throw new AuthException('New password must be different from the current password', HttpStatus::UnprocessableEntity);
-        }
-
         $userId = $passwordReset->userId->value;
-        $passwordResetId = $passwordReset->id->value;
-        $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+        $user = $this->userService->validateUserExists($userId);
 
-        $this->userRepository->updatePassword($userId, $newPasswordHash);
-        $this->passwordResetRepository->markAsUsed($passwordResetId);
+        $this->userService->updateUserPassword($userId, $request->newPassword->value, $user->passwordHash->value);
+        $this->passwordResetRepository->markAsUsed($passwordReset->id->value);
     }
 }

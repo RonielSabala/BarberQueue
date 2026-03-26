@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Attributes\ArrayOf;
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
 use App\Exceptions\ValidationException;
+use App\Utils\{TextUtils, TypeCoercion};
 
 abstract class BaseController
 {
-    private function getJsonBody(): array
+    private static function getJsonBody(): array
     {
         $raw = file_get_contents('php://input');
         return json_decode($raw ?: '', true) ?? [];
     }
 
-    protected function mapToRequest(string $requestClass): object
+    public static function buildRequest(string $requestClass): object
     {
-        $body = $this->getJsonBody();
-        return $this->mapFromArray($requestClass, $body);
+        return self::mapFromArray($requestClass, self::getJsonBody());
     }
 
-    private function mapFromArray(string $requestClass, array $data, string $path = ''): object
+    private static function mapFromArray(string $requestClass, array $data, string $path = ''): object
     {
         $reflection = new \ReflectionClass($requestClass);
         $constructor = $reflection->getConstructor();
@@ -32,24 +33,37 @@ abstract class BaseController
         }
 
         $args = [];
+        $expectedKeys = [];
+
         foreach ($constructor->getParameters() as $param) {
-            $args[] = $this->resolveParam($param, $param->getType(), $data, $path);
+            $fieldName = $param->getName();
+            $fieldType = $param->getType();
+            $fieldPath = TextUtils::joinWithDot($path, $fieldName);
+            $expectedKeys[] = $fieldName;
+
+            $value = self::extractValue($param, $fieldType, $fieldName, $fieldPath, $data);
+            $args[] = self::resolveParam($param, $fieldType, $value, $fieldPath);
+        }
+
+        $unexpectedKeys = array_diff(array_keys($data), $expectedKeys);
+        if (!empty($unexpectedKeys)) {
+            $prefix = TextUtils::joinWithDot($path);
+            $fields = implode(', ', array_map(static fn ($k) => "'{$prefix}{$k}'", $unexpectedKeys));
+            throw new ValidationException("Unexpected field(s): {$fields}", HttpStatus::BadRequest);
         }
 
         return $reflection->newInstanceArgs($args);
     }
 
-    private function resolveParam(
+    private static function extractValue(
         \ReflectionParameter $param,
-        ?\ReflectionType $type,
-        array $data,
-        string $path
+        \ReflectionNamedType $fieldType,
+        string $fieldName,
+        string $fieldPath,
+        array $data
     ): mixed {
-        $name = $param->getName();
-        $fullPath = $path !== '' ? "{$path}.{$name}" : $name;
-        $allowsNull = $type?->allowsNull() ?? true;
-
-        if (!\array_key_exists($name, $data)) {
+        $allowsNull = $fieldType?->allowsNull() ?? true;
+        if (!\array_key_exists($fieldName, $data)) {
             if ($param->isDefaultValueAvailable()) {
                 return $param->getDefaultValue();
             }
@@ -58,34 +72,126 @@ abstract class BaseController
                 return null;
             }
 
-            throw new ValidationException("Field '{$fullPath}' is required", HttpStatus::BadRequest);
+            throw new ValidationException("Field '{$fieldPath}' is required", HttpStatus::BadRequest);
         }
 
-        $value = $data[$name];
+        $value = $data[$fieldName];
+        if ($value === null && !$allowsNull) {
+            throw new ValidationException("Field '{$fieldPath}' cannot be null", HttpStatus::BadRequest);
+        }
+
+        return $value;
+    }
+
+    private static function resolveParam(
+        \ReflectionParameter $param,
+        \ReflectionNamedType $fieldType,
+        mixed $value,
+        string $fieldPath
+    ): mixed {
         if ($value === null) {
-            if ($allowsNull) {
-                return null;
-            }
-
-            throw new ValidationException("Field '{$fullPath}' cannot be null", HttpStatus::BadRequest);
+            return null;
         }
 
-        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+        $isReflectionType = $fieldType instanceof \ReflectionNamedType;
+        if ($isReflectionType && $fieldType->getName() === 'array') {
+            return self::resolveArray($param, $value, $fieldPath);
+        }
+
+        if (!$isReflectionType || $fieldType->isBuiltin()) {
             return $value;
         }
 
-        $className = $type->getName();
+        $className = $fieldType->getName();
 
         // Value Object
         if (!is_subclass_of($className, BaseRequest::class)) {
-            return new $className($value);
+            return new $className(self::coerceForValueObject($className, $value));
         }
 
         if (!\is_array($value)) {
-            throw new ValidationException("Field '{$fullPath}' must be an object", HttpStatus::BadRequest);
+            throw new ValidationException(
+                "Field '{$fieldPath}' must be an object",
+                HttpStatus::BadRequest
+            );
         }
 
         // Nested request
-        return $this->mapFromArray($className, $value, $fullPath);
+        return self::mapFromArray($className, $value, $fieldPath);
+    }
+
+    private static function resolveArray(
+        \ReflectionParameter $param,
+        mixed $value,
+        string $fieldPath
+    ): mixed {
+        $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+        if ($arrayOf === null) {
+            // Plain array with no attribute
+            return $value;
+        }
+
+        if (!\is_array($value)) {
+            throw new ValidationException(
+                "Field '{$fieldPath}' must be an array",
+                HttpStatus::BadRequest
+            );
+        }
+
+        $count = \count($value);
+        $instance = $arrayOf->newInstance();
+
+        if ($instance->minItems !== null && $count < $instance->minItems) {
+            throw new ValidationException(
+                "Field '{$fieldPath}[]' must have at least {$instance->minItems} item(s)",
+                HttpStatus::BadRequest
+            );
+        }
+
+        if ($instance->maxItems !== null && $count > $instance->maxItems) {
+            throw new ValidationException(
+                "Field '{$fieldPath}[]' must have at most {$instance->maxItems} item(s)",
+                HttpStatus::BadRequest
+            );
+        }
+
+        $itemType = $arrayOf->newInstance()->type;
+        return array_map(
+            static function (mixed $item) use ($itemType, $fieldPath): mixed {
+                if (!is_subclass_of($itemType, BaseRequest::class)) {
+                    return new $itemType($item);
+                }
+
+                if (!\is_array($item)) {
+                    throw new ValidationException(
+                        "Field '{$fieldPath}[]' must be an object",
+                        HttpStatus::BadRequest
+                    );
+                }
+
+                return self::mapFromArray($itemType, $item, $fieldPath);
+            },
+            $value
+        );
+    }
+
+    private static function coerceForValueObject(string $className, mixed $value): mixed
+    {
+        $constructor = (new \ReflectionClass($className))->getConstructor();
+        if (!$constructor) {
+            return $value;
+        }
+
+        $firstParam = $constructor->getParameters()[0] ?? null;
+        if (!$firstParam) {
+            return $value;
+        }
+
+        $type = $firstParam->getType();
+        if (!$type instanceof \ReflectionNamedType || !$type->isBuiltin()) {
+            return $value;
+        }
+
+        return TypeCoercion::coerce($value, $type->getName());
     }
 }

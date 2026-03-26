@@ -1,11 +1,9 @@
-from __future__ import annotations
-
-import random
 import string
 from dataclasses import dataclass
 from typing import ClassVar
 
-from domain.value_objects.string_field import StringField
+from domain.utils import random_string
+from domain.value_objects.base import StringField
 
 _FIXED_HASH_LENGTH = 60
 _BCRYPT_PREFIX = "$2b$10$"
@@ -19,7 +17,6 @@ class PasswordHash(StringField):
     _max_len: ClassVar[int] = _FIXED_HASH_LENGTH
 
     @classmethod
-    def random(cls) -> PasswordHash:
-        body = "".join(random.choices(_BCRYPT_CHARS, k=_BCRYPT_BODY_LEN))
-        password_hash = f"{_BCRYPT_PREFIX}{body}"
-        return cls(password_hash)
+    def random_value(cls) -> str:
+        body = random_string(_BCRYPT_CHARS, _BCRYPT_BODY_LEN)
+        return f"{_BCRYPT_PREFIX}{body}"

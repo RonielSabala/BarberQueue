@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
+use App\Domain\ValueObjects\Base\BaseField;
+
 enum Role: string
 {
     case Client = 'client';
@@ -17,7 +19,7 @@ enum Role: string
     }
 }
 
-class RoleName extends BaseField
+final readonly class RoleName extends BaseField
 {
     public function __construct(string $value)
     {

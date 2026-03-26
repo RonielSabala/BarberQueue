@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domain.dtos.base_request import BaseRequest
+from domain.dtos import BaseRequest
 from domain.value_objects import Email, Password, Phone, ResetCode, Username
 
 
@@ -26,4 +26,4 @@ class ForgotPasswordRequest(BaseRequest):
 @dataclass(slots=True, kw_only=True, frozen=True)
 class ResetPasswordRequest(BaseRequest):
     reset_code: ResetCode
-    password: Password
+    new_password: Password

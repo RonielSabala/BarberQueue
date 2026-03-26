@@ -6,18 +6,16 @@ import pytest
 import requests
 
 from api.client import ApiClient
-from assertions import assert_body, assert_content_type, assert_status
-from domain.dtos.health.responses import HealthResponse
-from http_header import HttpHeader
-from http_method import HttpMethod
-from http_status import HttpStatus
+from api.core import HttpHeader, HttpMethod, HttpStatus
+from domain.dtos import MessageResponse
+from helpers.assertions import assert_body, assert_content_type, assert_status
 
-BASE = "/api/health"
+_OK = MessageResponse(message="OK")
 
 
 @pytest.fixture(scope="module")
 def _response(client: ApiClient) -> requests.Response:
-    return client.request(HttpMethod.GET, BASE)
+    return client.request(HttpMethod.GET, "/api/health")
 
 
 def test_status(client: ApiClient, _response: requests.Response) -> None:
@@ -41,5 +39,4 @@ def test_body(client: ApiClient, _response: requests.Response) -> None:
     Response contains an OK message.
     """
 
-    expected_response = HealthResponse(message="OK")
-    assert_body(_response, expected_response)
+    assert_body(_response, _OK)

@@ -33,7 +33,12 @@ class HttpResponse
     ): void {
         $data = self::filterForJson($data);
         $status->response();
+        if ($status === HttpStatus::NoContent) {
+            return;
+        }
+
         $header->send();
+        $data = self::filterForJson($data);
         echo json_encode($data);
     }
 

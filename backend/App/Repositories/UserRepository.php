@@ -5,10 +5,17 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\User;
-use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Username};
 
 class UserRepository extends BaseRepository
 {
+    protected const string TABLE_NAME = 'users';
+    protected const array UPDATABLE_FIELDS = [
+        'username',
+        'email',
+        'phone',
+        'password_hash',
+    ];
+
     public function findById(int $id): ?User
     {
         $sql = <<<'SQL'
@@ -46,12 +53,12 @@ class UserRepository extends BaseRepository
     }
 
     public function create(
-        Username $username,
-        Email $email,
-        Phone $phone,
-        PasswordHash $passwordHash,
-        Id $roleId,
-    ): User {
+        int $roleId,
+        string $username,
+        string $email,
+        string $phone,
+        string $passwordHash,
+    ): ?User {
         $sql = <<<'SQL'
         INSERT INTO
             users (role_id, username, email, phone, password_hash)
@@ -62,28 +69,20 @@ class UserRepository extends BaseRepository
         $this->query(
             $sql,
             [
-                $roleId->value,
-                $username->value,
-                $email->value,
-                $phone->value,
-                $passwordHash->value,
+                $roleId,
+                $username,
+                $email,
+                $phone,
+                $passwordHash,
             ]
         );
 
-        $userId = (int) $this->db->lastInsertId();
-        return $this->findById($userId);
+        $id = (int) $this->db->lastInsertId();
+        return $this->findById($id);
     }
 
     public function updatePassword(int $id, string $passwordHash): void
     {
-        $sql = <<<'SQL'
-        UPDATE users
-        SET
-            password_hash = ?
-        WHERE
-            id = ?
-        SQL;
-
-        $this->query($sql, [$passwordHash, $id]);
+        $this->updateFields($id, ['password_hash' => $passwordHash]);
     }
 }

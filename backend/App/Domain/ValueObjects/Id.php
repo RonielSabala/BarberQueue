@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-class Id extends NumberField
-{
-    protected const int MIN = 0;
+use App\Domain\ValueObjects\Base\IntegerField;
 
-    public function __construct(int|string $value)
-    {
-        parent::__construct((int) $value);
-    }
+final readonly class Id extends IntegerField
+{
+    protected const int MIN_VALUE = 1;
 }

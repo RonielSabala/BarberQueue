@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-use App\Core\HttpStatus;
-use App\Exceptions\ValidationException;
+use App\Domain\ValueObjects\Base\StringField;
 
-class Email extends StringField
+final readonly class Email extends StringField
 {
     protected const int MIN_LEN = 5;
     protected const int MAX_LEN = 254;
@@ -16,8 +15,8 @@ class Email extends StringField
     {
         parent::__construct($value);
 
-        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            throw new ValidationException('Invalid email format', HttpStatus::UnprocessableEntity);
+        if (!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
+            throw $this->validationException('must be a valid email in format user@domain');
         }
     }
 }

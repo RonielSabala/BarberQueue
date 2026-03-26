@@ -10,9 +10,8 @@
   },
   "php-cs-fixer.executablePath": "${workspaceFolder}/backend/vendor/bin/php-cs-fixer",
   "php-cs-fixer.config": "backend/.php-cs-fixer.php",
-  "php-cs-fixer.onsave": true,
-  "php-cs-fixer.formatHtml": true,
   "php-cs-fixer.allowRisky": true,
+  "php-cs-fixer.formatHtml": false,
   "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
   "phpserver.relativePath": "backend",
@@ -23,7 +22,8 @@
   "Prettier-SQL.expressionWidth": 88,
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
-    "README.md": ["## Table of Contents"]
+    "README.md": ["## Table of Contents"],
+    "backend/ROUTES.md": ["## Table of Contents"]
   },
   "cSpell.language": "en",
   "cSpell.caseSensitive": true,

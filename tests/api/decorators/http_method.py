@@ -1,0 +1,75 @@
+"""
+HTTP verb decorators for route methods.
+"""
+
+import functools
+import re
+from collections.abc import Callable
+
+import requests
+
+from api.base_controller import BaseController
+from api.core import HttpMethod
+from domain.dtos import BaseRequest
+from domain.exceptions import RequestError
+from helpers.body_route import BodyRoute
+
+_PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
+
+
+def _build_url(path: str, args: tuple) -> str:
+    """
+    Replace placeholders in path with positional args
+    in order.
+    """
+
+    params = iter(args)
+    return _PATH_PARAM_PATTERN.sub(lambda _: str(next(params)), path)
+
+
+def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
+    param_count = len(_PATH_PARAM_PATTERN.findall(path))
+
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(self: BaseController, *args) -> requests.Response:
+            request_body = None
+            if body:
+                body_args = args[param_count:]
+                if not body_args or not isinstance(body_args[0], BaseRequest):
+                    raise RequestError(
+                        "Expected a BaseRequest object after path params"
+                    )
+
+                request_body = body_args[0].to_json()
+
+            url = self.prefix + _build_url(path, args[:param_count])
+            return self._client.request(method, url, body=request_body)
+
+        # Store metadata for route discovery
+        if body:
+            wrapper.__body_route__ = BodyRoute.from_function(func, method, path)  # type: ignore[attr-defined]
+
+        return wrapper
+
+    return decorator
+
+
+def GET(path: str) -> Callable:
+    return _route(HttpMethod.GET, path, body=False)
+
+
+def POST(path: str) -> Callable:
+    return _route(HttpMethod.POST, path, body=True)
+
+
+def PUT(path: str) -> Callable:
+    return _route(HttpMethod.PUT, path, body=True)
+
+
+def PATCH(path: str) -> Callable:
+    return _route(HttpMethod.PATCH, path, body=True)
+
+
+def DELETE(path: str) -> Callable:
+    return _route(HttpMethod.DELETE, path, body=False)
