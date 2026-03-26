@@ -8,27 +8,32 @@ use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop;
 use App\Domain\ValueObjects\Role;
 use App\DTOs\Barbershops\Requests\{
+    CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
     CreateBarbershopRequest,
     CreateBarbershopReviewRequest
 };
 use App\DTOs\Barbershops\Responses\{
     BarbershopDetailResponse,
+    BarbershopEmployeeResponse,
     BarbershopPhotoResponse,
     BarbershopResponse,
     BarbershopReviewResponse,
+    CreateBarbershopEmployeeResponse,
     CreateBarbershopPhotosResponse,
     CreateBarbershopResponse,
     GetBarbershopPhotosResponse
 };
 use App\DTOs\BaseRequest;
 use App\Exceptions\BarbershopException;
-use App\Repositories\BarbershopRepository;
+use App\Repositories\{BarbershopRepository, RoleRepository};
 
 class BarbershopService extends BaseService
 {
     public function __construct(
         private readonly UserService $userService,
+        private readonly PasswordService $passwordService,
+        private readonly RoleRepository $roleRepository,
         private readonly BarbershopRepository $barbershopRepository,
     ) {}
 
@@ -57,7 +62,7 @@ class BarbershopService extends BaseService
         $existing = $this->barbershopRepository->findByEmail($email);
 
         if ($existing !== null) {
-            throw new BarbershopException('Email already in use', HttpStatus::Conflict);
+            throw new BarbershopException('Barbershop email already in use', HttpStatus::Conflict);
         }
 
         $barbershop = $this->barbershopRepository->create(
@@ -161,5 +166,60 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         return $this->barbershopRepository->deleteReview($barbershopId, $reviewId);
+    }
+
+    public function getEmployees(int $barbershopId): array
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $employees = $this->barbershopRepository->getEmployees($barbershopId);
+
+        return array_map(
+            static fn ($employee) => BarbershopEmployeeResponse::fromEntity($employee),
+            $employees
+        );
+    }
+
+    public function createEmployee(int $id, CreateBarbershopEmployeeRequest $request): CreateBarbershopEmployeeResponse
+    {
+        $email = $request->email->value;
+        $this->validateBarbershopExists($id);
+        $this->userService->validateInexistentUserEmail($email);
+
+        $role = $this->roleRepository->findByValue($request->role->value);
+        $username = $request->username->value;
+        $phone = $request->phone->value;
+        $passwordHash = $this->passwordService->hash($request->password->value);
+        $startTime = $request->startTime->value;
+        $endTime = $request->endTime->value;
+        $workingDays = array_map(static fn ($day) => $day->value, $request->workingDays);
+
+        $employeeId = $this->barbershopRepository->createAndAssignEmployee(
+            $id,
+            [
+                'role_id' => $role->id->value,
+                'username' => $username,
+                'email' => $email,
+                'phone' => $phone,
+                'password_hash' => $passwordHash,
+            ],
+            [
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+            ],
+            $workingDays
+        );
+
+        return new CreateBarbershopEmployeeResponse(
+            id: $employeeId,
+            username: $username,
+            email: $email,
+            role: $role->roleName->value
+        );
+    }
+
+    public function deleteEmployeeAssignment(int $barbershopId, int $employeeId): bool
+    {
+        $this->validateBarbershopExists($barbershopId);
+        return $this->barbershopRepository->deleteEmployeeAssignment($employeeId, $barbershopId);
     }
 }

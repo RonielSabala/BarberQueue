@@ -101,6 +101,25 @@ abstract class BaseRepository
         return $results;
     }
 
+    public function transaction(callable $callback): mixed
+    {
+        if (!$this->db->beginTransaction()) {
+            throw new \RuntimeException('Could not start transaction');
+        }
+
+        try {
+            $result = $callback();
+            $this->db->commit();
+            return $result;
+        } catch (\Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            throw $e;
+        }
+    }
+
     public function updateFields(int $entityId, array $entityFields): void
     {
         if (empty($entityFields)) {

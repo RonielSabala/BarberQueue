@@ -8,14 +8,13 @@ use App\Attributes\{DELETE, GET, POST, RoutePrefix};
 use App\Attributes\PATCH;
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
+    CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
-    UpdateBarbershopStatusRequest
-};
-use App\DTOs\Barbershops\Requests\{
     CreateBarbershopRequest,
     CreateBarbershopReviewRequest,
     UpdateBarbershopPhotoRequest,
-    UpdateBarbershopRequest
+    UpdateBarbershopRequest,
+    UpdateBarbershopStatusRequest
 };
 use App\Services\BarbershopService;
 
@@ -85,8 +84,8 @@ class BarbershopController extends BaseController
     #[DELETE('/{id}/photos/{photoId}')]
     public function deletePhoto(int $id, int $photoId): void
     {
-        $deleted = $this->barbershopService->deletePhoto($id, $photoId);
-        if (!$deleted) {
+        $success = $this->barbershopService->deletePhoto($id, $photoId);
+        if (!$success) {
             HttpResponse::error('Barbershop photo not found', HttpStatus::NotFound);
             return;
         }
@@ -111,9 +110,35 @@ class BarbershopController extends BaseController
     #[DELETE('/{id}/reviews/{reviewId}')]
     public function deleteReview(int $id, int $reviewId): void
     {
-        $deleted = $this->barbershopService->deleteReview($id, $reviewId);
-        if (!$deleted) {
+        $success = $this->barbershopService->deleteReview($id, $reviewId);
+        if (!$success) {
             HttpResponse::error('Barbershop review not found', HttpStatus::NotFound);
+            return;
+        }
+
+        HttpResponse::json(null, HttpStatus::NoContent);
+    }
+
+    #[GET('/{id}/employees')]
+    public function getEmployees(int $id): void
+    {
+        $response = $this->barbershopService->getEmployees($id);
+        HttpResponse::json($response);
+    }
+
+    #[POST('/{id}/employees')]
+    public function createEmployee(int $id, CreateBarbershopEmployeeRequest $request): void
+    {
+        $response = $this->barbershopService->createEmployee($id, $request);
+        HttpResponse::json($response, HttpStatus::Created);
+    }
+
+    #[DELETE('/{id}/employees/{employeeId}')]
+    public function deleteEmployeeAssignment(int $id, int $employeeId): void
+    {
+        $success = $this->barbershopService->deleteEmployeeAssignment($id, $employeeId);
+        if (!$success) {
+            HttpResponse::error('Assignment not found', HttpStatus::NotFound);
             return;
         }
 

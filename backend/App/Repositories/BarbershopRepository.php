@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\{Barbershop, BarbershopPhoto, BarbershopReview};
+use App\Domain\Entities\{
+    Barbershop,
+    BarbershopPhoto,
+    BarbershopReview,
+    Employee
+};
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
 class BarbershopRepository extends BaseRepository
@@ -145,7 +150,6 @@ class BarbershopRepository extends BaseRepository
 
     public function addPhotos(int $barbershopId, array $photoUrls): array
     {
-        $insertedPhotos = [];
         $sql = <<<'SQL'
             INSERT INTO
                 barbershop_photos (barbershop_id, photo_url)
@@ -153,6 +157,7 @@ class BarbershopRepository extends BaseRepository
                 (?, ?)
         SQL;
 
+        $insertedPhotos = [];
         foreach ($photoUrls as $url) {
             $photoUrlValue = $url->value;
             $this->query($sql, [$barbershopId, $photoUrlValue]);
@@ -237,6 +242,111 @@ class BarbershopRepository extends BaseRepository
         SQL;
 
         $stmt = $this->query($sql, [$reviewId, $barbershopId]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function getEmployees(int $barbershopId): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                u.id,
+                sa.barbershop_id,
+                u.username,
+                u.email,
+                u.phone,
+                r.role_name AS role,
+                sa.start_time AS start_time,
+                sa.end_time AS end_time,
+                GROUP_CONCAT(
+                    wd.day_of_week
+                    ORDER BY
+                        wd.day_of_week ASC
+                ) AS working_days
+            FROM
+                users u
+                JOIN roles r ON u.role_id = r.id
+                JOIN staff_assignments sa ON u.id = sa.staff_id
+                LEFT JOIN working_days wd ON u.id = wd.staff_id
+            WHERE
+                sa.barbershop_id = ?
+            GROUP BY
+                u.id,
+                sa.barbershop_id,
+                r.role_name,
+                sa.start_time,
+                sa.end_time
+        SQL;
+
+        return $this->fetchAll(Employee::class, $sql, [$barbershopId]);
+    }
+
+    public function createAndAssignEmployee(
+        int $barbershopId,
+        array $userData,
+        array $assignmentData,
+        array $days
+    ): int {
+        $userSql = <<<'SQL'
+            INSERT INTO
+                users (role_id, username, email, phone, password_hash)
+            VALUES
+                (?, ?, ?, ?, ?)
+        SQL;
+
+        $assignSql = <<<'SQL'
+            INSERT INTO
+                staff_assignments (staff_id, barbershop_id, start_time, end_time)
+            VALUES
+                (?, ?, ?, ?)
+        SQL;
+
+        $daySql = <<<'SQL'
+            INSERT INTO
+                working_days (staff_id, day_of_week)
+            VALUES
+                (?, ?)
+        SQL;
+
+        return $this->transaction(function () use (
+            $barbershopId,
+            $userData,
+            $assignmentData,
+            $days,
+            $userSql,
+            $assignSql,
+            $daySql
+        ) {
+            // Insert user
+            $this->query($userSql, array_values($userData));
+            $staffId = (int) $this->db->lastInsertId();
+
+            // Create staff assignment
+            $this->query($assignSql, [
+                $staffId,
+                $barbershopId,
+                $assignmentData['start_time'],
+                $assignmentData['end_time'],
+            ]);
+
+            // Insert working days
+            foreach ($days as $day) {
+                $this->query($daySql, [$staffId, $day]);
+            }
+
+            return $staffId;
+        });
+    }
+
+    public function deleteEmployeeAssignment(int $employeeId, int $barbershopId): bool
+    {
+        $sql = <<<'SQL'
+        DELETE FROM staff_assignments
+        WHERE
+            staff_id = ?
+            AND barbershop_id = ?
+        SQL;
+
+        $stmt = $this->query($sql, [$employeeId, $barbershopId]);
         return $stmt->rowCount() > 0;
     }
 }

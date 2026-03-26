@@ -526,7 +526,7 @@ Remove a review from a barbershop's reviews.
 
 ### `GET /api/barbershops/{id}/employees` <!-- omit from toc -->
 
-List all employees assigned to a barbershop.
+Retrieve all employees currently assigned to a specific barbershop.
 
 - Response: `200`
 
@@ -544,3 +544,43 @@ List all employees assigned to a barbershop.
   }
 ]
 ```
+
+---
+
+### `POST /api/barbershops/{id}/employees` <!-- omit from toc -->
+
+Create a new user and create their assignment record for the barbershop.
+
+- Body
+
+```json
+{
+  "username": "new_employee",
+  "email": "new_employee@gmail.com",
+  "phone": "8091234567",
+  "password": "12345678",
+  "role": "barber",
+  "startTime": "08:00:00",
+  "endTime": "16:00:00",
+  "workingDays": [1, 2, 3, 4, 5]
+}
+```
+
+- Response: `201`
+
+```json
+{
+  "id": 1,
+  "username": "new_employee",
+  "email": "new_employee@gmail.com",
+  "role": "barber"
+}
+```
+
+---
+
+### `DELETE /api/barbershops/{id}/employees/{employeeId}` <!-- omit from toc -->
+
+Unassign an employee from a barbershop. The employee's user account remains active in the system.
+
+- Response: `204`
