@@ -64,11 +64,7 @@ class AuthService extends BaseService
     public function register(RegisterRequest $request): UserResponse
     {
         $email = $request->email->value;
-        $existing = $this->userRepository->findByEmail($email);
-
-        if ($existing !== null) {
-            throw new AuthException('Email already in use', HttpStatus::Conflict);
-        }
+        $this->userService->validateInexistentUserEmail($email);
 
         $user = $this->userRepository->create(
             roleId: self::CLIENT_ROLE_ID,

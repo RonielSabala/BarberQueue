@@ -28,6 +28,14 @@ class UserService extends BaseService
         return $user;
     }
 
+    public function validateInexistentUserEmail(string $userEmail): void
+    {
+        $user = $this->userRepository->findByEmail($userEmail);
+        if ($user) {
+            throw new UserException('User email already in use', HttpStatus::Conflict);
+        }
+    }
+
     public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
     {
         $newPasswordHash = $this->passwordService->hash($newPassword);

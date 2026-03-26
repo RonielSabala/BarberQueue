@@ -16,7 +16,7 @@ from helpers.assertions import (
     assert_status,
 )
 
-_EMAIL_ALREADY_IN_USE = ErrorResponse(error="Email already in use")
+_EMAIL_ALREADY_IN_USE = ErrorResponse(error="User email already in use")
 
 
 @pytest.fixture(scope="module")
