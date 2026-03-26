@@ -17,6 +17,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
 - [Roles \& Permissions](#roles--permissions)
+- [Test Accounts](#test-accounts)
 - [Contributing](#contributing)
 - [Authors](#authors)
 - [License](#license)
@@ -60,7 +61,7 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- [PHP](https://www.php.net/downloads.php) >= 8.0
+- [PHP](https://www.php.net/downloads.php) >= 8.4
 - [Composer](https://getcomposer.org/download/) >= 2.8.9
 - [Node.js](https://nodejs.org/en/download) >= 22.0.0
 - [Python](https://www.python.org/downloads/) >= 3.13.9
@@ -111,27 +112,30 @@ cd tests
 uv sync
 ```
 
-> **VS Code:** open the Command Palette (`Ctrl + Shift + P`), run **Python: Select Interpreter**, and choose the `.venv` inside `tests/`. Reload your terminal afterwards.
+> **VS Code:** open the Command Palette (`Ctrl+Shift+P`), run **Python: Select Interpreter**, and choose the `.venv` inside `tests/`. Reload your terminal afterwards.
 
 ---
 
 ### `.env` Configuration
 
-Create a `.env` file at the **repo root**:
+Create a `.env` file at the **repo root** and fill in the required values:
 
 ```env
-# App urls (required)
+# App URLs
 BACKEND_URL=http://localhost:3000
 FRONTEND_URL=http://localhost:5173
 
-# Database (required)
+# Database
 DB_HOST=
 DB_PORT=
 DB_USERNAME=
 DB_PASSWORD=
 DB_DATABASE=barberqueue_db
 
-# Email (optional)
+# Auth
+JWT_SECRET=
+
+# Email
 MAIL_USERNAME=
 MAIL_PASSWORD=
 
@@ -140,9 +144,17 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-All keys must be present even if left empty.
+#### JWT Secret
 
-#### Email Setup (Optional)
+Generate a strong random value and set it as `JWT_SECRET`.
+
+You can create one with:
+
+```bash
+openssl rand -base64 32
+```
+
+#### Email Setup
 
 1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
 2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.
@@ -183,14 +195,14 @@ From the **repo root**:
 php -S localhost:3000 -t backend
 ```
 
-Use `Ctrl + C` to stop.
+Use `Ctrl+C` to stop.
 
 ---
 
 **Option B. Use a VS Code extension (recommended):**
 
 1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
-2. Open the Command Palette (`Ctrl + Shift + P`) and run **PHP Server: Reload project**.
+2. Open the Command Palette (`Ctrl+Shift+P`) and run **PHP Server: Reload project**.
 
 Use **PHP Server: Stop project** to stop.
 
@@ -205,7 +217,7 @@ cd frontend
 npm run dev
 ```
 
-Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl + C` to stop.
+Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl+C` to stop.
 
 ---
 
@@ -215,10 +227,14 @@ From the `tests/` folder:
 
 ```bash
 cd tests
-uv run pytest
+uv run pytest                                # backend only
+uv run pytest -m frontend                    # frontend only
+uv run pytest -m "frontend or not frontend"  # everything
 ```
 
-Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from UI tests.
+Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
+
+> **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
 
 ---
 
@@ -259,6 +275,17 @@ Full management of one or more barbershops they administer:
 
 ---
 
+## Test Accounts
+
+Four sample users are included for testing. Password for all sample accounts: `app12345`
+
+- [andres@gmail.com](mailto:andres@gmail.com) (`client`)
+- [carlos@barbershop.com](mailto:carlos@barbershop.com) (`barber`)
+- [maria@barbershop.com](mailto:maria@barbershop.com) (`assistant`)
+- [admin@barbershop.com](mailto:admin@barbershop.com) (`admin`)
+
+---
+
 ## Contributing
 
 Contributions are welcome. Suggested workflow:
@@ -275,13 +302,13 @@ This project uses [pre-commit](https://pre-commit.com/) to enforce code quality 
 
 ```bash
 pip install pre-commit
-pre-commit install
+python3 -m pre_commit install
 ```
 
 After that, checks will run automatically on every `git commit`. To run them manually across all files:
 
 ```bash
-pre-commit run --all-files
+python3 -m pre_commit run --all-files
 ```
 
 ---

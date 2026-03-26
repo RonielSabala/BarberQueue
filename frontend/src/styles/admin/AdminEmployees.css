@@ -1,0 +1,193 @@
+.admin-employees-page {
+  padding: 32px;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-employees-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-employees-back,
+.admin-employees-add-btn,
+.edit-btn,
+.delete-btn {
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+
+.admin-employees-back {
+  background: #ffffff;
+  color: #1e3a5f;
+  border: 1px solid #dbe4ee;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.admin-employees-back:hover {
+  background: #f1f5f9;
+}
+
+.admin-employees-add-btn {
+  background: #f59e0b;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.admin-employees-add-btn:hover {
+  background: #d97706;
+}
+
+.admin-employees-header h1 {
+  margin: 0;
+  font-size: 44px;
+  color: #1e3a5f;
+  font-weight: 800;
+}
+
+.admin-employees-header p {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.admin-employees-filters {
+  display: flex;
+  gap: 16px;
+  margin: 28px 0;
+  flex-wrap: wrap;
+}
+
+.admin-employees-filters input,
+.admin-employees-filters select {
+  height: 50px;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 0 16px;
+  font-size: 15px;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+}
+
+.admin-employees-filters input {
+  flex: 1;
+  min-width: 280px;
+}
+
+.admin-employees-filters select {
+  min-width: 180px;
+}
+
+.admin-employees-filters input:focus,
+.admin-employees-filters select:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+}
+
+.admin-employees-table-card {
+  background: #ffffff;
+  border: 1px solid #e5edf5;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.admin-employees-section-label {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 8px 14px;
+  background: #eef4fa;
+  color: #1e3a5f;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.admin-employees-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-employees-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-employees-table thead th {
+  background: #f8fafc;
+  color: #1e3a5f;
+  text-align: left;
+  padding: 14px;
+  font-size: 15px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-employees-table tbody td {
+  padding: 14px;
+  border-bottom: 1px solid #edf2f7;
+  color: #334155;
+}
+
+.admin-employees-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.edit-btn {
+  background: #3b82f6;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.edit-btn:hover {
+  background: #2563eb;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+}
+
+.empty-row {
+  text-align: center;
+  color: #64748b;
+  padding: 24px !important;
+}
+
+@media (max-width: 768px) {
+  .admin-employees-page {
+    padding: 18px;
+  }
+
+  .admin-employees-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-employees-add-btn,
+  .admin-employees-back {
+    width: 100%;
+  }
+
+  .admin-employees-header h1 {
+    font-size: 32px;
+  }
+}

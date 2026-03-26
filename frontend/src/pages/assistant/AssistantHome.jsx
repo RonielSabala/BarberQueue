@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
 function AssistantHome() {
-
   const navigate = useNavigate();
 
   // datos simulados por ahora
@@ -9,7 +8,6 @@ function AssistantHome() {
   const assistantName = "María";
 
   return (
-
     <div
       style={{
         display: "flex",
@@ -17,14 +15,11 @@ function AssistantHome() {
         alignItems: "center",
         justifyContent: "center",
         height: "80vh",
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
-
       {/* NOMBRE BARBERIA */}
-      <h1 style={{ marginBottom: "40px" }}>
-        {barbershopName}
-      </h1>
+      <h1 style={{ marginBottom: "40px" }}>{barbershopName}</h1>
 
       {/* SALUDO */}
       <h2 style={{ marginBottom: "80px", fontWeight: "normal" }}>
@@ -41,14 +36,12 @@ function AssistantHome() {
           background: "#000",
           color: "white",
           fontSize: "16px",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         Agregar clientes
       </button>
-
     </div>
-
   );
 }
 

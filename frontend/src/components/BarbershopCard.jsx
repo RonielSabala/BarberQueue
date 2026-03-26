@@ -1,21 +1,18 @@
 import { useNavigate } from "react-router-dom";
 
 function BarbershopCard({ shop }) {
-
   const navigate = useNavigate();
 
   return (
-
     <div
       style={{
         border: "1px solid #ddd",
         borderRadius: "12px",
         padding: "15px",
         background: "#fff",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+        boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
       }}
     >
-
       {/* FOTO */}
       <img
         src={shop.image}
@@ -25,19 +22,15 @@ function BarbershopCard({ shop }) {
           height: "150px",
           objectFit: "cover",
           borderRadius: "10px",
-          marginBottom: "10px"
+          marginBottom: "10px",
         }}
       />
 
       {/* NOMBRE */}
-      <h3 style={{ marginBottom: "8px" }}>
-        {shop.name}
-      </h3>
+      <h3 style={{ marginBottom: "8px" }}>{shop.name}</h3>
 
       {/* RATING */}
-      <p style={{ marginBottom: "6px" }}>
-        ⭐ {shop.rating}
-      </p>
+      <p style={{ marginBottom: "6px" }}>⭐ {shop.rating}</p>
 
       {/* ESTADO */}
       <p style={{ marginBottom: "12px" }}>
@@ -45,7 +38,7 @@ function BarbershopCard({ shop }) {
         <span
           style={{
             color: shop.open ? "green" : "red",
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
           {shop.open ? "Abierta" : "Cerrada"}
@@ -61,12 +54,11 @@ function BarbershopCard({ shop }) {
           borderRadius: "8px",
           border: "none",
           background: "#f3f3f3",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         Ver barbería
       </button>
-
     </div>
   );
 }

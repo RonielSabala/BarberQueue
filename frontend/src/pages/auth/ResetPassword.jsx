@@ -1,38 +1,58 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layouts/AuthLayout";
+import { resetPassword } from "../../services/authService";
 
 function ResetPassword() {
   const navigate = useNavigate();
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!currentPassword) {
-      setMessage("Debes ingresar tu contraseña actual.");
+    setMessage("");
+    setError("");
+
+    if (!resetCode) {
+      setError("Debes ingresar el código de recuperación.");
       return;
     }
 
-    if (newPassword.length < 8) {
-      setMessage("La nueva contraseña debe tener al menos 8 caracteres.");
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      setMessage("Las nuevas contraseñas no coinciden.");
-      return;
+    setLoading(true);
+
+    try {
+      const data = await resetPassword({
+        resetCode: Number(resetCode),
+        password,
+      });
+
+      console.log("Respuesta reset password:", data);
+
+      setMessage(
+        data.message ||
+          "Contraseña restablecida correctamente. Redirigiendo...",
+      );
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (err) {
+      console.error("Error en reset password:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    setMessage("Contraseña actualizada correctamente. Redirigiendo...");
-
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
   };
 
   return (
@@ -41,17 +61,17 @@ function ResetPassword() {
         <h2>Restablecer contraseña</h2>
 
         <input
-          type="password"
-          placeholder="Contraseña actual"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
+          type="text"
+          placeholder="Código de recuperación"
+          value={resetCode}
+          onChange={(e) => setResetCode(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Nueva contraseña"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <input
@@ -61,9 +81,12 @@ function ResetPassword() {
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
-        {message && <p className="message">{message}</p>}
+        {error && <p className="error-message">{error}</p>}
+        {message && <p className="success-message">{message}</p>}
 
-        <button type="submit">Actualizar contraseña</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Actualizando..." : "Actualizar contraseña"}
+        </button>
 
         <p>
           <Link to="/login">Volver al inicio de sesión</Link>

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Core\Routing\RouteRegistry;
-use App\Utils\{ClassesDiscovery, UriUtils};
+use App\Config\LoggerProvider;
+use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
+use App\Exceptions\BaseException;
+use Monolog\Logger;
 
 class Router
 {
@@ -14,11 +16,13 @@ class Router
     private const CONTROLLERS_NAMESPACE = 'App\Controllers';
 
     private static RouteRegistry $registry;
+    private static Logger $logger;
 
     public static function init(): void
     {
         $container = new Container();
         self::$registry = new RouteRegistry($container);
+        self::$logger = LoggerProvider::get();
 
         // Get all controller classes
         $controllers = new ClassesDiscovery(
@@ -35,14 +39,28 @@ class Router
     public static function dispatch(): void
     {
         $httpMethod = $_SERVER['REQUEST_METHOD'];
-        $uri = UriUtils::getCurrentUri();
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         $match = self::$registry->findMatch($httpMethod, $uri);
         if ($match === null) {
-            HttpResponse::notFound('Route not found');
+            HttpResponse::error('Route not found', HttpStatus::NotFound);
             return;
         }
 
-        $match->dispatch();
+        try {
+            $match->dispatch();
+        } catch (BaseException $e) {
+            self::$logger->error($e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            HttpResponse::error($e->getMessage(), $e->getStatus());
+        } catch (\Throwable $e) {
+            self::$logger->critical($e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            HttpResponse::error('An unexpected error occurred', HttpStatus::InternalServerError);
+        }
     }
 }

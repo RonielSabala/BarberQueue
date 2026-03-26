@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
-// Public
-import Landing from "../pages/Landing";
-
 // Auth
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+
+// Public
+import Landing from "../pages/Landing";
 
 // System
 import ClientHome from "../pages/client/ClientHome";
@@ -19,7 +19,11 @@ import AssistantHome from "../pages/assistant/AssistantHome";
 import BarbershopProfile from "../pages/barbershop/BarbershopProfile";
 import QueueLive from "../pages/barbershop/QueueLive";
 
-//Barbershop
+//admin
+import AdminBarbershop from "../pages/admin/AdminBarbershop";
+import AdminEmployees from "../pages/admin/AdminEmployees";
+import AdminEmployeeForm from "../pages/admin/AdminEmployeeForm";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 //client
 import ClientProfile from "../pages/client/ClientProfile";
@@ -29,43 +33,58 @@ import BarberProfile from "../pages/barber/BarberProfile";
 import BarberDashboard from "../pages/barber/BarberDasboard";
 
 //assistant
-import RegisterClient from "../pages/assistant/RegisterClient";
+import RegisterClientsForm from "../pages/assistant/RegisterClientsForm";
 import AssistantProfile from "../pages/assistant/AssistantProfile";
 
 function AppRoutes() {
   return (
     <Routes>
-
       {/* LANDING */}
       <Route path="/" element={<Landing />} />
 
-      {/* AUTH */}
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* APP (con layout) */}
       <Route element={<MainLayout />}>
-      {/*Client*/}
+        {/*Client*/}
         <Route path="/client/home" element={<ClientHome />} />
         <Route path="/client/profile" element={<ClientProfile />} />
 
-      {/*Barbershop*/}
+        {/*Barbershop*/}
         <Route path="/barbershops/:id" element={<BarbershopProfile />} />
         <Route path="/barbershops/:id/queue" element={<QueueLive />} />
 
-      {/*Admin*/}
+        {/*Admin*/}
         <Route path="/admin/home" element={<AdminHome />} />
+        <Route path="/admin/barbershop/:id" element={<AdminBarbershop />} />
+        <Route
+          path="/admin/barbershop/:id/employees"
+          element={<AdminEmployees />}
+        />
+        <Route
+          path="/admin/barbershop/:id/employees/new"
+          element={<AdminEmployeeForm />}
+        />
+        <Route
+          path="/admin/barbershop/:id/employees/:employeeId/edit"
+          element={<AdminEmployeeForm />}
+        />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-      {/*Barber*/}
+        {/*Barber*/}
         <Route path="/barber/1/profile" element={<BarberProfile />} />
         <Route path="/barber/dashboard" element={<BarberDashboard />} />
 
-
-      {/*Assistant*/}
+        {/*Assistant*/}
         <Route path="/assistant/home" element={<AssistantHome />} />
-        <Route path="/assistant/register-client" element={<RegisterClient />} />
+        <Route
+          path="/assistant/register-client"
+          element={<RegisterClientsForm />}
+        />
         <Route path="/assistant/profile" element={<AssistantProfile />} />
       </Route>
 
