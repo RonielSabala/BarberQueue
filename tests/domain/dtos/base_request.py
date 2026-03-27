@@ -21,15 +21,16 @@ def _get_random_value_by_type(value_type: Any) -> Any:
             _get_random_value_by_type(list_metadata.base_type) for _ in range(count)
         ]
 
-    if not isinstance(value_type, type):
-        raise ValueError(f"Type '{value_type}' cannot be randomized")
+    is_type = isinstance(value_type, type)
 
     # Handle Value Objects
-    if isinstance(value_type, type) and issubclass(value_type, BaseField):
+    if is_type and issubclass(value_type, BaseField):
         return value_type.random()
 
-    if isinstance(value_type, bool):
+    if is_type and value_type is bool:
         return random.random() > 0.5
+
+    raise ValueError(f"Type '{value_type}' cannot be randomized")
 
 
 @dataclass(frozen=True)

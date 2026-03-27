@@ -39,7 +39,7 @@ class HttpResponse
 
         $header->send();
         $data = self::filterForJson($data);
-        echo json_encode($data);
+        echo json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
     }
 
     public static function success(
