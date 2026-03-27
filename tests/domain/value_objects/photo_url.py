@@ -46,5 +46,5 @@ class PhotoUrl(StringField):
 
 
 PhotoUrls: TypeAlias = Annotated[
-    list[PhotoUrl], ListOf(base_type=PhotoUrl, min_items=1, max_items=5)
+    list[PhotoUrl], ListOf(base_type=PhotoUrl, min_items=1)
 ]

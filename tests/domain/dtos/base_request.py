@@ -13,12 +13,17 @@ def _get_random_value_by_type(value_type: Any) -> Any:
     if list_metadata:
         min_items = list_metadata.min_items
         max_items = list_metadata.max_items
-        if min_items is None or max_items is None:
-            raise ValueError("Both min_items and min_items are required")
+        if min_items is None:
+            raise ValueError(
+                f"FieldOf.min_items is required in order to randomize <{value_type}>"
+            )
 
-        count = random.randint(min_items, max_items)
+        list_length = random.randint(
+            min_items, min_items + 1 if max_items is None else max_items
+        )
         return [
-            _get_random_value_by_type(list_metadata.base_type) for _ in range(count)
+            _get_random_value_by_type(list_metadata.base_type)
+            for _ in range(list_length)
         ]
 
     is_type = isinstance(value_type, type)
