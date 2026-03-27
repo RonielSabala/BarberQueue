@@ -86,21 +86,35 @@ def _nested_case_id(parent: str, child: str):
     return f"{parent}__{child}"
 
 
-def _get_missing_field_case(field: _FieldMetadata, payload: dict) -> BadFieldCase:
+def _get_required_field_case(field: _FieldMetadata, payload: dict) -> BadFieldCase:
     json_key = field.json_key
-    missing_payload = {k: v for k, v in payload.items() if k != json_key}
+    new_payload = {k: v for k, v in payload.items() if k != json_key}
     return BadFieldCase(
-        _case_id("missing", field.name),
-        missing_payload,
+        _case_id("required", field.name),
+        new_payload,
         f"Field '{field.full_path}' is required",
     )
 
 
-def _get_wrong_type_case(field: _FieldMetadata, payload: dict) -> BadFieldCase:
-    wrong_type_payload = {**payload, field.json_key: "not_an_object"}
+def _get_cannot_be_null_field_case(
+    field: _FieldMetadata, payload: dict
+) -> BadFieldCase:
+    json_key = field.json_key
+    new_payload = {k: (None if k == json_key else v) for k, v in payload.items()}
     return BadFieldCase(
-        _case_id("wrong_type", field.name),
-        wrong_type_payload,
+        _case_id("cannot_be_null", field.name),
+        new_payload,
+        f"Field '{field.full_path}' cannot be null",
+    )
+
+
+def _get_required_object_field_case(
+    field: _FieldMetadata, payload: dict
+) -> BadFieldCase:
+    new_payload = {**payload, field.json_key: "not_an_object"}
+    return BadFieldCase(
+        _case_id("required_object", field.name),
+        new_payload,
         f"Field '{field.full_path}' must be an object",
     )
 
@@ -136,7 +150,8 @@ def missing_field_cases(
             continue
 
         field = _FieldMetadata.from_data(field_name, field_type, _path)
-        yield _get_missing_field_case(field, payload)
+        yield _get_required_field_case(field, payload)
+        yield _get_cannot_be_null_field_case(field, payload)
 
         if field.is_nested:
             nested_fields.append(field)
@@ -148,7 +163,7 @@ def missing_field_cases(
 
     # Handle nested fields
     for field in nested_fields:
-        yield _get_wrong_type_case(field, payload)
+        yield _get_required_object_field_case(field, payload)
         yield from (
             case.build_inner_case(field, payload)
             for case in missing_field_cases(
