@@ -26,12 +26,19 @@ class ApiClient:
         return f"{self._base_url}{path}"
 
     def request(
-        self, method: HttpMethod, path: str, *, body: dict | None = None, **kwargs: Any
+        self,
+        method: HttpMethod,
+        path: str,
+        *,
+        body: dict | None = None,
+        params: dict | None = None,
+        **kwargs: Any,
     ) -> requests.Response:
         return self._session.request(
             method=method,
             url=self._url(path),
             json=body,
+            params=params,
             timeout=self.TIMEOUT,
             **kwargs,
         )

@@ -1,21 +1,20 @@
+"""
+Tests for PATCH /api/barbershops/{id}/status
+"""
+
+import random
+
 import pytest
 import requests
 
 from api.client import ApiClient
-from api.core import HttpStatus
+from api.core import HttpHeader, HttpStatus
 from domain.dtos import MessageResponse
-from domain.dtos.barbershops import (
-    CreateBarbershopRequest,
-    UpdateBarbershopStatusRequest,
-)
-from helpers.assertions import assert_body, assert_status
+from domain.dtos.barbershops import UpdateBarbershopStatusRequest
+from helpers.assertions import assert_body, assert_content_type, assert_status
+from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
-BARBERSHOP_STATUS_UPDATED = MessageResponse(message="Barbershop status updated")
-
-
-@pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    return client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
+_STATUS_UPDATED = MessageResponse(message="Barbershop status updated")
 
 
 @pytest.fixture(scope="module")
@@ -32,9 +31,42 @@ def test_status(response: requests.Response) -> None:
     assert_status(response, HttpStatus.OK)
 
 
-def test_body_shape(response: requests.Response) -> None:
+def test_content_type(response: requests.Response) -> None:
     """
-    Response contains expected fields.
+    Response is JSON.
     """
 
-    assert_body(response, BARBERSHOP_STATUS_UPDATED)
+    assert_content_type(response, HttpHeader.JSON)
+
+
+def test_body(response: requests.Response) -> None:
+    """
+    Response contains a confirmation message.
+    """
+
+    assert_body(response, _STATUS_UPDATED)
+
+
+def test_status_reflects_change(client: ApiClient, barbershop_id: int) -> None:
+    """
+    Updated isActive is reflected.
+    """
+
+    status_value = random.choice((True, False))
+    Update_request = UpdateBarbershopStatusRequest(is_active=status_value)
+    client.barbershops.update_status(barbershop_id, Update_request)
+
+    response = client.barbershops.get(barbershop_id)
+    assert response.json()["isActive"] is status_value
+
+
+def test_status_on_unknown_barbershop(client: ApiClient) -> None:
+    """
+    Unknown barbershop returns 404.
+    """
+
+    request = UpdateBarbershopStatusRequest(is_active=False)
+    response = client.barbershops.update_status(999_999, request)
+
+    assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, BARBERSHOP_NOT_FOUND)

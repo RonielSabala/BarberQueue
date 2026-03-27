@@ -67,10 +67,15 @@ def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
         assert_type(value, field_type, name_on_error=json_key)
 
 
-def _assert_list_shape(data: list, expected: type[BaseResponse]) -> None:
+def _assert_list_shape(data: list, expected: Any) -> None:
     assert_type(data, list, name_on_error="Response body")
 
+    list_of_objects = isinstance(expected, type) and issubclass(expected, BaseResponse)
     for i, item in enumerate(data):
+        if not list_of_objects:
+            assert_type(item, expected, name_on_error="List item")
+            continue
+
         assert_type(item, dict, name_on_error=f"Response body[{i}]")
         _assert_shape(item, expected)
 

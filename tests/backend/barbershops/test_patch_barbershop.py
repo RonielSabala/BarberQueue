@@ -1,25 +1,24 @@
+"""
+Tests for PATCH /api/barbershops/{id}
+"""
+
 import pytest
 import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos import MessageResponse
-from domain.dtos.barbershops import CreateBarbershopRequest, UpdateBarbershopRequest
+from domain.dtos.barbershops import UpdateBarbershopRequest
+from domain.value_objects import BarbershopName
 from helpers.assertions import assert_body, assert_content_type, assert_status
+from helpers.common_responses import AT_LEAST_ONE_FIELD, BARBERSHOP_NOT_FOUND
 
-BARBERSHOP_UPDATED = MessageResponse(message="Barbershop updated")
-
-
-@pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    request = CreateBarbershopRequest.random()
-    response = client.barbershops.create(request)
-    return response.json()["id"]
+_BARBERSHOP_UPDATED = MessageResponse(message="Barbershop updated")
 
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    request = UpdateBarbershopRequest.random()
+    request = UpdateBarbershopRequest.random(barbershop_name=BarbershopName.random())
     return client.barbershops.update(barbershop_id, request)
 
 
@@ -39,9 +38,46 @@ def test_content_type(response: requests.Response) -> None:
     assert_content_type(response, HttpHeader.JSON)
 
 
-def test_body_shape(response: requests.Response) -> None:
+def test_body(response: requests.Response) -> None:
     """
-    Response contains expected fields.
+    Response contains a confirmation message.
     """
 
-    assert_body(response, BARBERSHOP_UPDATED)
+    assert_body(response, _BARBERSHOP_UPDATED)
+
+
+def test_name_persists(client: ApiClient, barbershop_id: int) -> None:
+    """
+    Updated name is reflected.
+    """
+
+    new_name = BarbershopName.random()
+    update_request = UpdateBarbershopRequest.random(barbershop_name=new_name)
+    client.barbershops.update(barbershop_id, update_request)
+
+    response = client.barbershops.get(barbershop_id)
+    assert response.json()["barbershopName"] == new_name.value
+
+
+def test_no_fields(client: ApiClient, barbershop_id: int) -> None:
+    """
+    Sending no fields returns 400.
+    """
+
+    request = UpdateBarbershopRequest.random(optional_chance=0)
+    response = client.barbershops.update(barbershop_id, request)
+
+    assert_status(response, HttpStatus.BAD_REQUEST)
+    assert_body(response, AT_LEAST_ONE_FIELD)
+
+
+def test_status_on_unknown_barbershop(client: ApiClient) -> None:
+    """
+    Unknown barbershop returns 404.
+    """
+
+    request = UpdateBarbershopRequest.random()
+    response = client.barbershops.update(999_999, request)
+
+    assert_body(response, BARBERSHOP_NOT_FOUND)
+    assert_status(response, HttpStatus.NOT_FOUND)

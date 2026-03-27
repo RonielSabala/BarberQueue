@@ -30,7 +30,7 @@ class BarbershopEmployeeResponse(BaseResponse):
     role: str
     start_time: str
     end_time: str
-    working_days: list[int]
+    working_days: Annotated[list[int], ListOf(base_type=int, min_items=1, max_items=7)]
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

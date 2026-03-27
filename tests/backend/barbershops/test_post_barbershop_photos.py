@@ -1,37 +1,46 @@
+"""
+Tests for POST /api/barbershops/{id}/photos
+"""
+
 import pytest
 import requests
 
 from api.client import ApiClient
-from api.core import HttpStatus
+from api.core import HttpHeader, HttpStatus
 from domain.dtos.barbershops import (
     CreateBarbershopPhotosRequest,
     CreateBarbershopPhotosResponse,
-    CreateBarbershopRequest,
 )
-from domain.value_objects.photo_url import PhotoUrl
-from helpers.assertions import assert_body_shape, assert_status
-
-
-@pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    return client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
+from helpers.assertions import (
+    assert_body,
+    assert_body_shape,
+    assert_content_type,
+    assert_status,
+)
+from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    request = CreateBarbershopPhotosRequest(
-        photo_urls=[PhotoUrl.random(), PhotoUrl.random()]
+    return client.barbershops.add_photos(
+        barbershop_id, CreateBarbershopPhotosRequest.random()
     )
-
-    return client.barbershops.add_photos(barbershop_id, request)
 
 
 def test_status(response: requests.Response) -> None:
     """
-    Successful gallery additions returns 201.
+    Successful photo upload returns 201.
     """
 
     assert_status(response, HttpStatus.CREATED)
+
+
+def test_content_type(response: requests.Response) -> None:
+    """
+    Response is JSON.
+    """
+
+    assert_content_type(response, HttpHeader.JSON)
 
 
 def test_body_shape(response: requests.Response) -> None:
@@ -40,3 +49,27 @@ def test_body_shape(response: requests.Response) -> None:
     """
 
     assert_body_shape(response, CreateBarbershopPhotosResponse)
+
+
+def test_uploaded_count_matches_input(client: ApiClient, barbershop_id: int) -> None:
+    """
+    Number of uploaded photos matches the number sent.
+    """
+
+    request = CreateBarbershopPhotosRequest.random()
+    response = client.barbershops.add_photos(barbershop_id, request)
+    body = response.json()
+
+    assert len(body["uploaded"]) == len(request.photo_urls)
+
+
+def test_status_on_unknown_barbershop(client: ApiClient) -> None:
+    """
+    Unknown barbershop returns 404.
+    """
+
+    request = CreateBarbershopPhotosRequest.random()
+    response = client.barbershops.add_photos(999_999, request)
+
+    assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, BARBERSHOP_NOT_FOUND)

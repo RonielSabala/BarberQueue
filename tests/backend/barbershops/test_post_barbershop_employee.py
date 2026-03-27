@@ -2,39 +2,31 @@ import pytest
 import requests
 
 from api.client import ApiClient
-from api.core import HttpStatus
+from api.core import HttpHeader, HttpStatus
 from domain.dtos import ErrorResponse
 from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
     CreateBarbershopEmployeeResponse,
-    CreateBarbershopRequest,
 )
 from domain.value_objects import Role
-from helpers.assertions import assert_body, assert_body_shape, assert_status
-from helpers.common_responses import EMAIL_ALREADY_IN_USE
+from helpers.assertions import (
+    assert_body,
+    assert_body_shape,
+    assert_content_type,
+    assert_status,
+)
+from helpers.common_responses import BARBERSHOP_NOT_FOUND, EMAIL_ALREADY_IN_USE
 
-ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
+_ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
     error="Only barbers and assistants can be assigned to a barbershop"
 )
 
 
 @pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    request = CreateBarbershopRequest.random()
-    response = client.barbershops.create(request)
-    return response.json()["id"]
-
-
-@pytest.fixture(scope="module")
-def employee_request() -> CreateBarbershopEmployeeRequest:
-    return CreateBarbershopEmployeeRequest.random(role=(Role.BARBER, Role.ASSISTANT))
-
-
-@pytest.fixture(scope="module")
 def response(
     client: ApiClient,
-    employee_request: CreateBarbershopEmployeeRequest,
     barbershop_id: int,
+    employee_request: CreateBarbershopEmployeeRequest,
 ) -> requests.Response:
     return client.barbershops.create_employee(barbershop_id, employee_request)
 
@@ -47,6 +39,14 @@ def test_status(response: requests.Response) -> None:
     assert_status(response, HttpStatus.CREATED)
 
 
+def test_content_type(response: requests.Response) -> None:
+    """
+    Response is JSON.
+    """
+
+    assert_content_type(response, HttpHeader.JSON)
+
+
 def test_body_shape(response: requests.Response) -> None:
     """
     Response contains expected fields.
@@ -55,16 +55,48 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, CreateBarbershopEmployeeResponse)
 
 
-def test_duplicate_email(
-    client: ApiClient,
-    employee_request: CreateBarbershopEmployeeRequest,
-    barbershop_id: int,
+def test_email_matches_input(
+    response: requests.Response, employee_request: CreateBarbershopEmployeeRequest
 ) -> None:
     """
-    Registering an employee with an existing email returns 409.
+    Response email matches the submitted email.
     """
 
-    client.barbershops.create_employee(barbershop_id, employee_request)
+    assert response.json()["email"] == employee_request.email.value
+
+
+def test_role_matches_input(
+    response: requests.Response, employee_request: CreateBarbershopEmployeeRequest
+) -> None:
+    """
+    Response role matches the submitted role.
+    """
+
+    assert response.json()["role"] == employee_request.role.value
+
+
+def test_status_on_unknown_barbershop(
+    client: ApiClient, employee_request: CreateBarbershopEmployeeRequest
+) -> None:
+    """
+    Unknown barbershop returns 404.
+    """
+
+    response = client.barbershops.create_employee(999_999, employee_request)
+
+    assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, BARBERSHOP_NOT_FOUND)
+
+
+def test_duplicate_email(
+    client: ApiClient,
+    barbershop_id: int,
+    employee_request: CreateBarbershopEmployeeRequest,
+) -> None:
+    """
+    Creating an employee with a duplicate email returns 409.
+    """
+
     response = client.barbershops.create_employee(barbershop_id, employee_request)
 
     assert_status(response, HttpStatus.CONFLICT)
@@ -82,4 +114,4 @@ def test_incorrect_employee_role(client: ApiClient, barbershop_id: int) -> None:
     response = client.barbershops.create_employee(barbershop_id, employee_request)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS)
+    assert_body(response, _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS)

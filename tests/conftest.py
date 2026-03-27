@@ -8,6 +8,11 @@ from selenium import webdriver
 from selenium.webdriver.chromium.webdriver import ChromiumDriver
 
 from api.client import ApiClient
+from domain.dtos.barbershops import (
+    CreateBarbershopEmployeeRequest,
+    CreateBarbershopRequest,
+)
+from domain.value_objects import Role
 
 load_dotenv()
 
@@ -60,3 +65,15 @@ def capture_dir(request: pytest.FixtureRequest) -> Path:
     capture_dir = SCREENSHOTS_DIR / test_file_path.parent.name / test_file_path.stem
     capture_dir.mkdir(parents=True, exist_ok=True)
     return capture_dir
+
+
+@pytest.fixture(scope="module")
+def barbershop_id(client: ApiClient) -> int:
+    request = CreateBarbershopRequest.random()
+    response = client.barbershops.create(request)
+    return response.json()["id"]
+
+
+@pytest.fixture(scope="module")
+def employee_request() -> CreateBarbershopEmployeeRequest:
+    return CreateBarbershopEmployeeRequest.random(role=(Role.BARBER, Role.ASSISTANT))

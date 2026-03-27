@@ -1,33 +1,65 @@
+"""
+Tests for GET /api/barbershops/{id}/employees
+"""
+
 import pytest
 import requests
 
 from api.client import ApiClient
-from api.core import HttpStatus
-from domain.dtos.barbershops import BarbershopEmployeeResponse, CreateBarbershopRequest
-from helpers.assertions import assert_list_body_shape, assert_status
+from api.core import HttpHeader, HttpStatus
+from domain.dtos.barbershops import (
+    BarbershopEmployeeResponse,
+    CreateBarbershopEmployeeRequest,
+)
+from helpers.assertions import (
+    assert_body,
+    assert_content_type,
+    assert_list_body_shape,
+    assert_status,
+)
+from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    return client.barbershops.create(CreateBarbershopRequest.random()).json()["id"]
-
-
-@pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(
+    client: ApiClient,
+    barbershop_id: int,
+    employee_request: CreateBarbershopEmployeeRequest,
+) -> requests.Response:
+    client.barbershops.create_employee(barbershop_id, employee_request)
     return client.barbershops.get_employees(barbershop_id)
 
 
 def test_status(response: requests.Response) -> None:
     """
-    Successful employee list retrieval returns 200.
+    Successful employees listing returns 200.
     """
 
     assert_status(response, HttpStatus.OK)
 
 
+def test_content_type(response: requests.Response) -> None:
+    """
+    Response is JSON.
+    """
+
+    assert_content_type(response, HttpHeader.JSON)
+
+
 def test_body_shape(response: requests.Response) -> None:
     """
-    Response contains expected fields.
+    Response body is a list of employees.
     """
 
     assert_list_body_shape(response, BarbershopEmployeeResponse)
+
+
+def test_status_on_unknown_barbershop(client: ApiClient) -> None:
+    """
+    Unknown barbershop returns 404.
+    """
+
+    response = client.barbershops.get_employees(999_999)
+
+    assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, BARBERSHOP_NOT_FOUND)
