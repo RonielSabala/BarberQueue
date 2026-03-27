@@ -15,12 +15,9 @@ _ASSIGNMENT_NOT_FOUND = ErrorResponse(error="Assignment not found")
 
 
 @pytest.fixture
-def employee_id(
-    client: ApiClient,
-    barbershop_id: int,
-    employee_request: CreateBarbershopEmployeeRequest,
-) -> int:
-    response = client.barbershops.create_employee(barbershop_id, employee_request)
+def employee_id(client: ApiClient, barbershop_id: int) -> int:
+    request = CreateBarbershopEmployeeRequest.random_employee()
+    response = client.barbershops.create_employee(barbershop_id, request)
     return response.json()["id"]
 
 

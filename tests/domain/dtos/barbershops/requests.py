@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 from domain.dtos import BaseRequest
 from domain.value_objects import (
@@ -18,6 +19,7 @@ from domain.value_objects import (
     Username,
     WorkingDays,
 )
+from domain.value_objects.role_name import Role
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -30,6 +32,10 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
     start_time: TimeOfDay
     end_time: TimeOfDay
     working_days: WorkingDays
+
+    @classmethod
+    def random_employee(cls) -> Self:
+        return cls.random(role=(Role.BARBER, Role.ASSISTANT))
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

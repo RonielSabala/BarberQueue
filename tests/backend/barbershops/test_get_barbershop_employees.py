@@ -21,12 +21,9 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(
-    client: ApiClient,
-    barbershop_id: int,
-    employee_request: CreateBarbershopEmployeeRequest,
-) -> requests.Response:
-    client.barbershops.create_employee(barbershop_id, employee_request)
+def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+    request = CreateBarbershopEmployeeRequest.random_employee()
+    client.barbershops.create_employee(barbershop_id, request)
     return client.barbershops.get_employees(barbershop_id)
 
 
