@@ -1,7 +1,6 @@
 import requests
 
 from api.base_controller import BaseController
-from api.core.method import HttpMethod
 from api.decorators import DELETE, GET, PATCH, POST, route_prefix
 from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
@@ -16,16 +15,10 @@ from domain.dtos.barbershops import (
 
 @route_prefix("/api/barbershops")
 class BarbershopController(BaseController):
+    @GET("")
     def get_all(
-        self, search: str | None = None, is_open: bool | None = None
-    ) -> requests.Response:
-        params = {}
-        if search is not None:
-            params["search"] = search
-        if is_open is not None:
-            params["isOpen"] = is_open
-
-        return self._client.request(HttpMethod.GET, "/api/barbershops", params=params)
+        self, *, search: str | None = None, is_open: bool | None = None
+    ) -> requests.Response: ...
 
     @POST("")
     def create(self, request: CreateBarbershopRequest) -> requests.Response: ...
