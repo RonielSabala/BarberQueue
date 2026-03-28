@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Attributes\ArrayOf;
 use App\Config\DbConfig;
 use App\Domain\Entities\BaseEntity;
-use App\Utils\TextUtils;
 
 abstract class BaseRepository
 {
@@ -26,55 +24,6 @@ abstract class BaseRepository
         return new \RuntimeException("Repository `{$varName}` variable is not set");
     }
 
-    protected function mapToEntity(string $entityClass, array $row): BaseEntity
-    {
-        $reflection = new \ReflectionClass($entityClass);
-        $constructor = $reflection->getConstructor();
-
-        if (!$constructor) {
-            return new $entityClass();
-        }
-
-        $arguments = [];
-        foreach ($constructor->getParameters() as $param) {
-            $dbKey = TextUtils::toSnakeCase($param->getName());
-            $dbValue = $row[$dbKey] ?? null;
-            $valueExists = $dbValue !== null;
-            $type = $param->getType();
-
-            // Handle #[ArrayOf]
-            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
-            if ($arrayOf !== null) {
-                $itemType = $arrayOf->newInstance()->type;
-                $items = $valueExists
-                    ? array_map('trim', explode(',', (string) $dbValue))
-                    : [];
-
-                $arguments[] = array_map(
-                    static fn (string $item) => new $itemType($item),
-                    $items
-                );
-
-                continue;
-            }
-
-            // Value Object
-            if (
-                $valueExists
-                && $type instanceof \ReflectionNamedType
-                && !$type->isBuiltin()
-            ) {
-                $className = $type->getName();
-                $arguments[] = new $className($dbValue);
-                continue;
-            }
-
-            $arguments[] = $dbValue;
-        }
-
-        return $reflection->newInstanceArgs($arguments);
-    }
-
     protected function query(string $sql, array $params = []): \PDOStatement
     {
         $stmt = $this->db->prepare($sql);
@@ -82,20 +31,22 @@ abstract class BaseRepository
         return $stmt;
     }
 
+    /** @param class-string<BaseEntity> $entityClass */
     protected function fetchOne(string $entityClass, string $sql, array $params = []): ?BaseEntity
     {
         $stmt = $this->query($sql, $params);
         $row = $stmt->fetch();
-        return $row ? $this->mapToEntity($entityClass, $row) : null;
+        return $row ? $entityClass::fromDbRow($row) : null;
     }
 
+    /** @param class-string<BaseEntity> $entityClass */
     protected function fetchAll(string $entityClass, string $sql, array $params = []): array
     {
         $stmt = $this->query($sql, $params);
         $results = [];
 
         while ($row = $stmt->fetch()) {
-            $results[] = $this->mapToEntity($entityClass, $row);
+            $results[] = $entityClass::fromDbRow($row);
         }
 
         return $results;
