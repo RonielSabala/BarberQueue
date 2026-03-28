@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\{
-    Barbershop,
-    BarbershopEmployee,
-    BarbershopPhoto,
-    BarbershopReview
+    Barbershop
 };
-use App\Domain\ValueObjects\{Id, PhotoUrl};
 
 class BarbershopRepository extends BaseRepository
 {
@@ -27,7 +23,7 @@ class BarbershopRepository extends BaseRepository
         'is_active',
     ];
 
-    public function findById(int $id): ?Barbershop
+    public function getById(int $id): ?Barbershop
     {
         $sql = <<<'SQL'
             SELECT
@@ -47,7 +43,7 @@ class BarbershopRepository extends BaseRepository
         return $this->fetchOne(Barbershop::class, $sql, [$id]);
     }
 
-    public function findByEmail(string $email): ?Barbershop
+    public function getByEmail(string $email): ?Barbershop
     {
         $sql = <<<'SQL'
             SELECT
@@ -96,7 +92,7 @@ class BarbershopRepository extends BaseRepository
         return $this->fetchAll(Barbershop::class, $sql, $params);
     }
 
-    public function create(
+    public function createBarbershop(
         string $barbershopName,
         string $email,
         string $phone,
@@ -106,242 +102,17 @@ class BarbershopRepository extends BaseRepository
         string $closesAt,
         int $capacity
     ): ?Barbershop {
-        $sql = <<<'SQL'
-            INSERT INTO barbershops (
-                barbershop_name,
-                email,
-                phone,
-                barbershop_address,
-                photo_url,
-                opens_at,
-                closes_at,
-                capacity
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        SQL;
-
-        $this->query($sql, [
-            $barbershopName,
-            $email,
-            $phone,
-            $barbershopAddress,
-            $photoUrl,
-            $opensAt,
-            $closesAt,
-            $capacity,
+        $id = $this->insert([
+            'barbershop_name' => $barbershopName,
+            'email' => $email,
+            'phone' => $phone,
+            'barbershop_address' => $barbershopAddress,
+            'photo_url' => $photoUrl,
+            'opens_at' => $opensAt,
+            'closes_at' => $closesAt,
+            'capacity' => $capacity,
         ]);
 
-        $id = (int) $this->db->lastInsertId();
-        return $this->findById($id);
-    }
-
-    public function getPhotos(int $barbershopId): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                *
-            FROM
-                barbershop_photos
-            WHERE
-                barbershop_id = ?
-        SQL;
-
-        return $this->fetchAll(BarbershopPhoto::class, $sql, [$barbershopId]);
-    }
-
-    public function addPhotos(int $barbershopId, array $photoUrls): array
-    {
-        $sql = <<<'SQL'
-            INSERT INTO
-                barbershop_photos (barbershop_id, photo_url)
-            VALUES
-                (?, ?)
-        SQL;
-
-        $insertedPhotos = [];
-        foreach ($photoUrls as $url) {
-            $photoUrlValue = $url->value;
-            $this->query($sql, [$barbershopId, $photoUrlValue]);
-
-            $id = $this->db->lastInsertId();
-            $insertedPhotos[] = new BarbershopPhoto(
-                id: new Id($id),
-                barbershopId: new Id($barbershopId),
-                photoUrl: new PhotoUrl($photoUrlValue)
-            );
-        }
-
-        return $insertedPhotos;
-    }
-
-    public function deletePhoto(int $barbershopId, int $photoId): bool
-    {
-        return $this->deleteFrom(
-            'barbershop_photos',
-            [
-                'id' => $photoId,
-                'barbershop_id' => $barbershopId,
-            ]
-        );
-    }
-
-    public function getReviews(int $barbershopId): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                br.*,
-                u.username
-            FROM
-                barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
-            WHERE
-                br.barbershop_id = ?
-            ORDER BY
-                br.created_at DESC
-        SQL;
-
-        return $this->fetchAll(BarbershopReview::class, $sql, [$barbershopId]);
-    }
-
-    public function addReview(int $userId, int $barbershopId, int $rating, string $content): ?BarbershopReview
-    {
-        $sql = <<<'SQL'
-            INSERT INTO
-                barbershop_reviews (user_id, barbershop_id, rating, content)
-            VALUES
-                (?, ?, ?, ?)
-        SQL;
-
-        $fetchSql = <<<'SQL'
-            SELECT
-                br.*,
-                u.username
-            FROM
-                barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
-            WHERE
-                br.id = ?
-            LIMIT
-                1
-        SQL;
-
-        $this->query($sql, [$userId, $barbershopId, $rating, $content]);
-
-        $id = $this->db->lastInsertId();
-        return $this->fetchOne(BarbershopReview::class, $fetchSql, [$id]);
-    }
-
-    public function deleteReview(int $barbershopId, int $reviewId): bool
-    {
-        return $this->deleteFrom(
-            'barbershop_reviews',
-            [
-                'id' => $reviewId,
-                'barbershop_id' => $barbershopId,
-            ]
-        );
-    }
-
-    public function getEmployees(int $barbershopId): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                u.id,
-                sa.barbershop_id,
-                u.username,
-                u.email,
-                u.phone,
-                r.role_name AS role,
-                sa.start_time AS start_time,
-                sa.end_time AS end_time,
-                GROUP_CONCAT(
-                    wd.day_of_week
-                    ORDER BY
-                        wd.day_of_week ASC
-                ) AS working_days
-            FROM
-                users u
-                JOIN roles r ON u.role_id = r.id
-                JOIN staff_assignments sa ON u.id = sa.staff_id
-                LEFT JOIN working_days wd ON u.id = wd.staff_id
-                AND wd.barbershop_id = sa.barbershop_id
-            WHERE
-                sa.barbershop_id = ?
-            GROUP BY
-                u.id,
-                sa.barbershop_id,
-                r.role_name,
-                sa.start_time,
-                sa.end_time
-        SQL;
-
-        return $this->fetchAll(BarbershopEmployee::class, $sql, [$barbershopId]);
-    }
-
-    public function createAndAssignEmployee(
-        int $barbershopId,
-        array $userData,
-        array $assignmentData,
-        array $days
-    ): int {
-        $userSql = <<<'SQL'
-            INSERT INTO
-                users (role_id, username, email, phone, password_hash)
-            VALUES
-                (?, ?, ?, ?, ?)
-        SQL;
-
-        $assignSql = <<<'SQL'
-            INSERT INTO
-                staff_assignments (staff_id, barbershop_id, start_time, end_time)
-            VALUES
-                (?, ?, ?, ?)
-        SQL;
-
-        $daySql = <<<'SQL'
-            INSERT INTO
-                working_days (staff_id, barbershop_id, day_of_week)
-            VALUES
-                (?, ?, ?)
-        SQL;
-
-        return $this->transaction(function () use (
-            $barbershopId,
-            $userData,
-            $assignmentData,
-            $days,
-            $userSql,
-            $assignSql,
-            $daySql
-        ) {
-            // Insert user
-            $this->query($userSql, array_values($userData));
-            $staffId = (int) $this->db->lastInsertId();
-
-            // Create staff assignment
-            $this->query($assignSql, [
-                $staffId,
-                $barbershopId,
-                $assignmentData['start_time'],
-                $assignmentData['end_time'],
-            ]);
-
-            // Insert working days
-            foreach ($days as $day) {
-                $this->query($daySql, [$staffId, $barbershopId, $day]);
-            }
-
-            return $staffId;
-        });
-    }
-
-    public function deleteEmployeeAssignment(int $employeeId, int $barbershopId): bool
-    {
-        return $this->deleteFrom(
-            'staff_assignments',
-            [
-                'staff_id' => $employeeId,
-                'barbershop_id' => $barbershopId,
-            ]
-        );
+        return $this->getById($id);
     }
 }

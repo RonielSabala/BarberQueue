@@ -75,9 +75,9 @@ class BarbershopController extends BaseController
     }
 
     #[POST('/{id}/photos')]
-    public function addPhotos(int $id, CreateBarbershopPhotosRequest $request): void
+    public function createPhotos(int $id, CreateBarbershopPhotosRequest $request): void
     {
-        $response = $this->barbershopService->addPhotos($id, $request);
+        $response = $this->barbershopService->createPhotos($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 
@@ -101,9 +101,9 @@ class BarbershopController extends BaseController
     }
 
     #[POST('/{id}/reviews')]
-    public function addReview(int $id, CreateBarbershopReviewRequest $request): void
+    public function createReview(int $id, CreateBarbershopReviewRequest $request): void
     {
-        $response = $this->barbershopService->addReview($id, $request);
+        $response = $this->barbershopService->createReview($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 

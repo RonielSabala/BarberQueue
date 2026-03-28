@@ -14,13 +14,13 @@ use App\Repositories\UserRepository;
 class UserService extends BaseService
 {
     public function __construct(
-        private readonly PasswordService $passwordService,
         private readonly UserRepository $userRepository,
+        private readonly PasswordService $passwordService,
     ) {}
 
     public function validateUserExists(int $userId): User
     {
-        $user = $this->userRepository->findById($userId);
+        $user = $this->userRepository->getById($userId);
         if ($user === null) {
             throw new UserException('User not found', HttpStatus::NotFound);
         }
@@ -30,7 +30,7 @@ class UserService extends BaseService
 
     public function validateInexistentUserEmail(string $userEmail): void
     {
-        $user = $this->userRepository->findByEmail($userEmail);
+        $user = $this->userRepository->getByEmail($userEmail);
         if ($user) {
             throw new UserException('User email already in use', HttpStatus::Conflict);
         }

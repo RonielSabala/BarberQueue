@@ -60,7 +60,7 @@ class MailService extends BaseService
         $resetCode = ResetCode::getNewCode();
         $minutes = self::RESET_EXPIRY_MINUTES . ' minutes';
         $expiresAt = new \DateTimeImmutable("+{$minutes}");
-        $this->passwordResetRepository->create($userId, $resetCode, $expiresAt);
+        $this->passwordResetRepository->createPasswordReset($userId, $resetCode, $expiresAt);
 
         // Send email
         $mail = new PHPMailer(true);

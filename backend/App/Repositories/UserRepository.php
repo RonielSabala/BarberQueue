@@ -16,7 +16,7 @@ class UserRepository extends BaseRepository
         'password_hash',
     ];
 
-    public function findById(int $id): ?User
+    public function getById(int $id): ?User
     {
         $sql = <<<'SQL'
             SELECT
@@ -34,7 +34,7 @@ class UserRepository extends BaseRepository
         return $this->fetchOne(User::class, $sql, [$id]);
     }
 
-    public function findByEmail(string $email): ?User
+    public function getByEmail(string $email): ?User
     {
         $sql = <<<'SQL'
             SELECT
@@ -52,33 +52,20 @@ class UserRepository extends BaseRepository
         return $this->fetchOne(User::class, $sql, [$email]);
     }
 
-    public function create(
+    public function createUser(
         int $roleId,
         string $username,
         string $email,
         string $phone,
         string $passwordHash,
-    ): ?User {
-        $sql = <<<'SQL'
-            INSERT INTO
-                users (role_id, username, email, phone, password_hash)
-            VALUES
-                (?, ?, ?, ?, ?)
-        SQL;
-
-        $this->query(
-            $sql,
-            [
-                $roleId,
-                $username,
-                $email,
-                $phone,
-                $passwordHash,
-            ]
-        );
-
-        $id = (int) $this->db->lastInsertId();
-        return $this->findById($id);
+    ): int {
+        return $this->insert([
+            'role_id' => $roleId,
+            'username' => $username,
+            'email' => $email,
+            'phone' => $phone,
+            'password_hash' => $passwordHash,
+        ]);
     }
 
     public function updatePassword(int $id, string $passwordHash): void

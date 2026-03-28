@@ -10,27 +10,33 @@ use App\Domain\ValueObjects\Role;
 use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employee\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
-use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository, UserRepository, WorkingDaysRepository};
+use App\Repositories\{
+    AssignmentRepository,
+    EmployeeRepository,
+    RoleRepository,
+    UserRepository,
+    WorkingDayRepository
+};
 
 class EmployeeService extends BaseService
 {
     public function __construct(
-        private readonly BarbershopService $barbershopService,
         private readonly RoleRepository $roleRepository,
+        private readonly AssignmentRepository $assignmentsRepository,
+        private readonly WorkingDayRepository $workingDayRepository,
+        private readonly EmployeeRepository $employeeRepository,
         private readonly UserRepository $userRepository,
-        private readonly AssignmentsRepository $assignmentsRepository,
-        private readonly WorkingDaysRepository $workingDaysRepository,
-        private readonly EmployeeRepository $employeeRepository
+        private readonly BarbershopService $barbershopService,
     ) {}
 
     private function validateEmployee(int $employeeId): Employee
     {
-        $user = $this->userRepository->findById($employeeId);
+        $user = $this->userRepository->getById($employeeId);
         if ($user === null) {
             throw new EmployeeException('Employee not found', HttpStatus::NotFound);
         }
 
-        $role = $this->roleRepository->findByValue($user->role->value);
+        $role = $this->roleRepository->getByValue($user->role->value);
         $employeeRole = $role->roleName->value;
 
         if (
@@ -75,15 +81,17 @@ class EmployeeService extends BaseService
 
         $this->employeeRepository->transaction(
             function () use ($employeeId, $barbershopId, $fields): void {
+                $days = $fields['working_days'] ?? null;
+                unset($fields['working_days']);
+
                 $this->assignmentsRepository->updateAssignment($employeeId, $barbershopId, $fields);
 
-                $days = $fields['working_days'] ?? null;
                 if (!$days) {
                     return;
                 }
 
-                $this->workingDaysRepository->deleteDays($employeeId, $barbershopId);
-                $this->workingDaysRepository->createDays($employeeId, $barbershopId, $days);
+                $this->workingDayRepository->deleteWorkingDays($employeeId, $barbershopId);
+                $this->workingDayRepository->createWorkingDays($employeeId, $barbershopId, $days);
             }
         );
     }

@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 use App\Domain\Entities\EmployeeAssignment;
 
-class AssignmentsRepository extends BaseRepository
+class AssignmentRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'staff_assignments';
     protected const array UPDATABLE_FIELDS = [
@@ -18,7 +18,7 @@ class AssignmentsRepository extends BaseRepository
     {
         $sql = <<<'SQL'
             SELECT
-                sa.*
+                TRUE
             FROM
                 staff_assignments sa
             WHERE
@@ -57,12 +57,36 @@ class AssignmentsRepository extends BaseRepository
         return $this->fetchAll(EmployeeAssignment::class, $assignmentSql, [$id]);
     }
 
+    public function createAssignment(
+        int $staffId,
+        int $barbershopId,
+        string $startTime,
+        string $endTime
+    ): void {
+        $this->insert([
+            'staff_id' => $staffId,
+            'barbershop_id' => $barbershopId,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+        ]);
+    }
+
     public function updateAssignment(int $staffId, int $barbershopId, array $fields): void
     {
-        unset($fields['working_days']);
         $this->updateFrom(
             self::TABLE_NAME,
             $fields,
+            [
+                'staff_id' => $staffId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
+    }
+
+    public function deleteAssignment(int $staffId, int $barbershopId): bool
+    {
+        return $this->deleteFrom(
+            self::TABLE_NAME,
             [
                 'staff_id' => $staffId,
                 'barbershop_id' => $barbershopId,
