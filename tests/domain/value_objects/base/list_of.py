@@ -4,18 +4,12 @@ from dataclasses import dataclass
 @dataclass(slots=True, kw_only=True, frozen=True)
 class ListOf[T]:
     base_type: type[T]
-    min_items: int | None = None
+    min_items: int = 0
     max_items: int | None = None
 
     def __post_init__(self):
-        min_items = self.min_items
-        if min_items is None:
-            return
+        if self.min_items < 0:
+            raise ValueError("min_items must be >= 0")
 
-        cls_name = self.__class__.__name__
-        if min_items < 0:
-            raise ValueError(f"{cls_name}.min_items must be >= 0")
-
-        max_items = self.max_items
-        if max_items is not None and max_items < min_items:
-            raise ValueError(f"{cls_name}.max_items must be >= {cls_name}.min_items")
+        if self.max_items is not None and self.max_items < self.min_items:
+            raise ValueError("max_items must be >= min_items")
