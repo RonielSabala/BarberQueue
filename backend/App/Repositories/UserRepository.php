@@ -19,16 +19,16 @@ class UserRepository extends BaseRepository
     public function findById(int $id): ?User
     {
         $sql = <<<'SQL'
-        SELECT
-            u.*,
-            r.role_name as role
-        FROM
-            users u
-            JOIN roles r ON u.role_id = r.id
-        WHERE
-            u.id = ?
-        LIMIT
-            1
+            SELECT
+                u.*,
+                r.role_name as role
+            FROM
+                users u
+                JOIN roles r ON u.role_id = r.id
+            WHERE
+                u.id = ?
+            LIMIT
+                1
         SQL;
 
         return $this->fetchOne(User::class, $sql, [$id]);
@@ -37,16 +37,16 @@ class UserRepository extends BaseRepository
     public function findByEmail(string $email): ?User
     {
         $sql = <<<'SQL'
-        SELECT
-            u.*,
-            r.role_name as role
-        FROM
-            users u
-            JOIN roles r ON u.role_id = r.id
-        WHERE
-            u.email = ?
-        LIMIT
-            1
+            SELECT
+                u.*,
+                r.role_name as role
+            FROM
+                users u
+                JOIN roles r ON u.role_id = r.id
+            WHERE
+                u.email = ?
+            LIMIT
+                1
         SQL;
 
         return $this->fetchOne(User::class, $sql, [$email]);
@@ -60,10 +60,10 @@ class UserRepository extends BaseRepository
         string $passwordHash,
     ): ?User {
         $sql = <<<'SQL'
-        INSERT INTO
-            users (role_id, username, email, phone, password_hash)
-        VALUES
-            (?, ?, ?, ?, ?)
+            INSERT INTO
+                users (role_id, username, email, phone, password_hash)
+            VALUES
+                (?, ?, ?, ?, ?)
         SQL;
 
         $this->query(
