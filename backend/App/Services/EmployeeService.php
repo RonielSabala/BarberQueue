@@ -12,7 +12,7 @@ use App\DTOs\Employee\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
 use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository};
 
-class EmployeeService
+class EmployeeService extends BaseService
 {
     public function __construct(
         private readonly RoleRepository $roleRepository,
@@ -62,27 +62,12 @@ class EmployeeService
             throw new EmployeeException('Assignment not found', HttpStatus::NotFound);
         }
 
-        $fields = array_filter([
-            'start_time' => $request->startTime?->value,
-            'end_time' => $request->endTime?->value,
-        ], static fn (mixed $value) => $value !== null);
-
-        $days = $request->workingDays !== null
-            ? array_map(static fn ($day) => $day->value, $request->workingDays)
-            : null;
-
-        if (empty($fields) && $days === null) {
-            throw new EmployeeException(
-                'At least one field must be provided for update',
-                HttpStatus::BadRequest
-            );
-        }
-
+        $fields = $this->validateFieldsToUpdate($request);
         $this->employeeRepository->updateAssignment(
             $employeeId,
             $barbershopId,
             $fields,
-            $days
+            $fields['working_days'] ?? null
         );
     }
 

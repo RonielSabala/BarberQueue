@@ -81,6 +81,8 @@ class EmployeeRepository extends BaseRepository
 
     public function updateAssignment(int $staffId, int $barbershopId, array $fields, ?array $days): void
     {
+        unset($fields['working_days']);
+
         $assignmentsSql = null;
         if (!empty($fields)) {
             $setClauses = implode(', ', array_map(

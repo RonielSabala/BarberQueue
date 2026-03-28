@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\DTOs;
 
+use App\Attributes\ArrayOf;
 use App\Domain\Entities\BaseEntity;
-use App\Domain\ValueObjects\Base\BaseField;
 
-abstract readonly class BaseResponse
+abstract readonly class BaseResponse extends BaseDto
 {
     public static function fromEntity(BaseEntity $entity): static
     {
-        $responseReflection = new \ReflectionClass(static::class);
-        $constructor = $responseReflection->getConstructor();
+        $reflection = new \ReflectionClass(static::class);
+        $constructor = $reflection->getConstructor();
 
         if (!$constructor) {
             return new static();
@@ -34,27 +34,17 @@ abstract readonly class BaseResponse
 
             $property = $entityReflection->getProperty($name);
             $value = $property->getValue($entity);
-            $args[] = self::unwrapValue($value);
+
+            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+            $itemType = $arrayOf?->newInstance()?->type;
+
+            $onObject = ($itemType !== null && is_subclass_of($itemType, self::class))
+                ? static fn (mixed $item) => $itemType::fromEntity($item)
+                : null;
+
+            $args[] = static::unwrapValue($value, $onObject);
         }
 
-        return $responseReflection->newInstanceArgs($args);
-    }
-
-    private static function unwrapValue(mixed $value): mixed
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        if ($value instanceof BaseField) {
-            return $value->value;
-        }
-
-        // Unwrap array
-        if (\is_array($value)) {
-            return array_map(static fn (mixed $item) => self::unwrapValue($item), $value);
-        }
-
-        return $value;
+        return $reflection->newInstanceArgs($args);
     }
 }

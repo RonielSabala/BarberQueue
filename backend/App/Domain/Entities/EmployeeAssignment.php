@@ -7,7 +7,7 @@ namespace App\Domain\Entities;
 use App\Attributes\ArrayOf;
 use App\Domain\ValueObjects\{DayOfWeek, Id, TimeOfDay};
 
-readonly class EmployeeAssignment
+readonly class EmployeeAssignment extends BaseEntity
 {
     public function __construct(
         public Id $barbershopId,
