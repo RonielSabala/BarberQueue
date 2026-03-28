@@ -2,7 +2,12 @@ from typing import Any
 
 import requests
 
-from api.controllers import AuthController, BarbershopController, UserController
+from api.controllers import (
+    AuthController,
+    BarbershopController,
+    EmployeeController,
+    UserController,
+)
 from api.core import HttpMethod
 
 
@@ -21,6 +26,7 @@ class ApiClient:
         self.auth = AuthController(self)
         self.users = UserController(self)
         self.barbershops = BarbershopController(self)
+        self.employees = EmployeeController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"

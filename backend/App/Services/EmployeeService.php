@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\Employee;
+use App\Domain\Entities\EmployeeEntity;
 use App\Domain\ValueObjects\Role;
 use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employee\Responses\EmployeeResponse;
@@ -29,7 +29,7 @@ class EmployeeService extends BaseService
         private readonly BarbershopService $barbershopService,
     ) {}
 
-    private function validateEmployee(int $employeeId): Employee
+    private function validateEmployee(int $employeeId): EmployeeEntity
     {
         $user = $this->userRepository->getById($employeeId);
         if ($user === null) {
@@ -49,7 +49,7 @@ class EmployeeService extends BaseService
             );
         }
 
-        return new Employee(
+        return new EmployeeEntity(
             id: $user->id,
             username: $user->username,
             email: $user->email,
