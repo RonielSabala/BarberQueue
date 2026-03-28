@@ -91,8 +91,10 @@ CREATE TABLE
     working_days (
         id INT PRIMARY KEY AUTO_INCREMENT,
         staff_id INT NOT NULL,
+        barbershop_id INT NOT NULL,
         day_of_week TINYINT UNSIGNED NOT NULL COMMENT '1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun',
-        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
 -- CLIENT GROUPS
@@ -101,7 +103,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         leader_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (leader_id) REFERENCES users (id)
+        FOREIGN KEY (leader_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- TURNS
@@ -116,9 +118,9 @@ CREATE TABLE
         attended_at TIMESTAMP NULL,
         finished_at TIMESTAMP NULL,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE,
-        FOREIGN KEY (client_id) REFERENCES users (id),
-        FOREIGN KEY (group_id) REFERENCES client_groups (id),
-        FOREIGN KEY (barber_id) REFERENCES users (id)
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- BARBERSHOP REVIEWS

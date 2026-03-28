@@ -14,6 +14,7 @@ unless noted otherwise.
 - [Auth](#auth)
 - [Users](#users)
 - [Barbershops](#barbershops)
+- [Employees](#employees)
 
 ---
 
@@ -582,5 +583,71 @@ Create a new user and create their assignment record for the barbershop.
 ### `DELETE /api/barbershops/{id}/employees/{employeeId}` <!-- omit from toc -->
 
 Unassign an employee from a barbershop. The employee's user account remains active in the system.
+
+- Response: `204`
+
+---
+
+## Employees
+
+### `GET /api/employees/{id}` <!-- omit from toc -->
+
+Returns profile and all barbershop assignments of an employee.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "username": "employee_example",
+  "email": "employee_example@gmail.com",
+  "phone": "8091234567",
+  "role": "barber",
+  "assignments": [
+    {
+      "barbershopId": 1,
+      "startTime": "08:00:00",
+      "endTime": "16:00:00",
+      "workingDays": [1, 2, 3]
+    },
+    {
+      "barbershopId": 2,
+      "startTime": "08:00:00",
+      "endTime": "16:00:00",
+      "workingDays": [4, 5, 6]
+    }
+  ]
+}
+```
+
+---
+
+### `PATCH /api/employees/{id}/barbershop/{barbershopId}` <!-- omit from toc -->
+
+Updates a specific assignment's schedule. All fields are optional, but at least one must be provided.
+
+- Body
+
+```json
+{
+  "startTime": "09:00:00",
+  "endTime": "17:00:00",
+  "workingDays": [1, 2, 3]
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Employee schedule updated"
+}
+```
+
+---
+
+### `DELETE /api/employees/{id}` <!-- omit from toc -->
+
+Permanently removes the user and all associated staff assignments.
 
 - Response: `204`

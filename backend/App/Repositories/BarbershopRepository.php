@@ -6,9 +6,9 @@ namespace App\Repositories;
 
 use App\Domain\Entities\{
     Barbershop,
+    BarbershopEmployee,
     BarbershopPhoto,
-    BarbershopReview,
-    Employee
+    BarbershopReview
 };
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
@@ -267,6 +267,7 @@ class BarbershopRepository extends BaseRepository
                 JOIN roles r ON u.role_id = r.id
                 JOIN staff_assignments sa ON u.id = sa.staff_id
                 LEFT JOIN working_days wd ON u.id = wd.staff_id
+                AND wd.barbershop_id = sa.barbershop_id
             WHERE
                 sa.barbershop_id = ?
             GROUP BY
@@ -277,7 +278,7 @@ class BarbershopRepository extends BaseRepository
                 sa.end_time
         SQL;
 
-        return $this->fetchAll(Employee::class, $sql, [$barbershopId]);
+        return $this->fetchAll(BarbershopEmployee::class, $sql, [$barbershopId]);
     }
 
     public function createAndAssignEmployee(
@@ -302,9 +303,9 @@ class BarbershopRepository extends BaseRepository
 
         $daySql = <<<'SQL'
             INSERT INTO
-                working_days (staff_id, day_of_week)
+                working_days (staff_id, barbershop_id, day_of_week)
             VALUES
-                (?, ?)
+                (?, ?, ?)
         SQL;
 
         return $this->transaction(function () use (
@@ -330,7 +331,7 @@ class BarbershopRepository extends BaseRepository
 
             // Insert working days
             foreach ($days as $day) {
-                $this->query($daySql, [$staffId, $day]);
+                $this->query($daySql, [$staffId, $barbershopId, $day]);
             }
 
             return $staffId;

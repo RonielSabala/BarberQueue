@@ -6,12 +6,9 @@ import pytest
 
 from api.client import ApiClient
 from api.core import HttpStatus
-from domain.dtos import ErrorResponse
 from domain.dtos.barbershops import CreateBarbershopEmployeeRequest
 from helpers.assertions import assert_body, assert_status
-from helpers.common_responses import BARBERSHOP_NOT_FOUND
-
-_ASSIGNMENT_NOT_FOUND = ErrorResponse(error="Assignment not found")
+from helpers.common_responses import ASSIGNMENT_NOT_FOUND, BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture
@@ -38,7 +35,7 @@ def test_status_on_unknown_assignment(client: ApiClient, barbershop_id: int) -> 
     response = client.barbershops.delete_employee_assignment(barbershop_id, 999_999)
 
     assert_status(response, HttpStatus.NOT_FOUND)
-    assert_body(response, _ASSIGNMENT_NOT_FOUND)
+    assert_body(response, ASSIGNMENT_NOT_FOUND)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

@@ -56,6 +56,7 @@ return (new Config())
         ],
 
         // Disable overly strict rules
+        'phpdoc_to_comment' => false,
         'ordered_class_elements' => false,
 
         // Type hints

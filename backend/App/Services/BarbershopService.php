@@ -37,7 +37,7 @@ class BarbershopService extends BaseService
         private readonly BarbershopRepository $barbershopRepository,
     ) {}
 
-    private function validateBarbershopExists(int $barbershopId): Barbershop
+    public function validateBarbershopExists(int $barbershopId): Barbershop
     {
         $barbershop = $this->barbershopRepository->findById($barbershopId);
         if ($barbershop === null) {
