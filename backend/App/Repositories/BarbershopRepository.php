@@ -175,15 +175,13 @@ class BarbershopRepository extends BaseRepository
 
     public function deletePhoto(int $barbershopId, int $photoId): bool
     {
-        $sql = <<<'SQL'
-            DELETE FROM barbershop_photos
-            WHERE
-                id = ?
-                AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$photoId, $barbershopId]);
-        return $stmt->rowCount() > 0;
+        return $this->deleteFrom(
+            'barbershop_photos',
+            [
+                'id' => $photoId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
     }
 
     public function getReviews(int $barbershopId): array
@@ -234,15 +232,13 @@ class BarbershopRepository extends BaseRepository
 
     public function deleteReview(int $barbershopId, int $reviewId): bool
     {
-        $sql = <<<'SQL'
-            DELETE FROM barbershop_reviews
-            WHERE
-                id = ?
-                AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$reviewId, $barbershopId]);
-        return $stmt->rowCount() > 0;
+        return $this->deleteFrom(
+            'barbershop_reviews',
+            [
+                'id' => $reviewId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
     }
 
     public function getEmployees(int $barbershopId): array
@@ -340,14 +336,12 @@ class BarbershopRepository extends BaseRepository
 
     public function deleteEmployeeAssignment(int $employeeId, int $barbershopId): bool
     {
-        $sql = <<<'SQL'
-        DELETE FROM staff_assignments
-        WHERE
-            staff_id = ?
-            AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$employeeId, $barbershopId]);
-        return $stmt->rowCount() > 0;
+        return $this->deleteFrom(
+            'staff_assignments',
+            [
+                'staff_id' => $employeeId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
     }
 }

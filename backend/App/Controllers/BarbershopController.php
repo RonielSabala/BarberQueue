@@ -49,21 +49,21 @@ class BarbershopController extends BaseController
     #[PATCH('/{id}')]
     public function update(int $id, UpdateBarbershopRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop updated');
     }
 
     #[PATCH('/{id}/status')]
     public function updateStatus(int $id, UpdateBarbershopStatusRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop status updated');
     }
 
     #[PATCH('/{id}/photo')]
     public function updatePhoto(int $id, UpdateBarbershopPhotoRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop photo updated');
     }
 

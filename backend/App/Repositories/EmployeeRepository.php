@@ -6,6 +6,8 @@ namespace App\Repositories;
 
 class EmployeeRepository extends BaseRepository
 {
+    protected const string TABLE_NAME = 'users';
+
     public function updateAssignment(int $staffId, int $barbershopId, array $fields, ?array $days): void
     {
         unset($fields['working_days']);
@@ -70,17 +72,5 @@ class EmployeeRepository extends BaseRepository
                 $this->query($daySql, [$staffId, $barbershopId, $day]);
             }
         });
-    }
-
-    public function delete(int $id): bool
-    {
-        $sql = <<<'SQL'
-            DELETE FROM users
-            WHERE
-                id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$id]);
-        return $stmt->rowCount() > 0;
     }
 }

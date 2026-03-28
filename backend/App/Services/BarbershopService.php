@@ -89,11 +89,11 @@ class BarbershopService extends BaseService
         return BarbershopDetailResponse::fromEntity($barbershop);
     }
 
-    public function updateFields(int $barbershopId, BaseRequest $request): void
+    public function update(int $barbershopId, BaseRequest $request): void
     {
         $this->validateBarbershopExists($barbershopId);
         $fields = $this->validateFieldsToUpdate($request);
-        $this->barbershopRepository->updateFields($barbershopId, $fields);
+        $this->barbershopRepository->update($barbershopId, $fields);
     }
 
     public function getPhotos(int $barbershopId): GetBarbershopPhotosResponse

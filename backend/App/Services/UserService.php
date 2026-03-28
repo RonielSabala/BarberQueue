@@ -36,13 +36,6 @@ class UserService extends BaseService
         }
     }
 
-    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
-    {
-        $newPasswordHash = $this->passwordService->hash($newPassword);
-        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
-        $this->userRepository->updatePassword($userId, $newPasswordHash);
-    }
-
     public function get(int $userId): GetUserResponse
     {
         $user = $this->validateUserExists($userId);
@@ -53,7 +46,7 @@ class UserService extends BaseService
     {
         $this->validateUserExists($userId);
         $fields = $this->validateFieldsToUpdate($request);
-        $this->userRepository->updateFields($userId, $fields);
+        $this->userRepository->update($userId, $fields);
     }
 
     public function updatePassword(int $userId, UpdateUserPasswordRequest $request): void
@@ -66,5 +59,12 @@ class UserService extends BaseService
 
         $this->passwordService->validateMatch($currentPassword, $userPasswordHash);
         $this->updateUserPassword($userId, $newPassword, $userPasswordHash);
+    }
+
+    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
+    {
+        $newPasswordHash = $this->passwordService->hash($newPassword);
+        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
+        $this->userRepository->updatePassword($userId, $newPasswordHash);
     }
 }

@@ -83,6 +83,6 @@ class UserRepository extends BaseRepository
 
     public function updatePassword(int $id, string $passwordHash): void
     {
-        $this->updateFields($id, ['password_hash' => $passwordHash]);
+        $this->update($id, ['password_hash' => $passwordHash]);
     }
 }

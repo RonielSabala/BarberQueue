@@ -120,33 +120,66 @@ abstract class BaseRepository
         }
     }
 
-    public function updateFields(int $entityId, array $entityFields): void
+    public function updateFrom(string $tableName, array $entityFields, array $params): void
     {
         if (empty($entityFields)) {
             return;
         }
 
-        $tableName = static::TABLE_NAME;
-        if ($tableName === null) {
-            throw $this->missingVariablesException('TABLE_NAME');
-        }
-
         $updatableFields = static::UPDATABLE_FIELDS;
-        $keys = array_keys($entityFields);
+        $fields = array_keys($entityFields);
 
-        foreach ($keys as $field) {
+        foreach ($fields as $field) {
             if (!\in_array($field, $updatableFields, true)) {
-                throw new \InvalidArgumentException("Field '{$field}' is not allowed for updates in {$tableName}");
+                throw new \InvalidArgumentException(
+                    "Field '{$field}' is not allowed for updates in {$tableName}"
+                );
             }
         }
 
         $setClauses = implode(', ', array_map(
             static fn (string $field) => "{$field} = ?",
-            $keys
+            $fields
         ));
 
-        // Execute the query
-        $sql = 'UPDATE ' . $tableName . " SET {$setClauses} WHERE id = ?";
-        $this->query($sql, [...array_values($entityFields), $entityId]);
+        $whereClauses = implode(' AND ', array_map(
+            static fn (string $param) => "{$param} = ?",
+            array_keys($params)
+        ));
+
+        $sql = "UPDATE {$tableName} SET {$setClauses} WHERE {$whereClauses}";
+        $this->query($sql, [...array_values($entityFields), ...array_values($params)]);
+    }
+
+    public function deleteFrom(string $tableName, array $params): bool
+    {
+        $whereClauses = implode(' AND ', array_map(
+            static fn (string $param) => "{$param} = ?",
+            array_keys($params)
+        ));
+
+        $sql = "DELETE FROM {$tableName} WHERE {$whereClauses}";
+        $stmt = $this->query($sql, array_values($params));
+        return $stmt->rowCount() > 0;
+    }
+
+    public function update(int $entityId, array $entityFields, array $params = []): void
+    {
+        $tableName = static::TABLE_NAME;
+        if ($tableName === null) {
+            throw $this->missingVariablesException('TABLE_NAME');
+        }
+
+        $this->updateFrom($tableName, $entityFields, ['id' => $entityId, ...$params]);
+    }
+
+    public function delete(int $entityId, array $params = []): bool
+    {
+        $tableName = static::TABLE_NAME;
+        if ($tableName === null) {
+            throw $this->missingVariablesException('TABLE_NAME');
+        }
+
+        return $this->deleteFrom($tableName, ['id' => $entityId, ...$params]);
     }
 }
