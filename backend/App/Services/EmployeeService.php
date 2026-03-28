@@ -10,25 +10,26 @@ use App\Domain\ValueObjects\Role;
 use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employee\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
-use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository};
+use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository, UserRepository};
 
 class EmployeeService extends BaseService
 {
     public function __construct(
-        private readonly RoleRepository $roleRepository,
         private readonly BarbershopService $barbershopService,
+        private readonly RoleRepository $roleRepository,
+        private readonly UserRepository $userRepository,
         private readonly AssignmentsRepository $assignmentsRepository,
         private readonly EmployeeRepository $employeeRepository
     ) {}
 
     private function validateEmployee(int $employeeId): Employee
     {
-        $employee = $this->employeeRepository->findById($employeeId);
-        if ($employee === null) {
+        $user = $this->userRepository->findById($employeeId);
+        if ($user === null) {
             throw new EmployeeException('Employee not found', HttpStatus::NotFound);
         }
 
-        $role = $this->roleRepository->findByValue($employee->role->value);
+        $role = $this->roleRepository->findByValue($user->role->value);
         $employeeRole = $role->roleName->value;
 
         if (
@@ -41,7 +42,14 @@ class EmployeeService extends BaseService
             );
         }
 
-        return $employee;
+        return new Employee(
+            id: $user->id,
+            username: $user->username,
+            email: $user->email,
+            phone: $user->phone,
+            role: $user->role,
+            assignments: $this->assignmentsRepository->getAllByStaffId($employeeId),
+        );
     }
 
     public function get(int $employeeId): EmployeeResponse
