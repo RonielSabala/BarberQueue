@@ -6,7 +6,7 @@ namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
-readonly class BarbershopPhoto extends BaseEntity
+readonly class BarbershopPhotoEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

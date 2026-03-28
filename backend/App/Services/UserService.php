@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\User;
+use App\Domain\Entities\UserEntity;
 use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 use App\DTOs\Users\Responses\GetUserResponse;
 use App\Exceptions\UserException;
@@ -18,7 +18,7 @@ class UserService extends BaseService
         private readonly PasswordService $passwordService,
     ) {}
 
-    public function validateUserExists(int $userId): User
+    public function validateUserExists(int $userId): UserEntity
     {
         $user = $this->userRepository->getById($userId);
         if ($user === null) {

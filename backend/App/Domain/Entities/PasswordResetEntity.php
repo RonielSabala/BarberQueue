@@ -6,7 +6,7 @@ namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\Id;
 
-readonly class PasswordReset extends BaseEntity
+readonly class PasswordResetEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

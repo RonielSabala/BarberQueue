@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\BarbershopEmployee;
+use App\Domain\Entities\BarbershopEmployeeEntity;
 
 class EmployeeRepository extends BaseRepository
 {
@@ -43,6 +43,6 @@ class EmployeeRepository extends BaseRepository
                 sa.end_time
         SQL;
 
-        return $this->fetchAll(BarbershopEmployee::class, $sql, [$barbershopId]);
+        return $this->fetchAll(BarbershopEmployeeEntity::class, $sql, [$barbershopId]);
     }
 }

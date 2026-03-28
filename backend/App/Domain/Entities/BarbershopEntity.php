@@ -16,7 +16,7 @@ use App\Domain\ValueObjects\{
     TimeOfDay
 };
 
-readonly class Barbershop extends BaseEntity
+readonly class BarbershopEntity extends BaseEntity
 {
     public bool $isOpen;
 

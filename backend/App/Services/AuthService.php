@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\{Container, HttpStatus};
-use App\Domain\Entities\User;
+use App\Domain\Entities\UserEntity;
 use App\DTOs\Auth\Requests\{
     ForgotPasswordRequest,
     LoginRequest,
@@ -37,7 +37,7 @@ class AuthService extends BaseService
         $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
     }
 
-    private function generateJwt(User $user): string
+    private function generateJwt(UserEntity $user): string
     {
         $now = time();
         $payload = [

@@ -7,7 +7,7 @@ namespace App\Domain\Entities;
 use App\Attributes\ArrayOf;
 use App\Domain\ValueObjects\{Email, Id, Phone, RoleName, Username};
 
-readonly class Employee extends BaseEntity
+readonly class EmployeeEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,
@@ -15,7 +15,7 @@ readonly class Employee extends BaseEntity
         public Email $email,
         public Phone $phone,
         public RoleName $role,
-        #[ArrayOf(EmployeeAssignment::class)]
+        #[ArrayOf(EmployeeAssignmentEntity::class)]
         public array $assignments,
     ) {}
 }

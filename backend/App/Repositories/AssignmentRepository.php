@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\EmployeeAssignment;
+use App\Domain\Entities\EmployeeAssignmentEntity;
 
 class AssignmentRepository extends BaseRepository
 {
@@ -54,7 +54,7 @@ class AssignmentRepository extends BaseRepository
                 sa.end_time
         SQL;
 
-        return $this->fetchAll(EmployeeAssignment::class, $assignmentSql, [$id]);
+        return $this->fetchAll(EmployeeAssignmentEntity::class, $assignmentSql, [$id]);
     }
 
     public function createAssignment(

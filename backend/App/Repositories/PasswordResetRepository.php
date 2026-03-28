@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\PasswordReset;
+use App\Domain\Entities\PasswordResetEntity;
 
 class PasswordResetRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'password_resets';
     protected const array UPDATABLE_FIELDS = ['used'];
 
-    public function getByValue(int $resetCodeValue): ?PasswordReset
+    public function getByValue(int $resetCodeValue): ?PasswordResetEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -26,7 +26,7 @@ class PasswordResetRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(PasswordReset::class, $sql, [$resetCodeValue]);
+        return $this->fetchOne(PasswordResetEntity::class, $sql, [$resetCodeValue]);
     }
 
     public function createPasswordReset(int $userId, int $resetCode, \DateTimeImmutable $expiresAt): void

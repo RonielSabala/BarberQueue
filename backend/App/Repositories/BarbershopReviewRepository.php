@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\BarbershopReview;
+use App\Domain\Entities\BarbershopReviewEntity;
 
 class BarbershopReviewRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barbershop_reviews';
 
-    public function getById(int $id): ?BarbershopReview
+    public function getById(int $id): ?BarbershopReviewEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -25,7 +25,7 @@ class BarbershopReviewRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(BarbershopReview::class, $sql, [$id]);
+        return $this->fetchOne(BarbershopReviewEntity::class, $sql, [$id]);
     }
 
     public function getAll(int $barbershopId): array
@@ -43,7 +43,7 @@ class BarbershopReviewRepository extends BaseRepository
                 br.created_at DESC
         SQL;
 
-        return $this->fetchAll(BarbershopReview::class, $sql, [$barbershopId]);
+        return $this->fetchAll(BarbershopReviewEntity::class, $sql, [$barbershopId]);
     }
 
     public function createReview(
@@ -51,7 +51,7 @@ class BarbershopReviewRepository extends BaseRepository
         int $barbershopId,
         int $rating,
         string $content
-    ): ?BarbershopReview {
+    ): ?BarbershopReviewEntity {
         $id = $this->insert([
             'user_id' => $userId,
             'barbershop_id' => $barbershopId,

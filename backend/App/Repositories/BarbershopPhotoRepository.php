@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\{
-    BarbershopPhoto
+    BarbershopPhotoEntity
 };
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
@@ -24,7 +24,7 @@ class BarbershopPhotoRepository extends BaseRepository
                 barbershop_id = ?
         SQL;
 
-        return $this->fetchAll(BarbershopPhoto::class, $sql, [$barbershopId]);
+        return $this->fetchAll(BarbershopPhotoEntity::class, $sql, [$barbershopId]);
     }
 
     public function createPhotos(int $barbershopId, array $photoUrls): array
@@ -37,7 +37,7 @@ class BarbershopPhotoRepository extends BaseRepository
                 'photo_url' => $url,
             ]);
 
-            $insertedPhotos[] = new BarbershopPhoto(
+            $insertedPhotos[] = new BarbershopPhotoEntity(
                 id: new Id($id),
                 barbershopId: new Id($barbershopId),
                 photoUrl: new PhotoUrl($url)

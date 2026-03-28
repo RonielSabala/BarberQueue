@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\{
-    Barbershop
+    BarbershopEntity
 };
 
 class BarbershopRepository extends BaseRepository
@@ -23,7 +23,7 @@ class BarbershopRepository extends BaseRepository
         'is_active',
     ];
 
-    public function getById(int $id): ?Barbershop
+    public function getById(int $id): ?BarbershopEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -40,10 +40,10 @@ class BarbershopRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(Barbershop::class, $sql, [$id]);
+        return $this->fetchOne(BarbershopEntity::class, $sql, [$id]);
     }
 
-    public function getByEmail(string $email): ?Barbershop
+    public function getByEmail(string $email): ?BarbershopEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -60,7 +60,7 @@ class BarbershopRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(Barbershop::class, $sql, [$email]);
+        return $this->fetchOne(BarbershopEntity::class, $sql, [$email]);
     }
 
     public function getAll(?string $search = null, ?bool $isOpen = null): array
@@ -89,7 +89,7 @@ class BarbershopRepository extends BaseRepository
         }
 
         $sql .= ' GROUP BY b.id';
-        return $this->fetchAll(Barbershop::class, $sql, $params);
+        return $this->fetchAll(BarbershopEntity::class, $sql, $params);
     }
 
     public function createBarbershop(
@@ -101,7 +101,7 @@ class BarbershopRepository extends BaseRepository
         string $opensAt,
         string $closesAt,
         int $capacity
-    ): ?Barbershop {
+    ): ?BarbershopEntity {
         $id = $this->insert([
             'barbershop_name' => $barbershopName,
             'email' => $email,

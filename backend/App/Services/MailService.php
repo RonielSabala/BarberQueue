@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\User;
+use App\Domain\Entities\UserEntity;
 use App\Domain\ValueObjects\ResetCode;
 use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
@@ -51,7 +51,7 @@ class MailService extends BaseService
         $mail->send();
     }
 
-    public function sendPasswordReset(User $user): void
+    public function sendPasswordReset(UserEntity $user): void
     {
         $userId = $user->id->value;
         $userEmail = $user->email->value;

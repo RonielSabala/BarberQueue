@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\Barbershop;
+use App\Domain\Entities\BarbershopEntity;
 use App\Domain\ValueObjects\Role;
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopEmployeeRequest,
@@ -52,7 +52,7 @@ class BarbershopService extends BaseService
         private readonly UserService $userService,
     ) {}
 
-    public function validateBarbershopExists(int $barbershopId): Barbershop
+    public function validateBarbershopExists(int $barbershopId): BarbershopEntity
     {
         $barbershop = $this->barbershopRepository->getById($barbershopId);
         if ($barbershop === null) {

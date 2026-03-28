@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\User;
+use App\Domain\Entities\UserEntity;
 
 class UserRepository extends BaseRepository
 {
@@ -16,7 +16,7 @@ class UserRepository extends BaseRepository
         'password_hash',
     ];
 
-    public function getById(int $id): ?User
+    public function getById(int $id): ?UserEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -31,10 +31,10 @@ class UserRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(User::class, $sql, [$id]);
+        return $this->fetchOne(UserEntity::class, $sql, [$id]);
     }
 
-    public function getByEmail(string $email): ?User
+    public function getByEmail(string $email): ?UserEntity
     {
         $sql = <<<'SQL'
             SELECT
@@ -49,7 +49,7 @@ class UserRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(User::class, $sql, [$email]);
+        return $this->fetchOne(UserEntity::class, $sql, [$email]);
     }
 
     public function createUser(
