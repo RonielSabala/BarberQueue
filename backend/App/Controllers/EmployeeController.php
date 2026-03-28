@@ -26,7 +26,7 @@ class EmployeeController extends BaseController
     #[PATCH('/{id}/barbershop/{barbershopId}')]
     public function update(int $id, int $barbershopId, UpdateEmployeeAssignmentRequest $request): void
     {
-        $this->employeeService->updateEmployee($id, $barbershopId, $request);
+        $this->employeeService->updateEmployeeAssignment($id, $barbershopId, $request);
         HttpResponse::success('Employee schedule updated');
     }
 

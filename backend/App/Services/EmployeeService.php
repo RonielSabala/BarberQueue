@@ -10,7 +10,7 @@ use App\Domain\ValueObjects\Role;
 use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employee\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
-use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository, UserRepository};
+use App\Repositories\{AssignmentsRepository, EmployeeRepository, RoleRepository, UserRepository, WorkingDaysRepository};
 
 class EmployeeService extends BaseService
 {
@@ -19,6 +19,7 @@ class EmployeeService extends BaseService
         private readonly RoleRepository $roleRepository,
         private readonly UserRepository $userRepository,
         private readonly AssignmentsRepository $assignmentsRepository,
+        private readonly WorkingDaysRepository $workingDaysRepository,
         private readonly EmployeeRepository $employeeRepository
     ) {}
 
@@ -58,7 +59,7 @@ class EmployeeService extends BaseService
         return EmployeeResponse::fromEntity($employee);
     }
 
-    public function updateEmployee(
+    public function updateEmployeeAssignment(
         int $employeeId,
         int $barbershopId,
         UpdateEmployeeAssignmentRequest $request
@@ -71,11 +72,19 @@ class EmployeeService extends BaseService
         }
 
         $fields = $this->validateFieldsToUpdate($request);
-        $this->employeeRepository->updateAssignment(
-            $employeeId,
-            $barbershopId,
-            $fields,
-            $fields['working_days'] ?? null
+
+        $this->employeeRepository->transaction(
+            function () use ($employeeId, $barbershopId, $fields): void {
+                $this->assignmentsRepository->updateAssignment($employeeId, $barbershopId, $fields);
+
+                $days = $fields['working_days'] ?? null;
+                if (!$days) {
+                    return;
+                }
+
+                $this->workingDaysRepository->deleteDays($employeeId, $barbershopId);
+                $this->workingDaysRepository->createDays($employeeId, $barbershopId, $days);
+            }
         );
     }
 

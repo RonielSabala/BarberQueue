@@ -14,7 +14,7 @@ abstract class BaseRepository
     protected \PDO $db;
 
     protected const ?string TABLE_NAME = null;
-    protected const ?array UPDATABLE_FIELDS = [];
+    protected const array UPDATABLE_FIELDS = [];
 
     public function __construct()
     {

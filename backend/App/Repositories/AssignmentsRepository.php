@@ -8,6 +8,12 @@ use App\Domain\Entities\EmployeeAssignment;
 
 class AssignmentsRepository extends BaseRepository
 {
+    protected const string TABLE_NAME = 'staff_assignments';
+    protected const array UPDATABLE_FIELDS = [
+        'start_time',
+        'end_time',
+    ];
+
     public function exists(int $staffId, int $barbershopId): bool
     {
         $sql = <<<'SQL'
@@ -49,5 +55,18 @@ class AssignmentsRepository extends BaseRepository
         SQL;
 
         return $this->fetchAll(EmployeeAssignment::class, $assignmentSql, [$id]);
+    }
+
+    public function updateAssignment(int $staffId, int $barbershopId, array $fields): void
+    {
+        unset($fields['working_days']);
+        $this->updateFrom(
+            self::TABLE_NAME,
+            $fields,
+            [
+                'staff_id' => $staffId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
     }
 }
