@@ -10,15 +10,21 @@ class BarbershopReviewRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barbershop_reviews';
 
-    public function getById(int $id): ?BarbershopReviewEntity
+    private function reviewQuery(): string
     {
-        $sql = <<<'SQL'
+        return <<<'SQL'
             SELECT
                 br.*,
                 u.username
             FROM
                 barbershop_reviews br
                 JOIN users u ON br.user_id = u.id
+        SQL;
+    }
+
+    public function getById(int $id): ?BarbershopReviewEntity
+    {
+        $sql = $this->reviewQuery() . <<<'SQL'
             WHERE
                 br.id = ?
             LIMIT
@@ -28,15 +34,9 @@ class BarbershopReviewRepository extends BaseRepository
         return $this->fetchOne(BarbershopReviewEntity::class, $sql, [$id]);
     }
 
-    public function getAll(int $barbershopId): array
+    public function getAllByBarbershopId(int $barbershopId): array
     {
-        $sql = <<<'SQL'
-            SELECT
-                br.*,
-                u.username
-            FROM
-                barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
+        $sql = $this->reviewQuery() . <<<'SQL'
             WHERE
                 br.barbershop_id = ?
             ORDER BY

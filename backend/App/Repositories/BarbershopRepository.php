@@ -23,15 +23,21 @@ class BarbershopRepository extends BaseRepository
         'is_active',
     ];
 
-    public function getById(int $id): ?BarbershopEntity
+    private function barbershopQuery(): string
     {
-        $sql = <<<'SQL'
+        return <<<'SQL'
             SELECT
                 b.*,
                 ROUND(AVG(r.rating), 1) AS average_rating
             FROM
                 barbershops b
                 LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+        SQL;
+    }
+
+    public function getById(int $id): ?BarbershopEntity
+    {
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.id = ?
             GROUP BY
@@ -45,13 +51,7 @@ class BarbershopRepository extends BaseRepository
 
     public function getByEmail(string $email): ?BarbershopEntity
     {
-        $sql = <<<'SQL'
-            SELECT
-                b.*,
-                ROUND(AVG(r.rating), 1) AS average_rating
-            FROM
-                barbershops b
-                LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.email = ?
             GROUP BY
@@ -65,13 +65,7 @@ class BarbershopRepository extends BaseRepository
 
     public function getAll(?string $search = null, ?bool $isOpen = null): array
     {
-        $sql = <<<'SQL'
-            SELECT
-                b.*,
-                ROUND(AVG(r.rating), 1) AS average_rating
-            FROM
-                barbershops b
-                LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.is_active = 1
         SQL;

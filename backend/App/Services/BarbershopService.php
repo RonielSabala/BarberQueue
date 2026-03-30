@@ -144,7 +144,7 @@ class BarbershopService extends BaseService
     public function getReviews(int $barbershopId): array
     {
         $this->validateBarbershopExists($barbershopId);
-        $barbershopReviews = $this->barbershopReviewRepository->getAll($barbershopId);
+        $barbershopReviews = $this->barbershopReviewRepository->getAllByBarbershopId($barbershopId);
 
         return array_map(
             static fn ($barbershopReview) => BarbershopReviewResponse::fromEntity($barbershopReview),

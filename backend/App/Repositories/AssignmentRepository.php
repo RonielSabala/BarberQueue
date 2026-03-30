@@ -18,7 +18,7 @@ class AssignmentRepository extends BaseRepository
     {
         $sql = <<<'SQL'
             SELECT
-                TRUE
+                1
             FROM
                 staff_assignments sa
             WHERE

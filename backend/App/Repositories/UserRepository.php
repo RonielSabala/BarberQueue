@@ -16,15 +16,21 @@ class UserRepository extends BaseRepository
         'password_hash',
     ];
 
-    public function getById(int $id): ?UserEntity
+    private function userQuery(): string
     {
-        $sql = <<<'SQL'
+        return <<<'SQL'
             SELECT
                 u.*,
                 r.role_name as role
             FROM
                 users u
                 JOIN roles r ON u.role_id = r.id
+        SQL;
+    }
+
+    public function getById(int $id): ?UserEntity
+    {
+        $sql = $this->userQuery() . <<<'SQL'
             WHERE
                 u.id = ?
             LIMIT
@@ -36,13 +42,7 @@ class UserRepository extends BaseRepository
 
     public function getByEmail(string $email): ?UserEntity
     {
-        $sql = <<<'SQL'
-            SELECT
-                u.*,
-                r.role_name as role
-            FROM
-                users u
-                JOIN roles r ON u.role_id = r.id
+        $sql = $this->userQuery() . <<<'SQL'
             WHERE
                 u.email = ?
             LIMIT
