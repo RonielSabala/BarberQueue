@@ -52,7 +52,7 @@ class BarbershopResponse(BaseResponse):
 @dataclass(slots=True, kw_only=True, frozen=True)
 class BarbershopReviewResponse(BaseResponse):
     _id: int
-    user_id: int
+    client_id: int
     username: str
     rating: int
     content: str

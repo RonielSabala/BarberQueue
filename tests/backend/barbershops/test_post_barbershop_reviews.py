@@ -34,7 +34,7 @@ def response(client: ApiClient, barbershop_id: int) -> requests.Response:
     register_response = client.auth.register(register_request)
     user_id = register_response.json()["id"]
 
-    review_request = CreateBarbershopReviewRequest.random(user_id=user_id)
+    review_request = CreateBarbershopReviewRequest.random(client_id=user_id)
     return client.barbershops.add_review(barbershop_id, review_request)
 
 
@@ -83,7 +83,7 @@ def test_non_client_cannot_review(
     Non-client users cannot leave reviews. Returns 403.
     """
 
-    request = CreateBarbershopReviewRequest.random(user_id=employee_id)
+    request = CreateBarbershopReviewRequest.random(client_id=employee_id)
     response = client.barbershops.add_review(barbershop_id, request)
 
     assert_status(response, HttpStatus.FORBIDDEN)
@@ -95,7 +95,7 @@ def test_status_on_unknown_user(client: ApiClient, barbershop_id: int) -> None:
     Unknown user returns 404.
     """
 
-    request = CreateBarbershopReviewRequest.random(user_id=999_999)
+    request = CreateBarbershopReviewRequest.random(client_id=999_999)
     response = client.barbershops.add_review(barbershop_id, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)

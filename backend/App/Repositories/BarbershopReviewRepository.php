@@ -18,7 +18,7 @@ class BarbershopReviewRepository extends BaseRepository
                 u.username
             FROM
                 barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
+                JOIN users u ON br.client_id = u.id
         SQL;
     }
 
@@ -47,13 +47,13 @@ class BarbershopReviewRepository extends BaseRepository
     }
 
     public function createReview(
-        int $userId,
+        int $clientId,
         int $barbershopId,
         int $rating,
         string $content
     ): ?BarbershopReviewEntity {
         $id = $this->insert([
-            'user_id' => $userId,
+            'client_id' => $clientId,
             'barbershop_id' => $barbershopId,
             'rating' => $rating,
             'content' => $content,

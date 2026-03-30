@@ -478,7 +478,7 @@ List all reviews of a barbershop.
 [
   {
     "id": 1,
-    "userId": 1,
+    "clientId": 1,
     "username": "user_example",
     "rating": 5,
     "content": "Great service, highly recommended.",
@@ -497,7 +497,7 @@ Submit a review for a barbershop.
 
 ```json
 {
-  "userId": 1,
+  "clientId": 1,
   "rating": 5,
   "content": "Great service, highly recommended."
 }
@@ -508,7 +508,7 @@ Submit a review for a barbershop.
 ```json
 {
   "id": 1,
-  "userId": 1,
+  "clientId": 1,
   "username": "user_example",
   "rating": 5,
   "content": "Great service, highly recommended.",

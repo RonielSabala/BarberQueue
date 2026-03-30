@@ -57,7 +57,7 @@ class CreateBarbershopRequest(BaseRequest):
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopReviewRequest(BaseRequest):
-    user_id: Id
+    client_id: Id
     rating: Rating
     content: ReviewContent
 

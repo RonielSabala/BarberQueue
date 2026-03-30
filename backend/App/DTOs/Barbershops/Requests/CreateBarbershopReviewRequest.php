@@ -10,7 +10,7 @@ use App\DTOs\BaseRequest;
 readonly class CreateBarbershopReviewRequest extends BaseRequest
 {
     public function __construct(
-        public Id $userId,
+        public Id $clientId,
         public Rating $rating,
         public ReviewContent $content
     ) {}

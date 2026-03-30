@@ -156,15 +156,15 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
 
-        $userId = $request->userId->value;
-        $user = $this->userService->validateUserExists($userId);
+        $clientId = $request->clientId->value;
+        $client = $this->userService->validateUserExists($clientId);
 
-        if ($user->role->value !== Role::Client->value) {
+        if ($client->role->value !== Role::Client->value) {
             throw new BarbershopException('Only clients can leave barbershop reviews', HttpStatus::Forbidden);
         }
 
         $barbershopReview = $this->barbershopReviewRepository->createReview(
-            $userId,
+            $clientId,
             $barbershopId,
             $request->rating->value,
             $request->content->value

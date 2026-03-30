@@ -400,7 +400,7 @@ VALUES
 
 -- BARBERSHOP REVIEWS
 INSERT INTO
-    barbershop_reviews (user_id, barbershop_id, rating, content)
+    barbershop_reviews (client_id, barbershop_id, rating, content)
 VALUES
     (9, 1, 5, 'Excelente servicio, el lugar siempre limpio y el ambiente genial.'),
     (10, 1, 4, 'Muy buena atención, solo un poco de espera al principio.'),

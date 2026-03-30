@@ -127,12 +127,12 @@ CREATE TABLE
 CREATE TABLE
     barbershop_reviews (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
+        client_id INT NOT NULL,
         barbershop_id INT NOT NULL,
         rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
         content TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
@@ -197,7 +197,7 @@ CREATE INDEX idx_turns_barbershop_barber ON turns (barbershop_id, barber_id);
 CREATE INDEX idx_turns_barbershop_created ON turns (barbershop_id, created_at);
 
 -- barbershop_reviews
-CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (user_id);
+CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (client_id);
 
 CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
 

@@ -21,7 +21,7 @@ def review_id(client: ApiClient, barbershop_id: int) -> int:
     register_response = client.auth.register(register_request)
     user_id = register_response.json()["id"]
 
-    review_request = CreateBarbershopReviewRequest.random(user_id=user_id)
+    review_request = CreateBarbershopReviewRequest.random(client_id=user_id)
     response = client.barbershops.add_review(barbershop_id, review_request)
     return response.json()["id"]
 
