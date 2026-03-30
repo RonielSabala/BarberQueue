@@ -15,6 +15,7 @@ unless noted otherwise.
 - [Users](#users)
 - [Barbershops](#barbershops)
 - [Employees](#employees)
+- [Barbers](#barbers)
 
 ---
 
@@ -567,6 +568,8 @@ Create a new user and create their assignment record for the barbershop.
 }
 ```
 
+> `role` must be one of: `barber`, `assistant`
+
 - Response: `201`
 
 ```json
@@ -649,5 +652,106 @@ Updates a specific assignment's schedule. All fields are optional, but at least 
 ### `DELETE /api/employees/{id}` <!-- omit from toc -->
 
 Permanently removes the user and all associated staff assignments.
+
+- Response: `204`
+
+---
+
+## Barbers
+
+### `GET /api/barbers/{id}/dashboard` <!-- omit from toc -->
+
+Returns summary stats for a barber's dashboard.
+
+- Response: `200`
+
+```json
+{
+  "totalAttendedClients": 142,
+  "averageTimeWithClients": "00:22:15",
+  "averageRating": 4.7,
+  "joinDate": "2026-01-01 09:00:00"
+}
+```
+
+---
+
+### `PATCH /api/barbers/{id}/status` <!-- omit from toc -->
+
+Update a barber's current status.
+
+- Body
+
+```json
+{
+  "status": "resting"
+}
+```
+
+> `status` must be one of: `active`, `inactive`, `resting`
+
+- Response: `200`
+
+```json
+{
+  "message": "Barber status updated"
+}
+```
+
+---
+
+### `GET /api/barbers/{id}/reviews` <!-- omit from toc -->
+
+List all reviews for a barber.
+
+- Response: `200`
+
+```json
+[
+  {
+    "id": 1,
+    "clientId": 1,
+    "username": "client_example",
+    "rating": 5,
+    "content": "Great haircut, very precise.",
+    "createdAt": "2026-03-05 09:00:00"
+  }
+]
+```
+
+---
+
+### `POST /api/barbers/{id}/reviews` <!-- omit from toc -->
+
+Submit a review for a barber.
+
+- Body
+
+```json
+{
+  "clientId": 1,
+  "rating": 5,
+  "content": "Great haircut, very precise."
+}
+```
+
+- Response: `201`
+
+```json
+{
+  "id": 1,
+  "clientId": 1,
+  "username": "client_example",
+  "rating": 5,
+  "content": "Great haircut, very precise.",
+  "createdAt": "2026-03-05 09:00:00"
+}
+```
+
+---
+
+### `DELETE /api/barbers/{id}/reviews/{reviewId}` <!-- omit from toc -->
+
+Remove a review from a barber's reviews.
 
 - Response: `204`
