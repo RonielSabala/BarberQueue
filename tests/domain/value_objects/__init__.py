@@ -3,7 +3,9 @@ Value objects package.
 """
 
 from domain.value_objects.address import Address
+from domain.value_objects.attended_clients import AttendedClients
 from domain.value_objects.average_rating import AverageRating
+from domain.value_objects.barber_current_status import BarberCurrentStatus, BarberStatus
 from domain.value_objects.barbershop_name import BarbershopName
 from domain.value_objects.capacity import Capacity
 from domain.value_objects.datetime_string import DateTimeString
@@ -23,7 +25,10 @@ from domain.value_objects.username import Username
 
 __all__ = [
     "Address",
+    "AttendedClients",
     "AverageRating",
+    "BarberCurrentStatus",
+    "BarberStatus",
     "BarbershopName",
     "Capacity",
     "DateTimeString",

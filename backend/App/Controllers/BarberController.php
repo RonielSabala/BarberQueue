@@ -38,7 +38,7 @@ class BarberController extends BaseController
     }
 
     #[POST('/{id}/reviews')]
-    public function addReview(int $id, CreateBarberReviewRequest $request): void
+    public function createReview(int $id, CreateBarberReviewRequest $request): void
     {
         $response = $this->barberService->createReview($id, $request);
         HttpResponse::json($response, HttpStatus::Created);

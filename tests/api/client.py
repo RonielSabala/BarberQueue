@@ -4,6 +4,7 @@ import requests
 
 from api.controllers import (
     AuthController,
+    BarberController,
     BarbershopController,
     EmployeeController,
     UserController,
@@ -27,6 +28,7 @@ class ApiClient:
         self.users = UserController(self)
         self.barbershops = BarbershopController(self)
         self.employees = EmployeeController(self)
+        self.barbers = BarberController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"
