@@ -21,5 +21,5 @@ try {
     exit;
 }
 
-Router::init();
+Router::init($container);
 Router::dispatch();

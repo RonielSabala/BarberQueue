@@ -11,7 +11,7 @@ use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class MailService extends BaseService
+class MailService extends BaseService implements MailerInterface
 {
     private const PORT = 587;
     private const HOST = 'smtp.gmail.com';

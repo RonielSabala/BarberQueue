@@ -123,6 +123,7 @@ Create a `.env` file at the **repo root** and fill in the required values:
 ```env
 # Application
 APP_NAME=BarberQueue
+APP_ENV=development
 APP_TIMEZONE=America/Santo_Domingo
 
 # URLs
@@ -147,6 +148,14 @@ MAIL_PASSWORD=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
+
+#### Environment Modes
+
+The application behavior changes based on the `APP_ENV` variable:
+
+- `development`: Standard mode. Emails are sent normally using the credentials provided in `.env`.
+
+- `testing`: Suppresses critical side effects like sending real emails to avoid cluttering inboxes during automated test runs.
 
 #### JWT Secret
 
@@ -239,6 +248,8 @@ uv run pytest -m "frontend or not frontend"  # everything
 Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
 
 > **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
+
+> Also, backend tests automatically sends the `X-App-Env: testing` header, so tests operate in testing mode by default even if your `.env` is set to `development`.
 
 ---
 

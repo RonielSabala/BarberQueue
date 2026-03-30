@@ -40,13 +40,19 @@ class ApiClient:
         *,
         body: dict | None = None,
         params: dict | None = None,
+        headers: dict | None = None,
         **kwargs: Any,
     ) -> requests.Response:
+        default_headers = {"X-App-Env": "testing"}
+        if headers:
+            default_headers.update(headers)
+
         return self._session.request(
             method=method,
             url=self._url(path),
             json=body,
             params=params,
+            headers=default_headers,
             timeout=self.TIMEOUT,
             **kwargs,
         )

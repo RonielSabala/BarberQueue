@@ -8,6 +8,11 @@ class Container
 {
     private array $bindings = [];
 
+    public function bind(string $abstract, object|string $concrete): void
+    {
+        $this->bindings[$abstract] = $concrete;
+    }
+
     /** Resolve a class and autowire its constructor dependencies */
     public function make(string $class): object
     {

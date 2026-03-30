@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\{Container, HttpStatus};
+use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
 use App\DTOs\Auth\Requests\{
     ForgotPasswordRequest,
@@ -23,17 +23,15 @@ class AuthService extends BaseService
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
     private const CLIENT_ROLE_ID = 1;
 
-    private ?MailService $mailService;
     private readonly string $jwtSecret;
 
     public function __construct(
-        private readonly Container $container,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
         private readonly PasswordService $passwordService,
+        private readonly MailerInterface $mailService,
         private readonly UserService $userService,
     ) {
-        $this->mailService = null;
         $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
     }
 
@@ -93,10 +91,6 @@ class AuthService extends BaseService
         $user = $this->userRepository->getByEmail($email);
         if ($user === null) {
             return;
-        }
-
-        if ($this->mailService === null) {
-            $this->mailService = $this->container->make(MailService::class);
         }
 
         $this->mailService->sendPasswordReset($user);

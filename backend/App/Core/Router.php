@@ -18,9 +18,8 @@ class Router
     private static RouteRegistry $registry;
     private static Logger $logger;
 
-    public static function init(): void
+    public static function init(Container $container): void
     {
-        $container = new Container();
         self::$registry = new RouteRegistry($container);
         self::$logger = LoggerProvider::get();
 
