@@ -34,10 +34,14 @@ def assignment(client: ApiClient, barbershop_id: int) -> dict:
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    request = CreateBarbershopEmployeeRequest.random_employee()
-    response = client.barbershops.create_employee(barbershop_id, request)
+    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    update_assignment_request = UpdateEmployeeAssignmentRequest.random(
+        start_time=TimeOfDay.random()
+    )
+
+    response = client.barbershops.create_employee(barbershop_id, employee_request)
     return client.employees.update_assignment(
-        response.json()["id"], barbershop_id, UpdateEmployeeAssignmentRequest.random()
+        response.json()["id"], barbershop_id, update_assignment_request
     )
 
 

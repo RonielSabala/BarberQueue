@@ -16,6 +16,13 @@ class BarberController extends BaseController
         private readonly BarberService $barberService
     ) {}
 
+    #[GET('/{id}')]
+    public function get(int $id): void
+    {
+        $response = $this->barberService->get($id);
+        HttpResponse::json($response);
+    }
+
     #[GET('/{id}/dashboard')]
     public function getDashboard(int $id): void
     {

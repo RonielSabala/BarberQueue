@@ -659,6 +659,23 @@ Permanently removes the user and all associated staff assignments.
 
 ## Barbers
 
+### `GET /api/barbers/{id}` <!-- omit from toc -->
+
+Returns work profile of a barber.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "username": "barber_example",
+  "currentStatus": "active",
+  "isAccepting": true
+}
+```
+
+---
+
 ### `GET /api/barbers/{id}/dashboard` <!-- omit from toc -->
 
 Returns summary stats for a barber's dashboard.
@@ -678,17 +695,18 @@ Returns summary stats for a barber's dashboard.
 
 ### `PATCH /api/barbers/{id}/status` <!-- omit from toc -->
 
-Update a barber's current status.
+Update a barber's current status. All fields are optional, but at least one must be provided.
 
 - Body
 
 ```json
 {
-  "status": "resting"
+  "currentStatus": "resting",
+  "isAccepting": false
 }
 ```
 
-> `status` must be one of: `active`, `inactive`, `resting`
+> `currentStatus` must be one of: `active`, `inactive`, `resting`
 
 - Response: `200`
 

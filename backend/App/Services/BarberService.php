@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Domain\ValueObjects\Role;
 use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
-use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberReviewResponse};
+use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberResponse, BarberReviewResponse};
 use App\Exceptions\BarberException;
 use App\Repositories\{BarberRepository, BarberReviewRepository, UserRepository};
 
@@ -32,6 +32,16 @@ class BarberService extends BaseService
         }
     }
 
+    public function get(int $barberId): BarberResponse
+    {
+        $barber = $this->barberRepository->getById($barberId);
+        if ($barber === null) {
+            throw new BarberException('Barber not found', HttpStatus::NotFound);
+        }
+
+        return BarberResponse::fromEntity($barber);
+    }
+
     public function getDashboard(int $barberId): BarberDashboardResponse
     {
         $this->validateBarber($barberId);
@@ -47,7 +57,8 @@ class BarberService extends BaseService
     public function updateStatus(int $barberId, UpdateBarberStatusRequest $request): void
     {
         $this->validateBarber($barberId);
-        $this->barberRepository->updateStatus($barberId, $request->status);
+        $fields = $this->validateFieldsToUpdate($request);
+        $this->barberRepository->updateStatus($barberId, $fields);
     }
 
     public function getReviews(int $barberId): array

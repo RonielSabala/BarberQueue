@@ -13,4 +13,5 @@ class CreateBarberReviewRequest(BaseRequest):
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class UpdateBarberStatusRequest(BaseRequest):
-    status: BarberCurrentStatus
+    current_status: BarberCurrentStatus | None
+    is_accepting: bool | None

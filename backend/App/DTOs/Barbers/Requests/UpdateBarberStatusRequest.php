@@ -10,6 +10,7 @@ use App\DTOs\BaseRequest;
 readonly class UpdateBarberStatusRequest extends BaseRequest
 {
     public function __construct(
-        public BarberCurrentStatus $status,
+        public ?BarberCurrentStatus $currentStatus,
+        public ?bool $isAccepting,
     ) {}
 }

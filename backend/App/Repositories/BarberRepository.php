@@ -4,13 +4,35 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\BarberDashboardEntity;
-use App\Domain\ValueObjects\BarberCurrentStatus;
+use App\Domain\Entities\{BarberDashboardEntity, BarberEntity};
 
 class BarberRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barber_status';
-    protected const array UPDATABLE_FIELDS = ['current_status'];
+    protected const array UPDATABLE_FIELDS = [
+        'current_status',
+        'is_accepting',
+    ];
+
+    public function getById(int $barberId): ?BarberEntity
+    {
+        $sql = <<<'SQL'
+            SELECT
+                u.id,
+                u.username,
+                bs.current_status,
+                bs.is_accepting
+            FROM
+                users u
+                JOIN barber_status bs ON u.id = bs.staff_id
+            WHERE
+                u.id = ?
+            LIMIT
+                1
+        SQL;
+
+        return $this->fetchOne(BarberEntity::class, $sql, [$barberId]);
+    }
 
     public function getDashboard(int $barberId): ?BarberDashboardEntity
     {
@@ -52,12 +74,8 @@ class BarberRepository extends BaseRepository
         return $this->fetchOne(BarberDashboardEntity::class, $sql, [$barberId]);
     }
 
-    public function updateStatus(int $barberId, BarberCurrentStatus $status): void
+    public function updateStatus(int $barberId, array $fields): void
     {
-        $this->updateFrom(
-            self::TABLE_NAME,
-            ['current_status' => $status->value],
-            ['staff_id' => $barberId],
-        );
+        $this->updateFrom(self::TABLE_NAME, $fields, ['staff_id' => $barberId]);
     }
 }

@@ -24,3 +24,7 @@ class EnumField(BaseField[str]):
     @classmethod
     def random_value(cls) -> str:
         return random.choice(cls._enum_values)
+
+    @classmethod
+    def has_value(cls, value: str) -> bool:
+        return value in cls._enum_values

@@ -7,6 +7,9 @@ from domain.dtos.barbers import CreateBarberReviewRequest, UpdateBarberStatusReq
 
 @route_prefix("/api/barbers")
 class BarberController(BaseController):
+    @GET("/{id}")
+    def get(self, id: int) -> requests.Response: ...
+
     @GET("/{id}/dashboard")
     def get_dashboard(self, id: int) -> requests.Response: ...
 
