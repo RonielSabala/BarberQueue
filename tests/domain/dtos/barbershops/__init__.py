@@ -12,6 +12,7 @@ from domain.dtos.barbershops.requests import (
     UpdateBarbershopStatusRequest,
 )
 from domain.dtos.barbershops.responses import (
+    BarbershopDashboardResponse,
     BarbershopDetailResponse,
     BarbershopEmployeeResponse,
     BarbershopPhotoResponse,
@@ -31,6 +32,7 @@ __all__ = [
     "UpdateBarbershopPhotoRequest",
     "UpdateBarbershopRequest",
     "UpdateBarbershopStatusRequest",
+    "BarbershopDashboardResponse",
     "BarbershopDetailResponse",
     "BarbershopEmployeeResponse",
     "BarbershopPhotoResponse",

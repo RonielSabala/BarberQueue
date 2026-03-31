@@ -6,6 +6,18 @@ from domain.value_objects.base import ListOf
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
+class BarbershopDashboardResponse(BaseResponse):
+    clients_today: int
+    clients_this_week: int
+    clients_this_month: int
+    average_service_minutes: float | None
+    average_rating: float | None
+    total_reviews: int
+    active_barbers: int
+    queue_count: int
+
+
+@dataclass(slots=True, kw_only=True, frozen=True)
 class BarbershopDetailResponse(BaseResponse):
     _id: int
     barbershop_name: str

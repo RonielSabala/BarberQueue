@@ -250,10 +250,11 @@ List all active barbershops. Supports optional filters.
 
 **Query params**
 
-| Param    | Type                  | Description                         |
-| -------- | --------------------- | ----------------------------------- |
-| `search` | string                | Filter by name                      |
-| `isOpen` | **true** \| **false** | Filter by current open/closed state |
+| Param     | Type                  | Description                         |
+| --------- | --------------------- | ----------------------------------- |
+| `search`  | string                | Filter by name                      |
+| `isOpen`  | **true** \| **false** | Filter by current open/closed state |
+| `adminId` | int                   | Filter by admin id                  |
 
 - Response: `200`
 
@@ -261,6 +262,7 @@ List all active barbershops. Supports optional filters.
 [
   {
     "id": 1,
+    "adminId": 1,
     "barbershopName": "barbershop_name_example",
     "barbershopAddress": "123 Main Street",
     "photoUrl": "https://example.com/photo.jpg",
@@ -361,6 +363,30 @@ Update a barbershop's profile fields. All fields are optional, but at least one 
   "message": "Barbershop updated"
 }
 ```
+
+---
+
+### `GET /api/barbershops/{id}/dashboard` <!-- omit from toc -->
+
+Get KPI summary for a specific barbershop.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "clientsToday": 8,
+  "clientsThisWeek": 42,
+  "clientsThisMonth": 163,
+  "averageServiceMinutes": 28.5,
+  "averageRating": 4.7,
+  "totalReviews": 31,
+  "activeBarbers": 2,
+  "queueCount": 4
+}
+```
+
+> `averageServiceMinutes` and `averageRating` are `null` when no data is available yet.
 
 ---
 

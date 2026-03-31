@@ -88,7 +88,7 @@ def test_search_no_results(client: ApiClient) -> None:
 
 def test_is_open_filter(client: ApiClient) -> None:
     """
-    Filtering by isOpen returns correct status.
+    Filtering by isOpen returns barbershops matching the requested state.
     """
 
     is_open_value = random.choice((True, False))
@@ -98,3 +98,12 @@ def test_is_open_filter(client: ApiClient) -> None:
     assert_status(response, HttpStatus.OK)
     assert_list_body_shape(response, BarbershopResponse)
     assert all(barbershop["isOpen"] is is_open_value for barbershop in body)
+
+
+def test_admin_id_filter_unknown_admin(client: ApiClient) -> None:
+    """
+    Filtering by a non-existent adminId returns an empty list.
+    """
+
+    response = client.barbershops.get_all(admin_id=999_999)
+    assert response.json() == []

@@ -17,7 +17,11 @@ from domain.dtos.barbershops import (
 class BarbershopController(BaseController):
     @GET("")
     def get_all(
-        self, *, search: str | None = None, is_open: bool | None = None
+        self,
+        *,
+        search: str | None = None,
+        is_open: bool | None = None,
+        admin_id: int | None = None,
     ) -> requests.Response: ...
 
     @POST("")
@@ -25,6 +29,9 @@ class BarbershopController(BaseController):
 
     @GET("/{id}")
     def get(self, id: int) -> requests.Response: ...
+
+    @GET("/{id}/dashboard")
+    def get_dashboard(self, id: int) -> requests.Response: ...
 
     @PATCH("/{id}")
     def update(

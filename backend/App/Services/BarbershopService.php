@@ -14,6 +14,7 @@ use App\DTOs\Barbershops\Requests\{
     CreateBarbershopReviewRequest
 };
 use App\DTOs\Barbershops\Responses\{
+    BarbershopDashboardResponse,
     BarbershopDetailResponse,
     BarbershopEmployeeResponse,
     BarbershopPhotoResponse,
@@ -62,9 +63,9 @@ class BarbershopService extends BaseService
         return $barbershop;
     }
 
-    public function getAll(?string $search, ?bool $isOpen): array
+    public function getAll(?string $search, ?bool $isOpen, ?int $adminId = null): array
     {
-        $barbershops = $this->barbershopRepository->getAll($search, $isOpen);
+        $barbershops = $this->barbershopRepository->getAll($search, $isOpen, $adminId);
         return array_map(
             static fn ($barbershop) => BarbershopResponse::fromEntity($barbershop),
             $barbershops
@@ -113,6 +114,13 @@ class BarbershopService extends BaseService
     {
         $barbershop = $this->validateBarbershopExists($barbershopId);
         return BarbershopDetailResponse::fromEntity($barbershop);
+    }
+
+    public function getDashboard(int $barbershopId): BarbershopDashboardResponse
+    {
+        $this->validateBarbershopExists($barbershopId);
+        $dashboard = $this->barbershopRepository->getDashboard($barbershopId);
+        return BarbershopDashboardResponse::fromEntity($dashboard);
     }
 
     public function update(int $barbershopId, BaseRequest $request): void

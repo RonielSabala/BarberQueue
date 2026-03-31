@@ -26,9 +26,12 @@ class BarbershopController extends BaseController
     ) {}
 
     #[GET('')]
-    public function getAll(?string $search = null, ?bool $isOpen = null): void
-    {
-        $response = $this->barbershopService->getAll($search, $isOpen);
+    public function getAll(
+        ?string $search = null,
+        ?bool $isOpen = null,
+        ?int $adminId = null
+    ): void {
+        $response = $this->barbershopService->getAll($search, $isOpen, $adminId);
         HttpResponse::json($response);
     }
 
@@ -43,6 +46,13 @@ class BarbershopController extends BaseController
     public function get(int $id): void
     {
         $response = $this->barbershopService->get($id);
+        HttpResponse::json($response);
+    }
+
+    #[GET('/{id}/dashboard')]
+    public function getDashboard(int $id): void
+    {
+        $response = $this->barbershopService->getDashboard($id);
         HttpResponse::json($response);
     }
 
