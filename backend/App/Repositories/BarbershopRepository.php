@@ -124,63 +124,93 @@ class BarbershopRepository extends BaseRepository
             SELECT
                 b.id,
                 -- Clients today
-                COUNT(
-                    CASE
-                        WHEN DATE(t.created_at) = CURDATE()
-                        AND t.finished_at IS NOT NULL THEN 1
-                    END
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND DATE(t.finished_at) = CURDATE()
                 ) AS clients_today,
                 -- Clients this week
-                COUNT(
-                    CASE
-                        WHEN t.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-                        AND t.finished_at IS NOT NULL THEN 1
-                    END
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND t.finished_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
                 ) AS clients_this_week,
                 -- Clients this month
-                COUNT(
-                    CASE
-                        WHEN YEAR(t.created_at) = YEAR(NOW())
-                        AND MONTH(t.created_at) = MONTH(NOW())
-                        AND t.finished_at IS NOT NULL THEN 1
-                    END
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND YEAR(t.finished_at) = YEAR(NOW())
+                        AND MONTH(t.finished_at) = MONTH(NOW())
                 ) AS clients_this_month,
                 -- Average service duration in minutes
-                ROUND(
-                    AVG(
-                        CASE
-                            WHEN t.finished_at IS NOT NULL
-                            AND t.attended_at IS NOT NULL THEN TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at) / 60.0
-                        END
-                    ),
-                    1
+                (
+                    SELECT
+                        ROUND(AVG(TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at) / 60.0), 1)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND t.attended_at IS NOT NULL
                 ) AS average_service_minutes,
-                -- Average rating from reviews
-                ROUND(AVG(br.rating), 1) AS average_rating,
-                -- Total reviews count
-                COUNT(DISTINCT br.id) AS total_reviews,
+                -- Average rating
+                (
+                    SELECT
+                        ROUND(AVG(br.rating), 1)
+                    FROM
+                        barbershop_reviews br
+                    WHERE
+                        br.barbershop_id = b.id
+                ) AS average_rating,
+                -- Total reviews
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        barbershop_reviews br
+                    WHERE
+                        br.barbershop_id = b.id
+                ) AS total_reviews,
                 -- Active barbers right now
-                COUNT(
-                    DISTINCT CASE
-                        WHEN bs.current_status = 'active' THEN sa.staff_id
-                    END
+                (
+                    SELECT
+                        COUNT(DISTINCT sa.staff_id)
+                    FROM
+                        staff_assignments sa
+                        JOIN barber_status bs ON bs.staff_id = sa.staff_id
+                    WHERE
+                        sa.barbershop_id = b.id
+                        AND bs.current_status = 'active'
                 ) AS active_barbers,
                 -- Current queue depth
-                COUNT(
-                    CASE
-                        WHEN t.finished_at IS NULL THEN 1
-                    END
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NULL
                 ) AS queue_count
             FROM
                 barbershops b
-                LEFT JOIN turns t ON t.barbershop_id = b.id
-                LEFT JOIN barbershop_reviews br ON br.barbershop_id = b.id
-                LEFT JOIN staff_assignments sa ON sa.barbershop_id = b.id
-                LEFT JOIN barber_status bs ON bs.staff_id = sa.staff_id
             WHERE
                 b.id = ?
-            GROUP BY
-                b.id
             LIMIT
                 1
         SQL;
