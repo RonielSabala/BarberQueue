@@ -12,9 +12,9 @@ VALUES
 
 ELSEIF NEW.role_id = 2 THEN
 INSERT INTO
-    barber_status (staff_id, current_status, is_accepting)
+    barber_status (staff_id, current_status)
 VALUES
-    (NEW.id, 'inactive', TRUE);
+    (NEW.id, 'inactive');
 
 END IF;
 
@@ -133,7 +133,7 @@ CREATE TRIGGER trg_turns_before_insert BEFORE
 INSERT
     ON turns FOR EACH ROW BEGIN DECLARE v_group_size INT DEFAULT 0;
 
-DECLARE v_is_accepting BOOLEAN DEFAULT TRUE;
+DECLARE v_is_accepting BOOLEAN DEFAULT FALSE;
 
 -- 1) Group size cap
 IF NEW.group_id IS NOT NULL THEN

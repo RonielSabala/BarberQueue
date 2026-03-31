@@ -9,6 +9,7 @@ use App\Domain\ValueObjects\{
     BarbershopName,
     Capacity,
     Email,
+    Id,
     Phone,
     PhotoUrl,
     TimeOfDay
@@ -18,6 +19,7 @@ use App\DTOs\BaseRequest;
 readonly class CreateBarbershopRequest extends BaseRequest
 {
     public function __construct(
+        public Id $adminId,
         public BarbershopName $barbershopName,
         public Email $email,
         public Phone $phone,

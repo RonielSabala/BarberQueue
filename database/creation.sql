@@ -34,6 +34,7 @@ CREATE TABLE
 CREATE TABLE
     barbershops (
         id INT PRIMARY KEY AUTO_INCREMENT,
+        admin_id INT NOT NULL,
         barbershop_name VARCHAR(100) NOT NULL,
         email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
@@ -42,8 +43,9 @@ CREATE TABLE
         opens_at TIME NOT NULL,
         closes_at TIME NOT NULL,
         capacity TINYINT UNSIGNED NOT NULL,
-        is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        is_active BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (admin_id) REFERENCES users (id) ON DELETE RESTRICT
     );
 
 -- BARBERSHOP PHOTOS
@@ -69,7 +71,7 @@ CREATE TABLE
     barber_status (
         staff_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
-        is_accepting BOOLEAN DEFAULT TRUE,
+        is_accepting BOOLEAN DEFAULT FALSE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
@@ -159,6 +161,8 @@ CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_password_resets_code ON password_resets (reset_code);
 
 -- barbershops
+CREATE INDEX idx_barbershops_admin_id ON barbershops (admin_id);
+
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);
 
 -- barbershop_photos

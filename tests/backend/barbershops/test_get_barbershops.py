@@ -9,7 +9,11 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos.barbershops import BarbershopResponse, CreateBarbershopRequest
+from domain.dtos.barbershops import (
+    BarbershopResponse,
+    CreateBarbershopRequest,
+    UpdateBarbershopStatusRequest,
+)
 from domain.value_objects import BarbershopName
 from helpers.assertions import (
     assert_content_type,
@@ -24,10 +28,16 @@ def response(client: ApiClient) -> requests.Response:
 
 
 @pytest.fixture(scope="module")
-def barbershop_name(client: ApiClient) -> str:
-    request = CreateBarbershopRequest.random()
-    client.barbershops.create(request)
-    return request.barbershop_name.value
+def barbershop_name(
+    client: ApiClient, barbershop_request: CreateBarbershopRequest
+) -> str:
+    response = client.barbershops.create(barbershop_request)
+    barbershop_id = response.json()["id"]
+
+    status_request = UpdateBarbershopStatusRequest(is_active=True)
+    client.barbershops.update_status(barbershop_id, status_request)
+
+    return barbershop_request.barbershop_name.value
 
 
 def test_status(response: requests.Response) -> None:

@@ -280,6 +280,7 @@ Create a new barbershop. The only optional field is `capacity`, defaults to 1.
 
 ```json
 {
+  "adminId": 1,
   "barbershopName": "barbershop_name_example",
   "email": "barbershop_example@gmail.com",
   "phone": "8091234567",

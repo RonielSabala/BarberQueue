@@ -87,6 +87,7 @@ class BarbershopRepository extends BaseRepository
     }
 
     public function createBarbershop(
+        int $adminId,
         string $barbershopName,
         string $email,
         string $phone,
@@ -97,6 +98,7 @@ class BarbershopRepository extends BaseRepository
         int $capacity
     ): ?BarbershopEntity {
         $id = $this->insert([
+            'admin_id' => $adminId,
             'barbershop_name' => $barbershopName,
             'email' => $email,
             'phone' => $phone,

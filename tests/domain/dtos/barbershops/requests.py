@@ -45,6 +45,7 @@ class CreateBarbershopPhotosRequest(BaseRequest):
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopRequest(BaseRequest):
+    admin_id: Id
     barbershop_name: BarbershopName
     email: Email
     phone: Phone

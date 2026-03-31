@@ -35,8 +35,9 @@ def response(client: ApiClient, client_id: int, barber_id: int) -> requests.Resp
 
 
 @pytest.fixture(scope="module")
-def non_client_id(client: ApiClient) -> int:
-    barbershop_request = CreateBarbershopRequest.random()
+def non_client_id(
+    client: ApiClient, barbershop_request: CreateBarbershopRequest
+) -> int:
     barbershop_response = client.barbershops.create(barbershop_request)
     barbershop_id = barbershop_response.json()["id"]
 

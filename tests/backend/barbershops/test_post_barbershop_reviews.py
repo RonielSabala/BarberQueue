@@ -12,8 +12,8 @@ from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbershops import (
     BarbershopReviewResponse,
     CreateBarbershopEmployeeRequest,
-    CreateBarbershopRequest,
     CreateBarbershopReviewRequest,
+    UpdateBarbershopStatusRequest,
 )
 from helpers.assertions import (
     assert_body,
@@ -39,10 +39,9 @@ def response(client: ApiClient, barbershop_id: int) -> requests.Response:
 
 
 @pytest.fixture(scope="module")
-def employee_id(client: ApiClient) -> int:
-    barbershop_request = CreateBarbershopRequest.random()
-    barbershop_response = client.barbershops.create(barbershop_request)
-    barbershop_id = barbershop_response.json()["id"]
+def employee_id(client: ApiClient, barbershop_id: int) -> int:
+    status_request = UpdateBarbershopStatusRequest(is_active=True)
+    client.barbershops.update_status(barbershop_id, status_request)
 
     employee_request = CreateBarbershopEmployeeRequest.random_employee()
     employee_response = client.barbershops.create_employee(

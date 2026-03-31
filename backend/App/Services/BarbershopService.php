@@ -73,6 +73,16 @@ class BarbershopService extends BaseService
 
     public function create(CreateBarbershopRequest $request): CreateBarbershopResponse
     {
+        // Validate admin
+        $adminId = $request->adminId->value;
+        $admin = $this->userService->validateUserExists($adminId);
+        if ($admin->role->value !== Role::Admin->value) {
+            throw new BarbershopException(
+                'Only admins can own barbershops',
+                HttpStatus::Forbidden
+            );
+        }
+
         $email = $request->email->value;
         $existing = $this->barbershopRepository->getByEmail($email);
 
@@ -81,6 +91,7 @@ class BarbershopService extends BaseService
         }
 
         $barbershop = $this->barbershopRepository->createBarbershop(
+            adminId: $request->adminId->value,
             barbershopName: $request->barbershopName->value,
             email: $email,
             phone: $request->phone->value,

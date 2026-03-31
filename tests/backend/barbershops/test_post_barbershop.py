@@ -20,15 +20,10 @@ _EMAIL_ALREADY_IN_USE = ErrorResponse(error="Barbershop email already in use")
 
 
 @pytest.fixture(scope="module")
-def request_data() -> CreateBarbershopRequest:
-    return CreateBarbershopRequest.random()
-
-
-@pytest.fixture(scope="module")
 def response(
-    client: ApiClient, request_data: CreateBarbershopRequest
+    client: ApiClient, barbershop_request: CreateBarbershopRequest
 ) -> requests.Response:
-    return client.barbershops.create(request_data)
+    return client.barbershops.create(barbershop_request)
 
 
 def test_status(response: requests.Response) -> None:
@@ -55,32 +50,32 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, CreateBarbershopResponse)
 
 
-def test_is_active_by_default(response: requests.Response) -> None:
+def test_is_not_active_by_default(response: requests.Response) -> None:
     """
-    Newly created barbershops are active by default.
+    Newly created barbershops are not active by default.
     """
 
-    assert response.json()["isActive"] is True
+    assert response.json()["isActive"] is False
 
 
 def test_email_matches_input(
-    response: requests.Response, request_data: CreateBarbershopRequest
+    response: requests.Response, barbershop_request: CreateBarbershopRequest
 ) -> None:
     """
     Response email matches the submitted email.
     """
 
-    assert response.json()["email"] == request_data.email.value
+    assert response.json()["email"] == barbershop_request.email.value
 
 
 def test_duplicate_email(
-    client: ApiClient, request_data: CreateBarbershopRequest
+    client: ApiClient, barbershop_request: CreateBarbershopRequest
 ) -> None:
     """
     Creating a barbershop with a duplicate email returns 409.
     """
 
-    response = client.barbershops.create(request_data)
+    response = client.barbershops.create(barbershop_request)
 
     assert_status(response, HttpStatus.CONFLICT)
     assert_body(response, _EMAIL_ALREADY_IN_USE)

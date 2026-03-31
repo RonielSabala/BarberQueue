@@ -22,6 +22,7 @@ readonly class BarbershopEntity extends BaseEntity
 
     public function __construct(
         public Id $id,
+        public Id $adminId,
         public BarbershopName $barbershopName,
         public Email $email,
         public Phone $phone,

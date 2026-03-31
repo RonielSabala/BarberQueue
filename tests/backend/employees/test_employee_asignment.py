@@ -156,7 +156,9 @@ def test_status_on_unknown_barbershop(client: ApiClient, assignment: dict) -> No
     assert_body(response, BARBERSHOP_NOT_FOUND)
 
 
-def test_status_on_unknown_assignment(client: ApiClient, barbershop_id: int) -> None:
+def test_status_on_unknown_assignment(
+    client: ApiClient, barbershop_id: int, barbershop_request: CreateBarbershopRequest
+) -> None:
     """
     Valid employee and barbershop but no assignment between them returns 404.
     """
@@ -169,7 +171,6 @@ def test_status_on_unknown_assignment(client: ApiClient, barbershop_id: int) -> 
     employee_id = employee_response.json()["id"]
 
     # Create a separate barbershop the employee is NOT assigned to
-    barbershop_request = CreateBarbershopRequest.random()
     barbershop_response = client.barbershops.create(barbershop_request)
     other_barbershop_id = barbershop_response.json()["id"]
 

@@ -164,6 +164,7 @@ VALUES
 INSERT INTO
     barbershops (
         id,
+        admin_id,
         barbershop_name,
         email,
         phone,
@@ -171,11 +172,11 @@ INSERT INTO
         photo_url,
         opens_at,
         closes_at,
-        capacity,
-        is_active
+        capacity
     )
 VALUES
     (
+        1,
         1,
         'BarberKing Santo Domingo',
         'info@barberking.com',
@@ -184,11 +185,11 @@ VALUES
         'https://placehold.co/600x400?text=BarberKing',
         '08:00:00',
         '20:00:00',
-        3,
-        TRUE
+        3
     ),
     (
         2,
+        1,
         'The Gentleman Cut',
         'info@gentlemancut.com',
         '8092345000',
@@ -196,11 +197,11 @@ VALUES
         'https://placehold.co/600x400?text=GentlemanCut',
         '09:00:00',
         '19:00:00',
-        2,
-        TRUE
+        2
     ),
     (
         3,
+        1,
         'Elite Barbers',
         'info@elitebarbers.com',
         '8093456000',
@@ -208,9 +209,15 @@ VALUES
         'https://placehold.co/600x400?text=EliteBarbers',
         '07:00:00',
         '21:00:00',
-        4,
-        TRUE
+        4
     );
+
+-- BARBER STATUS OVERRIDES
+UPDATE barbershops
+SET
+    is_active = TRUE
+WHERE
+    id IN (1, 2, 3);
 
 -- BARBERSHOP PHOTOS
 INSERT INTO
@@ -271,27 +278,16 @@ WHERE
 -- BARBER STATUS OVERRIDES
 UPDATE barber_status
 SET
+    is_accepting = TRUE,
     current_status = 'active'
 WHERE
-    staff_id = 4;
+    staff_id IN (4, 6, 8);
 
 UPDATE barber_status
 SET
     current_status = 'resting'
 WHERE
     staff_id = 5;
-
-UPDATE barber_status
-SET
-    current_status = 'active'
-WHERE
-    staff_id = 6;
-
-UPDATE barber_status
-SET
-    current_status = 'active'
-WHERE
-    staff_id = 8;
 
 -- STAFF ASSIGNMENTS
 INSERT INTO
@@ -382,9 +378,9 @@ INSERT INTO
 VALUES
     -- Past completed turns
     (1, 9, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', '2026-03-05 09:35:00'),
-    (1, 10, NULL, 5, '2026-03-05 09:05:00', '2026-03-05 09:20:00', '2026-03-05 09:50:00'),
-    (2, 11, NULL, 6, '2026-03-06 10:00:00', '2026-03-06 10:05:00', '2026-03-06 10:30:00'),
-    (2, 12, NULL, 7, '2026-03-06 10:30:00', '2026-03-06 10:45:00', '2026-03-06 11:10:00'),
+    (1, 10, NULL, 6, '2026-03-05 09:05:00', '2026-03-05 09:20:00', '2026-03-05 09:50:00'),
+    (2, 11, NULL, 4, '2026-03-06 10:00:00', '2026-03-06 10:05:00', '2026-03-06 10:30:00'),
+    (2, 12, NULL, 8, '2026-03-06 10:30:00', '2026-03-06 10:45:00', '2026-03-06 11:10:00'),
     (3, 13, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
     (3, 14, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
     (1, 15, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', '2026-03-08 10:40:00'),
