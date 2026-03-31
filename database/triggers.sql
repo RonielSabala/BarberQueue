@@ -6,7 +6,7 @@ CREATE TRIGGER trg_users_after_insert AFTER
 INSERT
     ON users FOR EACH ROW BEGIN IF NEW.role_id = 1 THEN
 INSERT INTO
-    client_status (user_id, current_status)
+    client_status (client_id, current_status)
 VALUES
     (NEW.id, 'default');
 
@@ -33,7 +33,7 @@ SELECT
 FROM
     users
 WHERE
-    id = NEW.user_id
+    id = NEW.client_id
 LIMIT
     1;
 

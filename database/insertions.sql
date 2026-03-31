@@ -235,45 +235,40 @@ VALUES
 -- CLIENT STATUS OVERRIDES
 UPDATE client_status
 SET
+    barbershop_id = 2,
+    current_status = 'at_barbershop'
+WHERE
+    client_id = 16;
+
+UPDATE client_status
+SET
     current_status = 'on_queue'
 WHERE
-    user_id = 10;
-
-UPDATE client_status
-SET
-    current_status = 'in_service'
-WHERE
-    user_id = 11;
-
-UPDATE client_status
-SET
-    current_status = 'attended'
-WHERE
-    user_id = 12;
-
-UPDATE client_status
-SET
-    current_status = 'paid'
-WHERE
-    user_id = 13;
+    client_id IN (10, 18);
 
 UPDATE client_status
 SET
     current_status = 'waiting'
 WHERE
-    user_id = 14;
+    client_id = 14;
 
 UPDATE client_status
 SET
-    current_status = 'at_barbershop'
+    current_status = 'in_service'
 WHERE
-    user_id = 16;
+    client_id = 11;
 
 UPDATE client_status
 SET
-    current_status = 'on_queue'
+    current_status = 'attended'
 WHERE
-    user_id = 18;
+    client_id = 12;
+
+UPDATE client_status
+SET
+    current_status = 'paid'
+WHERE
+    client_id = 13;
 
 -- BARBER STATUS OVERRIDES
 UPDATE barber_status
@@ -372,7 +367,6 @@ VALUES
     (2, 9);
 
 -- TURNS
--- Historical completed turns are inserted directly with explicit timestamps.
 INSERT INTO
     turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
 VALUES
