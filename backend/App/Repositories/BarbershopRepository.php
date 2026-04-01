@@ -33,6 +33,11 @@ class BarbershopRepository extends BaseRepository
         SQL;
     }
 
+    public function isBarbershopActive(int $id): bool
+    {
+        return $this->exists($id, ['is_active' => 1]);
+    }
+
     public function getById(int $id): ?BarbershopEntity
     {
         $sql = $this->barbershopQuery() . <<<'SQL'

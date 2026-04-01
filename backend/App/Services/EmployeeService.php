@@ -73,7 +73,7 @@ class EmployeeService extends BaseService
         $this->validateEmployee($employeeId);
         $this->barbershopService->validateBarbershopExists($barbershopId);
 
-        if (!$this->assignmentsRepository->exists($employeeId, $barbershopId)) {
+        if (!$this->assignmentsRepository->assignmentExists($employeeId, $barbershopId)) {
             throw new EmployeeException('Assignment not found', HttpStatus::NotFound);
         }
 

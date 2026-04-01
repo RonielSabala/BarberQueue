@@ -14,20 +14,15 @@ class AssignmentRepository extends BaseRepository
         'end_time',
     ];
 
-    public function exists(int $staffId, int $barbershopId): bool
+    public function assignmentExists(int $staffId, int $barbershopId): bool
     {
-        $sql = <<<'SQL'
-            SELECT
-                1
-            FROM
-                staff_assignments sa
-            WHERE
-                staff_id = ?
-                AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$staffId, $barbershopId]);
-        return (bool) $stmt->fetch();
+        return $this->entityExists(
+            'staff_assignments',
+            [
+                'staff_id' => $staffId,
+                'barbershop_id' => $barbershopId,
+            ]
+        );
     }
 
     /** @return EmployeeAssignmentEntity[] */

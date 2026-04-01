@@ -19,9 +19,34 @@ abstract class BaseRepository
         $this->db = DbConfig::getConnection();
     }
 
-    private function missingVariablesException(string $varName): \RuntimeException
+    // Helpers
+
+    private function getTableName(): string
     {
-        return new \RuntimeException("Repository `{$varName}` variable is not set");
+        $tableName = static::TABLE_NAME;
+        if ($tableName === null) {
+            throw new \RuntimeException('Repository `TABLE_NAME` variable is not set');
+        }
+
+        return $tableName;
+    }
+
+    private function getClauses(string $clauseToken, array $items): string
+    {
+        return implode($clauseToken, array_map(
+            static fn (string $item) => "{$item} = ?",
+            $items
+        ));
+    }
+
+    private function getSetClauses(array $fields): string
+    {
+        return $this->getClauses(', ', $fields);
+    }
+
+    private function getWhereClauses(array $params): string
+    {
+        return $this->getClauses(' AND ', $params);
     }
 
     public function transaction(callable $callback): mixed
@@ -42,6 +67,8 @@ abstract class BaseRepository
             throw $e;
         }
     }
+
+    // Query methods
 
     protected function query(string $sql, array $params = []): \PDOStatement
     {
@@ -75,14 +102,57 @@ abstract class BaseRepository
         return $results;
     }
 
+    // General CRUD methods
+
+    public function entityExists(string $tableName, array $params): bool
+    {
+        if (empty($params)) {
+            return false;
+        }
+
+        $sql = <<<SQL
+            SELECT
+                1
+            FROM
+                {$tableName}
+            WHERE
+                {$this->getWhereClauses($params)}
+            LIMIT
+                1
+        SQL;
+
+        $stmt = $this->query($sql, array_values($params));
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function insert(array $entityFields): int
+    {
+        $tableName = $this->getTableName();
+        if (empty($entityFields)) {
+            throw new \InvalidArgumentException("Cannot insert an empty field set into {$tableName}");
+        }
+
+        $columns = implode(', ', array_keys($entityFields));
+        $placeholders = implode(', ', array_fill(0, \count($entityFields), '?'));
+        $sql = <<<SQL
+            INSERT INTO
+                {$tableName} ({$columns})
+            VALUES
+                ({$placeholders})
+        SQL;
+
+        $this->query($sql, array_values($entityFields));
+        return (int) $this->db->lastInsertId();
+    }
+
     public function updateFrom(string $tableName, array $entityFields, array $params): void
     {
-        if (empty($entityFields)) {
+        if (empty($entityFields) || empty($params)) {
             return;
         }
 
-        $updatableFields = static::UPDATABLE_FIELDS;
         $fields = array_keys($entityFields);
+        $updatableFields = static::UPDATABLE_FIELDS;
 
         foreach ($fields as $field) {
             if (!\in_array($field, $updatableFields, true)) {
@@ -92,69 +162,53 @@ abstract class BaseRepository
             }
         }
 
-        $setClauses = implode(', ', array_map(
-            static fn (string $field) => "{$field} = ?",
-            $fields
-        ));
+        $sql = <<<SQL
+            UPDATE {$tableName}
+            SET
+                {$this->getSetClauses($fields)}
+            WHERE
+                {$this->getWhereClauses($params)}
+        SQL;
 
-        $whereClauses = implode(' AND ', array_map(
-            static fn (string $param) => "{$param} = ?",
-            array_keys($params)
-        ));
-
-        $sql = "UPDATE {$tableName} SET {$setClauses} WHERE {$whereClauses}";
         $this->query($sql, [...array_values($entityFields), ...array_values($params)]);
     }
 
     public function deleteFrom(string $tableName, array $params): bool
     {
-        $whereClauses = implode(' AND ', array_map(
-            static fn (string $param) => "{$param} = ?",
-            array_keys($params)
-        ));
+        $sql = <<<SQL
+            DELETE FROM {$tableName}
+            WHERE
+                {$this->getWhereClauses($params)}
+        SQL;
 
-        $sql = "DELETE FROM {$tableName} WHERE {$whereClauses}";
         $stmt = $this->query($sql, array_values($params));
         return $stmt->rowCount() > 0;
     }
 
-    public function insert(array $entityFields): int
+    // Entity specific CRUD methods
+
+    public function exists(int $entityId, array $params = []): bool
     {
-        $tableName = static::TABLE_NAME;
-        if ($tableName === null) {
-            throw $this->missingVariablesException('TABLE_NAME');
-        }
-
-        if (empty($entityFields)) {
-            throw new \InvalidArgumentException("Cannot insert an empty field set into {$tableName}");
-        }
-
-        $columns = implode(', ', array_keys($entityFields));
-        $placeholders = implode(', ', array_fill(0, \count($entityFields), '?'));
-
-        $sql = "INSERT INTO {$tableName} ({$columns}) VALUES ({$placeholders})";
-
-        $this->query($sql, array_values($entityFields));
-        return (int) $this->db->lastInsertId();
+        return $this->entityExists(
+            $this->getTableName(),
+            ['id' => $entityId, ...$params]
+        );
     }
 
     public function update(int $entityId, array $entityFields, array $params = []): void
     {
-        $tableName = static::TABLE_NAME;
-        if ($tableName === null) {
-            throw $this->missingVariablesException('TABLE_NAME');
-        }
-
-        $this->updateFrom($tableName, $entityFields, ['id' => $entityId, ...$params]);
+        $this->updateFrom(
+            $this->getTableName(),
+            $entityFields,
+            ['id' => $entityId, ...$params]
+        );
     }
 
     public function delete(int $entityId, array $params = []): bool
     {
-        $tableName = static::TABLE_NAME;
-        if ($tableName === null) {
-            throw $this->missingVariablesException('TABLE_NAME');
-        }
-
-        return $this->deleteFrom($tableName, ['id' => $entityId, ...$params]);
+        return $this->deleteFrom(
+            $this->getTableName(),
+            ['id' => $entityId, ...$params]
+        );
     }
 }
