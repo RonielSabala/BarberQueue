@@ -7,8 +7,8 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Domain\Entities\EmployeeEntity;
 use App\Domain\ValueObjects\Role;
-use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
-use App\DTOs\Employee\Responses\EmployeeResponse;
+use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
+use App\DTOs\Employees\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
 use App\Repositories\{
     AssignmentRepository,

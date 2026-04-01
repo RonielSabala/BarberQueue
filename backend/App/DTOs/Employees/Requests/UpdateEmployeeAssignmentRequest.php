@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Employee\Requests;
+namespace App\DTOs\Employees\Requests;
 
 use App\Attributes\ArrayOf;
 use App\Domain\ValueObjects\{DayOfWeek, TimeOfDay};

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTOs\Employee\Responses;
+namespace App\DTOs\Employees\Responses;
 
 use App\DTOs\BaseResponse;
 

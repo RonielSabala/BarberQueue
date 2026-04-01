@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Attributes\{DELETE, GET, PATCH, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
-use App\DTOs\Employee\Requests\UpdateEmployeeAssignmentRequest;
+use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
 use App\Services\EmployeeService;
 
 #[RoutePrefix('/api/employees')]
