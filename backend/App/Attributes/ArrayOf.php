@@ -20,4 +20,9 @@ class ArrayOf
             throw new \RuntimeException('maxItems must be >= minItem');
         }
     }
+
+    public static function fromParam(\ReflectionParameter $param): ?\ReflectionAttribute
+    {
+        return $param->getAttributes(self::class)[0] ?? null;
+    }
 }

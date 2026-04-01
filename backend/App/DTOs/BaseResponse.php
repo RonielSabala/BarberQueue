@@ -35,9 +35,7 @@ abstract readonly class BaseResponse extends BaseDto
             $property = $entityReflection->getProperty($name);
             $value = $property->getValue($entity);
 
-            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
-            $itemType = $arrayOf?->newInstance()?->type;
-
+            $itemType = ArrayOf::fromParam($param)?->newInstance()?->type;
             $onObject = ($itemType !== null && is_subclass_of($itemType, self::class))
                 ? static fn (mixed $item) => $itemType::fromEntity($item)
                 : null;

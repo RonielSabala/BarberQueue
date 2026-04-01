@@ -25,8 +25,7 @@ readonly class BaseEntity
             $valueExists = $dbValue !== null;
             $type = $param->getType();
 
-            // Handle #[ArrayOf]
-            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+            $arrayOf = ArrayOf::fromParam($param);
             if ($arrayOf !== null) {
                 $itemType = $arrayOf->newInstance()->type;
                 $items = $valueExists
