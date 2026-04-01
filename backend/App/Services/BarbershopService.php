@@ -132,16 +132,22 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopPhotoRepository->getAll($barbershopId);
-        $photos = BarbershopPhotoResponse::fromEntities($barbershopPhotos);
-        return new GetBarbershopPhotosResponse(photos: $photos);
+
+        return new GetBarbershopPhotosResponse(
+            photos: BarbershopPhotoResponse::fromEntities($barbershopPhotos)
+        );
     }
 
-    public function createPhotos(int $barbershopId, CreateBarbershopPhotosRequest $request): CreateBarbershopPhotosResponse
-    {
+    public function createPhotos(
+        int $barbershopId,
+        CreateBarbershopPhotosRequest $request
+    ): CreateBarbershopPhotosResponse {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopPhotoRepository->createPhotos($barbershopId, $request->photoUrls);
-        $uploadedPhotos = BarbershopPhotoResponse::fromEntities($barbershopPhotos);
-        return new CreateBarbershopPhotosResponse(uploaded: $uploadedPhotos);
+
+        return new CreateBarbershopPhotosResponse(
+            uploaded: BarbershopPhotoResponse::fromEntities($barbershopPhotos)
+        );
     }
 
     public function deletePhoto(int $barbershopId, int $photoId): bool

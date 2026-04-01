@@ -52,7 +52,7 @@ abstract readonly class BaseResponse extends BaseDto
     public static function fromEntities(array $entities): array
     {
         return array_map(
-            static fn ($entity) => $this->fromEntity($entity),
+            static fn ($entity) => self::fromEntity($entity),
             $entities
         );
     }

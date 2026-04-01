@@ -31,11 +31,11 @@ abstract class BaseRepository
         return $tableName;
     }
 
-    private function getClauses(string $clauseToken, array $items): string
+    private function getClauses(string $clauseToken, array $columns): string
     {
         return implode($clauseToken, array_map(
-            static fn (string $item) => "{$item} = ?",
-            $items
+            static fn (string $column) => "{$column} = ?",
+            $columns
         ));
     }
 
@@ -46,7 +46,7 @@ abstract class BaseRepository
 
     private function getWhereClauses(array $params): string
     {
-        return $this->getClauses(' AND ', $params);
+        return $this->getClauses(' AND ', array_keys($params));
     }
 
     public function transaction(callable $callback): mixed
@@ -175,6 +175,10 @@ abstract class BaseRepository
 
     public function deleteFrom(string $tableName, array $params): bool
     {
+        if (empty($params)) {
+            return false;
+        }
+
         $sql = <<<SQL
             DELETE FROM {$tableName}
             WHERE
