@@ -58,7 +58,11 @@ abstract class BaseRepository
         return $row ? $entityClass::fromDbRow($row) : null;
     }
 
-    /** @param class-string<BaseEntity> $entityClass */
+    /**
+     * @param class-string<BaseEntity> $entityClass
+     *
+     * @return BaseEntity[]
+     */
     protected function fetchAll(string $entityClass, string $sql, array $params = []): array
     {
         $stmt = $this->query($sql, $params);

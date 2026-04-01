@@ -13,6 +13,7 @@ class BarbershopPhotoRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barbershop_photos';
 
+    /** @return BarbershopPhotoEntity[] */
     public function getAll(int $barbershopId): array
     {
         $sql = <<<'SQL'

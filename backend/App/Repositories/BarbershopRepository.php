@@ -61,6 +61,7 @@ class BarbershopRepository extends BaseRepository
         return $this->fetchOne(BarbershopEntity::class, $sql, [$email]);
     }
 
+    /** @return BarbershopEntity[] */
     public function getAll(
         ?string $search = null,
         ?bool $isOpen = null,

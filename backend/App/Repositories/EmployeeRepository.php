@@ -10,6 +10,7 @@ class EmployeeRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'users';
 
+    /** @return BarbershopEmployeeEntity[] */
     public function getAllByBarbershopId(int $barbershopId): array
     {
         $sql = <<<'SQL'

@@ -34,6 +34,7 @@ class BarbershopReviewRepository extends BaseRepository
         return $this->fetchOne(BarbershopReviewEntity::class, $sql, [$id]);
     }
 
+    /** @return BarbershopReviewEntity[] */
     public function getAllByBarbershopId(int $barbershopId): array
     {
         $sql = $this->reviewQuery() . <<<'SQL'

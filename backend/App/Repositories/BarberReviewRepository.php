@@ -22,6 +22,7 @@ class BarberReviewRepository extends BaseRepository
         SQL;
     }
 
+    /** @return BarberReviewEntity[] */
     public function getAllByBarberId(int $barberId): array
     {
         $sql = $this->reviewQuery() . <<<'SQL'

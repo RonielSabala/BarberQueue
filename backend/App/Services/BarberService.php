@@ -61,6 +61,7 @@ class BarberService extends BaseService
         $this->barberRepository->updateStatus($barberId, $fields);
     }
 
+    /** @return BarberReviewResponse[] */
     public function getReviews(int $barberId): array
     {
         $this->validateBarber($barberId);

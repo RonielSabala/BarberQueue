@@ -30,6 +30,7 @@ class AssignmentRepository extends BaseRepository
         return (bool) $stmt->fetch();
     }
 
+    /** @return EmployeeAssignmentEntity[] */
     public function getAllByStaffId(int $id): ?array
     {
         $assignmentSql = <<<'SQL'

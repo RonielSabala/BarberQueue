@@ -63,6 +63,7 @@ class BarbershopService extends BaseService
         return $barbershop;
     }
 
+    /** @return BarbershopResponse[] */
     public function getAll(?string $search, ?bool $isOpen, ?int $adminId = null): array
     {
         $barbershops = $this->barbershopRepository->getAll($search, $isOpen, $adminId);
@@ -149,6 +150,7 @@ class BarbershopService extends BaseService
         return $this->barbershopPhotoRepository->deletePhoto($barbershopId, $photoId);
     }
 
+    /** @return BarbershopReviewResponse[] */
     public function getReviews(int $barbershopId): array
     {
         $this->validateBarbershopExists($barbershopId);
@@ -187,6 +189,7 @@ class BarbershopService extends BaseService
         return $this->barbershopReviewRepository->deleteReview($barbershopId, $reviewId);
     }
 
+    /** @return BarbershopEmployeeResponse[] */
     public function getEmployees(int $barbershopId): array
     {
         $this->validateBarbershopExists($barbershopId);
