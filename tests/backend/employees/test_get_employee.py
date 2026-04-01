@@ -7,6 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbershops import CreateBarbershopEmployeeRequest
 from domain.dtos.employees import EmployeeResponse
@@ -60,7 +61,7 @@ def test_status_on_unknown_employee(client: ApiClient) -> None:
     Unknown employee returns 404.
     """
 
-    response = client.employees.get(999_999)
+    response = client.employees.get(NON_EXISTENT_ID)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, EMPLOYEE_NOT_FOUND)

@@ -5,6 +5,7 @@ from domain.dtos.barbershops import CreateBarbershopRequest
 from domain.value_objects.id import Id
 
 _SEEDED_ADMIN_ID = 1
+NON_EXISTENT_ID = 999_999
 
 
 def _get_barbershop_request() -> CreateBarbershopRequest:

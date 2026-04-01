@@ -9,6 +9,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.auth import LoginRequest, RegisterRequest
 from domain.dtos.users import UpdateUserPasswordRequest
@@ -92,7 +93,7 @@ def test_nonexistent_user(client: ApiClient) -> None:
     request = UpdateUserPasswordRequest(
         current_password=Password.random(), new_password=Password.random()
     )
-    response = client.users.update_user_password(999_999, request)
+    response = client.users.update_user_password(NON_EXISTENT_ID, request)
 
     assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)

@@ -6,6 +6,7 @@ import pytest
 
 from api.client import ApiClient
 from api.core import HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.barbershops import CreateBarbershopEmployeeRequest
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import EMPLOYEE_NOT_FOUND
@@ -32,7 +33,7 @@ def test_status_on_unknown_employee(client: ApiClient) -> None:
     Unknown employee returns 404.
     """
 
-    response = client.employees.delete(999_999)
+    response = client.employees.delete(NON_EXISTENT_ID)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, EMPLOYEE_NOT_FOUND)

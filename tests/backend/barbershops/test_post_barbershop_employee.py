@@ -3,6 +3,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse
 from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
@@ -78,7 +79,7 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     """
 
     request = CreateBarbershopEmployeeRequest.random_employee()
-    response = client.barbershops.create_employee(999_999, request)
+    response = client.barbershops.create_employee(NON_EXISTENT_ID, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, BARBERSHOP_NOT_FOUND)

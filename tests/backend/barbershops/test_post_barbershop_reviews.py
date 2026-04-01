@@ -7,6 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbershops import (
@@ -94,7 +95,7 @@ def test_status_on_unknown_user(client: ApiClient, barbershop_id: int) -> None:
     Unknown user returns 404.
     """
 
-    request = CreateBarbershopReviewRequest.random(client_id=999_999)
+    request = CreateBarbershopReviewRequest.random(client_id=NON_EXISTENT_ID)
     response = client.barbershops.add_review(barbershop_id, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
@@ -107,7 +108,7 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     """
 
     request = CreateBarbershopReviewRequest.random()
-    response = client.barbershops.add_review(999_999, request)
+    response = client.barbershops.add_review(NON_EXISTENT_ID, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, BARBERSHOP_NOT_FOUND)

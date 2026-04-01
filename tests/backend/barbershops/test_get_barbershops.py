@@ -9,6 +9,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.barbershops import (
     BarbershopResponse,
     CreateBarbershopRequest,
@@ -105,5 +106,5 @@ def test_admin_id_filter_unknown_admin(client: ApiClient) -> None:
     Filtering by a non-existent adminId returns an empty list.
     """
 
-    response = client.barbershops.get_all(admin_id=999_999)
+    response = client.barbershops.get_all(admin_id=NON_EXISTENT_ID)
     assert response.json() == []

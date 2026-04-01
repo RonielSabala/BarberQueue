@@ -7,6 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.barbershops import (
     CreateBarbershopPhotosRequest,
     GetBarbershopPhotosResponse,
@@ -56,7 +57,7 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     Unknown barbershop returns 404.
     """
 
-    response = client.barbershops.get_photos(999_999)
+    response = client.barbershops.get_photos(NON_EXISTENT_ID)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, BARBERSHOP_NOT_FOUND)
