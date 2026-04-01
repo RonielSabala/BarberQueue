@@ -66,10 +66,7 @@ class BarbershopService extends BaseService
     public function getAll(?string $search, ?bool $isOpen, ?int $adminId = null): array
     {
         $barbershops = $this->barbershopRepository->getAll($search, $isOpen, $adminId);
-        return array_map(
-            static fn ($barbershop) => BarbershopResponse::fromEntity($barbershop),
-            $barbershops
-        );
+        return BarbershopResponse::fromEntities($barbershops);
     }
 
     public function create(CreateBarbershopRequest $request): CreateBarbershopResponse
@@ -134,11 +131,7 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopPhotoRepository->getAll($barbershopId);
-        $photos = array_map(
-            static fn ($barbershopPhoto) => BarbershopPhotoResponse::fromEntity($barbershopPhoto),
-            $barbershopPhotos
-        );
-
+        $photos = BarbershopPhotoResponse::fromEntities($barbershopPhotos);
         return new GetBarbershopPhotosResponse(photos: $photos);
     }
 
@@ -146,11 +139,7 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopPhotoRepository->createPhotos($barbershopId, $request->photoUrls);
-        $uploadedPhotos = array_map(
-            static fn ($barbershopPhoto) => BarbershopPhotoResponse::fromEntity($barbershopPhoto),
-            $barbershopPhotos
-        );
-
+        $uploadedPhotos = BarbershopPhotoResponse::fromEntities($barbershopPhotos);
         return new CreateBarbershopPhotosResponse(uploaded: $uploadedPhotos);
     }
 
@@ -164,11 +153,7 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $barbershopReviews = $this->barbershopReviewRepository->getAllByBarbershopId($barbershopId);
-
-        return array_map(
-            static fn ($barbershopReview) => BarbershopReviewResponse::fromEntity($barbershopReview),
-            $barbershopReviews
-        );
+        return BarbershopReviewResponse::fromEntities($barbershopReviews);
     }
 
     public function createReview(int $barbershopId, CreateBarbershopReviewRequest $request): BarbershopReviewResponse
@@ -206,11 +191,7 @@ class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $employees = $this->employeeRepository->getAllByBarbershopId($barbershopId);
-
-        return array_map(
-            static fn ($employee) => BarbershopEmployeeResponse::fromEntity($employee),
-            $employees
-        );
+        return BarbershopEmployeeResponse::fromEntities($employees);
     }
 
     public function createEmployee(int $barbershopId, CreateBarbershopEmployeeRequest $request): CreateBarbershopEmployeeResponse

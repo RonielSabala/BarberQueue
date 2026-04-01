@@ -65,11 +65,7 @@ class BarberService extends BaseService
     {
         $this->validateBarber($barberId);
         $reviews = $this->barberReviewRepository->getAllByBarberId($barberId);
-
-        return array_map(
-            static fn ($review) => BarberReviewResponse::fromEntity($review),
-            $reviews
-        );
+        return BarberReviewResponse::fromEntities($reviews);
     }
 
     public function createReview(int $barberId, CreateBarberReviewRequest $request): BarberReviewResponse

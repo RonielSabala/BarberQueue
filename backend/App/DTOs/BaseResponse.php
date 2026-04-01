@@ -47,4 +47,13 @@ abstract readonly class BaseResponse extends BaseDto
 
         return $reflection->newInstanceArgs($args);
     }
+
+    /** @return static[] */
+    public static function fromEntities(array $entities): array
+    {
+        return array_map(
+            static fn ($entity) => $this->fromEntity($entity),
+            $entities
+        );
+    }
 }
