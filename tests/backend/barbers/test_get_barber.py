@@ -9,7 +9,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbers import BarberResponse
-from domain.value_objects import BarberCurrentStatus
+from domain.value_objects import BarberStatus
 from helpers.assertions import (
     assert_body,
     assert_body_shape,
@@ -54,7 +54,7 @@ def test_current_status_is_valid(response: requests.Response) -> None:
     """
 
     current_status = response.json()["currentStatus"]
-    assert BarberCurrentStatus.has_value(current_status)
+    assert BarberStatus.has_value(current_status)
 
 
 def test_status_on_unknown_barber(client: ApiClient) -> None:

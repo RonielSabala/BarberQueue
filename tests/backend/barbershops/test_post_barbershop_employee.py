@@ -8,7 +8,7 @@ from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
     CreateBarbershopEmployeeResponse,
 )
-from domain.value_objects import Role
+from domain.enums import RoleEnum
 from helpers.assertions import (
     assert_body,
     assert_body_shape,
@@ -102,7 +102,9 @@ def test_incorrect_employee_role(client: ApiClient, barbershop_id: int) -> None:
     Registering an employee as a client or admin returns 422.
     """
 
-    request = CreateBarbershopEmployeeRequest.random(role=(Role.CLIENT, Role.ADMIN))
+    request = CreateBarbershopEmployeeRequest.random(
+        role=(RoleEnum.CLIENT, RoleEnum.ADMIN)
+    )
     response = client.barbershops.create_employee(barbershop_id, request)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)

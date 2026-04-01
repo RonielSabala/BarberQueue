@@ -3,12 +3,12 @@ import pytest
 from api.client import ApiClient
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbershops import CreateBarbershopEmployeeRequest
-from domain.value_objects import Role
+from domain.enums import RoleEnum
 
 
 @pytest.fixture(scope="module")
 def barber_id(client: ApiClient, barbershop_id: int) -> int:
-    request = CreateBarbershopEmployeeRequest.random(role=Role.BARBER)
+    request = CreateBarbershopEmployeeRequest.random(role=RoleEnum.BARBER)
     response = client.barbershops.create_employee(barbershop_id, request)
     return response.json()["id"]
 

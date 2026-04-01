@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\ValueObjects\Role;
+use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
 use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberResponse, BarberReviewResponse};
 use App\Exceptions\BarberException;
@@ -27,7 +27,7 @@ class BarberService extends BaseService
             throw new BarberException('Barber not found', HttpStatus::NotFound);
         }
 
-        if ($barber->role->value !== Role::Barber->value) {
+        if ($barber->role->value !== RoleEnum::Barber->value) {
             throw new BarberException('This user is not a barber', HttpStatus::NotFound);
         }
     }
@@ -76,7 +76,7 @@ class BarberService extends BaseService
         // Validate client
         $clientId = $request->clientId->value;
         $client = $this->userService->validateUserExists($clientId);
-        if ($client->role->value !== Role::Client->value) {
+        if ($client->role->value !== RoleEnum::Client->value) {
             throw new BarberException(
                 'Only clients can leave barber reviews',
                 HttpStatus::Forbidden

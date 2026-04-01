@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Self
 
 from domain.dtos import BaseRequest
+from domain.enums import RoleEnum
 from domain.value_objects import (
     Address,
     BarbershopName,
@@ -14,12 +15,11 @@ from domain.value_objects import (
     PhotoUrls,
     Rating,
     ReviewContent,
-    RoleName,
+    Role,
     TimeOfDay,
     Username,
     WorkingDays,
 )
-from domain.value_objects.role_name import Role
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -28,14 +28,14 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
     email: Email
     phone: Phone
     password: Password
-    role: RoleName
+    role: Role
     start_time: TimeOfDay
     end_time: TimeOfDay
     working_days: WorkingDays
 
     @classmethod
     def random_employee(cls) -> Self:
-        return cls.random(role=(Role.BARBER, Role.ASSISTANT))
+        return cls.random(role=(RoleEnum.BARBER, RoleEnum.ASSISTANT))
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

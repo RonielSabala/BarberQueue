@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Entities;
 
-use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, RoleName, Username};
+use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Role, Username};
 
 readonly class UserEntity extends BaseEntity
 {
@@ -14,6 +14,6 @@ readonly class UserEntity extends BaseEntity
         public Email $email,
         public Phone $phone,
         public PasswordHash $passwordHash,
-        public RoleName $role
+        public Role $role
     ) {}
 }

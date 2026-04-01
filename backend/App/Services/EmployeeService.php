@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\EmployeeEntity;
-use App\Domain\ValueObjects\Role;
+use App\Domain\Enums\RoleEnum;
 use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employees\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
@@ -40,8 +40,8 @@ class EmployeeService extends BaseService
         $employeeRole = $role->roleName->value;
 
         if (
-            $employeeRole === Role::Client->value
-            || $employeeRole === Role::Admin->value
+            $employeeRole === RoleEnum::Client->value
+            || $employeeRole === RoleEnum::Admin->value
         ) {
             throw new EmployeeException(
                 'The employee role must be \'barber\' or \'assistant\'',

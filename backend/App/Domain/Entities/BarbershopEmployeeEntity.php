@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Entities;
 
 use App\Attributes\ArrayOf;
-use App\Domain\ValueObjects\{DayOfWeek, Email, Id, Phone, RoleName, TimeOfDay, Username};
+use App\Domain\ValueObjects\{DayOfWeek, Email, Id, Phone, Role, TimeOfDay, Username};
 
 readonly class BarbershopEmployeeEntity extends BaseEntity
 {
@@ -15,7 +15,7 @@ readonly class BarbershopEmployeeEntity extends BaseEntity
         public Username $username,
         public Email $email,
         public Phone $phone,
-        public RoleName $role,
+        public Role $role,
         public TimeOfDay $startTime,
         public TimeOfDay $endTime,
         #[ArrayOf(DayOfWeek::class, minItems: 1, maxItems: 7)]

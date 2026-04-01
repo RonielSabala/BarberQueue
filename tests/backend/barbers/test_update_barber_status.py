@@ -11,13 +11,13 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.barbers import UpdateBarberStatusRequest
-from domain.value_objects import BarberStatus
+from domain.enums import BarberStatusEnum
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import AT_LEAST_ONE_FIELD, BARBER_NOT_FOUND
 
 _STATUS_UPDATED = MessageResponse(message="Barber status updated")
 _INVALID_STATUS = ErrorResponse(
-    error="BarberCurrentStatus must be one of: 'active', 'inactive', 'resting'"
+    error="BarberStatus must be one of: 'active', 'inactive', 'resting'"
 )
 
 
@@ -56,7 +56,7 @@ def test_status_on_unknown_barber(client: ApiClient) -> None:
     Unknown barber returns 404.
     """
 
-    request = UpdateBarberStatusRequest.random(current_status=BarberStatus.ACTIVE)
+    request = UpdateBarberStatusRequest.random(current_status=BarberStatusEnum.ACTIVE)
     response = client.barbers.update_status(999_999, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
@@ -92,7 +92,7 @@ def test_update_only_current_status_resting(client: ApiClient, barber_id: int) -
     Setting status to resting returns 200.
     """
 
-    request = UpdateBarberStatusRequest.random(current_status=BarberStatus.RESTING)
+    request = UpdateBarberStatusRequest.random(current_status=BarberStatusEnum.RESTING)
     response = client.barbers.update_status(barber_id, request)
     assert_status(response, HttpStatus.OK)
 
@@ -102,7 +102,7 @@ def test_update_only_current_status_inactive(client: ApiClient, barber_id: int) 
     Setting status to inactive returns 200.
     """
 
-    request = UpdateBarberStatusRequest.random(current_status=BarberStatus.INACTIVE)
+    request = UpdateBarberStatusRequest.random(current_status=BarberStatusEnum.INACTIVE)
     response = client.barbers.update_status(barber_id, request)
     assert_status(response, HttpStatus.OK)
 

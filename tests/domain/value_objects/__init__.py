@@ -4,7 +4,7 @@ Value objects package.
 
 from domain.value_objects.address import Address
 from domain.value_objects.average_rating import AverageRating
-from domain.value_objects.barber_current_status import BarberCurrentStatus, BarberStatus
+from domain.value_objects.barber_status import BarberStatus
 from domain.value_objects.barbershop_name import BarbershopName
 from domain.value_objects.capacity import Capacity
 from domain.value_objects.datetime_string import DateTimeString
@@ -19,14 +19,13 @@ from domain.value_objects.photo_url import PhotoUrl, PhotoUrls
 from domain.value_objects.rating import Rating
 from domain.value_objects.reset_code import ResetCode
 from domain.value_objects.review_content import ReviewContent
-from domain.value_objects.role_name import Role, RoleName
+from domain.value_objects.role import Role
 from domain.value_objects.time_of_day import TimeOfDay
 from domain.value_objects.username import Username
 
 __all__ = [
     "Address",
     "AverageRating",
-    "BarberCurrentStatus",
     "BarberStatus",
     "BarbershopName",
     "Capacity",
@@ -45,7 +44,6 @@ __all__ = [
     "ResetCode",
     "ReviewContent",
     "Role",
-    "RoleName",
     "TimeOfDay",
     "Username",
 ]

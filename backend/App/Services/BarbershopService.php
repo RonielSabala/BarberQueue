@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\BarbershopEntity;
-use App\Domain\ValueObjects\Role;
+use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
@@ -75,7 +75,7 @@ class BarbershopService extends BaseService
         // Validate admin
         $adminId = $request->adminId->value;
         $admin = $this->userService->validateUserExists($adminId);
-        if ($admin->role->value !== Role::Admin->value) {
+        if ($admin->role->value !== RoleEnum::Admin->value) {
             throw new BarbershopException(
                 'Only admins can own barbershops',
                 HttpStatus::Forbidden
@@ -171,7 +171,7 @@ class BarbershopService extends BaseService
         $clientId = $request->clientId->value;
         $client = $this->userService->validateUserExists($clientId);
 
-        if ($client->role->value !== Role::Client->value) {
+        if ($client->role->value !== RoleEnum::Client->value) {
             throw new BarbershopException('Only clients can leave barbershop reviews', HttpStatus::Forbidden);
         }
 
@@ -210,7 +210,7 @@ class BarbershopService extends BaseService
 
         $role = $this->roleRepository->getByValue($request->role->value);
         $roleName = $role->roleName->value;
-        if ($roleName === Role::Client->value || $roleName === Role::Admin->value) {
+        if ($roleName === RoleEnum::Client->value || $roleName === RoleEnum::Admin->value) {
             throw new BarbershopException(
                 'Only barbers and assistants can be assigned to a barbershop',
                 HttpStatus::UnprocessableEntity
