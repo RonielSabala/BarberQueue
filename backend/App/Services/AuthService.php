@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
+use App\Exceptions\AuthException;
+use Firebase\JWT\JWT;
 use App\DTOs\Auth\Requests\{
     ForgotPasswordRequest,
     LoginRequest,
@@ -13,9 +15,7 @@ use App\DTOs\Auth\Requests\{
     ResetPasswordRequest
 };
 use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
-use App\Exceptions\AuthException;
 use App\Repositories\{PasswordResetRepository, UserRepository};
-use Firebase\JWT\JWT;
 
 class AuthService extends BaseService
 {

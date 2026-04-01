@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{GET, PATCH, RoutePrefix};
 use App\Core\HttpResponse;
-use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 use App\Services\UserService;
+use App\Attributes\{GET, PATCH, RoutePrefix};
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
 #[RoutePrefix('/api/users')]
 class UserController extends BaseController

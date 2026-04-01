@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTOs\Barbershops\Requests;
 
+use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{
     Address,
     BarbershopName,
@@ -14,7 +15,6 @@ use App\Domain\ValueObjects\{
     PhotoUrl,
     TimeOfDay
 };
-use App\DTOs\BaseRequest;
 
 readonly class CreateBarbershopRequest extends BaseRequest
 {

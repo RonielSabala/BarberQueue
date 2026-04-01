@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\{
-    BarbershopPhotoEntity
-};
+use App\Domain\Entities\BarbershopPhotoEntity;
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
 class BarbershopPhotoRepository extends BaseRepository

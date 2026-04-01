@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Entities;
 
-use App\Domain\ValueObjects\{AverageRating, DateTimeString, NonNegativeInteger, TimeOfDay};
+use App\Domain\ValueObjects\{
+    AverageRating,
+    DateTimeString,
+    NonNegativeInteger,
+    TimeOfDay
+};
 
 readonly class BarberDashboardEntity extends BaseEntity
 {

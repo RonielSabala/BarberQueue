@@ -6,9 +6,13 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Enums\RoleEnum;
-use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
-use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberResponse, BarberReviewResponse};
 use App\Exceptions\BarberException;
+use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
+use App\DTOs\Barbers\Responses\{
+    BarberDashboardResponse,
+    BarberResponse,
+    BarberReviewResponse
+};
 use App\Repositories\{BarberRepository, BarberReviewRepository, UserRepository};
 
 class BarberService extends BaseService

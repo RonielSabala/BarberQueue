@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\DTOs\Employees\Requests;
 
 use App\Attributes\ArrayOf;
-use App\Domain\ValueObjects\{DayOfWeek, TimeOfDay};
 use App\DTOs\BaseRequest;
+use App\Domain\ValueObjects\{DayOfWeek, TimeOfDay};
 
 readonly class UpdateEmployeeAssignmentRequest extends BaseRequest
 {

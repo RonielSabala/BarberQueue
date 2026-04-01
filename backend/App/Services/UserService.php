@@ -6,10 +6,10 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
-use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 use App\DTOs\Users\Responses\GetUserResponse;
 use App\Exceptions\UserException;
 use App\Repositories\UserRepository;
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
 class UserService extends BaseService
 {

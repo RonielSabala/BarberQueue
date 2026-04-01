@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{DELETE, GET, POST, RoutePrefix};
-use App\Attributes\PATCH;
+use App\Services\BarbershopService;
+use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopEmployeeRequest,
@@ -16,7 +16,6 @@ use App\DTOs\Barbershops\Requests\{
     UpdateBarbershopRequest,
     UpdateBarbershopStatusRequest
 };
-use App\Services\BarbershopService;
 
 #[RoutePrefix('/api/barbershops')]
 class BarbershopController extends BaseController

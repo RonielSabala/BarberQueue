@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTOs\Barbers\Requests;
 
-use App\Domain\ValueObjects\{Id, Rating, ReviewContent};
 use App\DTOs\BaseRequest;
+use App\Domain\ValueObjects\{Id, Rating, ReviewContent};
 
 readonly class CreateBarberReviewRequest extends BaseRequest
 {

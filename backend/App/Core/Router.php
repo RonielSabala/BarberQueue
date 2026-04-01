@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\LoggerProvider;
-use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 use App\Exceptions\BaseException;
 use Monolog\Logger;
+use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 
 class Router
 {

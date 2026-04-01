@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{DELETE, GET, PATCH, RoutePrefix};
-use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
 use App\Services\EmployeeService;
+use App\Attributes\{DELETE, GET, PATCH, RoutePrefix};
+use App\Core\{HttpResponse, HttpStatus};
 
 #[RoutePrefix('/api/employees')]
 class EmployeeController extends BaseController

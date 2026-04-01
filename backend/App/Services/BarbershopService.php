@@ -7,6 +7,8 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Domain\Entities\BarbershopEntity;
 use App\Domain\Enums\RoleEnum;
+use App\DTOs\BaseRequest;
+use App\Exceptions\BarbershopException;
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
@@ -25,8 +27,6 @@ use App\DTOs\Barbershops\Responses\{
     CreateBarbershopResponse,
     GetBarbershopPhotosResponse
 };
-use App\DTOs\BaseRequest;
-use App\Exceptions\BarbershopException;
 use App\Repositories\{
     AssignmentRepository,
     BarbershopPhotoRepository,

@@ -49,7 +49,10 @@ return (new Config())
         // Imports
         'group_import' => true,
         'single_import_per_statement' => false,
-        'ordered_imports' => ['sort_algorithm' => 'alpha'],
+        'ordered_imports' => [
+            'sort_algorithm' => 'none',
+            'imports_order' => ['class', 'function', 'const'],
+        ],
         'fully_qualified_strict_types' => [
             'import_symbols' => true,
             'leading_backslash_in_global_namespace' => true,
