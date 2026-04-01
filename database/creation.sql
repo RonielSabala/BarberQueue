@@ -110,12 +110,23 @@ CREATE TABLE
         FOREIGN KEY (leader_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
+-- GROUP MEMBERS
+CREATE TABLE
+    group_members (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        group_id INT NOT NULL,
+        member_name VARCHAR(30) NOT NULL,
+        current_status ENUM('on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL DEFAULT 'on_queue',
+        FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE
+    );
+
 -- TURNS
 CREATE TABLE
     turns (
         id INT PRIMARY KEY AUTO_INCREMENT,
         barbershop_id INT NOT NULL,
-        client_id INT NOT NULL,
+        client_id INT NULL,
+        member_id INT NULL,
         group_id INT NULL,
         barber_id INT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -123,8 +134,10 @@ CREATE TABLE
         finished_at TIMESTAMP NULL,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (member_id) REFERENCES group_members (id) ON DELETE CASCADE,
         FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE,
-        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE,
+        CONSTRAINT chk_turns_owner CHECK ((client_id IS NOT NULL) <> (member_id IS NOT NULL))
     );
 
 -- BARBERSHOP REVIEWS
@@ -187,12 +200,19 @@ CREATE INDEX idx_working_days_employee_day ON working_days (staff_id, day_of_wee
 -- client_groups
 CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
 
+-- group_members
+CREATE INDEX idx_group_members_group_id ON group_members (group_id);
+
 -- turns
 CREATE INDEX idx_turns_barbershop_id ON turns (barbershop_id);
 
-CREATE INDEX idx_turns_barber_id ON turns (barber_id);
+CREATE INDEX idx_turns_client_id ON turns (client_id);
+
+CREATE INDEX idx_turns_member_id ON turns (member_id);
 
 CREATE INDEX idx_turns_group_id ON turns (group_id);
+
+CREATE INDEX idx_turns_barber_id ON turns (barber_id);
 
 CREATE INDEX idx_turns_created_at ON turns (created_at);
 
