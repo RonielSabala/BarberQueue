@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Domain\Entities;
 
-use App\Domain\ValueObjects\{AttendedClients, AverageRating};
+use App\Domain\ValueObjects\{AverageRating, NonNegativeInteger};
 
 readonly class BarbershopDashboardEntity extends BaseEntity
 {
     public function __construct(
-        public AttendedClients $clientsToday,
-        public AttendedClients $clientsThisWeek,
-        public AttendedClients $clientsThisMonth,
+        public NonNegativeInteger $clientsToday,
+        public NonNegativeInteger $clientsThisWeek,
+        public NonNegativeInteger $clientsThisMonth,
         public ?float $averageServiceMinutes,
         public ?AverageRating $averageRating,
-        public AttendedClients $totalReviews,
-        public AttendedClients $activeBarbers,
-        public AttendedClients $queueCount,
+        public NonNegativeInteger $totalReviews,
+        public NonNegativeInteger $activeBarbers,
+        public NonNegativeInteger $queueCount,
     ) {}
 }
