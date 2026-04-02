@@ -242,30 +242,35 @@ WHERE
 
 UPDATE client_status
 SET
+    barbershop_id = 1,
     current_status = 'on_queue'
 WHERE
     client_id IN (10, 18);
 
 UPDATE client_status
 SET
+    barbershop_id = 3,
     current_status = 'waiting'
 WHERE
     client_id = 14;
 
 UPDATE client_status
 SET
+    barbershop_id = 2,
     current_status = 'in_service'
 WHERE
     client_id = 11;
 
 UPDATE client_status
 SET
+    barbershop_id = 2,
     current_status = 'attended'
 WHERE
     client_id = 12;
 
 UPDATE client_status
 SET
+    barbershop_id = 3,
     current_status = 'paid'
 WHERE
     client_id = 13;

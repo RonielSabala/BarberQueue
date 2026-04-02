@@ -26,7 +26,7 @@ class BarbershopClientRepository extends BaseRepository
         SQL;
     }
 
-    public function getById(int $clientId): ?BarbershopClientEntity
+    public function getByClientId(int $clientId): ?BarbershopClientEntity
     {
         $sql = $this->clientStatusQuery() . <<<'SQL'
             WHERE

@@ -8,16 +8,16 @@ _SEEDED_ADMIN_ID = 1
 NON_EXISTENT_ID = 999_999
 
 
-def _get_barbershop_request() -> CreateBarbershopRequest:
-    return CreateBarbershopRequest.random(admin_id=Id(_SEEDED_ADMIN_ID))
+def get_barbershop_request(**kwargs) -> CreateBarbershopRequest:
+    return CreateBarbershopRequest.random(admin_id=Id(_SEEDED_ADMIN_ID), **kwargs)
 
 
 @pytest.fixture(scope="module")
 def barbershop_request() -> CreateBarbershopRequest:
-    return _get_barbershop_request()
+    return get_barbershop_request()
 
 
 @pytest.fixture(scope="module")
 def barbershop_id(client: ApiClient) -> int:
-    response = client.barbershops.create(_get_barbershop_request())
+    response = client.barbershops.create(get_barbershop_request())
     return response.json()["id"]

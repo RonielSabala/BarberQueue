@@ -21,7 +21,7 @@ class BarbershopClientService extends BaseService
 
     public function validateBarbershopClientExists(int $clientId): BarbershopClientEntity
     {
-        $client = $this->barbershopClientRepository->getById($clientId);
+        $client = $this->barbershopClientRepository->getByClientId($clientId);
         if ($client === null) {
             throw new BarbershopClientException('Client not found', HttpStatus::NotFound);
         }
@@ -33,6 +33,7 @@ class BarbershopClientService extends BaseService
     public function getAllAtBarbershop(int $barbershopId): array
     {
         $this->BarbershopService->validateBarbershopExists($barbershopId);
+
         $statuses = $this->barbershopClientRepository->getAllAtBarbershop($barbershopId);
         return BarbershopClientResponse::fromEntities($statuses);
     }
@@ -42,20 +43,20 @@ class BarbershopClientService extends BaseService
         $barbershop = $this->BarbershopService->validateBarbershopExists($barbershopId);
         if (!$barbershop->isOpen) {
             throw new BarbershopClientException(
-                'Cannot check into a closed barbershop',
+                'Barbershop is not open',
                 HttpStatus::BadRequest
             );
         }
 
         $client = $this->userService->validateUserExists($clientId);
         if ($client->role->value !== RoleEnum::Client->value) {
-            throw new BarbershopClientException('Only clients can check into a barbershop', HttpStatus::Conflict);
+            throw new BarbershopClientException('Only clients can check in to a barbershop', HttpStatus::Forbidden);
         }
 
         $barbershopClient = $this->validateBarbershopClientExists($clientId);
         if ($barbershopClient->currentStatus->value !== ClientStatusEnum::Default->value) {
             throw new BarbershopClientException(
-                'Client is already in a barbershop',
+                'Client is already active in a barbershop',
                 HttpStatus::Conflict
             );
         }
@@ -69,19 +70,13 @@ class BarbershopClientService extends BaseService
 
     public function checkOut(int $barbershopId, int $clientId): void
     {
+        $this->BarbershopService->validateBarbershopExists($barbershopId);
         $barbershopClient = $this->validateBarbershopClientExists($clientId);
 
         $clientBarbershopId = $barbershopClient->barbershopId;
         if ($clientBarbershopId === null) {
             throw new BarbershopClientException(
-                'Client is not on any barbershop',
-                HttpStatus::BadRequest
-            );
-        }
-
-        if ($clientBarbershopId->value !== $barbershopId) {
-            throw new BarbershopClientException(
-                'Client is not on that barbershop',
+                'The client is not currently checked into any barbershop',
                 HttpStatus::BadRequest
             );
         }
@@ -92,8 +87,15 @@ class BarbershopClientService extends BaseService
             && $clientStatus !== ClientStatusEnum::Paid->value
         ) {
             throw new BarbershopClientException(
-                'Cannot check out while on queue or being attended',
-                HttpStatus::BadRequest
+                'Client must have status \'at_barbershop\' or \'paid\' to check out',
+                HttpStatus::Forbidden
+            );
+        }
+
+        if ($clientBarbershopId->value !== $barbershopId) {
+            throw new BarbershopClientException(
+                'The client is registered at a different barbershop location',
+                HttpStatus::Conflict
             );
         }
 

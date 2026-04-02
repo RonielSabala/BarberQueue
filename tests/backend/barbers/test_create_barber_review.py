@@ -86,7 +86,7 @@ def test_non_client_cannot_review(
     client: ApiClient, barber_id: int, non_client_id: int
 ) -> None:
     """
-    Non-client users cannot leave reviews — returns 403.
+    Non-client users cannot leave reviews. Returns 403.
     """
 
     request = CreateBarberReviewRequest.random(client_id=non_client_id)
