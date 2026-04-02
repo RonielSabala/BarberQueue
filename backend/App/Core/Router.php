@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\LoggerProvider;
-use App\Exceptions\BaseException;
+use App\Exceptions\Base\BaseException;
 use Monolog\Logger;
 use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 

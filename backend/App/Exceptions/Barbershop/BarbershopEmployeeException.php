@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Exceptions\Barbershop;
 
-use App\Exceptions\ServiceException;
+use App\Exceptions\Base\ServiceException;
 
 class BarbershopEmployeeException extends ServiceException {}

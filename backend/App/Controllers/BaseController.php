@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Attributes\ArrayOf;
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
-use App\Exceptions\ValidationException;
+use App\Exceptions\Base\ValidationException;
 use App\Utils\{TextUtils, TypeCoercion};
 
 abstract class BaseController
