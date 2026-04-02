@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getBarbershops } from "../../services/barbershopService";
 import BarbershopCard from "../../components/BarbershopCard";
 
@@ -25,7 +26,32 @@ function ClientHome() {
 
   return (
     <div style={{ padding: "30px" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>BarberQueue</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+          gap: "10px",
+          flexWrap: "wrap",
+        }}
+      >
+        <h1 style={{ margin: 0 }}>BarberQueue</h1>
+
+        <Link
+          to="/client/profile"
+          style={{
+            textDecoration: "none",
+            backgroundColor: "#f59e0b",
+            color: "white",
+            padding: "10px 18px",
+            borderRadius: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          Ir a mi perfil
+        </Link>
+      </div>
 
       {/* BUSCADOR */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>

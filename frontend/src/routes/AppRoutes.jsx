@@ -76,7 +76,7 @@ function AppRoutes() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
         {/*Barber*/}
-        <Route path="/barber/1/profile" element={<BarberProfile />} />
+        <Route path="/barber/profile" element={<BarberProfile />} />
         <Route path="/barber/dashboard" element={<BarberDashboard />} />
 
         {/*Assistant*/}
