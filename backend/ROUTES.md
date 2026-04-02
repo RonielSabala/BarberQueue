@@ -14,8 +14,12 @@ unless noted otherwise.
 - [Auth](#auth)
 - [Users](#users)
 - [Barbershops](#barbershops)
-- [Employees](#employees)
+  - [Photos](#photos)
+  - [Reviews](#reviews)
+  - [Employees](#employees)
+- [Employees](#employees-1)
 - [Barbers](#barbers)
+  - [Reviews](#reviews-1)
 
 ---
 
@@ -434,6 +438,8 @@ Replace the barbershop's main photo.
 
 ---
 
+### Photos
+
 ### `GET /api/barbershops/{id}/photos` <!-- omit from toc -->
 
 Get all photos of a barbershop.
@@ -495,6 +501,8 @@ Remove a photo from the gallery.
 
 ---
 
+### Reviews
+
 ### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
 
 List all reviews of a barbershop.
@@ -552,6 +560,8 @@ Remove a review from a barbershop's reviews.
 - Response: `204`
 
 ---
+
+### Employees
 
 ### `GET /api/barbershops/{id}/employees` <!-- omit from toc -->
 
@@ -744,6 +754,8 @@ Update a barber's current status. All fields are optional, but at least one must
 ```
 
 ---
+
+### Reviews
 
 ### `GET /api/barbers/{id}/reviews` <!-- omit from toc -->
 
