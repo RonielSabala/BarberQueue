@@ -7,7 +7,7 @@ namespace App\Domain\Entities\Barbershop;
 use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{DateTimeString, Id, Rating, ReviewContent, Username};
 
-readonly class BarbershopReviewEntity extends BaseEntity
+final readonly class BarbershopReviewEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

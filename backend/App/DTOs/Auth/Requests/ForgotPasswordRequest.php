@@ -7,7 +7,7 @@ namespace App\DTOs\Auth\Requests;
 use App\Domain\ValueObjects\Email;
 use App\DTOs\BaseRequest;
 
-readonly class ForgotPasswordRequest extends BaseRequest
+final readonly class ForgotPasswordRequest extends BaseRequest
 {
     public function __construct(
         public Email $email

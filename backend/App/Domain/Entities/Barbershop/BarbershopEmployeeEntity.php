@@ -8,7 +8,7 @@ use App\Attributes\ArrayOf;
 use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{DayOfWeek, Email, Id, Phone, Role, TimeOfDay, Username};
 
-readonly class BarbershopEmployeeEntity extends BaseEntity
+final readonly class BarbershopEmployeeEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

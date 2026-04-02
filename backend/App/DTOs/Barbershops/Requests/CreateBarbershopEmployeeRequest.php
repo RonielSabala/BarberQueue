@@ -16,7 +16,7 @@ use App\Domain\ValueObjects\{
     Username
 };
 
-readonly class CreateBarbershopEmployeeRequest extends BaseRequest
+final readonly class CreateBarbershopEmployeeRequest extends BaseRequest
 {
     public function __construct(
         public Username $username,

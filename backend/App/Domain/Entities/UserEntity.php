@@ -6,7 +6,7 @@ namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\{Email, Id, PasswordHash, Phone, Role, Username};
 
-readonly class UserEntity extends BaseEntity
+final readonly class UserEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

@@ -7,7 +7,7 @@ namespace App\DTOs\Barbershops\Requests;
 use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{Id, Rating, ReviewContent};
 
-readonly class CreateBarbershopReviewRequest extends BaseRequest
+final readonly class CreateBarbershopReviewRequest extends BaseRequest
 {
     public function __construct(
         public Id $clientId,

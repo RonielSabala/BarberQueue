@@ -12,7 +12,7 @@ use App\Domain\ValueObjects\{
     TimeOfDay
 };
 
-readonly class BarberDashboardEntity extends BaseEntity
+final readonly class BarberDashboardEntity extends BaseEntity
 {
     public function __construct(
         public NonNegativeInteger $totalAttendedClients,

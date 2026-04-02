@@ -6,7 +6,7 @@ namespace App\DTOs\Barbershops\Requests;
 
 use App\DTOs\BaseRequest;
 
-readonly class UpdateBarbershopStatusRequest extends BaseRequest
+final readonly class UpdateBarbershopStatusRequest extends BaseRequest
 {
     public function __construct(
         public bool $isActive,

@@ -7,7 +7,7 @@ namespace App\DTOs\Auth\Requests;
 use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{Email, Password};
 
-readonly class LoginRequest extends BaseRequest
+final readonly class LoginRequest extends BaseRequest
 {
     public function __construct(
         public Email $email,

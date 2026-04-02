@@ -8,7 +8,7 @@ use App\Attributes\ArrayOf;
 use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{DayOfWeek, TimeOfDay};
 
-readonly class UpdateEmployeeAssignmentRequest extends BaseRequest
+final readonly class UpdateEmployeeAssignmentRequest extends BaseRequest
 {
     public function __construct(
         public ?TimeOfDay $startTime,

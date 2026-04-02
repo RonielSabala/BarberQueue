@@ -7,7 +7,7 @@ namespace App\Domain\Entities\Barber;
 use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{BarberStatus, Id, Username};
 
-readonly class BarberEntity extends BaseEntity
+final readonly class BarberEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

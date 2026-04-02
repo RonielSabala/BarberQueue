@@ -7,7 +7,7 @@ namespace App\DTOs\Employees\Responses;
 use App\Attributes\ArrayOf;
 use App\DTOs\BaseResponse;
 
-readonly class EmployeeResponse extends BaseResponse
+final readonly class EmployeeResponse extends BaseResponse
 {
     public function __construct(
         public int $id,

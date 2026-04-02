@@ -7,7 +7,7 @@ namespace App\Domain\Entities\Barbershop;
 use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{AverageRating, NonNegativeInteger};
 
-readonly class BarbershopDashboardEntity extends BaseEntity
+final readonly class BarbershopDashboardEntity extends BaseEntity
 {
     public function __construct(
         public NonNegativeInteger $clientsToday,

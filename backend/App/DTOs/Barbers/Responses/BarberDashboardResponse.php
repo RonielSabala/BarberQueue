@@ -6,7 +6,7 @@ namespace App\DTOs\Barbers\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class BarberDashboardResponse extends BaseResponse
+final readonly class BarberDashboardResponse extends BaseResponse
 {
     public function __construct(
         public int $totalAttendedClients,

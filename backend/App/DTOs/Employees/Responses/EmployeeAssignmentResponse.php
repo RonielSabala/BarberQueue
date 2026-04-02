@@ -6,7 +6,7 @@ namespace App\DTOs\Employees\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class EmployeeAssignmentResponse extends BaseResponse
+final readonly class EmployeeAssignmentResponse extends BaseResponse
 {
     /** @param int[] $workingDays */
     public function __construct(

@@ -7,7 +7,7 @@ namespace App\Domain\Entities;
 use App\Attributes\ArrayOf;
 use App\Utils\TextUtils;
 
-readonly class BaseEntity
+abstract readonly class BaseEntity
 {
     public static function fromDbRow(array $row): self
     {
