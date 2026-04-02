@@ -2,24 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barbershop;
 
 use App\Core\HttpStatus;
 use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbershops\Requests\CreateBarbershopEmployeeRequest;
-use App\Exceptions\BarbershopEmployeeException;
+use App\Exceptions\Barbershop\BarbershopEmployeeException;
 use App\DTOs\Barbershops\Responses\{
     BarbershopEmployeeResponse,
     CreateBarbershopEmployeeResponse
 };
 use App\Repositories\{
+    Barbershop\BarbershopRepository,
     AssignmentRepository,
-    BarbershopRepository,
     EmployeeRepository,
     RoleRepository,
     UserRepository,
     WorkingDayRepository
 };
+use App\Services\{BaseService, PasswordService, UserService};
 
 class BarbershopEmployeeService extends BaseService
 {

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barbershop;
 
 use App\DTOs\Barbershops\Requests\CreateBarbershopPhotosRequest;
-use App\Repositories\BarbershopPhotoRepository;
+use App\Repositories\Barbershop\BarbershopPhotoRepository;
+use App\Services\BaseService;
 use App\DTOs\Barbershops\Responses\{
     BarbershopPhotoResponse,
     CreateBarbershopPhotosResponse,

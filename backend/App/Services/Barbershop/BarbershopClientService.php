@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barbershop;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\BarbershopClientEntity;
+use App\Domain\Entities\Barbershop\BarbershopClientEntity;
 use App\DTOs\Barbershops\Responses\BarbershopClientResponse;
-use App\Exceptions\BarbershopClientException;
-use App\Repositories\BarbershopClientRepository;
+use App\Exceptions\Barbershop\BarbershopClientException;
+use App\Repositories\Barbershop\BarbershopClientRepository;
 use App\Domain\Enums\{ClientStatusEnum, RoleEnum};
+use App\Services\{BaseService, UserService};
 
 class BarbershopClientService extends BaseService
 {

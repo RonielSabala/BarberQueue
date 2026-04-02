@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Entities;
+namespace App\Domain\Entities\Barbershop;
 
+use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{AverageRating, NonNegativeInteger};
 
 readonly class BarbershopDashboardEntity extends BaseEntity

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Exceptions;
+namespace App\Exceptions\Barbershop;
+
+use App\Exceptions\ServiceException;
 
 class BarbershopReviewException extends ServiceException {}

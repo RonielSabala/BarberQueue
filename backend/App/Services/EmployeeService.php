@@ -10,6 +10,7 @@ use App\Domain\Enums\RoleEnum;
 use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employees\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
+use App\Services\Barbershop\BarbershopService;
 use App\Repositories\{
     AssignmentRepository,
     EmployeeRepository,

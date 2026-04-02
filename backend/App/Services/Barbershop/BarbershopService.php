@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barbershop;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\BarbershopEntity;
+use App\Domain\Entities\Barbershop\BarbershopEntity;
 use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbershops\Requests\CreateBarbershopRequest;
 use App\DTOs\BaseRequest;
-use App\Exceptions\BarbershopException;
-use App\Repositories\BarbershopRepository;
+use App\Exceptions\Barbershop\BarbershopException;
+use App\Repositories\Barbershop\BarbershopRepository;
 use App\DTOs\Barbershops\Responses\{
     BarbershopDashboardResponse,
     BarbershopDetailResponse,
     BarbershopResponse,
     CreateBarbershopResponse
 };
+use App\Services\{BaseService, UserService};
 
 class BarbershopService extends BaseService
 {

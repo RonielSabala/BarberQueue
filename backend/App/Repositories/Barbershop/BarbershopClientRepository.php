@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories;
+namespace App\Repositories\Barbershop;
 
-use App\Domain\Entities\BarbershopClientEntity;
+use App\Domain\Entities\Barbershop\BarbershopClientEntity;
+use App\Repositories\BaseRepository;
 
 class BarbershopClientRepository extends BaseRepository
 {

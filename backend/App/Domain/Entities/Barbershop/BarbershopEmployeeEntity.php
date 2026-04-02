@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Entities;
+namespace App\Domain\Entities\Barbershop;
 
 use App\Attributes\ArrayOf;
+use App\Domain\Entities\BaseEntity;
 use App\Domain\ValueObjects\{DayOfWeek, Email, Id, Phone, Role, TimeOfDay, Username};
 
 readonly class BarbershopEmployeeEntity extends BaseEntity

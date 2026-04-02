@@ -15,7 +15,7 @@ use App\DTOs\Barbershops\Requests\{
     UpdateBarbershopRequest,
     UpdateBarbershopStatusRequest
 };
-use App\Services\{
+use App\Services\Barbershop\{
     BarbershopClientService,
     BarbershopEmployeeService,
     BarbershopPhotoService,
