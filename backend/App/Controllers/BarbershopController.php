@@ -16,10 +16,11 @@ use App\DTOs\Barbershops\Requests\{
     UpdateBarbershopStatusRequest
 };
 use App\Services\{
+    BarbershopClientService,
     BarbershopEmployeeService,
     BarbershopPhotoService,
     BarbershopReviewService,
-    BarbershopService,
+    BarbershopService
 };
 
 #[RoutePrefix('/api/barbershops')]
@@ -30,6 +31,7 @@ class BarbershopController extends BaseController
         private readonly BarbershopPhotoService $barbershopPhotoService,
         private readonly BarbershopReviewService $barbershopReviewService,
         private readonly BarbershopEmployeeService $barbershopEmployeeService,
+        private readonly BarbershopClientService $BarbershopClientService
     ) {}
 
     #[GET('')]
@@ -165,6 +167,29 @@ class BarbershopController extends BaseController
             return;
         }
 
+        HttpResponse::json(null, HttpStatus::NoContent);
+    }
+
+    // Clients
+
+    #[GET('/{id}/clients')]
+    public function getAllAtBarbershop(int $barbershopId): void
+    {
+        $response = $this->BarbershopClientService->getAllAtBarbershop($barbershopId);
+        HttpResponse::json($response);
+    }
+
+    #[POST('/{id}/clients/{clientId}')]
+    public function checkIn(int $barbershopId, int $clientId): void
+    {
+        $this->BarbershopClientService->checkIn($barbershopId, $clientId);
+        HttpResponse::json(null, HttpStatus::NoContent);
+    }
+
+    #[DELETE('/{id}/clients/{clientId}')]
+    public function checkOut(int $barbershopId, int $clientId): void
+    {
+        $this->BarbershopClientService->checkOut($barbershopId, $clientId);
         HttpResponse::json(null, HttpStatus::NoContent);
     }
 }

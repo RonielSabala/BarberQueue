@@ -35,6 +35,13 @@ readonly class BarbershopEntity extends BaseEntity
         public ?AverageRating $averageRating,
     ) {
         $now = date('H:i:s');
-        $this->isOpen = $now >= $this->opensAt->value && $now <= $this->closesAt->value;
+        $opensAt = $this->opensAt->value;
+        $closesAt = $this->closesAt->value;
+
+        $this->isOpen = (
+            $now >= $opensAt
+            && $now <= $closesAt
+            || $opensAt === $closesAt
+        );
     }
 }

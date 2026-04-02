@@ -17,6 +17,7 @@ unless noted otherwise.
   - [Photos](#photos)
   - [Reviews](#reviews)
   - [Employees](#employees)
+  - [Clients](#clients)
 - [Employees](#employees-1)
 - [Barbers](#barbers)
   - [Reviews](#reviews-1)
@@ -623,6 +624,42 @@ Create a new user and create their assignment record for the barbershop.
 ### `DELETE /api/barbershops/{id}/employees/{employeeId}` <!-- omit from toc -->
 
 Unassign an employee from a barbershop. The employee's user account remains active in the system.
+
+- Response: `204`
+
+---
+
+### Clients
+
+### `GET /api/barbershops/{id}/clients` <!-- omit from toc -->
+
+List all clients currently checked in at a barbershop.
+
+- Response: `200`
+
+```json
+[
+  {
+    "clientId": 1,
+    "currentStatus": "at_barbershop",
+    "username": "client_example"
+  }
+]
+```
+
+---
+
+### `POST /api/barbershops/{id}/clients/{clientId}` <!-- omit from toc -->
+
+Check a client in to a barbershop. The client must have status `default` and the barbershop must be open. Afterwards, the client's status becomes `at_barbershop`.
+
+- Response: `204`
+
+---
+
+### `DELETE /api/barbershops/{id}/clients/{clientId}` <!-- omit from toc -->
+
+Check a client out of a barbershop. The client must have status `at_barbershop` or `paid`. Afterwards, the client's status becomes `default`.
 
 - Response: `204`
 
