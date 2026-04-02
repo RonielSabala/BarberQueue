@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Mail;
 
 use App\Config\LoggerProvider;
 use App\Domain\Entities\UserEntity;

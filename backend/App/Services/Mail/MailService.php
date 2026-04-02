@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Mail;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
 use App\Domain\ValueObjects\ResetCode;
 use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
+use App\Services\BaseService;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class MailService extends BaseService implements MailerInterface
