@@ -12,6 +12,16 @@
   "php-cs-fixer.config": "backend/.php-cs-fixer.php",
   "php-cs-fixer.allowRisky": true,
   "php-cs-fixer.formatHtml": false,
+  "php-imports.formatOnSave": true,
+  "php-imports.print.wrap.limit": 88,
+  "php-imports.order": [
+    "singleUses.class",
+    "singleUses.function",
+    "singleUses.const",
+    "groupedUses.class",
+    "groupedUses.function",
+    "groupedUses.const"
+  ],
   "phpNamespaceResolver.autoSort": true,
   "phpserver.port": 3000,
   "phpserver.relativePath": "backend",

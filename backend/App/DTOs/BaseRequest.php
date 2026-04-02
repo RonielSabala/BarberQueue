@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\DTOs;
 
-use App\Domain\ValueObjects\Base\BaseField;
 use App\Utils\TextUtils;
 
-abstract readonly class BaseRequest
+abstract readonly class BaseRequest extends BaseDto
 {
     public function toUpdateArray(): array
     {
@@ -22,19 +21,14 @@ abstract readonly class BaseRequest
             }
 
             $key = TextUtils::toSnakeCase($property->getName());
-            $array[$key] = $this->parseValue($value);
+            $array[$key] = static::unwrapValue(
+                $value,
+                onObject: static fn (mixed $obj) => $obj instanceof self
+                    ? $obj->toUpdateArray()
+                    : $obj
+            );
         }
 
         return $array;
-    }
-
-    private function parseValue($value): mixed
-    {
-        return match (true) {
-            $value instanceof BaseField => $value->value,
-            $value instanceof self => $value->toUpdateArray(),
-            \is_bool($value) => $value ? 1 : 0,
-            default => $value,
-        };
     }
 }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\User;
+use App\Domain\Entities\UserEntity;
 use App\Domain\ValueObjects\ResetCode;
 use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class MailService extends BaseService
+class MailService extends BaseService implements MailerInterface
 {
     private const PORT = 587;
     private const HOST = 'smtp.gmail.com';
@@ -51,7 +51,7 @@ class MailService extends BaseService
         $mail->send();
     }
 
-    public function sendPasswordReset(User $user): void
+    public function sendPasswordReset(UserEntity $user): void
     {
         $userId = $user->id->value;
         $userEmail = $user->email->value;
@@ -60,7 +60,7 @@ class MailService extends BaseService
         $resetCode = ResetCode::getNewCode();
         $minutes = self::RESET_EXPIRY_MINUTES . ' minutes';
         $expiresAt = new \DateTimeImmutable("+{$minutes}");
-        $this->passwordResetRepository->create($userId, $resetCode, $expiresAt);
+        $this->passwordResetRepository->createPasswordReset($userId, $resetCode, $expiresAt);
 
         // Send email
         $mail = new PHPMailer(true);

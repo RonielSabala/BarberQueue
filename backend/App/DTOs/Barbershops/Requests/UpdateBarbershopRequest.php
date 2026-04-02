@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTOs\Barbershops\Requests;
 
+use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{
     Address,
     BarbershopName,
@@ -12,7 +13,6 @@ use App\Domain\ValueObjects\{
     Phone,
     TimeOfDay
 };
-use App\DTOs\BaseRequest;
 
 readonly class UpdateBarbershopRequest extends BaseRequest
 {

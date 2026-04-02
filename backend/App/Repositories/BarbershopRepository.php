@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Domain\Entities\{
-    Barbershop,
-    BarbershopPhoto,
-    BarbershopReview,
-    Employee
-};
-use App\Domain\ValueObjects\{Id, PhotoUrl};
+use App\Domain\Entities\{BarbershopDashboardEntity, BarbershopEntity};
 
 class BarbershopRepository extends BaseRepository
 {
@@ -27,15 +21,26 @@ class BarbershopRepository extends BaseRepository
         'is_active',
     ];
 
-    public function findById(int $id): ?Barbershop
+    private function barbershopQuery(): string
     {
-        $sql = <<<'SQL'
+        return <<<'SQL'
             SELECT
                 b.*,
                 ROUND(AVG(r.rating), 1) AS average_rating
             FROM
                 barbershops b
                 LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+        SQL;
+    }
+
+    public function isBarbershopActive(int $id): bool
+    {
+        return $this->exists($id, ['is_active' => 1]);
+    }
+
+    public function getById(int $id): ?BarbershopEntity
+    {
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.id = ?
             GROUP BY
@@ -44,18 +49,12 @@ class BarbershopRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(Barbershop::class, $sql, [$id]);
+        return $this->fetchOne(BarbershopEntity::class, $sql, [$id]);
     }
 
-    public function findByEmail(string $email): ?Barbershop
+    public function getByEmail(string $email): ?BarbershopEntity
     {
-        $sql = <<<'SQL'
-            SELECT
-                b.*,
-                ROUND(AVG(r.rating), 1) AS average_rating
-            FROM
-                barbershops b
-                LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.email = ?
             GROUP BY
@@ -64,18 +63,16 @@ class BarbershopRepository extends BaseRepository
                 1
         SQL;
 
-        return $this->fetchOne(Barbershop::class, $sql, [$email]);
+        return $this->fetchOne(BarbershopEntity::class, $sql, [$email]);
     }
 
-    public function getAll(?string $search = null, ?bool $isOpen = null): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                b.*,
-                ROUND(AVG(r.rating), 1) AS average_rating
-            FROM
-                barbershops b
-                LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+    /** @return BarbershopEntity[] */
+    public function getAll(
+        ?string $search = null,
+        ?bool $isOpen = null,
+        ?int $adminId = null
+    ): array {
+        $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.is_active = 1
         SQL;
@@ -92,11 +89,17 @@ class BarbershopRepository extends BaseRepository
             $sql .= ' AND (b.opens_at > CURRENT_TIME() OR b.closes_at < CURRENT_TIME())';
         }
 
+        if ($adminId !== null) {
+            $sql .= ' AND b.admin_id = :admin_id';
+            $params['admin_id'] = $adminId;
+        }
+
         $sql .= ' GROUP BY b.id';
-        return $this->fetchAll(Barbershop::class, $sql, $params);
+        return $this->fetchAll(BarbershopEntity::class, $sql, $params);
     }
 
-    public function create(
+    public function createBarbershop(
+        int $adminId,
         string $barbershopName,
         string $email,
         string $phone,
@@ -105,248 +108,119 @@ class BarbershopRepository extends BaseRepository
         string $opensAt,
         string $closesAt,
         int $capacity
-    ): ?Barbershop {
-        $sql = <<<'SQL'
-            INSERT INTO barbershops (
-                barbershop_name,
-                email,
-                phone,
-                barbershop_address,
-                photo_url,
-                opens_at,
-                closes_at,
-                capacity
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        SQL;
-
-        $this->query($sql, [
-            $barbershopName,
-            $email,
-            $phone,
-            $barbershopAddress,
-            $photoUrl,
-            $opensAt,
-            $closesAt,
-            $capacity,
+    ): ?BarbershopEntity {
+        $id = $this->insert([
+            'admin_id' => $adminId,
+            'barbershop_name' => $barbershopName,
+            'email' => $email,
+            'phone' => $phone,
+            'barbershop_address' => $barbershopAddress,
+            'photo_url' => $photoUrl,
+            'opens_at' => $opensAt,
+            'closes_at' => $closesAt,
+            'capacity' => $capacity,
         ]);
 
-        $id = (int) $this->db->lastInsertId();
-        return $this->findById($id);
+        return $this->getById($id);
     }
 
-    public function getPhotos(int $barbershopId): array
+    public function getDashboard(int $barbershopId): ?BarbershopDashboardEntity
     {
         $sql = <<<'SQL'
             SELECT
-                *
+                b.id,
+                -- Clients today
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND DATE(t.finished_at) = CURDATE()
+                ) AS clients_today,
+                -- Clients this week
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND t.finished_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                ) AS clients_this_week,
+                -- Clients this month
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND YEAR(t.finished_at) = YEAR(NOW())
+                        AND MONTH(t.finished_at) = MONTH(NOW())
+                ) AS clients_this_month,
+                -- Average service duration in minutes
+                (
+                    SELECT
+                        ROUND(AVG(TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at) / 60.0), 1)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NOT NULL
+                        AND t.attended_at IS NOT NULL
+                ) AS average_service_minutes,
+                -- Average rating
+                (
+                    SELECT
+                        ROUND(AVG(br.rating), 1)
+                    FROM
+                        barbershop_reviews br
+                    WHERE
+                        br.barbershop_id = b.id
+                ) AS average_rating,
+                -- Total reviews
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        barbershop_reviews br
+                    WHERE
+                        br.barbershop_id = b.id
+                ) AS total_reviews,
+                -- Active barbers right now
+                (
+                    SELECT
+                        COUNT(DISTINCT sa.staff_id)
+                    FROM
+                        staff_assignments sa
+                        JOIN barber_status bs ON bs.staff_id = sa.staff_id
+                    WHERE
+                        sa.barbershop_id = b.id
+                        AND bs.current_status = 'active'
+                ) AS active_barbers,
+                -- Current queue depth
+                (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        turns t
+                    WHERE
+                        t.barbershop_id = b.id
+                        AND t.finished_at IS NULL
+                ) AS queue_count
             FROM
-                barbershop_photos
+                barbershops b
             WHERE
-                barbershop_id = ?
-        SQL;
-
-        return $this->fetchAll(BarbershopPhoto::class, $sql, [$barbershopId]);
-    }
-
-    public function addPhotos(int $barbershopId, array $photoUrls): array
-    {
-        $sql = <<<'SQL'
-            INSERT INTO
-                barbershop_photos (barbershop_id, photo_url)
-            VALUES
-                (?, ?)
-        SQL;
-
-        $insertedPhotos = [];
-        foreach ($photoUrls as $url) {
-            $photoUrlValue = $url->value;
-            $this->query($sql, [$barbershopId, $photoUrlValue]);
-
-            $id = $this->db->lastInsertId();
-            $insertedPhotos[] = new BarbershopPhoto(
-                id: new Id($id),
-                barbershopId: new Id($barbershopId),
-                photoUrl: new PhotoUrl($photoUrlValue)
-            );
-        }
-
-        return $insertedPhotos;
-    }
-
-    public function deletePhoto(int $barbershopId, int $photoId): bool
-    {
-        $sql = <<<'SQL'
-            DELETE FROM barbershop_photos
-            WHERE
-                id = ?
-                AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$photoId, $barbershopId]);
-        return $stmt->rowCount() > 0;
-    }
-
-    public function getReviews(int $barbershopId): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                br.*,
-                u.username
-            FROM
-                barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
-            WHERE
-                br.barbershop_id = ?
-            ORDER BY
-                br.created_at DESC
-        SQL;
-
-        return $this->fetchAll(BarbershopReview::class, $sql, [$barbershopId]);
-    }
-
-    public function addReview(int $userId, int $barbershopId, int $rating, string $content): ?BarbershopReview
-    {
-        $sql = <<<'SQL'
-            INSERT INTO
-                barbershop_reviews (user_id, barbershop_id, rating, content)
-            VALUES
-                (?, ?, ?, ?)
-        SQL;
-
-        $fetchSql = <<<'SQL'
-            SELECT
-                br.*,
-                u.username
-            FROM
-                barbershop_reviews br
-                JOIN users u ON br.user_id = u.id
-            WHERE
-                br.id = ?
+                b.id = ?
             LIMIT
                 1
         SQL;
 
-        $this->query($sql, [$userId, $barbershopId, $rating, $content]);
-
-        $id = $this->db->lastInsertId();
-        return $this->fetchOne(BarbershopReview::class, $fetchSql, [$id]);
-    }
-
-    public function deleteReview(int $barbershopId, int $reviewId): bool
-    {
-        $sql = <<<'SQL'
-            DELETE FROM barbershop_reviews
-            WHERE
-                id = ?
-                AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$reviewId, $barbershopId]);
-        return $stmt->rowCount() > 0;
-    }
-
-    public function getEmployees(int $barbershopId): array
-    {
-        $sql = <<<'SQL'
-            SELECT
-                u.id,
-                sa.barbershop_id,
-                u.username,
-                u.email,
-                u.phone,
-                r.role_name AS role,
-                sa.start_time AS start_time,
-                sa.end_time AS end_time,
-                GROUP_CONCAT(
-                    wd.day_of_week
-                    ORDER BY
-                        wd.day_of_week ASC
-                ) AS working_days
-            FROM
-                users u
-                JOIN roles r ON u.role_id = r.id
-                JOIN staff_assignments sa ON u.id = sa.staff_id
-                LEFT JOIN working_days wd ON u.id = wd.staff_id
-            WHERE
-                sa.barbershop_id = ?
-            GROUP BY
-                u.id,
-                sa.barbershop_id,
-                r.role_name,
-                sa.start_time,
-                sa.end_time
-        SQL;
-
-        return $this->fetchAll(Employee::class, $sql, [$barbershopId]);
-    }
-
-    public function createAndAssignEmployee(
-        int $barbershopId,
-        array $userData,
-        array $assignmentData,
-        array $days
-    ): int {
-        $userSql = <<<'SQL'
-            INSERT INTO
-                users (role_id, username, email, phone, password_hash)
-            VALUES
-                (?, ?, ?, ?, ?)
-        SQL;
-
-        $assignSql = <<<'SQL'
-            INSERT INTO
-                staff_assignments (staff_id, barbershop_id, start_time, end_time)
-            VALUES
-                (?, ?, ?, ?)
-        SQL;
-
-        $daySql = <<<'SQL'
-            INSERT INTO
-                working_days (staff_id, day_of_week)
-            VALUES
-                (?, ?)
-        SQL;
-
-        return $this->transaction(function () use (
-            $barbershopId,
-            $userData,
-            $assignmentData,
-            $days,
-            $userSql,
-            $assignSql,
-            $daySql
-        ) {
-            // Insert user
-            $this->query($userSql, array_values($userData));
-            $staffId = (int) $this->db->lastInsertId();
-
-            // Create staff assignment
-            $this->query($assignSql, [
-                $staffId,
-                $barbershopId,
-                $assignmentData['start_time'],
-                $assignmentData['end_time'],
-            ]);
-
-            // Insert working days
-            foreach ($days as $day) {
-                $this->query($daySql, [$staffId, $day]);
-            }
-
-            return $staffId;
-        });
-    }
-
-    public function deleteEmployeeAssignment(int $employeeId, int $barbershopId): bool
-    {
-        $sql = <<<'SQL'
-        DELETE FROM staff_assignments
-        WHERE
-            staff_id = ?
-            AND barbershop_id = ?
-        SQL;
-
-        $stmt = $this->query($sql, [$employeeId, $barbershopId]);
-        return $stmt->rowCount() > 0;
+        return $this->fetchOne(BarbershopDashboardEntity::class, $sql, [$barbershopId]);
     }
 }

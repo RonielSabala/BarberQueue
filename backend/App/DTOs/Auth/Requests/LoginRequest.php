@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTOs\Auth\Requests;
 
-use App\Domain\ValueObjects\{Email, Password};
 use App\DTOs\BaseRequest;
+use App\Domain\ValueObjects\{Email, Password};
 
 readonly class LoginRequest extends BaseRequest
 {

@@ -58,7 +58,7 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, LoginResponse)
 
 
-def test_unknown_email(client: ApiClient) -> None:
+def test_status_on_unknown_email(client: ApiClient) -> None:
     """
     Non-existent email returns 401.
     """
@@ -70,7 +70,7 @@ def test_unknown_email(client: ApiClient) -> None:
     assert_status(response, HttpStatus.UNAUTHORIZED)
 
 
-def test_wrong_password(client: ApiClient, registered: LoginRequest) -> None:
+def test_status_on_wrong_password(client: ApiClient, registered: LoginRequest) -> None:
     """
     Wrong password returns 401.
     """

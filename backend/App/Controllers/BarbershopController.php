@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{DELETE, GET, POST, RoutePrefix};
-use App\Attributes\PATCH;
+use App\Services\BarbershopService;
+use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
     CreateBarbershopEmployeeRequest,
@@ -16,7 +16,6 @@ use App\DTOs\Barbershops\Requests\{
     UpdateBarbershopRequest,
     UpdateBarbershopStatusRequest
 };
-use App\Services\BarbershopService;
 
 #[RoutePrefix('/api/barbershops')]
 class BarbershopController extends BaseController
@@ -26,9 +25,12 @@ class BarbershopController extends BaseController
     ) {}
 
     #[GET('')]
-    public function getAll(?string $search = null, ?bool $isOpen = null): void
-    {
-        $response = $this->barbershopService->getAll($search, $isOpen);
+    public function getAll(
+        ?string $search = null,
+        ?bool $isOpen = null,
+        ?int $adminId = null
+    ): void {
+        $response = $this->barbershopService->getAll($search, $isOpen, $adminId);
         HttpResponse::json($response);
     }
 
@@ -46,24 +48,31 @@ class BarbershopController extends BaseController
         HttpResponse::json($response);
     }
 
+    #[GET('/{id}/dashboard')]
+    public function getDashboard(int $id): void
+    {
+        $response = $this->barbershopService->getDashboard($id);
+        HttpResponse::json($response);
+    }
+
     #[PATCH('/{id}')]
     public function update(int $id, UpdateBarbershopRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop updated');
     }
 
     #[PATCH('/{id}/status')]
     public function updateStatus(int $id, UpdateBarbershopStatusRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop status updated');
     }
 
     #[PATCH('/{id}/photo')]
     public function updatePhoto(int $id, UpdateBarbershopPhotoRequest $request): void
     {
-        $this->barbershopService->updateFields($id, $request);
+        $this->barbershopService->update($id, $request);
         HttpResponse::success('Barbershop photo updated');
     }
 
@@ -75,9 +84,9 @@ class BarbershopController extends BaseController
     }
 
     #[POST('/{id}/photos')]
-    public function addPhotos(int $id, CreateBarbershopPhotosRequest $request): void
+    public function createPhotos(int $id, CreateBarbershopPhotosRequest $request): void
     {
-        $response = $this->barbershopService->addPhotos($id, $request);
+        $response = $this->barbershopService->createPhotos($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 
@@ -101,9 +110,9 @@ class BarbershopController extends BaseController
     }
 
     #[POST('/{id}/reviews')]
-    public function addReview(int $id, CreateBarbershopReviewRequest $request): void
+    public function createReview(int $id, CreateBarbershopReviewRequest $request): void
     {
-        $response = $this->barbershopService->addReview($id, $request);
+        $response = $this->barbershopService->createReview($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 

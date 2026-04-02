@@ -6,11 +6,11 @@ namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\{DateTimeString, Id, Rating, ReviewContent, Username};
 
-readonly class BarbershopReview extends BaseEntity
+readonly class BarbershopReviewEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,
-        public Id $userId,
+        public Id $clientId,
         public Id $barbershopId,
         public Username $username,
         public Rating $rating,

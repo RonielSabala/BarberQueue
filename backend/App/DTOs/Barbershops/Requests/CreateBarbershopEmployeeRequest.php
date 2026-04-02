@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace App\DTOs\Barbershops\Requests;
 
 use App\Attributes\ArrayOf;
-use App\Domain\ValueObjects\{DayOfWeek, Email, Password, Phone, RoleName, TimeOfDay, Username};
 use App\DTOs\BaseRequest;
+use App\Domain\ValueObjects\{
+    DayOfWeek,
+    Email,
+    Password,
+    Phone,
+    Role,
+    TimeOfDay,
+    Username
+};
 
 readonly class CreateBarbershopEmployeeRequest extends BaseRequest
 {
@@ -15,7 +23,7 @@ readonly class CreateBarbershopEmployeeRequest extends BaseRequest
         public Email $email,
         public Phone $phone,
         public Password $password,
-        public RoleName $role,
+        public Role $role,
         public TimeOfDay $startTime,
         public TimeOfDay $endTime,
         #[ArrayOf(DayOfWeek::class, minItems: 1, maxItems: 7)]

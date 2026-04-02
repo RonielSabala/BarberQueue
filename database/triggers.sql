@@ -6,15 +6,15 @@ CREATE TRIGGER trg_users_after_insert AFTER
 INSERT
     ON users FOR EACH ROW BEGIN IF NEW.role_id = 1 THEN
 INSERT INTO
-    client_status (user_id, current_status)
+    client_status (client_id, current_status)
 VALUES
     (NEW.id, 'default');
 
 ELSEIF NEW.role_id = 2 THEN
 INSERT INTO
-    barber_status (staff_id, current_status, is_accepting)
+    barber_status (staff_id, current_status)
 VALUES
-    (NEW.id, 'inactive', TRUE);
+    (NEW.id, 'inactive');
 
 END IF;
 
@@ -33,7 +33,7 @@ SELECT
 FROM
     users
 WHERE
-    id = NEW.user_id
+    id = NEW.client_id
 LIMIT
     1;
 
@@ -133,7 +133,7 @@ CREATE TRIGGER trg_turns_before_insert BEFORE
 INSERT
     ON turns FOR EACH ROW BEGIN DECLARE v_group_size INT DEFAULT 0;
 
-DECLARE v_is_accepting BOOLEAN DEFAULT TRUE;
+DECLARE v_is_accepting BOOLEAN DEFAULT FALSE;
 
 -- 1) Group size cap
 IF NEW.group_id IS NOT NULL THEN

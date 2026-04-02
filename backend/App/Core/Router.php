@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\LoggerProvider;
-use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 use App\Exceptions\BaseException;
 use Monolog\Logger;
+use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 
 class Router
 {
@@ -18,9 +18,8 @@ class Router
     private static RouteRegistry $registry;
     private static Logger $logger;
 
-    public static function init(): void
+    public static function init(Container $container): void
     {
-        $container = new Container();
         self::$registry = new RouteRegistry($container);
         self::$logger = LoggerProvider::get();
 

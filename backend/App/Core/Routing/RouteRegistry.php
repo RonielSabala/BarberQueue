@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Routing;
 
-use App\Attributes\{HttpMethod, RoutePrefix};
 use App\Core\Container;
+use App\Attributes\{HttpMethod, RoutePrefix};
 
 class RouteRegistry
 {

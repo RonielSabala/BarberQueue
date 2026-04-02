@@ -7,7 +7,8 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos import ErrorResponse, MessageResponse
+from backend.conftest import NON_EXISTENT_ID
+from domain.dtos import MessageResponse
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.users import UpdateUserRequest
 from domain.utils import to_camel_case
@@ -19,12 +20,9 @@ from helpers.assertions import (
     assert_status,
     assert_type,
 )
-from helpers.common_responses import USER_NOT_FOUND
+from helpers.common_responses import AT_LEAST_ONE_FIELD, USER_NOT_FOUND
 
 _USER_UPDATED = MessageResponse(message="User updated")
-_ONE_FIELD_MUST_BE_PROVIDED = ErrorResponse(
-    error="At least one field must be provided for update"
-)
 
 
 @pytest.fixture(scope="module")
@@ -81,7 +79,7 @@ def test_updated_fields_persists(client: ApiClient, user_id: int) -> None:
         if value is None:
             continue
 
-        assert_type(value, BaseField, key)
+        assert_type(value, BaseField, name_on_error=key)
         assert user_body[to_camel_case(key)] == value.value
 
 
@@ -91,7 +89,7 @@ def test_nonexistent_user(client: ApiClient) -> None:
     """
 
     request = UpdateUserRequest.random(optional_chance=0)
-    response = client.users.update_user(999_999, request)
+    response = client.users.update_user(NON_EXISTENT_ID, request)
 
     assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
@@ -105,5 +103,5 @@ def test_no_fields(client: ApiClient, user_id: int) -> None:
     request = UpdateUserRequest.random(optional_chance=0)
     response = client.users.update_user(user_id, request)
 
-    assert_body(response, _ONE_FIELD_MUST_BE_PROVIDED)
+    assert_body(response, AT_LEAST_ONE_FIELD)
     assert_status(response, HttpStatus.BAD_REQUEST)

@@ -34,6 +34,7 @@ CREATE TABLE
 CREATE TABLE
     barbershops (
         id INT PRIMARY KEY AUTO_INCREMENT,
+        admin_id INT NOT NULL,
         barbershop_name VARCHAR(100) NOT NULL,
         email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
@@ -42,8 +43,9 @@ CREATE TABLE
         opens_at TIME NOT NULL,
         closes_at TIME NOT NULL,
         capacity TINYINT UNSIGNED NOT NULL,
-        is_active BOOLEAN DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        is_active BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (admin_id) REFERENCES users (id) ON DELETE RESTRICT
     );
 
 -- BARBERSHOP PHOTOS
@@ -58,10 +60,12 @@ CREATE TABLE
 -- CLIENT STATUS
 CREATE TABLE
     client_status (
-        user_id INT PRIMARY KEY,
+        client_id INT PRIMARY KEY,
+        barbershop_id INT NULL,
         current_status ENUM('default', 'at_barbershop', 'on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
 -- BARBER STATUS
@@ -69,7 +73,7 @@ CREATE TABLE
     barber_status (
         staff_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
-        is_accepting BOOLEAN DEFAULT TRUE,
+        is_accepting BOOLEAN DEFAULT FALSE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
     );
@@ -91,8 +95,10 @@ CREATE TABLE
     working_days (
         id INT PRIMARY KEY AUTO_INCREMENT,
         staff_id INT NOT NULL,
+        barbershop_id INT NOT NULL,
         day_of_week TINYINT UNSIGNED NOT NULL COMMENT '1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat, 7=Sun',
-        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
 -- CLIENT GROUPS
@@ -101,7 +107,17 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         leader_id INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (leader_id) REFERENCES users (id)
+        FOREIGN KEY (leader_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- GROUP MEMBERS
+CREATE TABLE
+    group_members (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        group_id INT NOT NULL,
+        member_name VARCHAR(30) NOT NULL,
+        current_status ENUM('on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL DEFAULT 'on_queue',
+        FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE
     );
 
 -- TURNS
@@ -109,28 +125,31 @@ CREATE TABLE
     turns (
         id INT PRIMARY KEY AUTO_INCREMENT,
         barbershop_id INT NOT NULL,
-        client_id INT NOT NULL,
+        client_id INT NULL,
+        member_id INT NULL,
         group_id INT NULL,
         barber_id INT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         attended_at TIMESTAMP NULL,
         finished_at TIMESTAMP NULL,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE,
-        FOREIGN KEY (client_id) REFERENCES users (id),
-        FOREIGN KEY (group_id) REFERENCES client_groups (id),
-        FOREIGN KEY (barber_id) REFERENCES users (id)
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (member_id) REFERENCES group_members (id) ON DELETE CASCADE,
+        FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE,
+        CONSTRAINT chk_turns_owner CHECK ((client_id IS NOT NULL) <> (member_id IS NOT NULL))
     );
 
 -- BARBERSHOP REVIEWS
 CREATE TABLE
     barbershop_reviews (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
+        client_id INT NOT NULL,
         barbershop_id INT NOT NULL,
         rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
         content TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
@@ -157,6 +176,8 @@ CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_password_resets_code ON password_resets (reset_code);
 
 -- barbershops
+CREATE INDEX idx_barbershops_admin_id ON barbershops (admin_id);
+
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);
 
 -- barbershop_photos
@@ -179,12 +200,19 @@ CREATE INDEX idx_working_days_employee_day ON working_days (staff_id, day_of_wee
 -- client_groups
 CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
 
+-- group_members
+CREATE INDEX idx_group_members_group_id ON group_members (group_id);
+
 -- turns
 CREATE INDEX idx_turns_barbershop_id ON turns (barbershop_id);
 
-CREATE INDEX idx_turns_barber_id ON turns (barber_id);
+CREATE INDEX idx_turns_client_id ON turns (client_id);
+
+CREATE INDEX idx_turns_member_id ON turns (member_id);
 
 CREATE INDEX idx_turns_group_id ON turns (group_id);
+
+CREATE INDEX idx_turns_barber_id ON turns (barber_id);
 
 CREATE INDEX idx_turns_created_at ON turns (created_at);
 
@@ -195,7 +223,7 @@ CREATE INDEX idx_turns_barbershop_barber ON turns (barbershop_id, barber_id);
 CREATE INDEX idx_turns_barbershop_created ON turns (barbershop_id, created_at);
 
 -- barbershop_reviews
-CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (user_id);
+CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (client_id);
 
 CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
 
