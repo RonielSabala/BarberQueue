@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barber;
 
 use App\Core\HttpStatus;
 use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbers\Requests\UpdateBarberStatusRequest;
-use App\Exceptions\BarberException;
+use App\Exceptions\Barber\BarberException;
+use App\Services\BaseService;
 use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberResponse};
-use App\Repositories\{BarberRepository, UserRepository};
+use App\Repositories\{Barber\BarberRepository, UserRepository};
 
 class BarberService extends BaseService
 {

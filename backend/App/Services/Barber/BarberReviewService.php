@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Barber;
 
 use App\Core\HttpStatus;
 use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbers\Requests\CreateBarberReviewRequest;
 use App\DTOs\Barbers\Responses\BarberReviewResponse;
-use App\Exceptions\BarberReviewException;
-use App\Repositories\BarberReviewRepository;
+use App\Exceptions\Barber\BarberReviewException;
+use App\Repositories\Barber\BarberReviewRepository;
+use App\Services\{BaseService, UserService};
 
 class BarberReviewService extends BaseService
 {

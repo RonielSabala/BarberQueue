@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
-use App\Services\{BarberReviewService, BarberService};
+use App\Services\Barber\{BarberReviewService, BarberService};
 
 #[RoutePrefix('/api/barbers')]
 class BarberController extends BaseController
