@@ -7,8 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.barbershops.clients.conftest import get_fresh_client_id
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
 from domain.dtos.barbershops import BarbershopClientResponse
 from domain.enums import ClientStatusEnum
 from helpers.assertions import (

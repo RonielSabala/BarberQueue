@@ -6,7 +6,10 @@ from api.controllers import (
     AuthController,
     BarberController,
     BarbershopController,
+    ClientController,
     EmployeeController,
+    GroupMemberController,
+    QueueController,
     UserController,
 )
 from api.core import HttpMethod
@@ -29,6 +32,9 @@ class ApiClient:
         self.barbershops = BarbershopController(self)
         self.employees = EmployeeController(self)
         self.barbers = BarberController(self)
+        self.clients = ClientController(self)
+        self.group_members = GroupMemberController(self)
+        self.queues = QueueController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"

@@ -4,11 +4,7 @@ Tests for POST /api/barbershops/{id}/clients/{clientId}
 
 from api.client import ApiClient
 from api.core import HttpStatus
-from backend.barbershops.clients.conftest import (
-    get_fresh_client_id,
-    get_fresh_employee_id,
-)
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id, get_fresh_employee_id
 from domain.dtos import ErrorResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_NOT_FOUND

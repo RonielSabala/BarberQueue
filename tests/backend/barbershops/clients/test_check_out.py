@@ -4,20 +4,20 @@ Tests for DELETE /api/barbershops/{id}/clients/{clientId}
 
 from api.client import ApiClient
 from api.core import HttpStatus
-from backend.barbershops.clients.conftest import (
+from backend.conftest import (
+    NON_EXISTENT_ID,
     get_fresh_client_id,
     get_open_barbershop_request,
 )
-from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse
 from helpers.assertions import assert_body, assert_status
-from helpers.common_responses import BARBERSHOP_NOT_FOUND
+from helpers.common_responses import (
+    BARBERSHOP_NOT_FOUND,
+    CLIENT_NOT_AT_BARBERSHOP,
+    CLIENT_NOT_FOUND,
+)
 
 _SEEDED_ON_QUEUE_CLIENT_ID = 10
-_CLIENT_NOT_FOUND = ErrorResponse(error="Client not found")
-_NOT_AT_BARBERSHOP = ErrorResponse(
-    error="The client is not currently checked into any barbershop"
-)
 _DIFFERENT_BARBERSHOP = ErrorResponse(
     error="The client is registered at a different barbershop location"
 )
@@ -61,7 +61,7 @@ def test_status_on_unknown_client(client: ApiClient, open_barbershop_id: int) ->
 
     response = client.barbershops.check_out(open_barbershop_id, NON_EXISTENT_ID)
 
-    assert_body(response, _CLIENT_NOT_FOUND)
+    assert_body(response, CLIENT_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
 
 
@@ -90,7 +90,7 @@ def test_default_status_client_cannot_check_out(
     response = client.barbershops.check_out(open_barbershop_id, client_id)
 
     assert_status(response, HttpStatus.BAD_REQUEST)
-    assert_body(response, _NOT_AT_BARBERSHOP)
+    assert_body(response, CLIENT_NOT_AT_BARBERSHOP)
 
 
 def test_client_at_different_barbershop_cannot_check_out(

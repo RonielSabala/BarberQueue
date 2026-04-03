@@ -16,6 +16,7 @@ from domain.value_objects.password import Password
 from domain.value_objects.password_hash import PasswordHash
 from domain.value_objects.phone import Phone
 from domain.value_objects.photo_url import PhotoUrl, PhotoUrls
+from domain.value_objects.positive_integer import PositiveInteger
 from domain.value_objects.rating import Rating
 from domain.value_objects.reset_code import ResetCode
 from domain.value_objects.review_content import ReviewContent
@@ -40,6 +41,7 @@ __all__ = [
     "Phone",
     "PhotoUrl",
     "PhotoUrls",
+    "PositiveInteger",
     "Rating",
     "ResetCode",
     "ReviewContent",
