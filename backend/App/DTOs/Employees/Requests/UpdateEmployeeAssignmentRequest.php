@@ -6,11 +6,12 @@ namespace App\DTOs\Employees\Requests;
 
 use App\Attributes\ArrayOf;
 use App\DTOs\BaseRequest;
-use App\Domain\ValueObjects\{DayOfWeek, TimeOfDay};
+use App\Domain\ValueObjects\{DayOfWeek, EmployeeRole, TimeOfDay};
 
 final readonly class UpdateEmployeeAssignmentRequest extends BaseRequest
 {
     public function __construct(
+        public ?EmployeeRole $role,
         public ?TimeOfDay $startTime,
         public ?TimeOfDay $endTime,
         #[ArrayOf(DayOfWeek::class, minItems: 1, maxItems: 7)]

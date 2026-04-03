@@ -710,17 +710,20 @@ Updates a specific assignment's schedule. All fields are optional, but at least 
 
 ```json
 {
+  "role": "barber",
   "startTime": "09:00:00",
   "endTime": "17:00:00",
   "workingDays": [1, 2, 3]
 }
 ```
 
+> `role` must be one of: `barber`, `assistant`
+
 - Response: `200`
 
 ```json
 {
-  "message": "Employee schedule updated"
+  "message": "Employee updated"
 }
 ```
 

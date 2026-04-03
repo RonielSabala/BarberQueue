@@ -42,7 +42,7 @@ def non_client_id(
     barbershop_response = client.barbershops.create(barbershop_request)
     barbershop_id = barbershop_response.json()["id"]
 
-    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    employee_request = CreateBarbershopEmployeeRequest.random()
     employee_response = client.barbershops.create_employee(
         barbershop_id, employee_request
     )

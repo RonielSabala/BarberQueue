@@ -27,7 +27,7 @@ class EmployeeController extends BaseController
     public function update(int $id, int $barbershopId, UpdateEmployeeAssignmentRequest $request): void
     {
         $this->employeeService->updateEmployeeAssignment($id, $barbershopId, $request);
-        HttpResponse::success('Employee schedule updated');
+        HttpResponse::success('Employee updated');
     }
 
     #[DELETE('/{id}')]

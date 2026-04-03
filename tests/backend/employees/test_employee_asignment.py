@@ -23,19 +23,19 @@ from helpers.common_responses import (
     EMPLOYEE_NOT_FOUND,
 )
 
-_SCHEDULE_UPDATED = MessageResponse(message="Employee schedule updated")
+_SCHEDULE_UPDATED = MessageResponse(message="Employee updated")
 
 
 @pytest.fixture(scope="module")
 def assignment(client: ApiClient, barbershop_id: int) -> dict:
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(barbershop_id, request)
     return {"employee_id": response.json()["id"], "barbershop_id": barbershop_id}
 
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    employee_request = CreateBarbershopEmployeeRequest.random()
     update_assignment_request = UpdateEmployeeAssignmentRequest.random(
         start_time=TimeOfDay.random()
     )
@@ -165,7 +165,7 @@ def test_status_on_unknown_assignment(
     """
 
     # Create employee assigned to barbershop_id
-    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    employee_request = CreateBarbershopEmployeeRequest.random()
     employee_response = client.barbershops.create_employee(
         barbershop_id, employee_request
     )

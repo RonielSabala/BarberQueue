@@ -44,7 +44,7 @@ def employee_id(client: ApiClient, barbershop_id: int) -> int:
     status_request = UpdateBarbershopStatusRequest(is_active=True)
     client.barbershops.update_status(barbershop_id, status_request)
 
-    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    employee_request = CreateBarbershopEmployeeRequest.random()
     employee_response = client.barbershops.create_employee(
         barbershop_id, employee_request
     )

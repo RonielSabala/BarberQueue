@@ -14,7 +14,7 @@ from helpers.common_responses import EMPLOYEE_NOT_FOUND
 
 @pytest.fixture
 def employee_id(client: ApiClient, barbershop_id: int) -> int:
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(barbershop_id, request)
     return response.json()["id"]
 

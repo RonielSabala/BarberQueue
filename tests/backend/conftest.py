@@ -36,7 +36,7 @@ def get_fresh_client_id(client: ApiClient) -> int:
 
 
 def get_fresh_employee_id(client: ApiClient, open_barbershop_id: int) -> int:
-    employee_request = CreateBarbershopEmployeeRequest.random_employee()
+    employee_request = CreateBarbershopEmployeeRequest.random()
     employee_response = client.barbershops.create_employee(
         open_barbershop_id, employee_request
     )

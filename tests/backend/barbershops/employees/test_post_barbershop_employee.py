@@ -19,13 +19,13 @@ from helpers.assertions import (
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, EMAIL_ALREADY_IN_USE
 
 _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
-    error="Only barbers and assistants can be assigned to a barbershop"
+    error="EmployeeRole must be one of: 'barber', 'assistant'"
 )
 
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     return client.barbershops.create_employee(barbershop_id, request)
 
 
@@ -58,7 +58,7 @@ def test_email_matches_input(client: ApiClient, barbershop_id: int) -> None:
     Response email matches the submitted email.
     """
 
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(barbershop_id, request)
     assert response.json()["email"] == request.email.value
 
@@ -68,7 +68,7 @@ def test_role_matches_input(client: ApiClient, barbershop_id: int) -> None:
     Response role matches the submitted role.
     """
 
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(barbershop_id, request)
     assert response.json()["role"] == request.role.value
 
@@ -78,7 +78,7 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     Unknown barbershop returns 404.
     """
 
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(NON_EXISTENT_ID, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
@@ -90,7 +90,7 @@ def test_duplicate_email(client: ApiClient, barbershop_id: int) -> None:
     Creating an employee with a duplicate email returns 409.
     """
 
-    request = CreateBarbershopEmployeeRequest.random_employee()
+    request = CreateBarbershopEmployeeRequest.random()
     client.barbershops.create_employee(barbershop_id, request)
     response = client.barbershops.create_employee(barbershop_id, request)
 

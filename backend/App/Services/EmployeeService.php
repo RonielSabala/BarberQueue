@@ -82,17 +82,19 @@ class EmployeeService extends BaseService
 
         $this->employeeRepository->transaction(
             function () use ($employeeId, $barbershopId, $fields): void {
+                $role = $fields['role'] ?? null;
                 $days = $fields['working_days'] ?? null;
-                unset($fields['working_days']);
+                unset($fields['role'], $fields['working_days']);
 
                 $this->assignmentsRepository->updateAssignment($employeeId, $barbershopId, $fields);
-
-                if (!$days) {
-                    return;
+                if ($days) {
+                    $this->workingDayRepository->deleteWorkingDays($employeeId, $barbershopId);
+                    $this->workingDayRepository->createWorkingDays($employeeId, $barbershopId, $days);
                 }
-
-                $this->workingDayRepository->deleteWorkingDays($employeeId, $barbershopId);
-                $this->workingDayRepository->createWorkingDays($employeeId, $barbershopId, $days);
+                if ($role) {
+                    $roleEntity = $this->roleRepository->getByValue($role);
+                    $this->userRepository->updateRole($employeeId, $roleEntity->id->value);
+                }
             }
         );
     }

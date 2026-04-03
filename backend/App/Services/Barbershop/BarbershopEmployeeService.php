@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Barbershop;
 
-use App\Core\HttpStatus;
-use App\Domain\Enums\RoleEnum;
 use App\DTOs\Barbershops\Requests\CreateBarbershopEmployeeRequest;
-use App\Exceptions\Barbershop\BarbershopEmployeeException;
 use App\DTOs\Barbershops\Responses\{
     BarbershopEmployeeResponse,
     CreateBarbershopEmployeeResponse
@@ -50,14 +47,6 @@ class BarbershopEmployeeService extends BaseService
         $this->userService->validateInexistentUserEmail($request->email->value);
 
         $role = $this->roleRepository->getByValue($request->role->value);
-        $roleName = $role->roleName->value;
-        if ($roleName === RoleEnum::Client->value || $roleName === RoleEnum::Admin->value) {
-            throw new BarbershopEmployeeException(
-                'Only barbers and assistants can be assigned to a barbershop',
-                HttpStatus::UnprocessableEntity
-            );
-        }
-
         $employeeId = $this->barbershopRepository->transaction(function () use (
             $barbershopId,
             $request,
@@ -89,7 +78,7 @@ class BarbershopEmployeeService extends BaseService
             id: $employeeId,
             username: $request->username->value,
             email: $request->email->value,
-            role: $roleName
+            role: $role->roleName->value
         );
     }
 
