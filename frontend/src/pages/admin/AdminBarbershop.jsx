@@ -1,145 +1,298 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import {
+  getBarbershopById,
+  updateBarbershop,
+  updateBarbershopStatus,
+  updateBarbershopPhoto,
+} from "../../services/barbershopService";
 import "../../styles/admin/AdminBarbershop.css";
 
 function AdminBarbershop() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
 
+  const [barbershop, setBarbershop] = useState(null);
   const [formData, setFormData] = useState({
-    name: "Barbería 1",
-    branch: "Sucursal de Santiago",
-    address: "Av. Los Próceres",
-    email: "barberia1@gmail.com",
-    phone: "+1 (899) 111-3223",
-    opensAt: "08:00",
-    closesAt: "17:00",
-    status: "open",
-    capacity: 10,
-    photo:
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop",
+    barbershopName: "",
+    email: "",
+    phone: "",
+    barbershopAddress: "",
+    opensAt: "",
+    closesAt: "",
+    capacity: "",
   });
+
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savingPhoto, setSavingPhoto] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const fetchBarbershop = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await getBarbershopById(id);
+      setBarbershop(data);
+
+      setFormData({
+        barbershopName: data.name || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        barbershopAddress: data.address || "",
+        opensAt: data.opensAt || "",
+        closesAt: data.closesAt || "",
+        capacity: data.capacity ?? "",
+      });
+
+      setPhotoUrl(data.photoUrl || "");
+    } catch (err) {
+      console.error("Error al cargar barbería:", err);
+      setError(err.message || "Error al cargar la barbería");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchBarbershop();
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSave = () => {
-    console.log("Guardar cambios barbería:", id, formData);
-    alert("Cambios guardados correctamente (modo estático).");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      setError("");
+      setSuccessMessage("");
+
+      const response = await updateBarbershop(id, formData);
+
+      setSuccessMessage(
+        response.message || "Barbería actualizada correctamente.",
+      );
+
+      await fetchBarbershop();
+    } catch (err) {
+      console.error("Error al actualizar barbería:", err);
+      setError(err.message || "Error al actualizar la barbería");
+    } finally {
+      setSaving(false);
+    }
   };
+
+  const handlePhotoSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSavingPhoto(true);
+      setError("");
+      setSuccessMessage("");
+
+      const response = await updateBarbershopPhoto(id, photoUrl);
+
+      setSuccessMessage(
+        response.message || "Foto principal actualizada correctamente.",
+      );
+
+      await fetchBarbershop();
+    } catch (err) {
+      console.error("Error al actualizar foto:", err);
+      setError(err.message || "Error al actualizar la foto");
+    } finally {
+      setSavingPhoto(false);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      setStatusLoading(true);
+      setError("");
+      setSuccessMessage("");
+
+      const response = await updateBarbershopStatus(id, newStatus);
+
+      setSuccessMessage(
+        response.message || "Estado de la barbería actualizado.",
+      );
+
+      await fetchBarbershop();
+    } catch (err) {
+      console.error("Error al cambiar estado:", err);
+      setError(err.message || "Error al cambiar el estado");
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-barbershop-page">
+        <p>Cargando barbería...</p>
+      </div>
+    );
+  }
+
+  if (!barbershop) {
+    return (
+      <div className="admin-barbershop-page">
+        <p>No se encontró la barbería.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-barbershop-page">
-      <div className="admin-barbershop-header">
-        <button className="back-btn" onClick={() => navigate("/admin/home")}>
+      <div className="admin-barbershop-topbar">
+        <button
+          onClick={() => navigate("/admin/home")}
+          className="admin-barbershop-back-btn"
+        >
           ← Volver
         </button>
 
-        <div className="header-actions">
+        <div className="admin-barbershop-actions">
           <button
-            className="queue-btn"
+            onClick={() => navigate(`/admin/barbershop/${id}/dashboard`)}
+            className="admin-barbershop-dashboard-btn"
+          >
+            Ver dashboard
+          </button>
+
+          <button
             onClick={() => navigate(`/barbershops/${id}/queue`)}
+            className="admin-barbershop-queue-btn"
           >
             Ver cola en vivo
           </button>
 
           <button
-            className="admin-employees-btn"
             onClick={() => navigate(`/admin/barbershop/${id}/employees`)}
+            className="admin-barbershop-employees-btn"
           >
             Gestionar empleados
           </button>
         </div>
       </div>
 
-      <div className="admin-barbershop-grid">
-        <div className="admin-left-panel">
-          <div className="photo-card">
+      {error && <div className="admin-barbershop-alert error">{error}</div>}
+
+      {successMessage && (
+        <div className="admin-barbershop-alert success">{successMessage}</div>
+      )}
+
+      <div className="admin-barbershop-layout">
+        <div className="admin-barbershop-left">
+          <div className="admin-barbershop-image-card">
             <img
-              src={formData.photo}
-              alt={formData.name}
-              className="barbershop-main-photo"
+              src={
+                barbershop.image ||
+                "https://via.placeholder.com/500x400?text=Barberia"
+              }
+              alt={barbershop.name}
+              onError={(e) => {
+                e.target.src =
+                  "https://via.placeholder.com/500x400?text=Barberia";
+              }}
+              className="admin-barbershop-image"
             />
           </div>
 
-          <div className="status-card">
-            <p className="status-label">Estado actual</p>
+          <div className="admin-barbershop-photo-card">
+            <h3>Foto principal</h3>
 
-            <div className="status-toggle-group">
+            <form onSubmit={handlePhotoSubmit} className="admin-photo-form">
+              <label>URL de la imagen</label>
+              <input
+                type="text"
+                value={photoUrl}
+                onChange={(e) => setPhotoUrl(e.target.value)}
+                placeholder="https://..."
+              />
+
+              <button type="submit" disabled={savingPhoto} className="save-btn">
+                {savingPhoto ? "Actualizando..." : "Actualizar foto"}
+              </button>
+            </form>
+          </div>
+
+          <div className="admin-barbershop-status-card">
+            <h3>Estado actual</h3>
+
+            <div className="admin-barbershop-status-buttons">
               <button
-                type="button"
-                className={`toggle-btn ${formData.status === "open" ? "active-open" : ""}`}
-                onClick={() =>
-                  setFormData((prev) => ({ ...prev, status: "open" }))
-                }
+                onClick={() => handleStatusChange(true)}
+                disabled={statusLoading}
+                className={`status-btn ${
+                  barbershop.isActive ? "status-btn-open active" : ""
+                }`}
               >
                 Abierta
               </button>
 
               <button
-                type="button"
-                className={`toggle-btn ${formData.status === "closed" ? "active-closed" : ""}`}
-                onClick={() =>
-                  setFormData((prev) => ({ ...prev, status: "closed" }))
-                }
+                onClick={() => handleStatusChange(false)}
+                disabled={statusLoading}
+                className={`status-btn ${
+                  !barbershop.isActive ? "status-btn-closed active" : ""
+                }`}
               >
                 Cerrada
               </button>
             </div>
 
-            <span
-              className={`status-badge ${
-                formData.status === "open" ? "open" : "closed"
+            <div
+              className={`admin-barbershop-status-pill ${
+                barbershop.isActive ? "open" : "closed"
               }`}
             >
-              {formData.status === "open" ? "● Abierta" : "● Cerrada"}
-            </span>
+              <span className="dot">●</span>
+              {barbershop.isActive ? "Abierta" : "Cerrada"}
+            </div>
           </div>
         </div>
 
-        <div className="admin-right-panel">
-          <div className="form-card">
-            <h1>Administrar Barbería</h1>
-            <p className="admin-barbershop-subtitle">
-              Edita la información visible para los clientes.
-            </p>
+        <div className="admin-barbershop-right">
+          <h1>Administrar Barbería</h1>
+          <p>Edita la información visible para los clientes.</p>
 
-            <div className="admin-form-grid">
-              <div className="form-group full">
-                <label>Nombre de la barbería</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="admin-barbershop-form">
+            <div className="form-group">
+              <label>Nombre de la barbería</label>
+              <input
+                type="text"
+                name="barbershopName"
+                value={formData.barbershopName}
+                onChange={handleChange}
+              />
+            </div>
 
-              <div className="form-group full">
-                <label>Sucursal</label>
-                <input
-                  type="text"
-                  name="branch"
-                  value={formData.branch}
-                  onChange={handleChange}
-                />
-              </div>
+            <div className="form-group">
+              <label>Dirección</label>
+              <input
+                type="text"
+                name="barbershopAddress"
+                value={formData.barbershopAddress}
+                onChange={handleChange}
+              />
+            </div>
 
-              <div className="form-group full">
-                <label>Dirección</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </div>
-
+            <div className="form-row">
               <div className="form-group">
                 <label>Correo</label>
                 <input
@@ -159,7 +312,9 @@ function AdminBarbershop() {
                   onChange={handleChange}
                 />
               </div>
+            </div>
 
+            <div className="form-row">
               <div className="form-group">
                 <label>Hora de apertura</label>
                 <input
@@ -179,43 +334,25 @@ function AdminBarbershop() {
                   onChange={handleChange}
                 />
               </div>
-
-              <div className="form-group full">
-                <label>Capacidad máxima</label>
-                <input
-                  type="number"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleChange}
-                  min="1"
-                />
-              </div>
-
-              <div className="form-group full">
-                <label>URL de foto principal</label>
-                <input
-                  type="text"
-                  name="photo"
-                  value={formData.photo}
-                  onChange={handleChange}
-                />
-              </div>
             </div>
 
-            <div className="admin-form-actions">
-              <button
-                className="cancel-btn"
-                type="button"
-                onClick={() => navigate("/admin/home")}
-              >
-                Cancelar
-              </button>
+            <div className="form-group form-capacity">
+              <label>Capacidad</label>
+              <input
+                type="number"
+                name="capacity"
+                value={formData.capacity}
+                onChange={handleChange}
+                min="1"
+              />
+            </div>
 
-              <button className="save-btn" type="button" onClick={handleSave}>
-                Guardar cambios
+            <div className="form-submit">
+              <button type="submit" disabled={saving} className="save-btn">
+                {saving ? "Guardando..." : "Guardar cambios"}
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

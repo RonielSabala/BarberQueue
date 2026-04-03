@@ -1,77 +1,71 @@
-.admin-employee-form-page {
+.admin-create-barbershop-page {
   padding: 30px;
 }
 
-.admin-employee-form-topbar {
+.admin-create-barbershop-topbar {
   margin-bottom: 24px;
 }
 
-.admin-employee-form-back-btn,
-.save-btn,
-.day-chip {
-  border: none;
+.admin-create-back-btn,
+.save-btn {
   cursor: pointer;
-  transition: 0.2s ease;
   font-weight: 700;
+  border: none;
+  transition: 0.2s ease;
 }
 
-.admin-employee-form-back-btn {
+.admin-create-back-btn {
   padding: 12px 18px;
   border-radius: 12px;
-  background: white;
   border: 1px solid #d1d5db;
+  background: white;
   color: #0f172a;
 }
 
-.admin-employee-form-alert {
+.admin-create-alert {
   padding: 14px 16px;
   border-radius: 12px;
   margin-bottom: 16px;
   font-weight: 500;
 }
 
-.admin-employee-form-alert.error {
+.admin-create-alert.error {
   background: #fef2f2;
   color: #b91c1c;
   border: 1px solid #fecaca;
 }
 
-.admin-employee-form-alert.success {
+.admin-create-alert.success {
   background: #f0fdf4;
   color: #166534;
   border: 1px solid #bbf7d0;
 }
 
-.admin-employee-form-card {
+.admin-create-card {
   background: white;
   border-radius: 24px;
   border: 1px solid #e5e7eb;
   padding: 28px;
+  max-width: 900px;
 }
 
-.admin-employee-form-card h1 {
-  font-size: 38px;
+.admin-create-card h1 {
   font-weight: bold;
+  font-size: 38px;
   margin-top: 0;
   margin-bottom: 10px;
   color: #16396b;
 }
 
-.admin-employee-form-card p {
+.admin-create-card p {
   margin-top: 0;
   margin-bottom: 26px;
   color: #64748b;
   font-size: 18px;
 }
 
-.admin-employee-form {
+.admin-create-form {
   display: grid;
-  gap: 20px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
@@ -82,8 +76,7 @@
   color: #0f172a;
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
   width: 100%;
   padding: 14px 16px;
   border-radius: 14px;
@@ -91,35 +84,20 @@
   font-size: 16px;
   outline: none;
   box-sizing: border-box;
-  background: white;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.form-group input:focus {
   border-color: #16396b;
 }
 
-.form-group input:disabled {
-  background: #f8fafc;
-  color: #64748b;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
-.working-days-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.day-chip {
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  color: #334155;
-}
-
-.day-chip.selected {
-  background: #16396b;
-  color: white;
+.form-capacity {
+  max-width: 260px;
 }
 
 .form-submit {
@@ -135,16 +113,16 @@
 }
 
 .save-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .admin-employee-form-page {
+@media (max-width: 640px) {
+  .admin-create-barbershop-page {
     padding: 20px;
   }
 
-  .admin-employee-form-card h1 {
+  .admin-create-card h1 {
     font-size: 30px;
   }
 

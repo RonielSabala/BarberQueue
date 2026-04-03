@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { getBarbershops } from "../../services/barbershopService";
 import BarbershopCard from "../../components/BarbershopCard";
 
@@ -7,57 +6,48 @@ function ClientHome() {
   const [shops, setShops] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const data = getBarbershops();
-    setShops(data);
-  }, []);
+    const fetchShops = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  const filteredShops = shops.filter((shop) => {
-    const matchesSearch = shop.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
+        const filters = {};
 
-    if (filter === "open") return matchesSearch && shop.open;
-    if (filter === "closed") return matchesSearch && !shop.open;
+        if (search.trim()) {
+          filters.search = search.trim();
+        }
 
-    return matchesSearch;
-  });
+        if (filter === "open") {
+          filters.isOpen = true;
+        } else if (filter === "closed") {
+          filters.isOpen = false;
+        }
+
+        const data = await getBarbershops(filters);
+        setShops(data);
+      } catch (err) {
+        console.error("Error al obtener barberías:", err);
+        setError(err.message || "Error al cargar las barberías");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchShops();
+  }, [search, filter]);
 
   return (
     <div style={{ padding: "30px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-          gap: "10px",
-          flexWrap: "wrap",
-        }}
-      >
-        <h1 style={{ margin: 0 }}>BarberQueue</h1>
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>BarberQueue</h1>
 
-        <Link
-          to="/client/profile"
-          style={{
-            textDecoration: "none",
-            backgroundColor: "#f59e0b",
-            color: "white",
-            padding: "10px 18px",
-            borderRadius: "10px",
-            fontWeight: "bold",
-          }}
-        >
-          Ir a mi perfil
-        </Link>
-      </div>
-
-      {/* BUSCADOR */}
       <div style={{ textAlign: "center", marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Search bar 🔎"
+          placeholder="Buscar barbería 🔎"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -69,7 +59,6 @@ function ClientHome() {
         />
       </div>
 
-      {/* FILTROS */}
       <div style={{ textAlign: "right", marginBottom: "20px" }}>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">Todas</option>
@@ -78,18 +67,37 @@ function ClientHome() {
         </select>
       </div>
 
-      {/* GRID DE BARBERÍAS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "20px",
-        }}
-      >
-        {filteredShops.map((shop) => (
-          <BarbershopCard key={shop.id} shop={shop} />
-        ))}
-      </div>
+      {loading && (
+        <p style={{ textAlign: "center", marginTop: "30px" }}>
+          Cargando barberías...
+        </p>
+      )}
+
+      {error && (
+        <p style={{ textAlign: "center", marginTop: "30px", color: "red" }}>
+          {error}
+        </p>
+      )}
+
+      {!loading && !error && shops.length === 0 && (
+        <p style={{ textAlign: "center", marginTop: "30px" }}>
+          No se encontraron barberías.
+        </p>
+      )}
+
+      {!loading && !error && shops.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {shops.map((shop) => (
+            <BarbershopCard key={shop.id} shop={shop} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

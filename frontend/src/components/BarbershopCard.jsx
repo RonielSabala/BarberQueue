@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 function BarbershopCard({ shop }) {
   const navigate = useNavigate();
 
+  const fallbackImage = "https://via.placeholder.com/400x200?text=Barberia";
+
   return (
     <div
       style={{
@@ -11,28 +13,47 @@ function BarbershopCard({ shop }) {
         padding: "15px",
         background: "#fff",
         boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
       }}
     >
-      {/* FOTO */}
       <img
-        src={shop.image}
+        src={shop.image || fallbackImage}
         alt={shop.name}
+        onError={(e) => {
+          e.target.src = fallbackImage;
+        }}
         style={{
           width: "100%",
           height: "150px",
           objectFit: "cover",
           borderRadius: "10px",
           marginBottom: "10px",
+          backgroundColor: "#f3f3f3",
         }}
       />
 
-      {/* NOMBRE */}
-      <h3 style={{ marginBottom: "8px" }}>{shop.name}</h3>
+      <h3
+        style={{
+          marginBottom: "8px",
+          fontSize: "20px",
+          lineHeight: "1.3",
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          minHeight: "52px",
+          wordBreak: "break-word",
+        }}
+        title={shop.name}
+      >
+        {shop.name}
+      </h3>
 
-      {/* RATING */}
-      <p style={{ marginBottom: "6px" }}>⭐ {shop.rating}</p>
+      <p style={{ marginBottom: "6px" }}>⭐ {shop.rating ?? "Sin rating"}</p>
 
-      {/* ESTADO */}
       <p style={{ marginBottom: "12px" }}>
         Estado:{" "}
         <span
@@ -45,16 +66,16 @@ function BarbershopCard({ shop }) {
         </span>
       </p>
 
-      {/* BOTÓN */}
       <button
         onClick={() => navigate(`/barbershops/${shop.id}`)}
         style={{
           width: "100%",
-          padding: "8px",
+          padding: "10px",
           borderRadius: "8px",
           border: "none",
           background: "#f3f3f3",
           cursor: "pointer",
+          marginTop: "auto",
         }}
       >
         Ver barbería
