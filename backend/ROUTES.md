@@ -21,6 +21,9 @@ unless noted otherwise.
 - [Employees](#employees-1)
 - [Barbers](#barbers)
   - [Reviews](#reviews-1)
+- [Clients](#clients-1)
+- [Group Members](#group-members)
+- [Queues](#queues)
 
 ---
 
@@ -849,3 +852,145 @@ Submit a review for a barber.
 Remove a review from a barber's reviews.
 
 - Response: `204`
+
+---
+
+## Clients
+
+### `GET /api/clients/{id}/turn` <!-- omit from toc -->
+
+Fetch the active turn for a specific client. If the client is a group leader, the response includes an array of all member turns under the `group` key.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "barbershopId": 2,
+  "clientId": 3,
+  "barberId": 4,
+  "username": "client_example",
+  "status": "on_queue",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00",
+  "group": null
+}
+```
+
+With group (leader):
+
+```json
+{
+  "id": 1,
+  "barbershopId": 2,
+  "clientId": 3,
+  "barberId": 4,
+  "username": "client_example",
+  "status": "in_service",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00",
+  "group": {
+    "groupId": 2,
+    "members": [
+      {
+        "turnId": 2,
+        "memberId": 1,
+        "memberName": "member_example",
+        "barberId": null,
+        "position": 2,
+        "status": "on_queue"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Group Members
+
+### `GET /api/group-members/{id}/turn` <!-- omit from toc -->
+
+Fetch the active turn for a specific group member.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "barbershopId": 1,
+  "memberId": 1,
+  "barberId": null,
+  "groupId": 1,
+  "memberName": "member_example",
+  "status": "in_service",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00"
+}
+```
+
+---
+
+## Queues
+
+### `GET /api/queues/barbershop/{barbershopId}` <!-- omit from toc -->
+
+Shows all active barbers at a barbershop and their queues. Turns with no assigned barber are scheduled to the barber with the shortest estimated finish time on each request.
+
+- Response: `200`
+
+```json
+[
+  {
+    "barberId": 1,
+    "barberName": "barber_example",
+    "barberStatus": "active",
+    "isAccepting": true,
+    "turns": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "groupId": null,
+        "barberId": null,
+        "ownerName": "client_example",
+        "ownerType": "client",
+        "ownerStatus": "in_service",
+        "position": 1,
+        "groupSize": null
+      }
+    ]
+  }
+]
+```
+
+> `ownerType` is guaranteed to be one of the following: `client`, `member`.
+
+---
+
+### `GET /api/queues/barber/{barberId}` <!-- omit from toc -->
+
+The barber's personal queue view. Shows the same turn data as the barbershop queue but filtered to a single barber.
+
+- Response: `200`
+
+```json
+{
+  "barberId": 1,
+  "barberName": "barber_example",
+  "barberStatus": "active",
+  "isAccepting": true,
+  "turns": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "groupId": null,
+      "barberId": null,
+      "ownerName": "client_example",
+      "ownerType": "client",
+      "ownerStatus": "in_service",
+      "position": 1,
+      "groupSize": null
+    }
+  ]
+}
+```

@@ -256,10 +256,24 @@ WHERE
 
 UPDATE client_status
 SET
+    barbershop_id = 1,
+    current_status = 'in_service'
+WHERE
+    client_id = 17;
+
+UPDATE client_status
+SET
     barbershop_id = 2,
     current_status = 'in_service'
 WHERE
-    client_id = 11;
+    client_id IN (11, 16);
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'attended'
+WHERE
+    client_id = 15;
 
 UPDATE client_status
 SET
@@ -371,27 +385,105 @@ VALUES
     (1, 13),
     (2, 9);
 
+-- GROUP MEMBERS
+INSERT INTO
+    group_members (id, group_id, member_name, current_status)
+VALUES
+    (1, 1, 'client_peter', 'paid'),
+    (2, 1, 'client_will', 'paid'),
+    (3, 2, 'client_bob', 'in_service'),
+    (4, 2, 'client_mark', 'in_service');
+
 -- TURNS
 INSERT INTO
-    turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
+    turns (
+        barbershop_id,
+        client_id,
+        member_id,
+        group_id,
+        barber_id,
+        created_at,
+        attended_at,
+        finished_at
+    )
 VALUES
-    -- Past completed turns
-    (1, 9, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', '2026-03-05 09:35:00'),
-    (1, 10, NULL, 6, '2026-03-05 09:05:00', '2026-03-05 09:20:00', '2026-03-05 09:50:00'),
-    (2, 11, NULL, 4, '2026-03-06 10:00:00', '2026-03-06 10:05:00', '2026-03-06 10:30:00'),
-    (2, 12, NULL, 8, '2026-03-06 10:30:00', '2026-03-06 10:45:00', '2026-03-06 11:10:00'),
-    (3, 13, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
-    (3, 14, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
-    (1, 15, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', '2026-03-08 10:40:00'),
-    (2, 16, NULL, 6, '2026-03-08 11:00:00', '2026-03-08 11:10:00', '2026-03-08 11:45:00'),
+    -- Past completed turns (individual clients)
+    (
+        1,
+        9,
+        NULL,
+        NULL,
+        4,
+        '2026-03-05 09:00:00',
+        '2026-03-05 09:10:00',
+        '2026-03-05 09:35:00'
+    ),
+    (
+        1,
+        10,
+        NULL,
+        NULL,
+        6,
+        '2026-03-05 09:05:00',
+        '2026-03-05 09:20:00',
+        '2026-03-05 09:50:00'
+    ),
+    (
+        2,
+        11,
+        NULL,
+        NULL,
+        4,
+        '2026-03-06 10:00:00',
+        '2026-03-06 10:05:00',
+        '2026-03-06 10:30:00'
+    ),
+    (
+        2,
+        12,
+        NULL,
+        NULL,
+        8,
+        '2026-03-06 10:30:00',
+        '2026-03-06 10:45:00',
+        '2026-03-06 11:10:00'
+    ),
+    -- Past completed turns (group 1 members)
+    (3, NULL, 1, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
+    (3, NULL, 2, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
+    -- Past completed turns (individual)
+    (
+        1,
+        15,
+        NULL,
+        NULL,
+        4,
+        '2026-03-08 10:00:00',
+        '2026-03-08 10:10:00',
+        '2026-03-08 10:40:00'
+    ),
+    (
+        2,
+        16,
+        NULL,
+        NULL,
+        6,
+        '2026-03-08 11:00:00',
+        '2026-03-08 11:10:00',
+        '2026-03-08 11:45:00'
+    ),
+    -- Past completed turns (group 2 members)
+    (3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', '2026-03-09 09:40:00'),
+    (3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', '2026-03-09 10:10:00'),
     -- Currently in service
-    (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
-    (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
-    -- Waiting in queue
-    (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
-    (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
-    (3, 9, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
-    (3, 13, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
+    (1, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    -- Waiting in queue (individual)
+    (1, 17, NULL, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
+    -- Waiting in queue (group 2)
+    (3, NULL, 3, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
+    (3, NULL, 4, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
 
 -- BARBERSHOP REVIEWS
 INSERT INTO

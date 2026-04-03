@@ -6,6 +6,7 @@ namespace App\Services\Barbershop;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\Barbershop\BarbershopClientEntity;
+use App\Domain\ValueObjects\Id;
 use App\DTOs\Barbershops\Responses\BarbershopClientResponse;
 use App\Exceptions\Barbershop\BarbershopClientException;
 use App\Repositories\Barbershop\BarbershopClientRepository;
@@ -28,6 +29,26 @@ class BarbershopClientService extends BaseService
         }
 
         return $client;
+    }
+
+    public function validateClientIsInBarbershop(?Id $clientBarbershopId): void
+    {
+        if ($clientBarbershopId === null) {
+            throw new BarbershopClientException(
+                'The client is not currently checked into any barbershop',
+                HttpStatus::BadRequest
+            );
+        }
+    }
+
+    public function validateClientIsAt(?Id $clientBarbershopId, int $barbershopId): void
+    {
+        if ($clientBarbershopId?->value !== $barbershopId) {
+            throw new BarbershopClientException(
+                'The client is registered at a different barbershop location',
+                HttpStatus::Conflict
+            );
+        }
     }
 
     /** @return BarbershopClientResponse[] */
@@ -72,17 +93,12 @@ class BarbershopClientService extends BaseService
     public function checkOut(int $barbershopId, int $clientId): void
     {
         $this->BarbershopService->validateBarbershopExists($barbershopId);
-        $barbershopClient = $this->validateBarbershopClientExists($clientId);
+        $client = $this->validateBarbershopClientExists($clientId);
 
-        $clientBarbershopId = $barbershopClient->barbershopId;
-        if ($clientBarbershopId === null) {
-            throw new BarbershopClientException(
-                'The client is not currently checked into any barbershop',
-                HttpStatus::BadRequest
-            );
-        }
+        $clientBarbershopId = $client->barbershopId;
+        $this->validateClientIsInBarbershop($clientBarbershopId);
 
-        $clientStatus = $barbershopClient->currentStatus->value;
+        $clientStatus = $client->currentStatus->value;
         if (
             $clientStatus !== ClientStatusEnum::AtBarbershop->value
             && $clientStatus !== ClientStatusEnum::Paid->value
@@ -93,12 +109,7 @@ class BarbershopClientService extends BaseService
             );
         }
 
-        if ($clientBarbershopId->value !== $barbershopId) {
-            throw new BarbershopClientException(
-                'The client is registered at a different barbershop location',
-                HttpStatus::Conflict
-            );
-        }
+        $this->validateClientIsAt($clientBarbershopId, $barbershopId);
 
         $this->barbershopClientRepository->updateBarbershopStatus(
             clientId: $clientId,
