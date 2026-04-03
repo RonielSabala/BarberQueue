@@ -10,12 +10,14 @@ from domain.value_objects.capacity import Capacity
 from domain.value_objects.datetime_string import DateTimeString
 from domain.value_objects.day_of_week import DayOfWeek, WorkingDays
 from domain.value_objects.email import Email
+from domain.value_objects.employee_role import EmployeeRole
 from domain.value_objects.id import Id
 from domain.value_objects.non_negative_integer import NonNegativeInteger
 from domain.value_objects.password import Password
 from domain.value_objects.password_hash import PasswordHash
 from domain.value_objects.phone import Phone
 from domain.value_objects.photo_url import PhotoUrl, PhotoUrls
+from domain.value_objects.positive_integer import PositiveInteger
 from domain.value_objects.rating import Rating
 from domain.value_objects.reset_code import ResetCode
 from domain.value_objects.review_content import ReviewContent
@@ -33,6 +35,7 @@ __all__ = [
     "DayOfWeek",
     "WorkingDays",
     "Email",
+    "EmployeeRole",
     "Id",
     "NonNegativeInteger",
     "Password",
@@ -40,6 +43,7 @@ __all__ = [
     "Phone",
     "PhotoUrl",
     "PhotoUrls",
+    "PositiveInteger",
     "Rating",
     "ResetCode",
     "ReviewContent",

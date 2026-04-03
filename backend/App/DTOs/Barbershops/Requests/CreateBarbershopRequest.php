@@ -16,7 +16,7 @@ use App\Domain\ValueObjects\{
     TimeOfDay
 };
 
-readonly class CreateBarbershopRequest extends BaseRequest
+final readonly class CreateBarbershopRequest extends BaseRequest
 {
     public function __construct(
         public Id $adminId,

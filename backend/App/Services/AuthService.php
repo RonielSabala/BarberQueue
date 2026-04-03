@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
 use App\Exceptions\AuthException;
+use App\Services\Mail\MailerInterface;
 use Firebase\JWT\JWT;
 use App\DTOs\Auth\Requests\{
     ForgotPasswordRequest,

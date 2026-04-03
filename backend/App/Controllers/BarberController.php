@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Services\BarberService;
 use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequest};
+use App\Services\Barber\{BarberReviewService, BarberService};
 
 #[RoutePrefix('/api/barbers')]
 class BarberController extends BaseController
 {
     public function __construct(
-        private readonly BarberService $barberService
+        private readonly BarberService $barberService,
+        private readonly BarberReviewService $barberReviewService
     ) {}
 
     #[GET('/{id}')]
@@ -40,21 +41,21 @@ class BarberController extends BaseController
     #[GET('/{id}/reviews')]
     public function getReviews(int $id): void
     {
-        $response = $this->barberService->getReviews($id);
+        $response = $this->barberReviewService->getReviews($id);
         HttpResponse::json($response);
     }
 
     #[POST('/{id}/reviews')]
     public function createReview(int $id, CreateBarberReviewRequest $request): void
     {
-        $response = $this->barberService->createReview($id, $request);
+        $response = $this->barberReviewService->createReview($id, $request);
         HttpResponse::json($response, HttpStatus::Created);
     }
 
     #[DELETE('/{id}/reviews/{reviewId}')]
     public function deleteReview(int $id, int $reviewId): void
     {
-        $success = $this->barberService->deleteReview($id, $reviewId);
+        $success = $this->barberReviewService->deleteReview($id, $reviewId);
         if (!$success) {
             HttpResponse::error('Barber review not found', HttpStatus::NotFound);
             return;

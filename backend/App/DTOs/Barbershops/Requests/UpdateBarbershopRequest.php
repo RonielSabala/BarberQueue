@@ -14,7 +14,7 @@ use App\Domain\ValueObjects\{
     TimeOfDay
 };
 
-readonly class UpdateBarbershopRequest extends BaseRequest
+final readonly class UpdateBarbershopRequest extends BaseRequest
 {
     public function __construct(
         public ?BarbershopName $barbershopName,

@@ -18,6 +18,8 @@ class BarberController(BaseController):
         self, id: int, request: UpdateBarberStatusRequest
     ) -> requests.Response: ...
 
+    # Reviews
+
     @GET("/{id}/reviews")
     def get_reviews(self, id: int) -> requests.Response: ...
 

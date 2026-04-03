@@ -6,7 +6,7 @@ namespace App\Domain\Entities;
 
 use App\Domain\ValueObjects\{Id, Role};
 
-readonly class RoleEntity extends BaseEntity
+final readonly class RoleEntity extends BaseEntity
 {
     public function __construct(
         public Id $id,

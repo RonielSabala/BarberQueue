@@ -6,7 +6,7 @@ namespace App\DTOs\Auth\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class LoginResponse extends BaseResponse
+final readonly class LoginResponse extends BaseResponse
 {
     public function __construct(
         public readonly string $token,

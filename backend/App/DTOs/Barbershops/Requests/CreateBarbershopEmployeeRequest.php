@@ -9,21 +9,21 @@ use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{
     DayOfWeek,
     Email,
+    EmployeeRole,
     Password,
     Phone,
-    Role,
     TimeOfDay,
     Username
 };
 
-readonly class CreateBarbershopEmployeeRequest extends BaseRequest
+final readonly class CreateBarbershopEmployeeRequest extends BaseRequest
 {
     public function __construct(
         public Username $username,
         public Email $email,
         public Phone $phone,
         public Password $password,
-        public Role $role,
+        public EmployeeRole $role,
         public TimeOfDay $startTime,
         public TimeOfDay $endTime,
         #[ArrayOf(DayOfWeek::class, minItems: 1, maxItems: 7)]

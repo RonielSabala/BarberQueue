@@ -10,6 +10,7 @@ class UserRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'users';
     protected const array UPDATABLE_FIELDS = [
+        'role_id',
         'username',
         'email',
         'phone',
@@ -71,5 +72,10 @@ class UserRepository extends BaseRepository
     public function updatePassword(int $id, string $passwordHash): void
     {
         $this->update($id, ['password_hash' => $passwordHash]);
+    }
+
+    public function updateRole(int $id, int $roleId): void
+    {
+        $this->update($id, ['role_id' => $roleId]);
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\Container;
-use App\Services\{MailService, MailerInterface, MockMailService};
+use App\Services\Mail\{MailService, MailerInterface, MockMailService};
 use Dotenv\Dotenv;
 
 const ROOT_DIR = __DIR__ . '/..';

@@ -17,3 +17,9 @@ EMPLOYEE_NOT_FOUND = ErrorResponse(error="Employee not found")
 
 # Barbers
 BARBER_NOT_FOUND = ErrorResponse(error="Barber not found")
+
+# Clients
+CLIENT_NOT_FOUND = ErrorResponse(error="Client not found")
+CLIENT_NOT_AT_BARBERSHOP = ErrorResponse(
+    error="The client is not currently checked into any barbershop"
+)

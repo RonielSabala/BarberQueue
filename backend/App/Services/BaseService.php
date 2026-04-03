@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
-use App\Exceptions\ServiceException;
+use App\Exceptions\Base\ServiceException;
 
 class BaseService
 {

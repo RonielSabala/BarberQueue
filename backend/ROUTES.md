@@ -14,8 +14,16 @@ unless noted otherwise.
 - [Auth](#auth)
 - [Users](#users)
 - [Barbershops](#barbershops)
-- [Employees](#employees)
+  - [Photos](#photos)
+  - [Reviews](#reviews)
+  - [Employees](#employees)
+  - [Clients](#clients)
+- [Employees](#employees-1)
 - [Barbers](#barbers)
+  - [Reviews](#reviews-1)
+- [Clients](#clients-1)
+- [Group Members](#group-members)
+- [Queues](#queues)
 
 ---
 
@@ -434,6 +442,8 @@ Replace the barbershop's main photo.
 
 ---
 
+### Photos
+
 ### `GET /api/barbershops/{id}/photos` <!-- omit from toc -->
 
 Get all photos of a barbershop.
@@ -495,6 +505,8 @@ Remove a photo from the gallery.
 
 ---
 
+### Reviews
+
 ### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
 
 List all reviews of a barbershop.
@@ -552,6 +564,8 @@ Remove a review from a barbershop's reviews.
 - Response: `204`
 
 ---
+
+### Employees
 
 ### `GET /api/barbershops/{id}/employees` <!-- omit from toc -->
 
@@ -618,6 +632,42 @@ Unassign an employee from a barbershop. The employee's user account remains acti
 
 ---
 
+### Clients
+
+### `GET /api/barbershops/{id}/clients` <!-- omit from toc -->
+
+List all clients currently checked in at a barbershop.
+
+- Response: `200`
+
+```json
+[
+  {
+    "clientId": 1,
+    "currentStatus": "at_barbershop",
+    "username": "client_example"
+  }
+]
+```
+
+---
+
+### `POST /api/barbershops/{id}/clients/{clientId}` <!-- omit from toc -->
+
+Check a client in to a barbershop. The client must have status `default` and the barbershop must be open. Afterwards, the client's status becomes `at_barbershop`.
+
+- Response: `204`
+
+---
+
+### `DELETE /api/barbershops/{id}/clients/{clientId}` <!-- omit from toc -->
+
+Check a client out of a barbershop. The client must have status `at_barbershop` or `paid`. Afterwards, the client's status becomes `default`.
+
+- Response: `204`
+
+---
+
 ## Employees
 
 ### `GET /api/employees/{id}` <!-- omit from toc -->
@@ -660,17 +710,20 @@ Updates a specific assignment's schedule. All fields are optional, but at least 
 
 ```json
 {
+  "role": "barber",
   "startTime": "09:00:00",
   "endTime": "17:00:00",
   "workingDays": [1, 2, 3]
 }
 ```
 
+> `role` must be one of: `barber`, `assistant`
+
 - Response: `200`
 
 ```json
 {
-  "message": "Employee schedule updated"
+  "message": "Employee updated"
 }
 ```
 
@@ -745,6 +798,8 @@ Update a barber's current status. All fields are optional, but at least one must
 
 ---
 
+### Reviews
+
 ### `GET /api/barbers/{id}/reviews` <!-- omit from toc -->
 
 List all reviews for a barber.
@@ -800,3 +855,145 @@ Submit a review for a barber.
 Remove a review from a barber's reviews.
 
 - Response: `204`
+
+---
+
+## Clients
+
+### `GET /api/clients/{id}/turn` <!-- omit from toc -->
+
+Fetch the active turn for a specific client. If the client is a group leader, the response includes an array of all member turns under the `group` key.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "barbershopId": 2,
+  "clientId": 3,
+  "barberId": 4,
+  "username": "client_example",
+  "status": "on_queue",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00",
+  "group": null
+}
+```
+
+With group (leader):
+
+```json
+{
+  "id": 1,
+  "barbershopId": 2,
+  "clientId": 3,
+  "barberId": 4,
+  "username": "client_example",
+  "status": "in_service",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00",
+  "group": {
+    "groupId": 2,
+    "members": [
+      {
+        "turnId": 2,
+        "memberId": 1,
+        "memberName": "member_example",
+        "barberId": null,
+        "position": 2,
+        "status": "on_queue"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Group Members
+
+### `GET /api/group-members/{id}/turn` <!-- omit from toc -->
+
+Fetch the active turn for a specific group member.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "barbershopId": 1,
+  "memberId": 1,
+  "barberId": null,
+  "groupId": 1,
+  "memberName": "member_example",
+  "status": "in_service",
+  "position": 1,
+  "createdAt": "2026-03-18 10:00:00"
+}
+```
+
+---
+
+## Queues
+
+### `GET /api/queues/barbershop/{barbershopId}` <!-- omit from toc -->
+
+Shows all active barbers at a barbershop and their queues. Turns with no assigned barber are scheduled to the barber with the shortest estimated finish time on each request.
+
+- Response: `200`
+
+```json
+[
+  {
+    "barberId": 1,
+    "barberName": "barber_example",
+    "barberStatus": "active",
+    "isAccepting": true,
+    "turns": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "groupId": null,
+        "barberId": null,
+        "ownerName": "client_example",
+        "ownerType": "client",
+        "ownerStatus": "in_service",
+        "position": 1,
+        "groupSize": null
+      }
+    ]
+  }
+]
+```
+
+> `ownerType` is guaranteed to be one of the following: `client`, `member`.
+
+---
+
+### `GET /api/queues/barber/{barberId}` <!-- omit from toc -->
+
+The barber's personal queue view. Shows the same turn data as the barbershop queue but filtered to a single barber.
+
+- Response: `200`
+
+```json
+{
+  "barberId": 1,
+  "barberName": "barber_example",
+  "barberStatus": "active",
+  "isAccepting": true,
+  "turns": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "groupId": null,
+      "barberId": null,
+      "ownerName": "client_example",
+      "ownerType": "client",
+      "ownerStatus": "in_service",
+      "position": 1,
+      "groupSize": null
+    }
+  ]
+}
+```

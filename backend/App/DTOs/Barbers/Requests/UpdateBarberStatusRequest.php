@@ -7,7 +7,7 @@ namespace App\DTOs\Barbers\Requests;
 use App\Domain\ValueObjects\BarberStatus;
 use App\DTOs\BaseRequest;
 
-readonly class UpdateBarberStatusRequest extends BaseRequest
+final readonly class UpdateBarberStatusRequest extends BaseRequest
 {
     public function __construct(
         public ?BarberStatus $currentStatus,

@@ -92,14 +92,11 @@ abstract class BaseRepository
      */
     protected function fetchAll(string $entityClass, string $sql, array $params = []): array
     {
-        $stmt = $this->query($sql, $params);
-        $results = [];
-
-        while ($row = $stmt->fetch()) {
-            $results[] = $entityClass::fromDbRow($row);
-        }
-
-        return $results;
+        $rows = $this->query($sql, $params)->fetchAll();
+        return array_map(
+            static fn (array $row) => $entityClass::fromDbRow($row),
+            $rows
+        );
     }
 
     // General CRUD methods

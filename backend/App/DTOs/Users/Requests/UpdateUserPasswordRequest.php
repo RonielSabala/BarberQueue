@@ -7,7 +7,7 @@ namespace App\DTOs\Users\Requests;
 use App\Domain\ValueObjects\Password;
 use App\DTOs\BaseRequest;
 
-readonly class UpdateUserPasswordRequest extends BaseRequest
+final readonly class UpdateUserPasswordRequest extends BaseRequest
 {
     public function __construct(
         public readonly Password $currentPassword,
