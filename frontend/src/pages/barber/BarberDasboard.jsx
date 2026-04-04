@@ -154,7 +154,7 @@ function BarberDashboard() {
           className="barber-dashboard-back-btn"
           onClick={handleBackToProfile}
         >
-          Volver al perfil
+          Ir al perfil
         </button>
       </div>
 
