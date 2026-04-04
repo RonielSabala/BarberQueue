@@ -9,7 +9,7 @@ use App\Domain\Entities\Turn\TurnEntity;
 use App\DTOs\Turns\Responses\TurnDetailResponse;
 use App\Exceptions\Turn\TurnException;
 use App\Domain\Enums\{BarberStatusEnum, ClientStatusEnum, OwnerTypeEnum};
-use App\Domain\Queue\{QueueScheduler, ScheduledQueue, SlotFinishTimeTracker};
+use App\Domain\Queue\{QueueScheduler, ScheduledQueue};
 use App\DTOs\Turns\Requests\{CreateTurnMemberRequest, CreateTurnRequest};
 use App\Repositories\{
     Barber\BarberRepository,
@@ -114,7 +114,6 @@ class TurnService extends BaseTurnService
     {
         // Load current queue state
         [$slots, $unassigned] = $this->turnRepository->getBarberSlots($barbershopId);
-        $slotFinder = new SlotFinishTimeTracker($slots ?? []);
         QueueScheduler::schedule($slots ?? [], $unassigned ?? []);
 
         // Create client group
@@ -127,7 +126,7 @@ class TurnService extends BaseTurnService
         $leaderTurnId = $this->turnRepository->createClientTurn(
             $barbershopId,
             $clientId,
-            $barberId ?? $slotFinder->pickBestAndAdvance(),
+            $barberId,
             $groupId
         );
 
@@ -137,17 +136,17 @@ class TurnService extends BaseTurnService
         // Create member turns
         $createdTurnIds = [$leaderTurnId];
         if ($groupMembers !== null && $groupId !== null) {
-            foreach ($groupMembers as $member) {
+            foreach ($groupMembers as $groupMember) {
                 $memberId = $this->groupMemberRepository->createMember(
                     $groupId,
-                    $member->memberName->value
+                    $groupMember->memberName->value
                 );
 
                 $memberTurnId = $this->turnRepository->createMemberTurn(
                     $barbershopId,
                     $memberId,
                     $groupId,
-                    $member->barberId?->value ?? $slotFinder->pickBestAndAdvance(),
+                    $groupMember->barberId?->value,
                 );
 
                 $createdTurnIds[] = $memberTurnId;

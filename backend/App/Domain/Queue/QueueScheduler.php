@@ -9,42 +9,6 @@ use App\Domain\Entities\Turn\TurnEntity;
 final class QueueScheduler
 {
     /**
-     * @param TurnEntity[] $turns
-     *
-     * @return TurnEntity[]
-     */
-    private static function sortByCreatedAt(array $turns): array
-    {
-        usort(
-            $turns,
-            static fn (TurnEntity $turnA, TurnEntity $turnB) => (
-                $turnA->createdAt->value <=> $turnB->createdAt->value
-            )
-        );
-
-        return $turns;
-    }
-
-    /**
-     * @param BarberSlotData[] $barberSlots
-     *
-     * @return array{array<int,float>, array<int,TurnEntity[]>}
-     */
-    private static function initBarberState(array $barberSlots): array
-    {
-        $finishMinutes = [];
-        $queues = [];
-
-        foreach ($barberSlots as $slot) {
-            $barberId = $slot->barberId;
-            $queues[$barberId] = $slot->assignedTurns;
-            $finishMinutes[$barberId] = $slot->estimatedFinishMinutes();
-        }
-
-        return [$finishMinutes, $queues];
-    }
-
-    /**
      * @param BarberSlotData[]  $barberSlots
      * @param array<int, float> $finishMinutes
      *
@@ -57,6 +21,7 @@ final class QueueScheduler
         $bestTime = PHP_FLOAT_MAX;
 
         foreach ($barberSlots as $slot) {
+            // Unassigned turns only go to barbers who are accepting new clients
             if (!$slot->isAccepting) {
                 continue;
             }
@@ -75,20 +40,52 @@ final class QueueScheduler
 
     /**
      * @param BarberSlotData[] $barberSlots
-     * @param TurnEntity[]     $unassignedTurns turns where barber_id IS NULL
+     * @param TurnEntity[]     $unassignedTurns
      */
     public static function schedule(array $barberSlots, array $unassignedTurns): ScheduledQueue
     {
-        [$finishMinutes, $queues] = self::initBarberState($barberSlots);
+        // Initialize state
+        $queues = [];
+        $slotsById = [];
+        $finishMinutes = [];
+        $allTurns = $unassignedTurns;
 
-        foreach (self::sortByCreatedAt($unassignedTurns) as $turn) {
-            [$bestId, $barberSlot] = self::pickBestBarber($barberSlots, $finishMinutes);
-            if ($bestId === null || $barberSlot === null) {
-                break;
+        foreach ($barberSlots as $slot) {
+            // Add all turns
+            foreach ($slot->assignedTurns as $turn) {
+                $allTurns[] = $turn;
             }
 
-            $queues[$bestId][] = $turn;
-            $finishMinutes[$bestId] += $barberSlot->getAvgServiceMinutes();
+            $barberId = $slot->barberId;
+            $queues[$barberId] = [];
+            $slotsById[$barberId] = $slot;
+            $finishMinutes[$barberId] = $slot->estimatedBaseFinishMinutes();
+        }
+
+        // Sort the entire pool by creation date
+        usort(
+            $allTurns,
+            static fn (TurnEntity $a, TurnEntity $b) => $a->id->value <=> $b->id->value
+        );
+
+        // Process all turns chronologically
+        foreach ($allTurns as $turn) {
+            $barberId = $turn->barberId?->value;
+
+            // If the turn specifies a barber, we MUST assign it to them
+            if ($barberId !== null && isset($queues[$barberId])) {
+                $queues[$barberId][] = $turn;
+                $finishMinutes[$barberId] += $slotsById[$barberId]->getAvgServiceMinutes();
+                continue;
+            }
+
+            // Otherwise, pick the best barber based on the current estimated finish times
+            [$bestId, $barberSlot] = self::pickBestBarber($barberSlots, $finishMinutes);
+
+            if ($bestId !== null && $barberSlot !== null) {
+                $queues[$bestId][] = $turn;
+                $finishMinutes[$bestId] += $barberSlot->getAvgServiceMinutes();
+            }
         }
 
         return new ScheduledQueue($barberSlots, $queues);
