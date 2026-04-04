@@ -1046,7 +1046,12 @@ If `barberId` is omitted, the system auto-assigns each turn to the barber with t
   "clientId": 1,
   "barbershopId": 1,
   "barberId": 1,
-  "groupMembers": ["member_example"]
+  "groupMembers": [
+    {
+      "barberId": 2,
+      "memberName": "member_example"
+    }
+  ]
 }
 ```
 

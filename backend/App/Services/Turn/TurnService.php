@@ -6,12 +6,11 @@ namespace App\Services\Turn;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\Turn\TurnEntity;
-use App\Domain\ValueObjects\Username;
-use App\DTOs\Turns\Requests\CreateTurnRequest;
 use App\DTOs\Turns\Responses\TurnDetailResponse;
 use App\Exceptions\Turn\TurnException;
 use App\Domain\Enums\{BarberStatusEnum, ClientStatusEnum, OwnerTypeEnum};
 use App\Domain\Queue\{QueueScheduler, ScheduledQueue, SlotFinishTimeTracker};
+use App\DTOs\Turns\Requests\{CreateTurnMemberRequest, CreateTurnRequest};
 use App\Repositories\{
     Barber\BarberRepository,
     Barbershop\BarbershopClientRepository,
@@ -107,7 +106,7 @@ class TurnService extends BaseTurnService
     }
 
     /**
-     * @param null|Username[] $groupMembers
+     * @param null|CreateTurnMemberRequest[] $groupMembers
      *
      * @return TurnDetailResponse[]
      */
@@ -138,13 +137,17 @@ class TurnService extends BaseTurnService
         // Create member turns
         $createdTurnIds = [$leaderTurnId];
         if ($groupMembers !== null && $groupId !== null) {
-            foreach ($groupMembers as $memberName) {
-                $memberId = $this->groupMemberRepository->createMember($groupId, $memberName->value);
+            foreach ($groupMembers as $member) {
+                $memberId = $this->groupMemberRepository->createMember(
+                    $groupId,
+                    $member->memberName->value
+                );
+
                 $memberTurnId = $this->turnRepository->createMemberTurn(
                     $barbershopId,
                     $memberId,
                     $groupId,
-                    $barberId ?? $slotFinder->pickBestAndAdvance(),
+                    $member->barberId?->value ?? $slotFinder->pickBestAndAdvance(),
                 );
 
                 $createdTurnIds[] = $memberTurnId;
