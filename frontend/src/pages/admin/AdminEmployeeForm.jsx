@@ -1,6 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createBarbershopEmployee } from "../../services/barbershopService";
+import {
+  getEmployeeById,
+  updateEmployeeAssignment,
+} from "../../services/employeeService";
 import "../../styles/admin/AdminEmployeeForm.css";
 
 const DAYS = [
@@ -30,9 +34,52 @@ function AdminEmployeeForm() {
     workingDays: [],
   });
 
+  const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const employee = await getEmployeeById(employeeId);
+
+        const currentAssignment = employee.assignments?.find(
+          (assignment) => Number(assignment.barbershopId) === Number(id),
+        );
+
+        if (!currentAssignment) {
+          setError(
+            "No se encontró la asignación de este empleado en esta barbería.",
+          );
+          return;
+        }
+
+        setFormData({
+          username: employee.username || "",
+          email: employee.email || "",
+          phone: employee.phone || "",
+          password: "",
+          role: currentAssignment.role || employee.role || "",
+          startTime: currentAssignment.startTime || "",
+          endTime: currentAssignment.endTime || "",
+          workingDays: currentAssignment.workingDays || [],
+        });
+      } catch (err) {
+        console.error("Error al cargar empleado:", err);
+        setError(err.message || "Error al cargar el empleado");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isEditMode && employeeId && id) {
+      fetchEmployee();
+    }
+  }, [isEditMode, employeeId, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,11 +106,6 @@ function AdminEmployeeForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isEditMode) {
-      setError("La edición de empleados todavía no está conectada.");
-      return;
-    }
-
     try {
       setSaving(true);
       setError("");
@@ -79,20 +121,40 @@ function AdminEmployeeForm() {
         return;
       }
 
-      await createBarbershopEmployee(id, formData);
+      if (isEditMode) {
+        const response = await updateEmployeeAssignment(employeeId, id, {
+          role: formData.role,
+          startTime: formData.startTime,
+          endTime: formData.endTime,
+          workingDays: formData.workingDays,
+        });
 
-      setSuccessMessage("Empleado creado correctamente.");
+        setSuccessMessage(
+          response.message || "Empleado actualizado correctamente.",
+        );
+      } else {
+        await createBarbershopEmployee(id, formData);
+        setSuccessMessage("Empleado creado correctamente.");
+      }
 
       setTimeout(() => {
         navigate(`/admin/barbershop/${id}/employees`);
       }, 1200);
     } catch (err) {
-      console.error("Error al crear empleado:", err);
-      setError(err.message || "Error al crear el empleado");
+      console.error("Error al guardar empleado:", err);
+      setError(err.message || "Error al guardar el empleado");
     } finally {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="admin-employee-form-page">
+        <p>Cargando empleado...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-employee-form-page">
@@ -116,7 +178,7 @@ function AdminEmployeeForm() {
         <h1>{isEditMode ? "Editar empleado" : "Agregar empleado"}</h1>
         <p>
           {isEditMode
-            ? "Actualiza la información del empleado."
+            ? "Actualiza la asignación del empleado en esta barbería."
             : "Completa la información del nuevo empleado."}
         </p>
 
@@ -131,6 +193,7 @@ function AdminEmployeeForm() {
                 onChange={handleChange}
                 placeholder="Ej: Juan Valdez"
                 required
+                disabled={isEditMode}
               />
             </div>
 
@@ -143,6 +206,7 @@ function AdminEmployeeForm() {
                 onChange={handleChange}
                 placeholder="Ej: juan@email.com"
                 required
+                disabled={isEditMode}
               />
             </div>
           </div>
@@ -157,6 +221,7 @@ function AdminEmployeeForm() {
                 onChange={handleChange}
                 placeholder="Ej: 8091234567"
                 required
+                disabled={isEditMode}
               />
             </div>
 
@@ -167,8 +232,13 @@ function AdminEmployeeForm() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Mínimo 8 caracteres"
+                placeholder={
+                  isEditMode
+                    ? "No editable desde esta pantalla"
+                    : "Mínimo 8 caracteres"
+                }
                 required={!isEditMode}
+                disabled={isEditMode}
               />
             </div>
           </div>

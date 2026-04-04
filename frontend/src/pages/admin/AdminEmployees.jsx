@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  getBarbershopEmployees,
-  deleteBarbershopEmployee,
-} from "../../services/barbershopService";
+import { getBarbershopEmployees } from "../../services/barbershopService";
+import { deleteEmployeePermanently } from "../../services/employeeService";
 import "../../styles/admin/AdminEmployees.css";
 
 function AdminEmployees() {
@@ -61,7 +59,7 @@ function AdminEmployees() {
 
   const handleDelete = async (employeeId) => {
     const confirmed = window.confirm(
-      "¿Seguro que deseas desasignar este empleado de la barbería?",
+      "¿Seguro que deseas eliminar este empleado del sistema? Esta acción eliminará también todas sus asignaciones.",
     );
 
     if (!confirmed) return;
@@ -71,9 +69,9 @@ function AdminEmployees() {
       setError("");
       setSuccessMessage("");
 
-      await deleteBarbershopEmployee(id, employeeId);
+      await deleteEmployeePermanently(employeeId);
 
-      setSuccessMessage("Empleado desasignado correctamente.");
+      setSuccessMessage("Empleado eliminado correctamente.");
       await fetchEmployees();
     } catch (err) {
       console.error("Error al eliminar empleado:", err);
@@ -165,15 +163,28 @@ function AdminEmployees() {
                       {employee.startTime} - {employee.endTime}
                     </td>
                     <td>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(employee.id)}
-                        disabled={deletingId === employee.id}
-                      >
-                        {deletingId === employee.id
-                          ? "Eliminando..."
-                          : "Eliminar"}
-                      </button>
+                      <div className="employee-table-actions">
+                        <button
+                          className="edit-btn"
+                          onClick={() =>
+                            navigate(
+                              `/admin/barbershop/${id}/employees/${employee.id}/edit`,
+                            )
+                          }
+                        >
+                          Editar
+                        </button>
+
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(employee.id)}
+                          disabled={deletingId === employee.id}
+                        >
+                          {deletingId === employee.id
+                            ? "Eliminando..."
+                            : "Eliminar"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
