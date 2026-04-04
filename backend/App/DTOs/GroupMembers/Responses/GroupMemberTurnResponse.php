@@ -16,7 +16,7 @@ final readonly class GroupMemberTurnResponse extends BaseResponse
         public int $groupId,
         public string $memberName,
         public string $status,
-        public int $position,
+        public ?int $position,
         public string $createdAt,
     ) {}
 }

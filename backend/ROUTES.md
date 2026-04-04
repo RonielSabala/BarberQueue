@@ -24,6 +24,7 @@ unless noted otherwise.
 - [Clients](#clients-1)
 - [Group Members](#group-members)
 - [Queues](#queues)
+- [Turns](#turns)
 
 ---
 
@@ -997,3 +998,116 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
   ]
 }
 ```
+
+---
+
+## Turns
+
+### `GET /api/turns/{id}` <!-- omit from toc -->
+
+Fetch a specific turn's details.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": 1,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "in_service",
+  "position": 1,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": null,
+  "finishedAt": null
+}
+```
+
+> `ownerType` is guaranteed to be one of the following: `client`, `member`.
+
+---
+
+### `POST /api/turns` <!-- omit from toc -->
+
+Creates a turn for a client. The client must have status `at_barbershop`. Afterwards, the client's status becomes `on_queue`. If the created turn is immediately at position 1, the owner's status becomes `in_service` instead.
+
+If `groupMembers` is provided, a group is created with the client as the leader and each name becomes an independent turn.
+
+If `barberId` is omitted, the system auto-assigns each turn to the barber with the shortest estimated queue.
+
+- Body
+
+```json
+{
+  "clientId": 1,
+  "barbershopId": 1,
+  "barberId": 1,
+  "groupMembers": [
+    {
+      "barberId": 2,
+      "memberName": "member_example"
+    }
+  ]
+}
+```
+
+- Response: `201`
+
+```json
+[
+  {
+    "id": 1,
+    "ownerId": 1,
+    "barbershopId": 1,
+    "groupId": 1,
+    "barberId": 1,
+    "ownerName": "client_example",
+    "ownerType": "client",
+    "ownerStatus": "in_service",
+    "position": 1,
+    "groupSize": 2,
+    "createdAt": "2026-03-18 10:00:00",
+    "attendedAt": null,
+    "finishedAt": null
+  },
+  {
+    "id": 2,
+    "ownerId": 1,
+    "barbershopId": 1,
+    "groupId": 1,
+    "barberId": 1,
+    "ownerName": "member_example",
+    "ownerType": "member",
+    "ownerStatus": "on_queue",
+    "position": 2,
+    "groupSize": 2,
+    "createdAt": "2026-03-18 10:00:00",
+    "attendedAt": null,
+    "finishedAt": null
+  }
+]
+```
+
+---
+
+### `DELETE /api/turns/{id}` <!-- omit from toc -->
+
+Deletes a turn. The status restoration depends on who owns the turn:
+
+| Owner  | Current status                          | Result                                 |
+| ------ | --------------------------------------- | -------------------------------------- |
+| Client | `waiting`                               | Client status becomes `default`.       |
+| Client | `on_queue` or `in_service`              | Client status becomes `at_barbershop`. |
+| Member | `on_queue` or `waiting` or `in_service` | Member record deleted.                 |
+
+If the client is a **group leader**, the entire group is cancelled: all member turns are
+deleted and all member records are removed.
+
+After deletion, the next eligible `on_queue` turn in each affected barber queue is
+promoted to `in_service`.
+
+- Response: `204`

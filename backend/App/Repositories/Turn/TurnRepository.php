@@ -10,19 +10,13 @@ use App\Repositories\BaseRepository;
 
 class TurnRepository extends BaseRepository
 {
-    /** @return TurnEntity[] */
-    public function getAll(int $barbershopId, ?int $barberId = null): array
+    protected const string TABLE_NAME = 'turns';
+
+    private function turnQuery(): string
     {
-        $sql = <<<'SQL'
+        return <<<'SQL'
             SELECT
-                t.id,
-                t.barber_id,
-                t.group_id,
-                t.created_at,
-                CASE
-                    WHEN t.client_id IS NOT NULL THEN 'client'
-                    ELSE 'member'
-                END AS owner_type,
+                t.*,
                 CASE
                     WHEN t.client_id IS NOT NULL THEN t.client_id
                     ELSE t.member_id
@@ -32,6 +26,10 @@ class TurnRepository extends BaseRepository
                     ELSE gm.member_name
                 END AS owner_name,
                 CASE
+                    WHEN t.client_id IS NOT NULL THEN 'client'
+                    ELSE 'member'
+                END AS owner_type,
+                CASE
                     WHEN t.client_id IS NOT NULL THEN cs.current_status
                     ELSE gm.current_status
                 END AS owner_status,
@@ -40,9 +38,9 @@ class TurnRepository extends BaseRepository
                         SELECT
                             COUNT(*)
                         FROM
-                            group_members gm2
+                            turns t2
                         WHERE
-                            gm2.group_id = t.group_id
+                            t2.group_id = t.group_id
                     )
                     ELSE NULL
                 END AS group_size
@@ -51,6 +49,23 @@ class TurnRepository extends BaseRepository
                 LEFT JOIN users u ON u.id = t.client_id
                 LEFT JOIN client_status cs ON cs.client_id = t.client_id
                 LEFT JOIN group_members gm ON gm.id = t.member_id
+        SQL;
+    }
+
+    public function getById(int $id): ?TurnEntity
+    {
+        $sql = $this->turnQuery() . <<<'SQL'
+            WHERE
+                t.id = ?
+        SQL;
+
+        return $this->fetchOne(TurnEntity::class, $sql, [$id]);
+    }
+
+    /** @return TurnEntity[] */
+    public function getAll(int $barbershopId, ?int $barberId = null): array
+    {
+        $sql = $this->turnQuery() . <<<'SQL'
             WHERE
                 t.barbershop_id = ?
                 AND t.finished_at IS NULL
@@ -136,5 +151,33 @@ class TurnRepository extends BaseRepository
         );
 
         return [$slots, $unassignedTurns];
+    }
+
+    private function createTurn(mixed $fields): int
+    {
+        return $this->insert(array_filter(
+            $fields,
+            static fn ($value) => $value !== null
+        ));
+    }
+
+    public function createClientTurn(int $barbershopId, int $clientId, ?int $barberId, ?int $groupId): int
+    {
+        return $this->createTurn([
+            'barbershop_id' => $barbershopId,
+            'client_id' => $clientId,
+            'barber_id' => $barberId,
+            'group_id' => $groupId,
+        ]);
+    }
+
+    public function createMemberTurn(int $barbershopId, int $memberId, int $groupId, ?int $barberId): int
+    {
+        return $this->createTurn([
+            'barbershop_id' => $barbershopId,
+            'member_id' => $memberId,
+            'group_id' => $groupId,
+            'barber_id' => $barberId,
+        ]);
     }
 }

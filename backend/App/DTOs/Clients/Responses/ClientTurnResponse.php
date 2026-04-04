@@ -15,7 +15,7 @@ final readonly class ClientTurnResponse extends BaseResponse
         public ?int $barberId,
         public string $username,
         public string $status,
-        public int $position,
+        public ?int $position,
         public string $createdAt,
         public ?GroupResponse $group,
     ) {}

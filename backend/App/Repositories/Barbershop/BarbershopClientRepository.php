@@ -60,13 +60,4 @@ class BarbershopClientRepository extends BaseRepository
             ['client_id' => $clientId]
         );
     }
-
-    public function updateStatus(int $clientId, string $currentStatus): void
-    {
-        $this->updateFrom(
-            static::TABLE_NAME,
-            ['current_status' => $currentStatus],
-            ['client_id' => $clientId]
-        );
-    }
 }

@@ -44,7 +44,7 @@ final readonly class BarberSlotData
     }
 
     /** Estimated minutes until the barber finishes their current queue. */
-    public function estimatedFinishMinutes(): float
+    public function estimatedBaseFinishMinutes(): float
     {
         return \count($this->assignedTurns) * $this->getAvgServiceMinutes();
     }

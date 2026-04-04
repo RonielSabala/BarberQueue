@@ -14,7 +14,7 @@ class TurnResponse(BaseResponse):
     owner_name: str
     owner_type: str
     owner_status: str
-    position: int
+    position: int | None
     group_size: int | None
 
 

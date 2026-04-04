@@ -15,7 +15,7 @@ use App\DTOs\Clients\Responses\{
 };
 use App\Repositories\Turn\{ClientTurnRepository, TurnRepository};
 
-class ClientTurnService extends TurnService
+class ClientTurnService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,
@@ -49,20 +49,17 @@ class ClientTurnService extends TurnService
             );
         }
 
-        $turnId = $turn->id->value;
-        $turnBarbershopId = $turn->barbershopId->value;
-        $scheduled = $this->getScheduledQueue($this->turnRepository, $turnBarbershopId);
+        $scheduled = $this->getScheduledQueue(
+            $this->turnRepository,
+            $turn->barbershopId->value
+        );
 
-        return new ClientTurnResponse(
-            id: $turnId,
-            barbershopId: $turnBarbershopId,
-            clientId: $turn->clientId->value,
-            barberId: $turn->barberId?->value,
-            username: $turn->username->value,
-            status: $turn->status->value,
-            position: $scheduled->findTurnPosition($turnId) ?? 0,
-            createdAt: $turn->createdAt->value,
-            group: $group,
+        return ClientTurnResponse::fromEntity(
+            $turn,
+            [
+                'position' => $scheduled->findTurnPosition($turn->id->value),
+                'group' => $group,
+            ]
         );
     }
 }

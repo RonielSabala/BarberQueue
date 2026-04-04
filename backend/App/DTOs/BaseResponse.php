@@ -9,7 +9,7 @@ use App\Domain\Entities\BaseEntity;
 
 abstract readonly class BaseResponse extends BaseDto
 {
-    public static function fromEntity(BaseEntity $entity): static
+    public static function fromEntity(BaseEntity $entity, array $overrides = []): static
     {
         $reflection = new \ReflectionClass(static::class);
         $constructor = $reflection->getConstructor();
@@ -24,6 +24,13 @@ abstract readonly class BaseResponse extends BaseDto
         foreach ($constructor->getParameters() as $param) {
             $name = $param->getName();
 
+            // Check manual overrides first
+            if (\array_key_exists($name, $overrides)) {
+                $args[] = $overrides[$name];
+                continue;
+            }
+
+            // Check if the entity has the property
             if (!$entityReflection->hasProperty($name)) {
                 $args[] = $param->isDefaultValueAvailable()
                     ? $param->getDefaultValue()
@@ -32,10 +39,13 @@ abstract readonly class BaseResponse extends BaseDto
                 continue;
             }
 
+            // Extract and process value from entity
             $property = $entityReflection->getProperty($name);
             $value = $property->getValue($entity);
 
             $itemType = ArrayOf::fromParam($param)?->newInstance()?->type;
+
+            // Handle recursive DTO mapping if the property is an array of sub-entities
             $onObject = ($itemType !== null && is_subclass_of($itemType, self::class))
                 ? static fn (mixed $item) => $itemType::fromEntity($item)
                 : null;
