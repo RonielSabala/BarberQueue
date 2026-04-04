@@ -1,76 +1,98 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBarbershopEmployees } from "../../services/barbershopService";
+import { deleteEmployeePermanently } from "../../services/employeeService";
 import "../../styles/admin/AdminEmployees.css";
 
 function AdminEmployees() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
 
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  const [employees] = useState([
-    {
-      id: 1,
-      name: "Juan Valdez",
-      role: "Barbero",
-      email: "juan@barberqueue.com",
-      phone: "809-555-1111",
-    },
-    {
-      id: 2,
-      name: "María Montez",
-      role: "Asistente",
-      email: "maria@barberqueue.com",
-      phone: "809-555-2222",
-    },
-    {
-      id: 3,
-      name: "Ramón Tavarez",
-      role: "Admin",
-      email: "ramon@barberqueue.com",
-      phone: "809-555-3333",
-    },
-    {
-      id: 4,
-      name: "Luis Gómez",
-      role: "Barbero",
-      email: "luis@barberqueue.com",
-      phone: "809-555-4444",
-    },
-  ]);
+  const fetchEmployees = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data = await getBarbershopEmployees(id);
+      setEmployees(data);
+    } catch (err) {
+      console.error("Error al obtener empleados:", err);
+      setError(err.message || "Error al cargar los empleados");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchEmployees();
+    }
+  }, [id]);
 
   const filteredEmployees = useMemo(() => {
     return employees.filter((employee) => {
       const matchesSearch =
-        employee.name.toLowerCase().includes(search.toLowerCase()) ||
-        employee.role.toLowerCase().includes(search.toLowerCase()) ||
-        employee.email.toLowerCase().includes(search.toLowerCase());
+        employee.username?.toLowerCase().includes(search.toLowerCase()) ||
+        employee.email?.toLowerCase().includes(search.toLowerCase()) ||
+        employee.phone?.toLowerCase().includes(search.toLowerCase());
 
       const matchesRole =
-        roleFilter === "all" ||
-        employee.role.toLowerCase() === roleFilter.toLowerCase();
+        roleFilter === "all" ? true : employee.role === roleFilter;
 
       return matchesSearch && matchesRole;
     });
   }, [employees, search, roleFilter]);
 
-  const handleDelete = (employeeName) => {
-    alert(`Aquí luego eliminaremos a ${employeeName} desde backend.`);
+  const formatRole = (role) => {
+    if (role === "barber") return "Barbero";
+    if (role === "assistant") return "Asistente";
+    return role;
+  };
+
+  const handleDelete = async (employeeId) => {
+    const confirmed = window.confirm(
+      "¿Seguro que deseas eliminar este empleado del sistema? Esta acción eliminará también todas sus asignaciones.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setDeletingId(employeeId);
+      setError("");
+      setSuccessMessage("");
+
+      await deleteEmployeePermanently(employeeId);
+
+      setSuccessMessage("Empleado eliminado correctamente.");
+      await fetchEmployees();
+    } catch (err) {
+      console.error("Error al eliminar empleado:", err);
+      setError(err.message || "Error al eliminar el empleado");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
     <div className="admin-employees-page">
       <div className="admin-employees-topbar">
         <button
-          className="admin-employees-back"
+          className="admin-employees-back-btn"
           onClick={() => navigate(`/admin/barbershop/${id}`)}
         >
           ← Volver
         </button>
 
         <button
-          className="admin-employees-add-btn"
+          className="admin-employees-create-btn"
           onClick={() => navigate(`/admin/barbershop/${id}/employees/new`)}
         >
           Añadir empleado
@@ -82,50 +104,66 @@ function AdminEmployees() {
         <p>Gestiona el personal de la barbería.</p>
       </div>
 
+      {error && <div className="admin-employees-alert error">{error}</div>}
+      {successMessage && (
+        <div className="admin-employees-alert success">{successMessage}</div>
+      )}
+
       <div className="admin-employees-filters">
         <input
           type="text"
           placeholder="Buscar empleado"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          className="admin-employees-search"
         />
 
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
+          className="admin-employees-role-filter"
         >
           <option value="all">Todos</option>
-          <option value="barbero">Barbero</option>
-          <option value="asistente">Asistente</option>
-          <option value="admin">Admin</option>
+          <option value="barber">Barbero</option>
+          <option value="assistant">Asistente</option>
         </select>
       </div>
 
       <div className="admin-employees-table-card">
-        <div className="admin-employees-section-label">Empleados</div>
+        <div className="admin-employees-table-badge">Empleados</div>
 
-        <div className="admin-employees-table-wrapper">
-          <table className="admin-employees-table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Rol</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
+        {loading ? (
+          <p className="admin-employees-loading">Cargando empleados...</p>
+        ) : filteredEmployees.length === 0 ? (
+          <div className="admin-employees-empty">
+            No se encontraron empleados para esta barbería.
+          </div>
+        ) : (
+          <div className="admin-employees-table-wrapper">
+            <table className="admin-employees-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Rol</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Horario</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {filteredEmployees.length > 0 ? (
-                filteredEmployees.map((employee) => (
+              <tbody>
+                {filteredEmployees.map((employee) => (
                   <tr key={employee.id}>
-                    <td>{employee.name}</td>
-                    <td>{employee.role}</td>
+                    <td>{employee.username}</td>
+                    <td>{formatRole(employee.role)}</td>
                     <td>{employee.email}</td>
                     <td>{employee.phone}</td>
                     <td>
-                      <div className="admin-employees-actions">
+                      {employee.startTime} - {employee.endTime}
+                    </td>
+                    <td>
+                      <div className="employee-table-actions">
                         <button
                           className="edit-btn"
                           onClick={() =>
@@ -139,24 +177,21 @@ function AdminEmployees() {
 
                         <button
                           className="delete-btn"
-                          onClick={() => handleDelete(employee.name)}
+                          onClick={() => handleDelete(employee.id)}
+                          disabled={deletingId === employee.id}
                         >
-                          Eliminar
+                          {deletingId === employee.id
+                            ? "Eliminando..."
+                            : "Eliminar"}
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="empty-row">
-                    No se encontraron empleados.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,127 +1,89 @@
 .admin-dashboard-page {
-  width: 100%;
-  min-height: 100%;
-  padding: 32px;
-  background: #f4f6f8;
+  padding: 30px;
+}
+
+.admin-dashboard-topbar {
+  margin-bottom: 24px;
+}
+
+.admin-dashboard-back-btn {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #0f172a;
+  cursor: pointer;
+  font-weight: 700;
 }
 
 .admin-dashboard-header {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .admin-dashboard-header h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #16324f;
+  margin: 0 0 8px 0;
+  font-size: 38px;
+  font-weight: bold;
+  color: #16396b;
 }
 
 .admin-dashboard-header p {
-  margin-top: 8px;
-  font-size: 1rem;
-  color: #5f6f81;
+  margin: 0;
+  color: #64748b;
+  font-size: 18px;
 }
 
-.admin-kpis-section {
-  background: #ffffff;
-  border: 1px solid #dbe4ee;
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 8px 24px rgba(15, 35, 55, 0.06);
-}
-
-.admin-kpis-title {
-  margin: 0 0 28px 0;
-  font-size: 2rem;
-  font-weight: 800;
-  color: #16324f;
-}
-
-.admin-kpis-grid {
+.admin-dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 28px;
-  align-items: center;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
-.admin-kpi-card {
-  background: #f9fbfd;
-  border: 1px solid #dbe4ee;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 20px rgba(22, 50, 79, 0.05);
-}
-
-.admin-kpi-rect {
-  min-height: 190px;
+.dashboard-card {
+  background: white;
+  border: 1px solid #e5e7eb;
   border-radius: 20px;
   padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.admin-kpi-circle {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  justify-self: center;
-  padding: 20px;
-  border: 2px solid #d2dce8;
-  background: linear-gradient(180deg, #ffffff 0%, #f4f8fb 100%);
-}
-
-.admin-kpi-label {
-  font-size: 1rem;
+.dashboard-card h3 {
+  margin: 0 0 12px 0;
+  color: #475569;
+  font-size: 16px;
   font-weight: 700;
-  color: #16324f;
-  margin-bottom: 14px;
-  text-align: center;
 }
 
-.admin-kpi-main-value {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #f59e0b;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.admin-kpi-detail {
+.dashboard-card p {
   margin: 0;
-  color: #5f6f81;
-  font-size: 0.95rem;
-  text-align: center;
-  line-height: 1.4;
-}
-
-.admin-rating-card {
-  width: 100%;
-  min-height: 180px;
-  background: #f9fbfd;
-  border: 1px solid #dbe4ee;
-  border-radius: 22px;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-shadow: 0 8px 20px rgba(22, 50, 79, 0.05);
-}
-
-.admin-rating-value {
-  font-size: 3rem;
+  font-size: 30px;
   font-weight: 800;
-  color: #16324f;
-  margin-bottom: 10px;
+  color: #0f172a;
 }
 
-@media (max-width: 992px) {
-  .admin-kpis-grid {
-    grid-template-columns: 1fr;
+.admin-dashboard-alert {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.admin-dashboard-alert.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+@media (max-width: 640px) {
+  .admin-dashboard-page {
+    padding: 20px;
   }
 
-  .admin-kpi-circle {
-    width: 190px;
-    height: 190px;
+  .admin-dashboard-header h1 {
+    font-size: 30px;
+  }
+
+  .dashboard-card p {
+    font-size: 24px;
   }
 }

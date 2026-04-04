@@ -1,94 +1,294 @@
-.barbershop-profile {
+.barbershop-profile-page {
+  padding: 30px;
   max-width: 1100px;
-  margin: auto;
+  margin: 0 auto;
 }
 
-.profile-header {
+.barbershop-profile-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.barbershop-profile-hero {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.barbershop-profile-content {
+  padding: 24px;
+}
+
+.barbershop-profile-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.branch {
-  color: #64748b;
-  margin-left: 5px;
-}
-
-.rating {
-  margin-top: 5px;
-}
-
-.queue-box {
-  background: #f1f5f9;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.live {
-  color: #ef4444;
-  font-size: 14px;
-}
-
-.profile-main {
-  display: flex;
+  align-items: flex-start;
   gap: 20px;
-  margin-top: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
-.main-photo {
-  width: 500px;
+.barbershop-profile-title {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+}
+
+.barbershop-profile-meta {
+  margin: 0 0 8px 0;
+  color: #555;
+}
+
+.barbershop-profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.barbershop-profile-status {
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.barbershop-profile-status.open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.barbershop-profile-status.closed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.barbershop-profile-queue-btn {
+  border: none;
+  background: #3b82f6;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.barbershop-profile-queue-btn:hover {
+  background: #2563eb;
+}
+
+.barbershop-profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.barbershop-info-box {
+  background: #f9fafb;
+  padding: 16px;
   border-radius: 12px;
 }
 
-.haircuts {
-  flex: 1;
+.barbershop-info-label {
+  margin: 0 0 8px 0;
+  color: #6b7280;
 }
 
-.haircut-list {
+.barbershop-info-value {
+  margin: 0;
+  font-weight: 600;
+}
+
+.barbershop-profile-section {
+  margin-bottom: 32px;
+}
+
+.barbershop-profile-section-title {
+  margin-bottom: 16px;
+  font-size: 26px;
+}
+
+.barbershop-cuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.barbershop-cut-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.barbershop-cut-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.barbershop-cut-body {
+  padding: 14px;
+}
+
+.barbershop-cut-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.barbershop-review-form-card,
+.barbershop-empty-card,
+.barbershop-review-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.barbershop-review-form-card {
+  margin-bottom: 20px;
+}
+
+.barbershop-review-form-title {
+  margin-top: 0;
+}
+
+.barbershop-review-message {
+  margin-bottom: 12px;
+}
+
+.barbershop-review-message.error {
+  color: #b91c1c;
+}
+
+.barbershop-review-message.success {
+  color: #166534;
+}
+
+.barbershop-form-group {
+  margin-bottom: 12px;
+}
+
+.barbershop-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.barbershop-input,
+.barbershop-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+}
+
+.barbershop-textarea {
+  resize: vertical;
+}
+
+.barbershop-submit-btn {
+  border: none;
+  background: #16396b;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.barbershop-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.barbershop-reviews-list {
+  display: grid;
+  gap: 16px;
+}
+
+.barbershop-review-header {
   display: flex;
-  gap: 15px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-.haircut-card {
-  background: #f8fafc;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.haircut-card img {
-  width: 180px;
-  border-radius: 10px;
-}
-
-.info-box {
-  margin-top: 20px;
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.status {
-  color: #22c55e;
-}
-
-.reviews {
-  margin-top: 30px;
-}
-
-.review-card {
+.barbershop-review-header-right {
   display: flex;
-  gap: 15px;
-  background: #f8fafc;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 10px;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  background: #cbd5f5;
-  border-radius: 50%;
+.barbershop-review-user {
+  margin: 0;
+  font-weight: 700;
+}
+
+.barbershop-review-date {
+  margin: 4px 0 0 0;
+  color: #6b7280;
+}
+
+.barbershop-review-stars {
+  font-size: 18px;
+}
+
+.barbershop-delete-review-btn {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.barbershop-delete-review-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.barbershop-review-content {
+  margin: 0;
+  color: #374151;
+}
+
+.barbershop-profile-error {
+  color: red;
+}
+
+@media (max-width: 640px) {
+  .barbershop-profile-page {
+    padding: 20px;
+  }
+
+  .barbershop-profile-title {
+    font-size: 26px;
+  }
+
+  .barbershop-profile-actions {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .barbershop-profile-queue-btn {
+    width: 100%;
+  }
+
+  .barbershop-review-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

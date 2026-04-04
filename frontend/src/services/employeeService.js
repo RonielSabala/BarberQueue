@@ -1,90 +1,81 @@
-const mockEmployees = [
-  {
-    id: 1,
-    name: "Juan Valdez",
-    email: "juan@email.com",
-    phone: "809-111-1111",
-    role: "barber",
-    address: "Santiago",
-    birthDate: "1998-03-12",
-    photoUrl: "",
-  },
-  {
-    id: 2,
-    name: "María Montez",
-    email: "maria@email.com",
-    phone: "809-222-2222",
-    role: "assistant",
-    address: "Santo Domingo",
-    birthDate: "1996-07-20",
-    photoUrl: "",
-  },
-];
+import API_URL from "./api";
 
-const mockAssignments = [
-  {
-    staffId: 1,
-    barbershopId: 1,
-    startTime: "08:00",
-    endTime: "17:00",
-  },
-  {
-    staffId: 2,
-    barbershopId: 1,
-    startTime: "08:00",
-    endTime: "17:00",
-  },
-];
-
-export async function getEmployees() {
-  return Promise.resolve(mockEmployees);
+function getErrorMessage(data, defaultMessage) {
+  return data?.message || data?.error || data?.details || defaultMessage;
 }
 
-export async function createEmployee(employeeData) {
-  const newEmployee = {
-    id: Date.now(),
-    name: employeeData.name,
-    email: employeeData.email,
-    phone: employeeData.phone,
-    role: employeeData.role,
-    address: employeeData.address,
-    birthDate: employeeData.birthDate,
-    photoUrl: employeeData.photoPreview || "",
-  };
-
-  mockEmployees.push(newEmployee);
-
-  return Promise.resolve(newEmployee);
-}
-
-export async function assignEmployeeToBarbershop({
-  staffId,
-  barbershopId,
-  startTime = "08:00",
-  endTime = "17:00",
-}) {
-  const newAssignment = {
-    staffId,
-    barbershopId: Number(barbershopId),
-    startTime,
-    endTime,
-  };
-
-  mockAssignments.push(newAssignment);
-
-  return Promise.resolve(newAssignment);
-}
-
-export async function createEmployeeWithAssignment(employeeData) {
-  const newEmployee = await createEmployee(employeeData);
-
-  const assignment = await assignEmployeeToBarbershop({
-    staffId: newEmployee.id,
-    barbershopId: employeeData.barbershopId,
+export async function getEmployeeById(employeeId) {
+  const response = await fetch(`${API_URL}/employees/${employeeId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
-  return {
-    employee: newEmployee,
-    assignment,
-  };
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(data, "Error al obtener el empleado")
+    );
+  }
+
+  return data;
+}
+
+export async function updateEmployeeAssignment(
+  employeeId,
+  barbershopId,
+  assignmentData
+) {
+  const response = await fetch(
+    `${API_URL}/employees/${employeeId}/barbershop/${barbershopId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        role: assignmentData.role,
+        startTime: assignmentData.startTime,
+        endTime: assignmentData.endTime,
+        workingDays: assignmentData.workingDays.map(Number),
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(data, "Error al actualizar el empleado")
+    );
+  }
+
+  return data;
+}
+
+export async function deleteEmployeePermanently(employeeId) {
+  const response = await fetch(`${API_URL}/employees/${employeeId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    throw new Error(
+      getErrorMessage(data, "Error al eliminar el empleado del sistema")
+    );
+  }
+
+  return true;
 }
