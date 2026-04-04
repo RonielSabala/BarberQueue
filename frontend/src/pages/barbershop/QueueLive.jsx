@@ -1,10 +1,32 @@
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQueue } from "../../context/QueueContext";
 import QueueColumn from "../../components/queue/QueueColumn";
+import {
+  getBarbershopClients,
+  checkInBarbershopClient,
+  checkOutBarbershopClient,
+} from "../../services/barbershopService";
 
 function QueueLive() {
   const { id } = useParams();
   const { barbers = [] } = useQueue() || {};
+
+  const [clientsAtBarbershop, setClientsAtBarbershop] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(true);
+  const [clientActionLoading, setClientActionLoading] = useState(false);
+  const [clientError, setClientError] = useState("");
+  const [clientSuccess, setClientSuccess] = useState("");
+
+  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  const currentUserId = storedUser?.id;
+  const currentUserRole = storedUser?.role;
+
+  const isClient = currentUserRole === "client";
+  const canManageClients =
+    currentUserRole === "admin" ||
+    currentUserRole === "assistant" ||
+    currentUserRole === "barber";
 
   const activeBarbers = barbers.filter((b) => b.status === "active");
   const restingBarbers = barbers.filter((b) => b.status === "resting");
@@ -13,6 +35,78 @@ function QueueLive() {
     (acc, b) => acc + (b.current ? 1 : 0) + (b.queue?.length || 0),
     0,
   );
+
+  const fetchClientsAtBarbershop = async () => {
+    try {
+      setLoadingClients(true);
+      setClientError("");
+
+      const data = await getBarbershopClients(id);
+      setClientsAtBarbershop(data);
+    } catch (err) {
+      console.error("Error al obtener clientes en barbería:", err);
+      setClientError(err.message || "Error al cargar los clientes en barbería");
+    } finally {
+      setLoadingClients(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchClientsAtBarbershop();
+    }
+  }, [id]);
+
+  const currentUserCheckedIn = useMemo(() => {
+    if (!currentUserId) return false;
+
+    return clientsAtBarbershop.some(
+      (client) => Number(client.clientId) === Number(currentUserId),
+    );
+  }, [clientsAtBarbershop, currentUserId]);
+
+  const handleCheckIn = async () => {
+    try {
+      setClientActionLoading(true);
+      setClientError("");
+      setClientSuccess("");
+
+      if (!currentUserId) {
+        setClientError("Debes iniciar sesión para registrar tu llegada.");
+        return;
+      }
+
+      await checkInBarbershopClient(id, currentUserId);
+
+      setClientSuccess("Tu llegada fue registrada correctamente.");
+      await fetchClientsAtBarbershop();
+    } catch (err) {
+      console.error("Error en check-in:", err);
+      setClientError(
+        err.message || "Error al registrar tu llegada en la barbería",
+      );
+    } finally {
+      setClientActionLoading(false);
+    }
+  };
+
+  const handleCheckOut = async (clientId) => {
+    try {
+      setClientActionLoading(true);
+      setClientError("");
+      setClientSuccess("");
+
+      await checkOutBarbershopClient(id, clientId);
+
+      setClientSuccess("Cliente retirado de la barbería correctamente.");
+      await fetchClientsAtBarbershop();
+    } catch (err) {
+      console.error("Error en check-out:", err);
+      setClientError(err.message || "Error al retirar el cliente");
+    } finally {
+      setClientActionLoading(false);
+    }
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
@@ -64,18 +158,31 @@ function QueueLive() {
                 Espera General
               </h2>
 
-              <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                    <span className="material-icons-round text-slate-400">
-                      person
-                    </span>
-                  </div>
-                  <span className="text-xs font-medium text-slate-500">
-                    Cliente #
-                  </span>
+              {loadingClients ? (
+                <p className="text-slate-400 text-sm">Cargando clientes...</p>
+              ) : clientsAtBarbershop.length === 0 ? (
+                <p className="text-slate-400 text-sm italic">
+                  No hay clientes registrados en espera general.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-4">
+                  {clientsAtBarbershop.map((client) => (
+                    <div
+                      key={client.clientId}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                        <span className="material-icons-round text-slate-400">
+                          person
+                        </span>
+                      </div>
+                      <span className="text-xs font-medium text-slate-500 text-center max-w-[80px] break-words">
+                        {client.username}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -134,9 +241,91 @@ function QueueLive() {
               </p>
             </div>
 
-            <button className="w-full bg-primary hover:bg-blue-600 text-white font-bold h-14 px-6 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
-              Ver ticket
-            </button>
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+              <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
+                <span className="material-icons-round text-slate-400">
+                  storefront
+                </span>
+                Clientes en barbería
+              </h3>
+
+              {clientError && (
+                <p className="text-sm text-red-500 mb-3">{clientError}</p>
+              )}
+
+              {clientSuccess && (
+                <p className="text-sm text-green-600 mb-3">{clientSuccess}</p>
+              )}
+
+              {isClient && (
+                <div className="space-y-3">
+                  <p className="text-sm text-slate-600">
+                    Registra tu llegada para aparecer en la espera general de la
+                    barbería.
+                  </p>
+
+                  {currentUserCheckedIn ? (
+                    <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
+                      Ya estás registrado dentro de la barbería.
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleCheckIn}
+                      disabled={clientActionLoading}
+                      className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                    >
+                      {clientActionLoading
+                        ? "Registrando..."
+                        : "Registrar llegada"}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {canManageClients && (
+                <div className="space-y-3">
+                  {loadingClients ? (
+                    <p className="text-slate-400 text-sm">
+                      Cargando clientes...
+                    </p>
+                  ) : clientsAtBarbershop.length === 0 ? (
+                    <p className="text-slate-400 text-sm italic">
+                      No hay clientes dentro de la barbería.
+                    </p>
+                  ) : (
+                    clientsAtBarbershop.map((client) => (
+                      <div
+                        key={client.clientId}
+                        className="flex items-center justify-between gap-3 border border-slate-100 rounded-2xl p-3"
+                      >
+                        <div>
+                          <p className="font-semibold text-slate-800">
+                            {client.username}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            Estado: {client.currentStatus}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => handleCheckOut(client.clientId)}
+                          disabled={clientActionLoading}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-60"
+                        >
+                          Check-out
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {!isClient && !canManageClients && (
+                <p className="text-slate-400 text-sm italic">
+                  No tienes permisos para gestionar clientes en esta barbería.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </main>

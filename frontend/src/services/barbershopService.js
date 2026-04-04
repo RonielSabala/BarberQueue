@@ -362,3 +362,76 @@ export async function deleteBarbershopEmployee(id, employeeId) {
 
   return true;
 }
+
+export async function getBarbershopClients(id) {
+  const response = await fetch(`${API_URL}/barbershops/${id}/clients`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message || data?.error || "Error al obtener los clientes en barbería"
+    );
+  }
+
+  return Array.isArray(data) ? data : [];
+}
+
+export async function checkInBarbershopClient(barbershopId, clientId) {
+  const response = await fetch(
+    `${API_URL}/barbershops/${barbershopId}/clients/${clientId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    throw new Error(
+      data?.message || data?.error || "Error al hacer check-in del cliente"
+    );
+  }
+
+  return true;
+}
+
+export async function checkOutBarbershopClient(barbershopId, clientId) {
+  const response = await fetch(
+    `${API_URL}/barbershops/${barbershopId}/clients/${clientId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    throw new Error(
+      data?.message || data?.error || "Error al hacer check-out del cliente"
+    );
+  }
+
+  return true;
+}
