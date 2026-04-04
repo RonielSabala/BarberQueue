@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQueue } from "../../context/QueueContext";
 import QueueColumn from "../../components/queue/QueueColumn";
 import {
   getBarbershopClients,
   checkInBarbershopClient,
   checkOutBarbershopClient,
 } from "../../services/barbershopService";
+import { getBarbershopQueue } from "../../services/queueService";
 
 function QueueLive() {
   const { id } = useParams();
-  const { barbers = [] } = useQueue() || {};
+
+  const [barbers, setBarbers] = useState([]);
+  const [loadingQueue, setLoadingQueue] = useState(true);
+  const [queueError, setQueueError] = useState("");
 
   const [clientsAtBarbershop, setClientsAtBarbershop] = useState([]);
   const [loadingClients, setLoadingClients] = useState(true);
@@ -36,6 +39,21 @@ function QueueLive() {
     0,
   );
 
+  const fetchQueue = async () => {
+    try {
+      setLoadingQueue(true);
+      setQueueError("");
+
+      const data = await getBarbershopQueue(id);
+      setBarbers(data);
+    } catch (err) {
+      console.error("Error al obtener cola de barbería:", err);
+      setQueueError(err.message || "Error al cargar la cola");
+    } finally {
+      setLoadingQueue(false);
+    }
+  };
+
   const fetchClientsAtBarbershop = async () => {
     try {
       setLoadingClients(true);
@@ -53,6 +71,7 @@ function QueueLive() {
 
   useEffect(() => {
     if (id) {
+      fetchQueue();
       fetchClientsAtBarbershop();
     }
   }, [id]);
@@ -140,8 +159,16 @@ function QueueLive() {
 
         <div className="flex flex-col xl:flex-row gap-8">
           <div className="flex-grow">
+            {queueError && (
+              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+                {queueError}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeBarbers.length === 0 ? (
+              {loadingQueue ? (
+                <p className="text-slate-500">Cargando cola...</p>
+              ) : activeBarbers.length === 0 ? (
                 <p className="text-slate-500">No hay barberos activos.</p>
               ) : (
                 activeBarbers.map((barber) => (
@@ -326,6 +353,10 @@ function QueueLive() {
                 </p>
               )}
             </div>
+
+            <button className="w-full bg-primary hover:bg-blue-600 text-white font-bold h-14 px-6 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+              Ver ticket
+            </button>
           </div>
         </div>
       </main>
