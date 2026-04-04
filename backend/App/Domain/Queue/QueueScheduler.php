@@ -88,6 +88,6 @@ final class QueueScheduler
             }
         }
 
-        return new ScheduledQueue($barberSlots, $queues);
+        return new ScheduledQueue($barberSlots, $slotsById, $queues);
     }
 }

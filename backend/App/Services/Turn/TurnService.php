@@ -215,7 +215,8 @@ class TurnService extends BaseTurnService
     {
         $ownerId = $turn->ownerId->value;
         $ownerStatus = $turn->ownerStatus->value;
-        $affectedBarberIds = array_filter([$turn->barberId?->value]);
+        $ownerBarberId = $turn->barberId;
+        $affectedBarberIds = array_filter([$ownerBarberId?->value]);
 
         // Delete client turn
         if ($turn->ownerType->value === OwnerTypeEnum::Client->value) {
@@ -266,15 +267,22 @@ class TurnService extends BaseTurnService
             $this->groupMemberRepository->delete($ownerId);
         }
 
-        if (empty($affectedBarberIds)) {
+        if (empty($affectedBarberIds) && $ownerBarberId !== null) {
             return;
         }
 
         $scheduled = $this->scheduledQueue($turn->barbershopId->value);
 
+        // Add all possible barber ids if owner barber is not specified
+        if ($ownerBarberId === null) {
+            foreach ($scheduled->slotsById as $barberId => $_) {
+                $affectedBarberIds[] = $barberId;
+            }
+        }
+
         // Promote next turns for each affected barber
         foreach (array_unique($affectedBarberIds) as $barberId) {
-            $queue = $scheduled->queueFor($barberId);
+            $queue = $scheduled->queueOf($barberId);
             foreach ($queue as $turn) {
                 $promoted = $this->promoteToInService($turn);
                 if ($promoted) {

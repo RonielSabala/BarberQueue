@@ -25,7 +25,7 @@ class QueueService extends BaseTurnService
         ScheduledQueue $scheduled
     ): QueueResponse {
         $barberId = $slot->barberId;
-        $barberQueue = $scheduled->queueFor($barberId);
+        $barberQueue = $scheduled->queueOf($barberId);
 
         return new QueueResponse(
             barberId: $barberId,
