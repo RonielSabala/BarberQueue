@@ -19,7 +19,7 @@ class BarberService extends BaseService
         private readonly BarberRepository $barberRepository,
     ) {}
 
-    public function validateBarber(int $barberId): void
+    public function validateBarberExists(int $barberId): void
     {
         $barber = $this->userRepository->getById($barberId);
         if ($barber === null) {
@@ -43,7 +43,7 @@ class BarberService extends BaseService
 
     public function getDashboard(int $barberId): BarberDashboardResponse
     {
-        $this->validateBarber($barberId);
+        $this->validateBarberExists($barberId);
 
         $dashboard = $this->barberRepository->getDashboard($barberId);
         if ($dashboard === null) {
@@ -55,7 +55,7 @@ class BarberService extends BaseService
 
     public function updateStatus(int $barberId, UpdateBarberStatusRequest $request): void
     {
-        $this->validateBarber($barberId);
+        $this->validateBarberExists($barberId);
         $fields = $this->validateFieldsToUpdate($request);
         $this->barberRepository->updateStatus($barberId, $fields);
     }

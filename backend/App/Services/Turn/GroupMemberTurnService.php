@@ -9,7 +9,7 @@ use App\DTOs\GroupMembers\Responses\GroupMemberTurnResponse;
 use App\Exceptions\Turn\GroupMemberTurnException;
 use App\Repositories\Turn\{GroupMemberTurnRepository, TurnRepository};
 
-class GroupMemberTurnService extends TurnService
+class GroupMemberTurnService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,
@@ -31,20 +31,14 @@ class GroupMemberTurnService extends TurnService
             throw new GroupMemberTurnException('No active turn found for this group member', HttpStatus::NotFound);
         }
 
-        $turnId = $turn->id->value;
-        $turnBarbershopId = $turn->barbershopId->value;
-        $scheduled = $this->getScheduledQueue($this->turnRepository, $turnBarbershopId);
+        $scheduled = $this->getScheduledQueue(
+            $this->turnRepository,
+            $turn->barbershopId->value
+        );
 
-        return new GroupMemberTurnResponse(
-            id: $turnId,
-            barbershopId: $turnBarbershopId,
-            memberId: $turn->memberId->value,
-            barberId: $turn->barberId?->value,
-            groupId: $turn->groupId->value,
-            memberName: $turn->memberName->value,
-            status: $turn->status->value,
-            position: $scheduled->findTurnPosition($turnId) ?? 0,
-            createdAt: $turn->createdAt->value,
+        return GroupMemberTurnResponse::fromEntity(
+            $turn,
+            ['position' => $scheduled->findTurnPosition($turn->id->value)]
         );
     }
 }

@@ -12,5 +12,5 @@ class GroupMemberTurnResponse(BaseResponse):
     group_id: int
     member_name: str
     status: str
-    position: int
+    position: int | None
     created_at: str

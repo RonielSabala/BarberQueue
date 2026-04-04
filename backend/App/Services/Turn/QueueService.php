@@ -12,7 +12,7 @@ use App\Domain\Queue\{BarberSlotData, ScheduledQueue};
 use App\DTOs\Queues\Responses\{QueueResponse, TurnResponse};
 use App\Repositories\Turn\{QueueRepository, TurnRepository};
 
-class QueueService extends TurnService
+class QueueService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,
@@ -33,27 +33,17 @@ class QueueService extends TurnService
             barberStatus: $slot->barberStatus,
             isAccepting: $slot->isAccepting,
             turns: array_map(
-                fn (TurnEntity $turn) => $this->buildTurnResponse(
+                static fn (TurnEntity $turn) => TurnResponse::fromEntity(
                     $turn,
-                    $scheduled->positionOf($barberQueue, $turn->id->value)
+                    [
+                        'position' => $scheduled->positionOf(
+                            $barberQueue,
+                            $turn->id->value
+                        ),
+                    ]
                 ),
                 $barberQueue
             ),
-        );
-    }
-
-    private function buildTurnResponse(TurnEntity $turn, ?int $position): TurnResponse
-    {
-        return new TurnResponse(
-            id: $turn->id->value,
-            ownerId: $turn->ownerId->value,
-            groupId: $turn->groupId?->value,
-            barberId: $turn->barberId?->value,
-            ownerName: $turn->ownerName->value,
-            ownerType: $turn->ownerType->value,
-            ownerStatus: $turn->ownerStatus->value,
-            position: $position ?? 0,
-            groupSize: $turn->groupSize?->value,
         );
     }
 

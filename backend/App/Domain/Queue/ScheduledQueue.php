@@ -26,11 +26,11 @@ final readonly class ScheduledQueue
     /**
      * Position of a turn within a known barber queue (1-indexed).
      *
-     * @param TurnEntity[] $barberQueue
+     * @param TurnEntity[] $queue
      */
-    public function positionOf(array $barberQueue, int $turnId): ?int
+    public function positionOf(array $queue, int $turnId): ?int
     {
-        foreach ($barberQueue as $i => $turn) {
+        foreach ($queue as $i => $turn) {
             if ($turn->id->value === $turnId) {
                 return $i + 1;
             }
@@ -45,8 +45,8 @@ final readonly class ScheduledQueue
      */
     public function findTurnPosition(int $turnId): ?int
     {
-        foreach ($this->queues as $barberQueue) {
-            $position = $this->positionOf($barberQueue, $turnId);
+        foreach ($this->queues as $queue) {
+            $position = $this->positionOf($queue, $turnId);
             if ($position !== null) {
                 return $position;
             }

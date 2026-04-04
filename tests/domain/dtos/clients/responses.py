@@ -11,7 +11,7 @@ class GroupMemberTurnResponse(BaseResponse):
     member_id: int
     member_name: str
     barber_id: int | None
-    position: int
+    position: int | None
     status: str
 
 
@@ -31,6 +31,6 @@ class ClientTurnResponse(BaseResponse):
     barber_id: int | None
     username: str
     status: str
-    position: int
+    position: int | None
     created_at: str
     group: GroupResponse | None
