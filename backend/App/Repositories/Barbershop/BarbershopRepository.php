@@ -219,7 +219,7 @@ class BarbershopRepository extends BaseRepository
                         turns t
                     WHERE
                         t.barbershop_id = b.id
-                        AND t.finished_at IS NULL
+                        AND t.attended_at IS NULL
                 ) AS queue_count
             FROM
                 barbershops b

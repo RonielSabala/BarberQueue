@@ -22,7 +22,6 @@ class ClientTurnRepository extends BaseRepository
                 JOIN users u ON u.id = t.client_id
             WHERE
                 t.client_id = ?
-                AND t.finished_at IS NULL
             LIMIT
                 1
         SQL;
@@ -44,7 +43,6 @@ class ClientTurnRepository extends BaseRepository
             WHERE
                 t.group_id = ?
                 AND t.member_id IS NOT NULL
-                AND t.finished_at IS NULL
             ORDER BY
                 t.created_at ASC
         SQL;

@@ -6,12 +6,17 @@ namespace App\Repositories\Turn;
 
 use App\Domain\Entities\Turn\TurnEntity;
 use App\Domain\Queue\BarberSlotData;
+use App\Domain\ValueObjects\DateTimeString;
 use App\Repositories\BaseRepository;
 
 class TurnRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'turns';
-    protected const array UPDATABLE_FIELDS = ['barber_id'];
+    protected const array UPDATABLE_FIELDS = [
+        'barber_id',
+        'attended_at',
+        'finished_at',
+    ];
 
     private function turnQuery(): string
     {
@@ -69,7 +74,7 @@ class TurnRepository extends BaseRepository
         $sql = $this->turnQuery() . <<<'SQL'
             WHERE
                 t.barbershop_id = ?
-                AND t.finished_at IS NULL
+                AND t.attended_at IS NULL
         SQL;
 
         $params = [$barbershopId];
@@ -185,5 +190,24 @@ class TurnRepository extends BaseRepository
     public function updateBarberId(int $turnId, int $barberId): void
     {
         $this->update($turnId, ['barber_id' => $barberId]);
+    }
+
+    public function setAttendedAt(int $turnId): void
+    {
+        $this->update($turnId, ['attended_at' => date(DateTimeString::DATETIME_FORMAT)]);
+    }
+
+    public function setFinishedAt(int $turnId): void
+    {
+        $this->update($turnId, ['finished_at' => date(DateTimeString::DATETIME_FORMAT)]);
+    }
+
+    public function setGroupFinishedAt(int $groupId): void
+    {
+        $this->updateFrom(
+            static::TABLE_NAME,
+            ['finished_at' => date(DateTimeString::DATETIME_FORMAT)],
+            ['group_id' => $groupId]
+        );
     }
 }

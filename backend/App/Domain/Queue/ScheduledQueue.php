@@ -58,12 +58,13 @@ final readonly class ScheduledQueue
         return null;
     }
 
-    /**
-     * Searches all barber queues and returns the position (1-indexed) of the
-     * given turn, regardless of which barber it ended up with.
-     */
     public function findTurnPosition(int $turnId): ?int
     {
         return $this->findTurnLocation($turnId)[0] ?? null;
+    }
+
+    public function findTurnBarberId(int $turnId): ?int
+    {
+        return $this->findTurnLocation($turnId)[1] ?? null;
     }
 }

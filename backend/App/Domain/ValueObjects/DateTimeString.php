@@ -9,7 +9,7 @@ use App\Domain\ValueObjects\Base\StringField;
 final readonly class DateTimeString extends StringField
 {
     private const int FIXED_DATETIME_LENGTH = 19;
-    private const string DATETIME_FORMAT = 'Y-m-d H:i:s';
+    public const string DATETIME_FORMAT = 'Y-m-d H:i:s';
 
     protected const int MIN_LEN = self::FIXED_DATETIME_LENGTH;
     protected const int MAX_LEN = self::FIXED_DATETIME_LENGTH;

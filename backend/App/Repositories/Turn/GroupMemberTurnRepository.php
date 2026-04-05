@@ -21,7 +21,6 @@ class GroupMemberTurnRepository extends BaseRepository
                 JOIN group_members gm ON gm.id = t.member_id
             WHERE
                 t.member_id = ?
-                AND t.finished_at IS NULL
             LIMIT
                 1
         SQL;

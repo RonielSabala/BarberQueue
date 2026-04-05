@@ -50,4 +50,18 @@ class TurnController extends BaseController
         $response = $this->turnService->unwaitTurn($id);
         HttpResponse::json($response);
     }
+
+    #[PATCH('/{id}/attend')]
+    public function attendTurn(int $id): void
+    {
+        $response = $this->turnService->attendTurn($id);
+        HttpResponse::json($response);
+    }
+
+    #[PATCH('/{id}/pay')]
+    public function payTurn(int $id): void
+    {
+        $response = $this->turnService->payTurn($id);
+        HttpResponse::json($response);
+    }
 }
