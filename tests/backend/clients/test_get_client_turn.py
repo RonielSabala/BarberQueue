@@ -24,8 +24,8 @@ from helpers.assertions import (
 )
 from helpers.common_responses import CLIENT_NOT_AT_BARBERSHOP, CLIENT_NOT_FOUND
 
-SEEDED_CLIENT_WITH_TURN_ID = 15
-SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID = 17
+SEEDED_CLIENT_WITH_TURN_ID = 17
+SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID = 18
 
 _NO_ACTIVE_TURN = ErrorResponse(
     error="The client currently has no turn despite being in a barbershop"
@@ -75,10 +75,11 @@ def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
     """
 
     response = client.clients.get_turn(SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID)
+    body = response.json()
 
     assert_status(response, HttpStatus.OK)
-    assert response.json()["position"] >= 1
-    assert response.json()["barberId"] is None
+    assert body["position"] >= 1
+    assert body["barberId"] is None
 
 
 def test_turn_id_matches_created_turn(client: ApiClient, live_turn: dict) -> None:

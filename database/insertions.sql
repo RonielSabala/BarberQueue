@@ -245,7 +245,7 @@ SET
     barbershop_id = 1,
     current_status = 'on_queue'
 WHERE
-    client_id IN (10, 18);
+    client_id = 18;
 
 UPDATE client_status
 SET
@@ -260,13 +260,6 @@ SET
     current_status = 'in_service'
 WHERE
     client_id = 17;
-
-UPDATE client_status
-SET
-    barbershop_id = 2,
-    current_status = 'in_service'
-WHERE
-    client_id IN (11, 16);
 
 UPDATE client_status
 SET
