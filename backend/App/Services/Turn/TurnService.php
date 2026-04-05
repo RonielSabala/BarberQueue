@@ -323,7 +323,7 @@ class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
             throw new TurnException(
-                'Only on_queue turns can be set to waiting',
+                'Only \'on_queue\' turns can be set to \'waiting\'',
                 HttpStatus::UnprocessableEntity
             );
         }
@@ -342,7 +342,7 @@ class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::Waiting->value) {
             throw new TurnException(
-                'Only waiting turns can be set back to on_queue',
+                'Only \'waiting\' turns can be set back to \'on_queue\'',
                 HttpStatus::UnprocessableEntity
             );
         }
