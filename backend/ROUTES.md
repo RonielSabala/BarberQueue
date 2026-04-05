@@ -186,19 +186,17 @@ Reset password using the reset code received by email.
 
 ## Users
 
----
-
 ### `GET /api/users` <!-- omit from toc -->
 
 List all users. Supports optional filters.
 
 **Query params**
 
-| Param      | Type   | Description              |
-| ---------- | ------ | ------------------------ |
-| `username` | string | Filter by username       |
-| `email`    | string | Filter by the user email |
-| `role`     | string | Filter by role           |
+| Param      | Type   | Description         |
+| ---------- | ------ | ------------------- |
+| `username` | string | Filter by username  |
+| `email`    | string | Filter by the email |
+| `role`     | string | Filter by role      |
 
 - Response: `200`
 
