@@ -10,6 +10,7 @@ from api.controllers import (
     EmployeeController,
     GroupMemberController,
     QueueController,
+    TurnController,
     UserController,
 )
 from api.core import HttpMethod
@@ -35,6 +36,7 @@ class ApiClient:
         self.clients = ClientController(self)
         self.group_members = GroupMemberController(self)
         self.queues = QueueController(self)
+        self.turns = TurnController(self)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}{path}"

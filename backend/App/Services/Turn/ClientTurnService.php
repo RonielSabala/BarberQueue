@@ -40,19 +40,25 @@ class ClientTurnService extends BaseTurnService
             throw new ClientTurnException('No active turn found for this client', HttpStatus::NotFound);
         }
 
-        $group = null;
-        if ($turn->groupId !== null) {
-            $memberTurns = $this->clientTurnRepository->getAllByGroupId($turn->groupId->value);
-            $group = new GroupResponse(
-                groupId: $turn->groupId->value,
-                members: GroupMemberTurnResponse::fromEntities($memberTurns),
-            );
-        }
-
         $scheduled = $this->getScheduledQueue(
             $this->turnRepository,
             $turn->barbershopId->value
         );
+
+        $group = null;
+        $groupId = $turn->groupId;
+        if ($groupId !== null) {
+            $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId->value);
+            $memberResponses = array_map(
+                static fn ($turn) => GroupMemberTurnResponse::fromEntity(
+                    $turn,
+                    ['position' => $scheduled->findTurnPosition($turn->id->value)]
+                ),
+                $memberTurns
+            );
+
+            $group = new GroupResponse(groupId: $groupId->value, members: $memberResponses);
+        }
 
         return ClientTurnResponse::fromEntity(
             $turn,

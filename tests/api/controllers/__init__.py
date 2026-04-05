@@ -9,6 +9,7 @@ from api.controllers.clients import ClientController
 from api.controllers.employees import EmployeeController
 from api.controllers.group_members import GroupMemberController
 from api.controllers.queues import QueueController
+from api.controllers.turns import TurnController
 from api.controllers.users import UserController
 
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     "EmployeeController",
     "GroupMemberController",
     "QueueController",
+    "TurnController",
     "UserController",
 ]

@@ -9,9 +9,9 @@ use App\Domain\Entities\Turn\TurnEntity;
 final readonly class ScheduledQueue
 {
     /**
-     * @param BarberSlotData[]             $barberSlots
-     * @param array<int, BarberSlotData[]> $slotsById
-     * @param array<int, TurnEntity[]>     $queues
+     * @param BarberSlotData[]           $barberSlots
+     * @param array<int, BarberSlotData> $slotsById
+     * @param array<int, TurnEntity[]>   $queues
      */
     public function __construct(
         public array $barberSlots,
@@ -42,18 +42,28 @@ final readonly class ScheduledQueue
     }
 
     /**
+     * Finds both the 1-indexed position and the barber ID for a given turn.
+     *
+     * * @return null|array{int, int}
+     */
+    public function findTurnLocation(int $turnId): ?array
+    {
+        foreach ($this->queues as $barberId => $queue) {
+            $position = $this->positionOf($queue, $turnId);
+            if ($position !== null) {
+                return [$position, (int) $barberId];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Searches all barber queues and returns the position (1-indexed) of the
      * given turn, regardless of which barber it ended up with.
      */
     public function findTurnPosition(int $turnId): ?int
     {
-        foreach ($this->queues as $queue) {
-            $position = $this->positionOf($queue, $turnId);
-            if ($position !== null) {
-                return $position;
-            }
-        }
-
-        return null;
+        return $this->findTurnLocation($turnId)[0] ?? null;
     }
 }

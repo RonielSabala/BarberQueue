@@ -9,11 +9,11 @@ use App\DTOs\BaseResponse;
 final readonly class GroupMemberTurnResponse extends BaseResponse
 {
     public function __construct(
-        public int $turnId,
+        public int $id,
         public int $memberId,
         public string $memberName,
         public ?int $barberId,
-        public int $position,
+        public ?int $position,
         public string $status,
     ) {}
 }

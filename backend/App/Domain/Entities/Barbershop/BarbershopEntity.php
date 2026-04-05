@@ -38,11 +38,10 @@ final readonly class BarbershopEntity extends BaseEntity
         $now = date('H:i:s');
         $opensAt = $this->opensAt->value;
         $closesAt = $this->closesAt->value;
+        $isNormalShift = $opensAt < $closesAt;
 
-        $this->isOpen = (
-            $now >= $opensAt
-            && $now <= $closesAt
-            || $opensAt === $closesAt
-        );
+        $this->isOpen = $isNormalShift
+            ? ($now >= $opensAt && $now <= $closesAt)
+            : ($now >= $opensAt || $now <= $closesAt);
     }
 }

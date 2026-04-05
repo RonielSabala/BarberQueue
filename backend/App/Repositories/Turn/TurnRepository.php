@@ -11,6 +11,7 @@ use App\Repositories\BaseRepository;
 class TurnRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'turns';
+    protected const array UPDATABLE_FIELDS = ['barber_id'];
 
     private function turnQuery(): string
     {
@@ -179,5 +180,10 @@ class TurnRepository extends BaseRepository
             'group_id' => $groupId,
             'barber_id' => $barberId,
         ]);
+    }
+
+    public function updateBarberId(int $turnId, int $barberId): void
+    {
+        $this->update($turnId, ['barber_id' => $barberId]);
     }
 }
