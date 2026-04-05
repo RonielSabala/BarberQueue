@@ -36,6 +36,13 @@ class UserService extends BaseService
         }
     }
 
+    /** @return GetUserResponse[] */
+    public function getAll(?string $username, ?string $email, ?string $role): array
+    {
+        $users = $this->userRepository->getAll($username, $email, $role);
+        return GetUserResponse::fromEntities($users);
+    }
+
     public function get(int $userId): GetUserResponse
     {
         $user = $this->validateUserExists($userId);

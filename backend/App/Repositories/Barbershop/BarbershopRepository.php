@@ -63,11 +63,8 @@ class BarbershopRepository extends BaseRepository
     }
 
     /** @return BarbershopEntity[] */
-    public function getAll(
-        ?string $search = null,
-        ?bool $isOpen = null,
-        ?int $adminId = null
-    ): array {
+    public function getAll(?string $search, ?bool $isOpen, ?int $adminId): array
+    {
         $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.is_active = 1

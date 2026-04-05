@@ -37,7 +37,7 @@ class BarbershopService extends BaseService
     }
 
     /** @return BarbershopResponse[] */
-    public function getAll(?string $search, ?bool $isOpen, ?int $adminId = null): array
+    public function getAll(?string $search, ?bool $isOpen, ?int $adminId): array
     {
         $barbershops = $this->barbershopRepository->getAll($search, $isOpen, $adminId);
         return BarbershopResponse::fromEntities($barbershops);

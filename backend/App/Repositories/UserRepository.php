@@ -53,6 +53,31 @@ class UserRepository extends BaseRepository
         return $this->fetchOne(UserEntity::class, $sql, [$email]);
     }
 
+    /** @return UserEntity[] */
+    public function getAll(?string $username, ?string $email, ?string $role): array
+    {
+        $sql = $this->userQuery();
+
+        $params = [];
+        if ($username !== null) {
+            $sql .= ' AND u.username LIKE :username';
+            $params['username'] = "%{$username}%";
+        }
+
+        if ($email !== null) {
+            $sql .= ' AND u.email = :email';
+            $params['email'] = $email;
+        }
+
+        if ($role !== null) {
+            $sql .= ' AND r.role_name = :role';
+            $params['role'] = $role;
+        }
+
+        $sql .= ' ORDER BY u.id ASC';
+        return $this->fetchAll(UserEntity::class, $sql, $params);
+    }
+
     public function createUser(
         int $roleId,
         string $username,
