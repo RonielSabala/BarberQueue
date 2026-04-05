@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import QueueColumn from "../../components/queue/QueueColumn";
+import AssistantRegisterPanel from "../../components/assistant/AssistantRegisterPanel";
 import {
   getBarbershopClients,
   checkInBarbershopClient,
@@ -38,6 +39,7 @@ function QueueLive() {
   const currentUserRole = storedUser?.role;
 
   const isClient = currentUserRole === "client";
+  const isAssistant = currentUserRole === "assistant";
   const canManageClients =
     currentUserRole === "admin" ||
     currentUserRole === "assistant" ||
@@ -89,7 +91,6 @@ function QueueLive() {
       setTurnError("");
 
       const data = await getClientActiveTurn(currentUserId);
-      console.log("Mi turno desde API:", data);
       setMyTurn(data);
     } catch (err) {
       console.error("Error al obtener mi turno:", err);
@@ -212,8 +213,6 @@ function QueueLive() {
         barbershopId: Number(id),
         barberId: Number(barberId),
       });
-
-      console.log("Turnos creados:", createdTurns);
 
       const mainTurn = Array.isArray(createdTurns)
         ? createdTurns.find(
@@ -432,103 +431,101 @@ function QueueLive() {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-              <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
-                <span className="material-icons-round text-slate-400">
-                  storefront
-                </span>
-                Clientes en barbería
-              </h3>
+            {isAssistant ? (
+              <AssistantRegisterPanel barbers={activeBarbers} />
+            ) : (
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
+                  <span className="material-icons-round text-slate-400">
+                    storefront
+                  </span>
+                  Clientes en barbería
+                </h3>
 
-              {clientError && (
-                <p className="text-sm text-red-500 mb-3">{clientError}</p>
-              )}
+                {clientError && (
+                  <p className="text-sm text-red-500 mb-3">{clientError}</p>
+                )}
 
-              {clientSuccess && (
-                <p className="text-sm text-green-600 mb-3">{clientSuccess}</p>
-              )}
+                {clientSuccess && (
+                  <p className="text-sm text-green-600 mb-3">{clientSuccess}</p>
+                )}
 
-              {isClient && (
-                <div className="space-y-3">
-                  <p className="text-sm text-slate-600">
-                    Registra tu llegada para aparecer en la espera general de la
-                    barbería.
-                  </p>
-
-                  {currentUserCheckedIn ? (
-                    <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
-                      Ya estás registrado dentro de la barbería.
-                    </div>
-                  ) : (
-                    <button
-                      onClick={handleCheckIn}
-                      disabled={clientActionLoading}
-                      className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60"
-                    >
-                      {clientActionLoading
-                        ? "Registrando..."
-                        : "Registrar llegada"}
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsTurnModalOpen(true);
-                      fetchMyTurn();
-                    }}
-                    disabled={loadingMyTurn}
-                    className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
-                  >
-                    {loadingMyTurn ? "Cargando..." : "Ver mi turno"}
-                  </button>
-                </div>
-              )}
-
-              {canManageClients && (
-                <div className="space-y-3">
-                  {loadingClients ? (
-                    <p className="text-slate-400 text-sm">
-                      Cargando clientes...
+                {isClient && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-slate-600">
+                      Registra tu llegada para aparecer en la espera general de
+                      la barbería.
                     </p>
-                  ) : clientsAtBarbershop.length === 0 ? (
-                    <p className="text-slate-400 text-sm italic">
-                      No hay clientes dentro de la barbería.
-                    </p>
-                  ) : (
-                    clientsAtBarbershop.map((client) => (
-                      <div
-                        key={client.clientId}
-                        className="flex items-center justify-between gap-3 border border-slate-100 rounded-2xl p-3"
-                      >
-                        <div>
-                          <p className="font-semibold text-slate-800">
-                            {client.username}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            Estado: {client.currentStatus}
-                          </p>
-                        </div>
 
-                        <button
-                          onClick={() => handleCheckOut(client.clientId)}
-                          disabled={clientActionLoading}
-                          className="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-60"
-                        >
-                          Check-out
-                        </button>
+                    {currentUserCheckedIn ? (
+                      <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
+                        Ya estás registrado dentro de la barbería.
                       </div>
-                    ))
-                  )}
-                </div>
-              )}
+                    ) : (
+                      <button
+                        onClick={handleCheckIn}
+                        disabled={clientActionLoading}
+                        className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                      >
+                        {clientActionLoading
+                          ? "Registrando..."
+                          : "Registrar llegada"}
+                      </button>
+                    )}
 
-              {!isClient && !canManageClients && (
-                <p className="text-slate-400 text-sm italic">
-                  No tienes permisos para gestionar clientes en esta barbería.
-                </p>
-              )}
-            </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsTurnModalOpen(true);
+                        fetchMyTurn();
+                      }}
+                      disabled={loadingMyTurn}
+                      className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                    >
+                      {loadingMyTurn ? "Cargando..." : "Ver mi turno"}
+                    </button>
+                  </div>
+                )}
+
+                {canManageClients && !isClient && (
+                  <div className="space-y-3">
+                    {loadingClients ? (
+                      <p className="text-slate-400 text-sm">
+                        Cargando clientes...
+                      </p>
+                    ) : clientsAtBarbershop.length === 0 ? (
+                      <p className="text-slate-400 text-sm italic">
+                        No hay clientes dentro de la barbería.
+                      </p>
+                    ) : (
+                      clientsAtBarbershop.map((client) => (
+                        <div
+                          key={client.clientId}
+                          className="flex items-center justify-between gap-3 border border-slate-100 rounded-2xl p-3"
+                        >
+                          <div>
+                            <p className="font-semibold text-slate-800">
+                              {client.username}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              Estado: {client.currentStatus}
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => handleCheckOut(client.clientId)}
+                            disabled={clientActionLoading}
+                            className="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-60"
+                          >
+                            Check-out
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -40,8 +40,17 @@ function UserProfileCard({
     );
   }
 
-  if (!user) return null;
-
+  if (!user) {
+    return (
+      <div className="p-8">
+        <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
+          <p className="text-slate-500 text-lg">
+            No se encontró información del usuario.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
