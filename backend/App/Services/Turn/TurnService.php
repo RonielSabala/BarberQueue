@@ -71,6 +71,7 @@ class TurnService extends BaseTurnService
     {
         $ownerId = $turn->ownerId->value;
 
+        // Update status
         if ($turn->ownerType->value === OwnerTypeEnum::Client->value) {
             $this->groupMemberRepository->updateClientStatus($ownerId, $newStatus);
         } else {
@@ -86,6 +87,11 @@ class TurnService extends BaseTurnService
         }
 
         $this->setOwnerStatus($turn, ClientStatusEnum::InService->value);
+
+        // Assign barber to this turn
+        if ($turn->barberId === null) {
+            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
+        }
 
         // Assign barber to this turn
         if ($turn->barberId === null) {
