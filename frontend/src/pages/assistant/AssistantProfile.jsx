@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import UserProfileCard from "../../components/UserProfileCard";
 import { useUserProfile } from "../../hooks/useUserProfile";
 
 function AssistantProfile() {
+  const navigate = useNavigate();
   const {
     user,
     error,
@@ -12,8 +14,8 @@ function AssistantProfile() {
     isChangingPassword,
     formData,
     passwordData,
-    handleChange,
-    handlePasswordChange,
+    handleFieldChange,
+    handlePasswordFieldChange,
     handleEditClick,
     handlePasswordClick,
     handleCancel,
@@ -34,13 +36,30 @@ function AssistantProfile() {
       isChangingPassword={isChangingPassword}
       formData={formData}
       passwordData={passwordData}
-      onFieldChange={handleChange}
-      onPasswordFieldChange={handlePasswordChange}
+      onFieldChange={handleFieldChange}
+      onPasswordFieldChange={handlePasswordFieldChange}
       onEditClick={handleEditClick}
       onPasswordClick={handlePasswordClick}
       onCancel={handleCancel}
       onSubmitProfile={handleSubmitProfile}
       onSubmitPassword={handleSubmitPassword}
+      extraActions={
+        <>
+          <button
+            onClick={() => navigate("/assistant/home")}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-3 rounded-2xl transition"
+          >
+            Volver al home
+          </button>
+
+          <button
+            onClick={() => navigate("/assistant/register-client")}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-2xl transition"
+          >
+            Registrar clientes
+          </button>
+        </>
+      }
     />
   );
 }

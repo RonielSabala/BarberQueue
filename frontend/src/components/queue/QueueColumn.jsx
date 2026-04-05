@@ -1,4 +1,10 @@
-function QueueColumn({ barber }) {
+function QueueColumn({
+  barber,
+  showJoinAction = false,
+  canJoin = false,
+  joining = false,
+  onJoinQueue,
+}) {
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
@@ -133,6 +139,23 @@ function QueueColumn({ barber }) {
             ))
           )}
         </div>
+
+        {showJoinAction && (
+          <div className="px-4 pb-4">
+            <button
+              type="button"
+              onClick={() => onJoinQueue?.(barber.id)}
+              disabled={!canJoin || joining || !barber.isAccepting}
+              className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {joining
+                ? "Registrando..."
+                : barber.isAccepting
+                  ? "Entrar a esta cola"
+                  : "Barbero no disponible"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
