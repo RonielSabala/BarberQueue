@@ -153,7 +153,7 @@ def test_auto_assign_without_barber_id(
 
     client_id = checked_in(client, open_barbershop_id)
     turn_request = CreateTurnRequest.random(
-        client_id=client_id, barbershop_id=open_barbershop_id, barber_id=None
+        client_id=client_id, barbershop_id=open_barbershop_id, optional_chance=0
     )
 
     response = client.turns.create_turn(turn_request)

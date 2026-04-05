@@ -67,7 +67,7 @@ class TurnService extends BaseTurnService
         }
     }
 
-    private function promoteToInService(TurnEntity $turn): bool
+    private function promoteToInService(TurnEntity $turn, int $barberId): bool
     {
         // Only promote on queue owners
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
@@ -77,10 +77,16 @@ class TurnService extends BaseTurnService
         $ownerId = $turn->ownerId->value;
         $newStatus = ClientStatusEnum::InService->value;
 
+        // Update status
         if ($turn->ownerType->value === OwnerTypeEnum::Client->value) {
             $this->groupMemberRepository->updateClientStatus($ownerId, $newStatus);
         } else {
             $this->groupMemberRepository->updateMemberStatus($ownerId, $newStatus);
+        }
+
+        // Assign barber to this turn
+        if ($turn->barberId === null) {
+            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
         }
 
         return true;
@@ -156,13 +162,14 @@ class TurnService extends BaseTurnService
         // Promote position-1 turns
         $freshScheduled = $this->scheduledQueue($barbershopId);
         foreach ($createdTurnIds as $turnId) {
-            if ($freshScheduled->findTurnPosition($turnId) !== 1) {
+            [$position, $barberId] = $freshScheduled->findTurnLocation($turnId);
+            if ($position !== 1) {
                 continue;
             }
 
             $turn = $this->turnRepository->getById($turnId);
             if ($turn !== null) {
-                $this->promoteToInService($turn);
+                $this->promoteToInService($turn, $barberId);
             }
         }
 
@@ -284,7 +291,7 @@ class TurnService extends BaseTurnService
         foreach (array_unique($affectedBarberIds) as $barberId) {
             $queue = $scheduled->queueOf($barberId);
             foreach ($queue as $turn) {
-                $promoted = $this->promoteToInService($turn);
+                $promoted = $this->promoteToInService($turn, $barberId);
                 if ($promoted) {
                     break;
                 }
