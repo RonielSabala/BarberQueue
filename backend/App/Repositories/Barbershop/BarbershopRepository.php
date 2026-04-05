@@ -80,9 +80,21 @@ class BarbershopRepository extends BaseRepository
         }
 
         if ($isOpen === true) {
-            $sql .= ' AND (b.opens_at <= CURRENT_TIME() AND b.closes_at >= CURRENT_TIME())';
+            $sql .= <<<'SQL'
+                AND (
+                    (opens_at < closes_at AND CURRENT_TIME() BETWEEN opens_at AND closes_at)
+                    OR
+                    (opens_at >= closes_at AND (CURRENT_TIME() >= opens_at OR CURRENT_TIME() <= closes_at))
+                )
+            SQL;
         } elseif ($isOpen === false) {
-            $sql .= ' AND (b.opens_at > CURRENT_TIME() OR b.closes_at < CURRENT_TIME())';
+            $sql .= <<<'SQL'
+                AND NOT (
+                    (opens_at < closes_at AND CURRENT_TIME() BETWEEN opens_at AND closes_at)
+                    OR
+                    (opens_at >= closes_at AND (CURRENT_TIME() >= opens_at OR CURRENT_TIME() <= closes_at))
+                )
+            SQL;
         }
 
         if ($adminId !== null) {
