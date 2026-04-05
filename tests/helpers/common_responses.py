@@ -23,3 +23,6 @@ CLIENT_NOT_FOUND = ErrorResponse(error="Client not found")
 CLIENT_NOT_AT_BARBERSHOP = ErrorResponse(
     error="The client is not currently checked into any barbershop"
 )
+
+# Turns
+TURN_NOT_FOUND = ErrorResponse(error="Turn not found")

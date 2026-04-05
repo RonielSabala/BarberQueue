@@ -897,7 +897,7 @@ With group (leader):
     "groupId": 2,
     "members": [
       {
-        "turnId": 2,
+        "id": 2,
         "memberId": 1,
         "memberName": "member_example",
         "barberId": null,

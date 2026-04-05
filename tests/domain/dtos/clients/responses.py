@@ -7,7 +7,7 @@ from domain.value_objects.base import ListOf
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class GroupMemberTurnResponse(BaseResponse):
-    turn_id: int
+    _id: int
     member_id: int
     member_name: str
     barber_id: int | None

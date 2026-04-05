@@ -7,7 +7,7 @@ from domain.value_objects.base import BaseField
 from helpers.unwrap_type import unwrap_list_of
 
 
-def _get_random_value_by_type(value_type: Any) -> Any:
+def _get_random_value_by_type(value_type: Any, optional_chance: float) -> Any:
     # Handle Annotated
     list_metadata = unwrap_list_of(value_type)
     if list_metadata:
@@ -22,11 +22,15 @@ def _get_random_value_by_type(value_type: Any) -> Any:
             min_items, min_items + 1 if max_items is None else max_items
         )
         return [
-            _get_random_value_by_type(list_metadata.base_type)
+            _get_random_value_by_type(list_metadata.base_type, optional_chance)
             for _ in range(list_length)
         ]
 
     is_type = isinstance(value_type, type)
+
+    # Handle BaseRequests
+    if is_type and issubclass(value_type, BaseRequest):
+        return value_type.random(optional_chance=optional_chance)
 
     # Handle Value Objects
     if is_type and issubclass(value_type, BaseField):
@@ -82,7 +86,9 @@ class BaseRequest(BaseDto):
 
             populate = not is_optional or random.random() < optional_chance
             kwargs[field_name] = (
-                _get_random_value_by_type(field_type) if populate else None
+                _get_random_value_by_type(field_type, optional_chance)
+                if populate
+                else None
             )
 
         return cls(**kwargs)
