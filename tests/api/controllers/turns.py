@@ -1,7 +1,7 @@
 import requests
 
 from api.base_controller import BaseController
-from api.decorators import DELETE, GET, POST, route_prefix
+from api.decorators import DELETE, GET, PATCH, POST, route_prefix
 from domain.dtos.turns.requests import CreateTurnRequest
 
 
@@ -15,3 +15,9 @@ class TurnController(BaseController):
 
     @DELETE("/{id}")
     def delete_turn(self, id: int) -> requests.Response: ...
+
+    @PATCH("/{id}/wait")
+    def wait_turn(self, id: int) -> requests.Response: ...
+
+    @PATCH("/{id}/unwait")
+    def unwait_turn(self, id: int) -> requests.Response: ...

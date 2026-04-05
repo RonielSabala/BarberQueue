@@ -186,6 +186,34 @@ Reset password using the reset code received by email.
 
 ## Users
 
+### `GET /api/users` <!-- omit from toc -->
+
+List all users. Supports optional filters.
+
+**Query params**
+
+| Param      | Type   | Description         |
+| ---------- | ------ | ------------------- |
+| `username` | string | Filter by username  |
+| `email`    | string | Filter by the email |
+| `role`     | string | Filter by role      |
+
+- Response: `200`
+
+```json
+[
+  {
+    "id": 1,
+    "username": "user_example",
+    "email": "user_example@gmail.com",
+    "phone": "8091234567",
+    "role": "client"
+  }
+]
+```
+
+---
+
 ### `GET /api/users/{id}` <!-- omit from toc -->
 
 Get a user's profile.
@@ -924,7 +952,7 @@ Fetch the active turn for a specific group member.
   "id": 1,
   "barbershopId": 1,
   "memberId": 1,
-  "barberId": null,
+  "barberId": 1,
   "groupId": 1,
   "memberName": "member_example",
   "status": "in_service",
@@ -955,7 +983,7 @@ Shows all active barbers at a barbershop and their queues. Turns with no assigne
         "id": 1,
         "ownerId": 1,
         "groupId": null,
-        "barberId": null,
+        "barberId": 1,
         "ownerName": "client_example",
         "ownerType": "client",
         "ownerStatus": "in_service",
@@ -988,7 +1016,7 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
       "id": 1,
       "ownerId": 1,
       "groupId": null,
-      "barberId": null,
+      "barberId": 1,
       "ownerName": "client_example",
       "ownerType": "client",
       "ownerStatus": "in_service",
@@ -1111,3 +1139,117 @@ After deletion, the next eligible `on_queue` turn in each affected barber queue 
 promoted to `in_service`.
 
 - Response: `204`
+
+---
+
+### `PATCH /api/turns/{id}/wait` <!-- omit from toc -->
+
+Mark a turn owner as temporarily absent. Only `on_queue` turns can trigger this. Afterwards, the owner's status becomes `waiting` and their turn is preserved in the queue at its current position.
+
+While waiting, the owner is skipped if they reach position 1, the next `on_queue` turn behind them moves to `in_service` instead.
+
+- Response: `200`
+
+```json
+{
+  "id": 2,
+  "ownerId": 2,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": null,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "waiting",
+  "position": 2,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": null,
+  "finishedAt": null
+}
+```
+
+---
+
+### `PATCH /api/turns/{id}/unwait` <!-- omit from toc -->
+
+Mark a waiting turn owner as present again. Only `waiting` turns can trigger this. Afterwards, the owner's status becomes `on_queue` and they re-enter the queue at their original position.
+
+If they re-enter at position 1 and no one is currently `in_service` for their barber, they are immediately promoted to `in_service`.
+
+- Response: `200`
+
+```json
+{
+  "id": 2,
+  "ownerId": 2,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": 1,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "in_service",
+  "position": 1,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": null,
+  "finishedAt": null
+}
+```
+
+---
+
+### `PATCH /api/turns/{id}/attend` <!-- omit from toc -->
+
+Mark a turn as attended. Only turns whose owner has status `in_service` can be attended. Afterwards, the owner's status becomes `attended` and `turns.attended_at` is set.
+
+After marking the turn as attended, the server promotes the next eligible turn in that barber's queue to `in_service`.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": 1,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "attended",
+  "position": null,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": "2026-03-18 10:25:00",
+  "finishedAt": null
+}
+```
+
+---
+
+### `PATCH /api/turns/{id}/pay` <!-- omit from toc -->
+
+Mark a turn as paid and close it. Only client turns can trigger this, member turns cannot pay independently.
+
+**Solo client:** Must have status `attended`. Afterwards, the client's status becomes `paid` and `turns.finished_at` is set.
+
+**Group leader:** Can only pay if **all** group member turns also have status `attended`. Afterwards, the leader's and all members' statuses become `paid`, and `turns.finished_at` is set on all turns in the group.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "ownerId": 1,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": 1,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "paid",
+  "position": null,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": "2026-03-18 10:25:00",
+  "finishedAt": "2026-03-18 10:30:00"
+}
+```

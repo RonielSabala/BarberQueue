@@ -63,11 +63,8 @@ class BarbershopRepository extends BaseRepository
     }
 
     /** @return BarbershopEntity[] */
-    public function getAll(
-        ?string $search = null,
-        ?bool $isOpen = null,
-        ?int $adminId = null
-    ): array {
+    public function getAll(?string $search, ?bool $isOpen, ?int $adminId): array
+    {
         $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.is_active = 1
@@ -219,7 +216,7 @@ class BarbershopRepository extends BaseRepository
                         turns t
                     WHERE
                         t.barbershop_id = b.id
-                        AND t.finished_at IS NULL
+                        AND t.attended_at IS NULL
                 ) AS queue_count
             FROM
                 barbershops b

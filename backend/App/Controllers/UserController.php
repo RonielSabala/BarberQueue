@@ -16,6 +16,16 @@ class UserController extends BaseController
         private readonly UserService $userService
     ) {}
 
+    #[GET('')]
+    public function getAll(
+        ?string $username = null,
+        ?string $email = null,
+        ?string $role = null
+    ): void {
+        $response = $this->userService->getAll($username, $email, $role);
+        HttpResponse::json($response);
+    }
+
     #[GET('/{id}')]
     public function get(int $id): void
     {

@@ -245,7 +245,7 @@ SET
     barbershop_id = 1,
     current_status = 'on_queue'
 WHERE
-    client_id IN (10, 18);
+    client_id = 18;
 
 UPDATE client_status
 SET
@@ -260,13 +260,6 @@ SET
     current_status = 'in_service'
 WHERE
     client_id = 17;
-
-UPDATE client_status
-SET
-    barbershop_id = 2,
-    current_status = 'in_service'
-WHERE
-    client_id IN (11, 16);
 
 UPDATE client_status
 SET
@@ -479,7 +472,7 @@ VALUES
     (3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
     (2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
     -- Waiting in queue (individual)
-    (1, 17, NULL, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
     (1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
     -- Waiting in queue (group 2)
     (3, NULL, 3, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),

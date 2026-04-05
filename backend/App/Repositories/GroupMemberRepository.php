@@ -30,4 +30,13 @@ class GroupMemberRepository extends BaseRepository
     {
         $this->update($memberId, ['current_status' => $currentStatus]);
     }
+
+    public function updateAllMemberStatus(int $groupId, string $currentStatus): void
+    {
+        $this->updateFrom(
+            self::TABLE_NAME,
+            ['current_status' => $currentStatus],
+            ['group_id' => $groupId],
+        );
+    }
 }

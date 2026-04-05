@@ -17,7 +17,7 @@ from helpers.common_responses import (
     CLIENT_NOT_FOUND,
 )
 
-_SEEDED_ON_QUEUE_CLIENT_ID = 10
+_SEEDED_ON_QUEUE_CLIENT_ID = 18
 _DIFFERENT_BARBERSHOP = ErrorResponse(
     error="The client is registered at a different barbershop location"
 )

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Domain\Entities\PasswordResetEntity;
+use App\Domain\ValueObjects\DateTimeString;
 
 class PasswordResetRepository extends BaseRepository
 {
@@ -35,7 +36,7 @@ class PasswordResetRepository extends BaseRepository
         $this->insert([
             'user_id' => $userId,
             'reset_code' => $resetCode,
-            'expires_at' => $expiresAt->format('Y-m-d H:i:s'),
+            'expires_at' => $expiresAt->format(DateTimeString::DATETIME_FORMAT),
         ]);
     }
 
