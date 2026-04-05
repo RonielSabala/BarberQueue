@@ -67,6 +67,17 @@ class TurnService extends BaseTurnService
         }
     }
 
+    private function setOwnerStatus(TurnEntity $turn, string $newStatus): void
+    {
+        $ownerId = $turn->ownerId->value;
+
+        if ($turn->ownerType->value === OwnerTypeEnum::Client->value) {
+            $this->groupMemberRepository->updateClientStatus($ownerId, $newStatus);
+        } else {
+            $this->groupMemberRepository->updateMemberStatus($ownerId, $newStatus);
+        }
+    }
+
     private function promoteToInService(TurnEntity $turn, int $barberId): bool
     {
         // Only promote on queue owners
@@ -74,15 +85,7 @@ class TurnService extends BaseTurnService
             return false;
         }
 
-        $ownerId = $turn->ownerId->value;
-        $newStatus = ClientStatusEnum::InService->value;
-
-        // Update status
-        if ($turn->ownerType->value === OwnerTypeEnum::Client->value) {
-            $this->groupMemberRepository->updateClientStatus($ownerId, $newStatus);
-        } else {
-            $this->groupMemberRepository->updateMemberStatus($ownerId, $newStatus);
-        }
+        $this->setOwnerStatus($turn, ClientStatusEnum::InService->value);
 
         // Assign barber to this turn
         if ($turn->barberId === null) {
@@ -90,6 +93,19 @@ class TurnService extends BaseTurnService
         }
 
         return true;
+    }
+
+    private function promoteNextEligibleInQueue(
+        ScheduledQueue $scheduled,
+        int $barberId
+    ): void {
+        $queue = $scheduled->queueOf($barberId);
+        foreach ($queue as $turn) {
+            $promoted = $this->promoteToInService($turn, $barberId);
+            if ($promoted) {
+                return;
+            }
+        }
     }
 
     private function buildTurnResponse(
@@ -289,13 +305,7 @@ class TurnService extends BaseTurnService
 
         // Promote next turns for each affected barber
         foreach (array_unique($affectedBarberIds) as $barberId) {
-            $queue = $scheduled->queueOf($barberId);
-            foreach ($queue as $turn) {
-                $promoted = $this->promoteToInService($turn, $barberId);
-                if ($promoted) {
-                    break;
-                }
-            }
+            $this->promoteNextEligibleInQueue($scheduled, $barberId);
         }
     }
 
@@ -304,6 +314,54 @@ class TurnService extends BaseTurnService
         $turn = $this->validateTurnExists($turnId);
         $this->turnRepository->transaction(
             fn () => $this->orchestrateTurnDeletion($turn)
+        );
+    }
+
+    public function waitTurn(int $turnId): TurnDetailResponse
+    {
+        $turn = $this->validateTurnExists($turnId);
+
+        if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
+            throw new TurnException(
+                'Only on_queue turns can be set to waiting',
+                HttpStatus::UnprocessableEntity
+            );
+        }
+
+        $this->setOwnerStatus($turn, ClientStatusEnum::Waiting->value);
+
+        return $this->buildTurnResponse(
+            turn: $this->turnRepository->getById($turnId),
+            scheduled: $this->scheduledQueue($turn->barbershopId->value)
+        );
+    }
+
+    public function unwaitTurn(int $turnId): TurnDetailResponse
+    {
+        $turn = $this->validateTurnExists($turnId);
+
+        if ($turn->ownerStatus->value !== ClientStatusEnum::Waiting->value) {
+            throw new TurnException(
+                'Only waiting turns can be set back to on_queue',
+                HttpStatus::UnprocessableEntity
+            );
+        }
+
+        $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
+
+        $barbershopId = $turn->barbershopId->value;
+        $scheduled = $this->scheduledQueue($barbershopId);
+
+        // After re-entering the queue, check if this turn is now at position 1
+        [$position, $barberId] = $scheduled->findTurnLocation($turnId);
+        if ($position === 1) {
+            $updatedTurn = $this->turnRepository->getById($turnId);
+            $this->promoteToInService($updatedTurn, $barberId);
+        }
+
+        return $this->buildTurnResponse(
+            turn: $this->turnRepository->getById($turnId),
+            scheduled: $this->scheduledQueue($barbershopId)
         );
     }
 }

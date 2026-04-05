@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\DTOs\Turns\Requests\CreateTurnRequest;
 use App\Services\Turn\TurnService;
-use App\Attributes\{DELETE, GET, POST, RoutePrefix};
+use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 
 #[RoutePrefix('/api/turns')]
@@ -35,5 +35,19 @@ class TurnController extends BaseController
     {
         $this->turnService->deleteTurn($id);
         HttpResponse::json(null, HttpStatus::NoContent);
+    }
+
+    #[PATCH('/{id}/wait')]
+    public function waitTurn(int $id): void
+    {
+        $response = $this->turnService->waitTurn($id);
+        HttpResponse::json($response);
+    }
+
+    #[PATCH('/{id}/unwait')]
+    public function unwaitTurn(int $id): void
+    {
+        $response = $this->turnService->unwaitTurn($id);
+        HttpResponse::json($response);
     }
 }

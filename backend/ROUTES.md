@@ -924,7 +924,7 @@ Fetch the active turn for a specific group member.
   "id": 1,
   "barbershopId": 1,
   "memberId": 1,
-  "barberId": null,
+  "barberId": 1,
   "groupId": 1,
   "memberName": "member_example",
   "status": "in_service",
@@ -955,7 +955,7 @@ Shows all active barbers at a barbershop and their queues. Turns with no assigne
         "id": 1,
         "ownerId": 1,
         "groupId": null,
-        "barberId": null,
+        "barberId": 1,
         "ownerName": "client_example",
         "ownerType": "client",
         "ownerStatus": "in_service",
@@ -988,7 +988,7 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
       "id": 1,
       "ownerId": 1,
       "groupId": null,
-      "barberId": null,
+      "barberId": 1,
       "ownerName": "client_example",
       "ownerType": "client",
       "ownerStatus": "in_service",
@@ -1111,3 +1111,59 @@ After deletion, the next eligible `on_queue` turn in each affected barber queue 
 promoted to `in_service`.
 
 - Response: `204`
+
+---
+
+### `PATCH /api/turns/{id}/wait` <!-- omit from toc -->
+
+Mark a turn owner as temporarily absent. Only `on_queue` turns can trigger this. Afterwards, the owner's status becomes `waiting` and their turn is preserved in the queue at its current position.
+
+While waiting, the owner is skipped if they reach position 1, the next `on_queue` turn behind them moves to `in_service` instead.
+
+- Response: `200`
+
+```json
+{
+  "id": 2,
+  "ownerId": 2,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": null,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "waiting",
+  "position": 2,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": null,
+  "finishedAt": null
+}
+```
+
+---
+
+### `PATCH /api/turns/{id}/unwait` <!-- omit from toc -->
+
+Mark a waiting turn owner as present again. Only `waiting` turns can trigger this. Afterwards, the owner's status becomes `on_queue` and they re-enter the queue at their original position.
+
+If they re-enter at position 1 and no one is currently `in_service` for their barber, they are immediately promoted to `in_service`.
+
+- Response: `200`
+
+```json
+{
+  "id": 2,
+  "ownerId": 2,
+  "barbershopId": 1,
+  "groupId": null,
+  "barberId": 1,
+  "ownerName": "client_example",
+  "ownerType": "client",
+  "ownerStatus": "in_service",
+  "position": 1,
+  "groupSize": null,
+  "createdAt": "2026-03-18 10:00:00",
+  "attendedAt": null,
+  "finishedAt": null
+}
+```

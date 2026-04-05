@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Queue;
 
 use App\Domain\Entities\Turn\TurnEntity;
+use App\Domain\Enums\ClientStatusEnum;
 
 final class QueueScheduler
 {
@@ -38,6 +39,38 @@ final class QueueScheduler
         return [$bestId, $bestSlot];
     }
 
+    private static function isOwnerWaiting(TurnEntity $turn): bool
+    {
+        return $turn->ownerStatus->value === ClientStatusEnum::Waiting->value;
+    }
+
+    /**
+     * If the first turn in the queue is waiting, finds the first non-waiting turn
+     * and moves it to position 0. All other turns keep their relative order.
+     *
+     * @param TurnEntity[] $queue
+     *
+     * @return TurnEntity[]
+     */
+    private static function promoteFirstEligible(array $queue): array
+    {
+        if (empty($queue) || !self::isOwnerWaiting($queue[0])) {
+            return $queue;
+        }
+
+        foreach ($queue as $i => $turn) {
+            if (self::isOwnerWaiting($turn)) {
+                continue;
+            }
+
+            array_splice($queue, $i, 1);
+            array_unshift($queue, $turn);
+            return $queue;
+        }
+
+        return $queue;
+    }
+
     /**
      * @param BarberSlotData[] $barberSlots
      * @param TurnEntity[]     $unassignedTurns
@@ -51,7 +84,6 @@ final class QueueScheduler
         $allTurns = $unassignedTurns;
 
         foreach ($barberSlots as $slot) {
-            // Add all turns
             foreach ($slot->assignedTurns as $turn) {
                 $allTurns[] = $turn;
             }
@@ -68,7 +100,7 @@ final class QueueScheduler
             static fn (TurnEntity $a, TurnEntity $b) => $a->id->value <=> $b->id->value
         );
 
-        // Process all turns chronologically
+        // Process all turns
         foreach ($allTurns as $turn) {
             $barberId = $turn->barberId?->value;
 
@@ -81,11 +113,15 @@ final class QueueScheduler
 
             // Otherwise, pick the best barber based on the current estimated finish times
             [$bestId, $barberSlot] = self::pickBestBarber($barberSlots, $finishMinutes);
-
             if ($bestId !== null && $barberSlot !== null) {
                 $queues[$bestId][] = $turn;
                 $finishMinutes[$bestId] += $barberSlot->getAvgServiceMinutes();
             }
+        }
+
+        // If position 1 is waiting, promote the first eligible turn to the front
+        foreach ($queues as $barberId => $queue) {
+            $queues[$barberId] = self::promoteFirstEligible($queue);
         }
 
         return new ScheduledQueue($barberSlots, $slotsById, $queues);
