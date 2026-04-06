@@ -167,6 +167,11 @@ export async function getBarbershopDashboard(id) {
 }
 
 export async function createBarbershop(barbershopData) {
+  const formatTime = (time) => {
+    if (!time) return time;
+    return time.length === 5 ? `${time}:00` : time;
+  };
+
   const response = await fetch(`${API_URL}/barbershops`, {
     method: "POST",
     headers: {
@@ -179,8 +184,8 @@ export async function createBarbershop(barbershopData) {
       phone: barbershopData.phone,
       barbershopAddress: barbershopData.barbershopAddress,
       photoUrl: barbershopData.photoUrl,
-      opensAt: barbershopData.opensAt,
-      closesAt: barbershopData.closesAt,
+      opensAt: formatTime(barbershopData.opensAt),
+      closesAt: formatTime(barbershopData.closesAt),
       capacity: Number(barbershopData.capacity || 1),
     }),
   });
@@ -308,6 +313,11 @@ export async function getBarbershopEmployees(id) {
 }
 
 export async function createBarbershopEmployee(id, employeeData) {
+  const formatTime = (time) => {
+    if (!time) return time;
+    return time.length === 5 ? `${time}:00` : time;
+  };
+
   const response = await fetch(`${API_URL}/barbershops/${id}/employees`, {
     method: "POST",
     headers: {
@@ -319,8 +329,8 @@ export async function createBarbershopEmployee(id, employeeData) {
       phone: employeeData.phone,
       password: employeeData.password,
       role: employeeData.role,
-      startTime: employeeData.startTime,
-      endTime: employeeData.endTime,
+      startTime: formatTime(employeeData.startTime),
+      endTime: formatTime(employeeData.endTime),
       workingDays: employeeData.workingDays.map(Number),
     }),
   });

@@ -78,3 +78,27 @@ export async function changeUserPassword(id, passwordData) {
 
   return data;
 }
+
+export async function getUsers(filters = {}) {
+  const params = new URLSearchParams();
+
+  if (filters.username) params.append("username", filters.username);
+  if (filters.email) params.append("email", filters.email);
+  if (filters.role) params.append("role", filters.role);
+
+  const queryString = params.toString();
+  const url = queryString ? `${API_URL}/users?${queryString}` : `${API_URL}/users`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Error al buscar usuarios");
+  }
+
+  return Array.isArray(data) ? data : [];
+}

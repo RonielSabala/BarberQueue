@@ -135,11 +135,19 @@ function QueueLive() {
 
   const estimatedTurnTime = useMemo(() => {
     if (!myTurn) return "Sin turno";
-    if (myTurn.status === "in_service") return "Te están atendiendo ahora";
-    if (!myTurn.position || myTurn.position <= 1) return "Próximo en atención";
+    if ((myTurn.ownerStatus || myTurn.status) === "in_service") {
+      return "Te están atendiendo ahora";
+    }
+    if (!myTurn.position || myTurn.position <= 1) {
+      return "Próximo en atención";
+    }
 
     const minutes = (myTurn.position - 1) * 25;
     return `~${minutes} minutos`;
+  }, [myTurn]);
+
+  const isGroupLeader = useMemo(() => {
+    return Boolean(myTurn?.group && Array.isArray(myTurn.group.members));
   }, [myTurn]);
 
   const handleCheckIn = async () => {
@@ -432,7 +440,13 @@ function QueueLive() {
             </div>
 
             {isAssistant ? (
-              <AssistantRegisterPanel barbers={activeBarbers} />
+              <AssistantRegisterPanel
+                barbers={activeBarbers}
+                barbershopId={id}
+                onRegistered={async () => {
+                  await Promise.all([fetchQueue(), fetchClientsAtBarbershop()]);
+                }}
+              />
             ) : (
               <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                 <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
@@ -532,7 +546,7 @@ function QueueLive() {
 
       {isTurnModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-4 mb-5">
               <div>
                 <h2 className="text-2xl font-bold text-slate-800">Mi turno</h2>
@@ -597,7 +611,7 @@ function QueueLive() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <p className="text-xs uppercase font-bold text-slate-400 mb-1">
                       Tiempo estimado
                     </p>
@@ -605,26 +619,69 @@ function QueueLive() {
                       {estimatedTurnTime}
                     </p>
                   </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
+                      Tipo de turno
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                        {isGroupLeader ? "Grupo" : "Individual"}
+                      </span>
+
+                      {isGroupLeader && (
+                        <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                          Líder de grupo
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {myTurn.group && (
+                {isGroupLeader && (
                   <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-bold text-slate-800 mb-3">
-                      Grupo #{myTurn.group.groupId}
-                    </p>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">
+                          Grupo #{myTurn.group.groupId}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Estás registrado como líder de grupo.
+                        </p>
+                      </div>
 
-                    <div className="space-y-2">
+                      <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                        {myTurn.group.members.length} miembro
+                        {myTurn.group.members.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
                       {myTurn.group.members.map((member) => (
                         <div
                           key={member.turnId}
-                          className="flex items-center justify-between rounded-xl bg-white border border-slate-200 px-3 py-2"
+                          className="rounded-2xl bg-white border border-slate-200 p-4"
                         >
-                          <span className="font-medium text-slate-700">
-                            {member.memberName}
-                          </span>
-                          <span className="text-sm text-slate-500">
-                            Posición: {member.position} · {member.status}
-                          </span>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                              <p className="font-bold text-slate-800">
+                                {member.memberName}
+                              </p>
+                              <p className="text-sm text-slate-500">
+                                Miembro del grupo
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+                                Posición: {member.position}
+                              </span>
+
+                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                {member.status}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
