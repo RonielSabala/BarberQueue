@@ -1,61 +1,71 @@
 import API_URL from "./api";
 
-function getErrorMessage(data, defaultMessage) {
-  return data?.message || data?.error || data?.details || defaultMessage;
+function getErrorMessage(data, fallback) {
+  if (!data) return fallback;
+  return data.message || data.error || data.details || fallback;
 }
 
-function mapQueueBarber(barber) {
-  const turns = Array.isArray(barber.turns) ? barber.turns : [];
+function normalizeBarbershopQueueItem(item) {
+  const turns = Array.isArray(item?.turns) ? item.turns : [];
 
-  const currentTurn =
-    turns.find((turn) => turn.ownerStatus === "in_service") ||
-    turns.find((turn) => turn.position === 1) ||
-    null;
+  const sortedTurns = [...turns].sort((a, b) => {
+    const posA = a?.position ?? 9999;
+    const posB = b?.position ?? 9999;
+    return posA - posB;
+  });
 
-  const queueTurns = currentTurn
-    ? turns.filter((turn) => turn.id !== currentTurn.id)
-    : turns;
+  const current =
+    sortedTurns.find((turn) => turn.ownerStatus === "in_service") || null;
+
+  const queue = sortedTurns.filter((turn) =>
+    ["on_queue", "waiting"].includes(turn.ownerStatus)
+  );
 
   return {
-    id: barber.barberId,
-    name: barber.barberName,
-    status: barber.barberStatus,
-    isAccepting: barber.isAccepting,
-    current: currentTurn
-      ? {
-          id: currentTurn.id,
-          ownerId: currentTurn.ownerId,
-          ownerName: currentTurn.ownerName,
-          ownerType: currentTurn.ownerType,
-          ownerStatus: currentTurn.ownerStatus,
-          position: currentTurn.position,
-          groupId: currentTurn.groupId,
-          groupSize: currentTurn.groupSize,
-        }
-      : null,
-    queue: queueTurns.map((turn) => ({
-      id: turn.id,
-      ownerId: turn.ownerId,
-      ownerName: turn.ownerName,
-      ownerType: turn.ownerType,
-      ownerStatus: turn.ownerStatus,
-      position: turn.position,
-      groupId: turn.groupId,
-      groupSize: turn.groupSize,
-    })),
+    id: item.barberId,
+    name: item.barberName,
+    status: item.barberStatus,
+    isAccepting: item.isAccepting,
+    current,
+    queue,
+    turns: sortedTurns,
+  };
+}
+
+function normalizeSingleBarberQueue(data) {
+  const turns = Array.isArray(data?.turns) ? data.turns : [];
+
+  const sortedTurns = [...turns].sort((a, b) => {
+    const posA = a?.position ?? 9999;
+    const posB = b?.position ?? 9999;
+    return posA - posB;
+  });
+
+  const current =
+    sortedTurns.find((turn) => turn.ownerStatus === "in_service") || null;
+
+  const queue = sortedTurns.filter((turn) =>
+    ["on_queue", "waiting"].includes(turn.ownerStatus)
+  );
+
+  return {
+    barberId: data?.barberId,
+    barberName: data?.barberName,
+    barberStatus: data?.barberStatus,
+    isAccepting: data?.isAccepting,
+    current,
+    queue,
+    turns: sortedTurns,
   };
 }
 
 export async function getBarbershopQueue(barbershopId) {
-  const response = await fetch(
-    `${API_URL}/queues/barbershop/${barbershopId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await fetch(`${API_URL}/queues/barbershop/${barbershopId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
   const data = await response.json();
 
@@ -65,7 +75,7 @@ export async function getBarbershopQueue(barbershopId) {
     );
   }
 
-  return Array.isArray(data) ? data.map(mapQueueBarber) : [];
+  return Array.isArray(data) ? data.map(normalizeBarbershopQueueItem) : [];
 }
 
 export async function getBarberQueue(barberId) {
@@ -84,5 +94,5 @@ export async function getBarberQueue(barberId) {
     );
   }
 
-  return mapQueueBarber(data);
+  return normalizeSingleBarberQueue(data);
 }

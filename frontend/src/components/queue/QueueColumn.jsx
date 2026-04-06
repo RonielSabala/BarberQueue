@@ -5,6 +5,36 @@ function QueueColumn({
   joining = false,
   onJoinQueue,
 }) {
+  const renderTurnMeta = (turn) => {
+    const isGroup = Number(turn.groupSize) > 1;
+
+    return (
+      <div className="flex flex-wrap items-center gap-2 mt-1">
+        <span className="text-[11px] text-slate-400 truncate">
+          {turn.ownerStatus === "in_service" ? "En servicio" : turn.ownerStatus}
+        </span>
+
+        {turn.ownerType === "member" && (
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
+            Miembro
+          </span>
+        )}
+
+        {turn.ownerType === "client" && isGroup && (
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+            Líder de grupo
+          </span>
+        )}
+
+        {isGroup && (
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+            Grupo {turn.groupSize}
+          </span>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
@@ -80,14 +110,7 @@ function QueueColumn({
                     {barber.current.ownerName}
                   </span>
 
-                  <span className="text-[11px] text-slate-400 truncate">
-                    {barber.current.ownerStatus === "in_service"
-                      ? "En servicio"
-                      : barber.current.ownerStatus}
-                    {barber.current.groupSize
-                      ? ` · Grupo ${barber.current.groupSize}`
-                      : ""}
-                  </span>
+                  {renderTurnMeta(barber.current)}
                 </div>
               </div>
             </>
@@ -110,7 +133,7 @@ function QueueColumn({
               <div
                 key={client.id}
                 className={`flex items-center gap-3 ${
-                  idx === 0 ? "opacity-100" : "opacity-60"
+                  idx === 0 ? "opacity-100" : "opacity-70"
                 }`}
               >
                 <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center font-bold text-slate-400 flex-shrink-0">
@@ -128,12 +151,7 @@ function QueueColumn({
                     {client.ownerName}
                   </span>
 
-                  <span className="text-[11px] text-slate-400 truncate">
-                    {client.ownerStatus === "in_service"
-                      ? "En servicio"
-                      : client.ownerStatus}
-                    {client.groupSize ? ` · Grupo ${client.groupSize}` : ""}
-                  </span>
+                  {renderTurnMeta(client)}
                 </div>
               </div>
             ))

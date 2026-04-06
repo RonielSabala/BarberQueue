@@ -43,7 +43,7 @@ function BarberDashboard() {
       setBarber(barberData);
       setDashboard(dashboardData);
       setQueueData(queue);
-      setSelectedStatus(barberData.currentStatus || "");
+      setSelectedStatus(barberData?.currentStatus || "");
     } catch (err) {
       console.error("Error al cargar dashboard del barbero:", err);
       setError(err.message || "Error al cargar el dashboard del barbero");
@@ -61,7 +61,7 @@ function BarberDashboard() {
   }, [queueData]);
 
   const waitingQueue = useMemo(() => {
-    return queueData?.queue || [];
+    return Array.isArray(queueData?.queue) ? queueData.queue : [];
   }, [queueData]);
 
   const getStatusLabel = (status) => {
@@ -72,8 +72,7 @@ function BarberDashboard() {
   };
 
   const getAcceptingValueByStatus = (status) => {
-    if (status === "active") return true;
-    return false;
+    return status === "active";
   };
 
   const handleStatusUpdate = async () => {
@@ -99,7 +98,7 @@ function BarberDashboard() {
     }
   };
 
-  const handleBackToProfile = () => {
+  const handleGoToProfile = () => {
     navigate("/barber/profile");
   };
 
@@ -152,7 +151,7 @@ function BarberDashboard() {
 
         <button
           className="barber-dashboard-back-btn"
-          onClick={handleBackToProfile}
+          onClick={handleGoToProfile}
         >
           Ir al perfil
         </button>
@@ -262,6 +261,11 @@ function BarberDashboard() {
                     <span className="client-tag green">
                       {currentClient.ownerStatus}
                     </span>
+                    {Number(currentClient.groupSize) > 1 && (
+                      <span className="client-tag amber">
+                        Grupo {currentClient.groupSize}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -281,7 +285,7 @@ function BarberDashboard() {
                 className="barber-action-card finish-service"
                 type="button"
                 disabled
-                title="Pendiente de API de finalizar servicio"
+                title="Pendiente de integración de finalizar servicio"
               >
                 <span className="material-icons-round">content_cut</span>
                 <div>
@@ -321,7 +325,12 @@ function BarberDashboard() {
                   </span>
                   <div className="barber-queue-turn-info">
                     <p>{currentClient.ownerName}</p>
-                    <span>En servicio</span>
+                    <span>
+                      En servicio
+                      {Number(currentClient.groupSize) > 1
+                        ? ` · Grupo ${currentClient.groupSize}`
+                        : ""}
+                    </span>
                   </div>
                 </div>
               ) : (
