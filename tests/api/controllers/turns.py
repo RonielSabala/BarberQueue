@@ -21,3 +21,9 @@ class TurnController(BaseController):
 
     @PATCH("/{id}/unwait")
     def unwait_turn(self, id: int) -> requests.Response: ...
+
+    @PATCH("/{id}/attend")
+    def attend_turn(self, id: int) -> requests.Response: ...
+
+    @PATCH("/{id}/pay")
+    def pay_turn(self, id: int) -> requests.Response: ...
