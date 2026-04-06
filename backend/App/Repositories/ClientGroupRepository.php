@@ -14,21 +14,4 @@ class ClientGroupRepository extends BaseRepository
             'leader_id' => $leaderId,
         ]);
     }
-
-    public function getGroupIdByLeaderId(int $leaderId): ?int
-    {
-        $sql = <<<'SQL'
-            SELECT
-                id
-            FROM
-                client_groups
-            WHERE
-                leader_id = ?
-            LIMIT
-                1
-        SQL;
-
-        $row = $this->query($sql, [$leaderId])->fetch();
-        return $row ? (int) $row['id'] : null;
-    }
 }

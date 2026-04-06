@@ -83,12 +83,6 @@ class TurnRepository extends BaseRepository
             $params[] = $barberId;
         }
 
-        $sql .= <<<'SQL'
-            ORDER BY
-                t.barber_id ASC,
-                t.created_at ASC
-        SQL;
-
         return $this->fetchAll(TurnEntity::class, $sql, $params);
     }
 

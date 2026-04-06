@@ -25,6 +25,24 @@ class AssignmentRepository extends BaseRepository
         );
     }
 
+    public function getBarbershopIdByStaffId(int $staffId): ?int
+    {
+        $sql = <<<'SQL'
+            SELECT
+                sa.barbershop_id
+            FROM
+                users u
+                JOIN staff_assignments sa ON u.id = sa.staff_id
+            WHERE
+                u.id = ?
+            LIMIT
+                1
+        SQL;
+
+        $row = $this->query($sql, [$staffId])->fetch();
+        return $row ? (int) $row['barbershop_id'] : null;
+    }
+
     /** @return EmployeeAssignmentEntity[] */
     public function getAllByStaffId(int $id): ?array
     {
