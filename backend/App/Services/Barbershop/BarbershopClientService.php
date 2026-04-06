@@ -25,7 +25,7 @@ class BarbershopClientService extends BaseService
     {
         $client = $this->barbershopClientRepository->getByClientId($clientId);
         if ($client === null) {
-            throw new BarbershopClientException('Client not found', HttpStatus::NotFound);
+            throw new BarbershopClientException('Client not found in barbershop', HttpStatus::NotFound);
         }
 
         return $client;
