@@ -138,7 +138,7 @@ class TurnService extends BaseTurnService
      *
      * @return TurnDetailResponse[]
      */
-    private function orchestrateTurnCreation(int $barbershopId, int $clientId, ?int $barberId, ?array $groupMembers): array
+    private function orchestrateTurnCreation(int $barbershopId, int $clientId, ?int $leaderBarberId, ?array $groupMembers): array
     {
         // Load current queue state
         [$slots, $unassigned] = $this->turnRepository->getBarberSlots($barbershopId);
@@ -154,7 +154,7 @@ class TurnService extends BaseTurnService
         $leaderTurnId = $this->turnRepository->createClientTurn(
             $barbershopId,
             $clientId,
-            $barberId,
+            $leaderBarberId,
             $groupId
         );
 
@@ -252,7 +252,7 @@ class TurnService extends BaseTurnService
             $this->turnRepository->delete($turn->id->value);
 
             // Delete group and turns if client is leader
-            $groupId = $this->clientGroupRepository->getGroupIdByLeaderId($ownerId);
+            $groupId = $turn->groupId?->value;
             if ($groupId !== null) {
                 $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
 
@@ -294,10 +294,6 @@ class TurnService extends BaseTurnService
         ) {
             // Delete member and turn
             $this->groupMemberRepository->delete($ownerId);
-        }
-
-        if (empty($affectedBarberIds) && $ownerBarberId !== null) {
-            return;
         }
 
         $scheduled = $this->scheduledQueue($turn->barbershopId->value);
@@ -347,8 +343,7 @@ class TurnService extends BaseTurnService
         $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
 
         $turnId = $turn->id->value;
-        $barbershopId = $turn->barbershopId->value;
-        $scheduled = $this->scheduledQueue($barbershopId);
+        $scheduled = $this->scheduledQueue($turn->barbershopId->value);
         [$position, $barberId] = $scheduled->findTurnLocation($turnId);
 
         // Promote this turn if now is at position 1
@@ -453,7 +448,7 @@ class TurnService extends BaseTurnService
         }
 
         // Verify every member is attended
-        $groupId = $this->clientGroupRepository->getGroupIdByLeaderId($turn->ownerId->value);
+        $groupId = $turn->groupId?->value;
         if ($groupId !== null) {
             $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
             foreach ($memberTurns as $memberTurn) {

@@ -10,11 +10,12 @@ use App\Exceptions\Turn\QueueException;
 use App\Services\Barbershop\BarbershopService;
 use App\Domain\Queue\{BarberSlotData, ScheduledQueue};
 use App\DTOs\Queues\Responses\{QueueResponse, TurnResponse};
-use App\Repositories\Turn\{QueueRepository, TurnRepository};
+use App\Repositories\{Turn\QueueRepository, Turn\TurnRepository, AssignmentRepository};
 
 class QueueService extends BaseTurnService
 {
     public function __construct(
+        private readonly AssignmentRepository $assignmentRepository,
         private readonly TurnRepository $turnRepository,
         private readonly QueueRepository $queueRepository,
         private readonly BarbershopService $barbershopService,
@@ -61,7 +62,8 @@ class QueueService extends BaseTurnService
 
     public function getBarberQueue(int $barberId): QueueResponse
     {
-        $barbershopId = $this->queueRepository->findActiveBarbershopForBarber($barberId);
+        $barbershopId = $this->queueRepository->findActiveBarbershopForBarber($barberId) ?? $this->assignmentRepository->getBarbershopIdByStaffId($barberId);
+
         $slot = $barbershopId !== null
             ? $this->queueRepository->getSingleBarberSlot($barbershopId, $barberId)
             : null;
