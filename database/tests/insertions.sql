@@ -1,0 +1,466 @@
+-- ROLES
+INSERT INTO
+    roles (id, role_name)
+VALUES
+    (1, 'client'),
+    (2, 'barber'),
+    (3, 'assistant'),
+    (4, 'admin');
+
+-- USERS
+INSERT INTO
+    users (id, role_id, username, email, phone, password_hash)
+VALUES
+    -- Admin
+    (
+        1,
+        4,
+        'admin_juan',
+        'admin@barbershop.com',
+        '8091234567',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    -- Assistants
+    (
+        2,
+        3,
+        'asistente_maria',
+        'maria@barbershop.com',
+        '8092345678',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        3,
+        3,
+        'asistente_pedro',
+        'pedro@barbershop.com',
+        '8093456789',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    -- Barbers
+    (
+        4,
+        2,
+        'barber_carlos',
+        'carlos@barbershop.com',
+        '8094567890',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        5,
+        2,
+        'barber_luis',
+        'luis@barbershop.com',
+        '8095678901',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        6,
+        2,
+        'barber_miguel',
+        'miguel@barbershop.com',
+        '8096789012',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        7,
+        2,
+        'barber_ramon',
+        'ramon@barbershop.com',
+        '8097890123',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        8,
+        2,
+        'barber_felix',
+        'felix@barbershop.com',
+        '8098901234',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    -- Clients
+    (
+        9,
+        1,
+        'cliente_andres',
+        'andres@gmail.com',
+        '8091111111',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        10,
+        1,
+        'cliente_sofia',
+        'sofia@gmail.com',
+        '8092222222',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        11,
+        1,
+        'cliente_jose',
+        'jose@gmail.com',
+        '8093333333',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        12,
+        1,
+        'cliente_ana',
+        'ana@gmail.com',
+        '8094444444',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        13,
+        1,
+        'cliente_rafael',
+        'rafael@gmail.com',
+        '8095555555',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        14,
+        1,
+        'cliente_diana',
+        'diana@gmail.com',
+        '8096666666',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        15,
+        1,
+        'cliente_marcos',
+        'marcos@gmail.com',
+        '8097777777',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        16,
+        1,
+        'cliente_laura',
+        'laura@gmail.com',
+        '8098888888',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        17,
+        1,
+        'cliente_victor',
+        'victor@gmail.com',
+        '8099999999',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    ),
+    (
+        18,
+        1,
+        'cliente_paola',
+        'paola@gmail.com',
+        '8090000000',
+        '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
+    );
+
+-- BARBERSHOPS
+INSERT INTO
+    barbershops (
+        id,
+        admin_id,
+        barbershop_name,
+        email,
+        phone,
+        barbershop_address,
+        photo_url,
+        opens_at,
+        closes_at,
+        capacity
+    )
+VALUES
+    (
+        1,
+        1,
+        'BarberKing Santo Domingo',
+        'info@barberking.com',
+        '8091234000',
+        'Av. Duarte 100, Santo Domingo',
+        'https://placehold.co/600x400?text=BarberKing',
+        '08:00:00',
+        '20:00:00',
+        3
+    ),
+    (
+        2,
+        1,
+        'The Gentleman Cut',
+        'info@gentlemancut.com',
+        '8092345000',
+        'Calle El Conde 55, Zona Colonial',
+        'https://placehold.co/600x400?text=GentlemanCut',
+        '09:00:00',
+        '19:00:00',
+        2
+    ),
+    (
+        3,
+        1,
+        'Elite Barbers',
+        'info@elitebarbers.com',
+        '8093456000',
+        'Av. Winston Churchill 300, Piantini',
+        'https://placehold.co/600x400?text=EliteBarbers',
+        '07:00:00',
+        '21:00:00',
+        4
+    );
+
+-- BARBER STATUS OVERRIDES
+UPDATE barbershops
+SET
+    is_active = TRUE
+WHERE
+    id IN (1, 2, 3);
+
+-- CLIENT STATUS OVERRIDES
+UPDATE client_status
+SET
+    barbershop_id = 2,
+    current_status = 'at_barbershop'
+WHERE
+    client_id = 16;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'on_queue'
+WHERE
+    client_id = 18;
+
+UPDATE client_status
+SET
+    barbershop_id = 3,
+    current_status = 'waiting'
+WHERE
+    client_id = 14;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'in_service'
+WHERE
+    client_id = 17;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'attended'
+WHERE
+    client_id = 15;
+
+UPDATE client_status
+SET
+    barbershop_id = 2,
+    current_status = 'attended'
+WHERE
+    client_id = 12;
+
+UPDATE client_status
+SET
+    barbershop_id = 3,
+    current_status = 'paid'
+WHERE
+    client_id = 13;
+
+-- BARBER STATUS OVERRIDES
+UPDATE barber_status
+SET
+    is_accepting = TRUE,
+    current_status = 'active'
+WHERE
+    staff_id IN (4, 6, 8);
+
+UPDATE barber_status
+SET
+    current_status = 'resting'
+WHERE
+    staff_id = 5;
+
+-- STAFF ASSIGNMENTS
+INSERT INTO
+    staff_assignments (staff_id, barbershop_id, start_time, end_time)
+VALUES
+    -- Maria
+    (2, 1, '08:00:00', '17:00:00'),
+    (2, 2, '08:30:00', '17:30:00'),
+    -- Pedro
+    (3, 2, '09:00:00', '18:00:00'),
+    (3, 3, '09:25:00', '18:25:00'),
+    -- Carlos
+    (4, 3, '10:00:00', '19:00:00'),
+    -- Luis
+    (5, 3, '08:00:00', '17:00:00'),
+    (5, 1, '08:30:00', '17:30:00'),
+    -- Miguel
+    (6, 2, '09:00:00', '18:00:00'),
+    (6, 3, '09:00:00', '18:00:00'),
+    -- Ramon
+    (7, 3, '10:00:00', '19:00:00'),
+    (7, 1, '10:00:00', '19:00:00'),
+    -- Felix
+    (8, 1, '08:00:00', '17:00:00');
+
+-- WORKING DAYS
+INSERT INTO
+    working_days (staff_id, barbershop_id, day_of_week)
+VALUES
+    -- Maria
+    (2, 1, 1),
+    (2, 1, 2),
+    (2, 1, 3),
+    (2, 1, 4),
+    (2, 2, 5),
+    (2, 2, 6),
+    -- Pedro
+    (3, 2, 1),
+    (3, 2, 2),
+    (3, 2, 3),
+    (3, 2, 4),
+    (3, 3, 5),
+    (3, 3, 6),
+    (3, 3, 7),
+    -- Carlos
+    (4, 3, 1),
+    (4, 3, 2),
+    (4, 3, 3),
+    (4, 3, 4),
+    (4, 3, 5),
+    -- Luis
+    (5, 3, 2),
+    (5, 3, 3),
+    (5, 1, 4),
+    (5, 1, 5),
+    (5, 1, 6),
+    -- Miguel
+    (6, 2, 1),
+    (6, 2, 2),
+    (6, 2, 3),
+    (6, 3, 4),
+    (6, 3, 5),
+    (6, 3, 6),
+    -- Ramon
+    (7, 3, 3),
+    (7, 3, 4),
+    (7, 3, 5),
+    (7, 1, 6),
+    (7, 1, 7),
+    -- Felix
+    (8, 1, 1),
+    (8, 1, 2),
+    (8, 1, 3),
+    (8, 1, 4),
+    (8, 1, 5);
+
+-- CLIENT GROUPS
+INSERT INTO
+    client_groups (id, leader_id)
+VALUES
+    (1, 13),
+    (2, 9);
+
+-- GROUP MEMBERS
+INSERT INTO
+    group_members (id, group_id, member_name, current_status)
+VALUES
+    (1, 1, 'client_peter', 'paid'),
+    (2, 1, 'client_will', 'paid'),
+    (3, 2, 'client_bob', 'in_service'),
+    (4, 2, 'client_mark', 'in_service');
+
+-- TURNS
+INSERT INTO
+    turns (
+        barbershop_id,
+        client_id,
+        member_id,
+        group_id,
+        barber_id,
+        created_at,
+        attended_at,
+        finished_at
+    )
+VALUES
+    -- Past completed turns (individual clients)
+    (
+        1,
+        9,
+        NULL,
+        NULL,
+        4,
+        '2026-03-05 09:00:00',
+        '2026-03-05 09:10:00',
+        '2026-03-05 09:35:00'
+    ),
+    (
+        1,
+        10,
+        NULL,
+        NULL,
+        6,
+        '2026-03-05 09:05:00',
+        '2026-03-05 09:20:00',
+        '2026-03-05 09:50:00'
+    ),
+    (
+        2,
+        11,
+        NULL,
+        NULL,
+        4,
+        '2026-03-06 10:00:00',
+        '2026-03-06 10:05:00',
+        '2026-03-06 10:30:00'
+    ),
+    (
+        2,
+        12,
+        NULL,
+        NULL,
+        8,
+        '2026-03-06 10:30:00',
+        '2026-03-06 10:45:00',
+        '2026-03-06 11:10:00'
+    ),
+    -- Past completed turns (group 1 members)
+    (3, NULL, 1, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
+    (3, NULL, 2, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
+    -- Past completed turns (individual)
+    (
+        1,
+        15,
+        NULL,
+        NULL,
+        4,
+        '2026-03-08 10:00:00',
+        '2026-03-08 10:10:00',
+        '2026-03-08 10:40:00'
+    ),
+    (
+        2,
+        16,
+        NULL,
+        NULL,
+        6,
+        '2026-03-08 11:00:00',
+        '2026-03-08 11:10:00',
+        '2026-03-08 11:45:00'
+    ),
+    -- Past completed turns (group 2 members)
+    (3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', '2026-03-09 09:40:00'),
+    (3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', '2026-03-09 10:10:00'),
+    -- Currently in service
+    (3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    -- Waiting in queue (individual)
+    (1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
+    -- Waiting in queue (group 2)
+    (3, NULL, 3, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
+    (3, NULL, 4, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);

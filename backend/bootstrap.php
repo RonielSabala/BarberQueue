@@ -11,16 +11,15 @@ use Dotenv\Dotenv;
 const ROOT_DIR = __DIR__ . '/..';
 Dotenv::createImmutable(ROOT_DIR)->load();
 
-// Set timezone
-date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'UTC');
-
-// Bindings
-
 $isTest = (
     ($_ENV['APP_ENV'] ?? 'development') === 'testing'
     || ($_SERVER['HTTP_X_APP_ENV'] ?? '') === 'testing'
 );
 
+// Set timezone
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'UTC');
+
+// Bindings
 $container = new Container();
 $container->bind(
     MailerInterface::class,

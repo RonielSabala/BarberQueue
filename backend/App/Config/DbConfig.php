@@ -10,11 +10,15 @@ class DbConfig
     private static string $dbName;
     private const CONNECTION_STRING_TEMPLATE = 'mysql:host=%s;port=%s;charset=utf8mb4%s';
 
-    public static function init(bool $withDatabase = true): void
+    public static function init(bool $withDatabase = true, bool $isTest = false): void
     {
         $dbName = $_ENV['DB_DATABASE'];
         if (empty($dbName)) {
             throw new \RuntimeException('Database name cannot be empty');
+        }
+
+        if ($isTest) {
+            $dbName .= '_tests';
         }
 
         $dsn = \sprintf(

@@ -11,7 +11,8 @@ use App\Middleware\CorsMiddleware;
 CorsMiddleware::handle();
 
 try {
-    DbConfig::init();
+    // Connect to the correct database
+    DbConfig::init(isTest: $isTest);
 } catch (\RuntimeException $e) {
     LoggerProvider::get()->critical($e->getMessage(), [
         'exception' => $e,

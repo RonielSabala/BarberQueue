@@ -151,11 +151,13 @@ GOOGLE_CLIENT_SECRET=
 
 #### Environment Modes
 
-The application behavior changes based on the `APP_ENV` variable:
+The application switches behavior based on the `APP_ENV` variable:
 
-- `development`: Standard mode. Emails are sent normally using the credentials provided in `.env`.
+- **`development`**: Standard mode. Emails are sent using the credentials in `.env` and all data is written to the production database (`DB_DATABASE`).
 
-- `testing`: Suppresses critical side effects like sending real emails to avoid cluttering inboxes during automated test runs.
+- **`testing`**: Test mode. Real emails are suppressed to avoid sending noise during automated test runs, and all data is written to a separate test database. This keeps test data completely isolated from production.
+
+> The test mode is also activated on a per-request basis when the backend receives the `X-App-Env: testing` HTTP header, regardless of `APP_ENV`. Backend tests send this header automatically, so you can run tests against a `development` server without changing your `.env`.
 
 #### JWT Secret
 
@@ -193,6 +195,10 @@ From the **repo root**:
 ```bash
 php scripts/install-db.php
 ```
+
+This creates and seeds two databases, one for local development and one for running tests.
+
+Both databases share the same schema (`creation.sql`, `triggers.sql`). They differ only in their seed data: the development DB is filled with realistic examples so you can start using the app immediately, while the testing DB uses a controlled, minimal dataset designed to support specific test scenarios.
 
 ---
 
@@ -248,8 +254,6 @@ uv run pytest -m "frontend or not frontend"  # everything
 Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
 
 > **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
-
-> Also, backend tests automatically sends the `X-App-Env: testing` header, so tests operate in testing mode by default even if your `.env` is set to `development`.
 
 ---
 
