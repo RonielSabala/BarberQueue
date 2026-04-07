@@ -7,7 +7,7 @@ namespace App\Repositories\Barbershop;
 use App\Domain\Entities\Barbershop\BarbershopClientEntity;
 use App\Repositories\BaseRepository;
 
-class BarbershopClientRepository extends BaseRepository
+final readonly class BarbershopClientRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'client_status';
     protected const array UPDATABLE_FIELDS = [
@@ -52,7 +52,7 @@ class BarbershopClientRepository extends BaseRepository
     public function updateBarbershopStatus(int $clientId, ?int $barbershopId, string $currentStatus): void
     {
         $this->updateFrom(
-            static::TABLE_NAME,
+            self::TABLE_NAME,
             [
                 'barbershop_id' => $barbershopId,
                 'current_status' => $currentStatus,

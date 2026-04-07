@@ -7,7 +7,7 @@ namespace App\Repositories;
 use App\Domain\Entities\PasswordResetEntity;
 use App\Domain\ValueObjects\DateTimeString;
 
-class PasswordResetRepository extends BaseRepository
+final readonly class PasswordResetRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'password_resets';
     protected const array UPDATABLE_FIELDS = ['used'];

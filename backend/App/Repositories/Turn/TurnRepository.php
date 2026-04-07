@@ -9,7 +9,7 @@ use App\Domain\Queue\BarberSlotData;
 use App\Domain\ValueObjects\DateTimeString;
 use App\Repositories\BaseRepository;
 
-class TurnRepository extends BaseRepository
+final readonly class TurnRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'turns';
     protected const array UPDATABLE_FIELDS = [
@@ -199,7 +199,7 @@ class TurnRepository extends BaseRepository
     public function setGroupFinishedAt(int $groupId): void
     {
         $this->updateFrom(
-            static::TABLE_NAME,
+            self::TABLE_NAME,
             ['finished_at' => date(DateTimeString::DATETIME_FORMAT)],
             ['group_id' => $groupId]
         );

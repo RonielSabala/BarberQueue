@@ -8,7 +8,7 @@ use App\Domain\Entities\Barbershop\BarbershopPhotoEntity;
 use App\Repositories\BaseRepository;
 use App\Domain\ValueObjects\{Id, PhotoUrl};
 
-class BarbershopPhotoRepository extends BaseRepository
+final readonly class BarbershopPhotoRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barbershop_photos';
 

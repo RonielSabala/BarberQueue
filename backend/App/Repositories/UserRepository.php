@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 use App\Domain\Entities\UserEntity;
 
-class UserRepository extends BaseRepository
+final readonly class UserRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'users';
     protected const array UPDATABLE_FIELDS = [

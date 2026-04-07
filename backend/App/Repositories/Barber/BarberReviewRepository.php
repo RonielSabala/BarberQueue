@@ -7,7 +7,7 @@ namespace App\Repositories\Barber;
 use App\Domain\Entities\Barber\BarberReviewEntity;
 use App\Repositories\BaseRepository;
 
-class BarberReviewRepository extends BaseRepository
+final readonly class BarberReviewRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barber_reviews';
 

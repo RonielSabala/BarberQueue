@@ -7,7 +7,7 @@ namespace App\Repositories\Turn;
 use App\Repositories\BaseRepository;
 use App\Domain\Entities\Turn\{ClientTurnEntity, GroupMemberTurnEntity};
 
-class ClientTurnRepository extends BaseRepository
+final readonly class ClientTurnRepository extends BaseRepository
 {
     public function getById(int $clientId): ?ClientTurnEntity
     {

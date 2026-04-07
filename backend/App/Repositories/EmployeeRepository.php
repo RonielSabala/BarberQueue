@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 use App\Domain\Entities\Barbershop\BarbershopEmployeeEntity;
 
-class EmployeeRepository extends BaseRepository
+final readonly class EmployeeRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'users';
 

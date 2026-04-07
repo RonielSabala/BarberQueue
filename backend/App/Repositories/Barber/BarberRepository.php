@@ -7,7 +7,7 @@ namespace App\Repositories\Barber;
 use App\Repositories\BaseRepository;
 use App\Domain\Entities\Barber\{BarberDashboardEntity, BarberEntity};
 
-class BarberRepository extends BaseRepository
+final readonly class BarberRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'barber_status';
     protected const array UPDATABLE_FIELDS = [

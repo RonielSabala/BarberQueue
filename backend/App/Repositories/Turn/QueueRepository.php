@@ -6,7 +6,7 @@ namespace App\Repositories\Turn;
 
 use App\Domain\Queue\BarberSlotData;
 
-class QueueRepository extends TurnRepository
+final readonly class QueueRepository extends TurnRepository
 {
     public function findActiveBarbershopForBarber(int $barberId): ?int
     {

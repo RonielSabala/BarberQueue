@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class GroupMemberRepository extends BaseRepository
+final readonly class GroupMemberRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'group_members';
     protected const array UPDATABLE_FIELDS = ['current_status'];

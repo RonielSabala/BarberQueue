@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 use App\Domain\Entities\EmployeeAssignmentEntity;
 
-class AssignmentRepository extends BaseRepository
+final readonly class AssignmentRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'staff_assignments';
     protected const array UPDATABLE_FIELDS = [

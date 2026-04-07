@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class WorkingDayRepository extends BaseRepository
+final readonly class WorkingDayRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'working_days';
 

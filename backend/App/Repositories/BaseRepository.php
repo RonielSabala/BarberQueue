@@ -7,7 +7,7 @@ namespace App\Repositories;
 use App\Config\DbConfig;
 use App\Domain\Entities\BaseEntity;
 
-abstract class BaseRepository
+abstract readonly class BaseRepository
 {
     protected \PDO $db;
 
