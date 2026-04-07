@@ -1,4 +1,6 @@
 {
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
   "editor.formatOnSave": true,
   "prettier.endOfLine": "lf",
   "cSpell.language": "en",
