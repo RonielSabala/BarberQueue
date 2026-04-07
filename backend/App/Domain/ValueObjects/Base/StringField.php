@@ -13,21 +13,21 @@ abstract readonly class StringField extends BaseField
 
     public function __construct(string $value)
     {
+        $minLen = static::MIN_LEN;
+        $maxLen = static::MAX_LEN;
+        $pattern = static::PATTERN;
         $length = mb_strlen($value, 'UTF-8');
 
-        $minLen = static::MIN_LEN;
+        if ($pattern !== null && !preg_match($pattern, $value)) {
+            throw $this->validationException(static::PATTERN_ERROR_MSG);
+        }
+
         if ($minLen !== null && $length < $minLen) {
             throw $this->validationException("length must be >= {$minLen} (got {$length})");
         }
 
-        $maxLen = static::MAX_LEN;
         if ($maxLen !== null && $length > $maxLen) {
             throw $this->validationException("length must be <= {$maxLen} (got {$length})");
-        }
-
-        $pattern = static::PATTERN;
-        if ($pattern !== null && !preg_match($pattern, $value)) {
-            throw $this->validationException(static::PATTERN_ERROR_MSG);
         }
 
         $this->value = $value;

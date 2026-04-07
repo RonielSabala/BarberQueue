@@ -1,7 +1,6 @@
 import random
 import string
 from dataclasses import dataclass
-from typing import ClassVar
 from urllib.parse import urlparse
 
 from typing_extensions import Annotated, TypeAlias
@@ -23,7 +22,7 @@ _MAX_FILENAME_LENGTH = 16
 
 @dataclass(slots=True, frozen=True)
 class PhotoUrl(StringField):
-    _min_len: ClassVar[int] = 12
+    _min_len = 12
 
     def __post_init__(self) -> None:
         StringField.__post_init__(self)

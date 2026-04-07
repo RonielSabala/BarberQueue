@@ -23,27 +23,24 @@ class StringField(BaseField[str]):
     def __post_init__(self) -> None:
         length = len(self.value)
 
+        if (pattern := self._pattern) is not None and not pattern.fullmatch(self.value):
+            raise self._validation_error(self._pattern_error_msg)
+
         if (min_len := self._min_len) is not None and length < min_len:
             raise self._validation_error(f"length must be >= {min_len} (got {length})")
 
         if (max_len := self._max_len) is not None and length > max_len:
             raise self._validation_error(f"length must be <= {max_len} (got {length})")
 
-        if (pattern := self._pattern) is not None and not pattern.fullmatch(self.value):
-            raise self._validation_error(self._pattern_error_msg)
-
     @classmethod
     def random_value(cls) -> str:
-        allowed_chars = cls._allowed_chars
-        if allowed_chars is None:
+        if (allowed_chars := cls._allowed_chars) is None:
             raise cls._random_value_error("_allowed_chars")
 
-        min_len = cls._min_len
-        if min_len is None:
+        if (min_len := cls._min_len) is None:
             raise cls._random_value_error("_min_len")
 
-        max_len = cls._max_len
-        if max_len is None:
+        if (max_len := cls._max_len) is None:
             raise cls._random_value_error("_max_len")
 
         return random_string_len(allowed_chars, min_len, max_len)
