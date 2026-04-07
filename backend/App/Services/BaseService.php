@@ -10,16 +10,6 @@ use App\Exceptions\Base\ServiceException;
 
 class BaseService
 {
-    protected function getEnvVariable(string $variableName): string
-    {
-        $value = $_ENV[$variableName] ?? null;
-        if (!$value) {
-            throw new ServiceException("`{$variableName}` is not defined in the environment.", HttpStatus::InternalServerError);
-        }
-
-        return $value;
-    }
-
     protected function validateFieldsToUpdate(BaseRequest $request): array
     {
         $fields = $request->toUpdateArray();

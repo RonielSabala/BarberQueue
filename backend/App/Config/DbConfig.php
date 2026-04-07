@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Config;
 
+use App\Utils\EnvUtils;
+
 class DbConfig
 {
     private static \PDO $pdo;
@@ -12,7 +14,7 @@ class DbConfig
 
     public static function init(bool $withDatabase = true, bool $isTest = false): void
     {
-        $dbName = $_ENV['DB_DATABASE'];
+        $dbName = EnvUtils::get('DB_DATABASE');
         if (empty($dbName)) {
             throw new \RuntimeException('Database name cannot be empty');
         }
@@ -23,16 +25,16 @@ class DbConfig
 
         $dsn = \sprintf(
             self::CONNECTION_STRING_TEMPLATE,
-            $_ENV['DB_HOST'],
-            $_ENV['DB_PORT'],
+            EnvUtils::get('DB_HOST'),
+            EnvUtils::get('DB_PORT'),
             $withDatabase ? ";dbname={$dbName}" : '',
         );
 
         self::$dbName = $dbName;
         self::$pdo = new \PDO(
             $dsn,
-            $_ENV['DB_USERNAME'],
-            $_ENV['DB_PASSWORD'],
+            EnvUtils::get('DB_USERNAME'),
+            EnvUtils::get('DB_PASSWORD'),
             [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,

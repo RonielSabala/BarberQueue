@@ -8,6 +8,7 @@ use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
 use App\Exceptions\AuthException;
 use App\Services\Mail\MailerInterface;
+use App\Utils\EnvUtils;
 use Firebase\JWT\JWT;
 use App\DTOs\Auth\Requests\{
     ForgotPasswordRequest,
@@ -33,7 +34,7 @@ class AuthService extends BaseService
         private readonly MailerInterface $mailService,
         private readonly UserService $userService,
     ) {
-        $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
+        $this->jwtSecret = EnvUtils::get('JWT_SECRET');
     }
 
     private function generateJwt(UserEntity $user): string

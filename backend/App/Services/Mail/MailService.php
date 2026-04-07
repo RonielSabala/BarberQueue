@@ -10,6 +10,7 @@ use App\Domain\ValueObjects\ResetCode;
 use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
 use App\Services\BaseService;
+use App\Utils\EnvUtils;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class MailService extends BaseService implements MailerInterface
@@ -25,9 +26,9 @@ class MailService extends BaseService implements MailerInterface
     public function __construct(
         private readonly PasswordResetRepository $passwordResetRepository,
     ) {
-        $this->appName = $this->getEnvVariable('APP_NAME');
-        $this->username = $this->getEnvVariable('MAIL_USERNAME');
-        $this->password = $this->getEnvVariable('MAIL_PASSWORD');
+        $this->appName = EnvUtils::get('APP_NAME');
+        $this->username = EnvUtils::get('MAIL_USERNAME');
+        $this->password = EnvUtils::get('MAIL_PASSWORD');
     }
 
     private function sendEmail(PHPMailer $mail, string $to, string $subject, string $body): void
