@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-class HttpResponse
+final readonly class HttpResponse
 {
     private static function filterForJson(mixed $data): mixed
     {

@@ -7,7 +7,7 @@ namespace App\Middleware;
 use App\Core\HttpStatus;
 use App\Utils\EnvUtils;
 
-class CorsMiddleware
+final readonly class CorsMiddleware
 {
     public static function handle(): void
     {

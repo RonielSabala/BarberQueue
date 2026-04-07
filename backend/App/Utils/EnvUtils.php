@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
-class EnvUtils
+final readonly class EnvUtils
 {
     public static function get(string $variableName, ?string $fallback = null): string
     {

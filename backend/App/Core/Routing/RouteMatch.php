@@ -7,7 +7,7 @@ namespace App\Core\Routing;
 use App\DTOs\BaseRequest;
 use App\Utils\TypeCoercion;
 
-class RouteMatch
+final readonly class RouteMatch
 {
     public function __construct(
         public readonly Route $route,

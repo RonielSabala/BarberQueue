@@ -6,7 +6,7 @@ namespace App\Core\Routing;
 
 use App\Controllers\BaseController;
 
-class Route
+final readonly class Route
 {
     private const PATTERN = '/\{[^}]+\}/';
     private const REPLACEMENT = '([^/]+)';
