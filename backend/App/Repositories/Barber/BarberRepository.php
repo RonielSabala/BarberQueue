@@ -50,7 +50,7 @@ final readonly class BarberRepository extends BaseRepository
                             AVG(
                                 CASE
                                     WHEN t.finished_at IS NOT NULL
-                                    AND t.attended_at IS NOT NULL THEN TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at)
+                                    THEN TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at)
                                 END
                             ),
                             1

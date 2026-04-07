@@ -177,7 +177,6 @@ final readonly class BarbershopRepository extends BaseRepository
                     WHERE
                         t.barbershop_id = b.id
                         AND t.finished_at IS NOT NULL
-                        AND t.attended_at IS NOT NULL
                 ) AS average_service_minutes,
                 -- Average rating
                 (

@@ -99,7 +99,7 @@ readonly class TurnRepository extends BaseRepository
                     AVG(
                         CASE
                             WHEN th.finished_at IS NOT NULL
-                            AND th.attended_at IS NOT NULL THEN TIMESTAMPDIFF(SECOND, th.attended_at, th.finished_at) / 60.0
+                            THEN TIMESTAMPDIFF(SECOND, th.attended_at, th.finished_at) / 60.0
                         END
                     ),
                     1
@@ -111,7 +111,6 @@ readonly class TurnRepository extends BaseRepository
                 JOIN barber_status bs ON bs.staff_id = u.id
                 LEFT JOIN turns th ON th.barber_id = u.id
                 AND th.finished_at IS NOT NULL
-                AND th.attended_at IS NOT NULL
             WHERE
                 sa.barbershop_id = ?
                 AND r.role_name = 'barber'
