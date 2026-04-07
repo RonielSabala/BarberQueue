@@ -7,7 +7,7 @@ namespace App\Core\Routing;
 use App\Core\Container;
 use App\Attributes\{HttpMethod, RoutePrefix};
 
-class RouteRegistry
+final class RouteRegistry
 {
     /** @var Route[] */
     private array $routes = [];

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-class Container
+final class Container
 {
     private array $bindings = [];
 

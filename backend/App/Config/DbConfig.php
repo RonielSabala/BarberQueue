@@ -6,7 +6,7 @@ namespace App\Config;
 
 use App\Utils\EnvUtils;
 
-class DbConfig
+final class DbConfig
 {
     private static \PDO $pdo;
     private static string $dbName;

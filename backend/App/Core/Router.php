@@ -9,7 +9,7 @@ use App\Exceptions\Base\BaseException;
 use Monolog\Logger;
 use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 
-class Router
+final class Router
 {
     private const CONTROLLERS_PATH = __DIR__ . '/../Controllers';
     private const CONTROLLER_SUFFIX = 'Controller';
