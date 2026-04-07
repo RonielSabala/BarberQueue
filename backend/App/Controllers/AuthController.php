@@ -15,7 +15,7 @@ use App\DTOs\Auth\Requests\{
 };
 
 #[RoutePrefix('/api/auth')]
-class AuthController extends BaseController
+final readonly class AuthController extends BaseController
 {
     public function __construct(
         private readonly AuthService $authService

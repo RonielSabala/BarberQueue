@@ -24,7 +24,7 @@ use App\Services\Barbershop\{
 };
 
 #[RoutePrefix('/api/barbershops')]
-class BarbershopController extends BaseController
+final readonly class BarbershopController extends BaseController
 {
     public function __construct(
         private readonly BarbershopService $barbershopService,

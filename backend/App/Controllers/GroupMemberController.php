@@ -9,7 +9,7 @@ use App\Services\Turn\GroupMemberTurnService;
 use App\Attributes\{GET, RoutePrefix};
 
 #[RoutePrefix('/api/group-members')]
-class GroupMemberController extends BaseController
+final readonly class GroupMemberController extends BaseController
 {
     public function __construct(
         private readonly GroupMemberTurnService $groupMemberTurnService

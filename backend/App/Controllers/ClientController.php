@@ -9,7 +9,7 @@ use App\Services\Turn\ClientTurnService;
 use App\Attributes\{GET, RoutePrefix};
 
 #[RoutePrefix('/api/clients')]
-class ClientController extends BaseController
+final readonly class ClientController extends BaseController
 {
     public function __construct(
         private readonly ClientTurnService $clientTurnService

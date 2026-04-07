@@ -10,7 +10,7 @@ use App\DTOs\BaseRequest;
 use App\Exceptions\Base\ValidationException;
 use App\Utils\{TextUtils, TypeCoercion};
 
-abstract class BaseController
+abstract readonly class BaseController
 {
     private static function getJsonBody(): array
     {

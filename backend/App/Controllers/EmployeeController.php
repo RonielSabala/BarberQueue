@@ -10,7 +10,7 @@ use App\Attributes\{DELETE, GET, PATCH, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 
 #[RoutePrefix('/api/employees')]
-class EmployeeController extends BaseController
+final readonly class EmployeeController extends BaseController
 {
     public function __construct(
         private readonly EmployeeService $employeeService

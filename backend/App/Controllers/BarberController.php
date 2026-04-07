@@ -10,7 +10,7 @@ use App\DTOs\Barbers\Requests\{CreateBarberReviewRequest, UpdateBarberStatusRequ
 use App\Services\Barber\{BarberReviewService, BarberService};
 
 #[RoutePrefix('/api/barbers')]
-class BarberController extends BaseController
+final readonly class BarberController extends BaseController
 {
     public function __construct(
         private readonly BarberService $barberService,

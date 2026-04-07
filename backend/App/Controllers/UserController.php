@@ -10,7 +10,7 @@ use App\Attributes\{GET, PATCH, RoutePrefix};
 use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
 #[RoutePrefix('/api/users')]
-class UserController extends BaseController
+final readonly class UserController extends BaseController
 {
     public function __construct(
         private readonly UserService $userService

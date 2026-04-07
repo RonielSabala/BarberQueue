@@ -10,7 +10,7 @@ use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 
 #[RoutePrefix('/api/turns')]
-class TurnController extends BaseController
+final readonly class TurnController extends BaseController
 {
     public function __construct(
         private readonly TurnService $turnService

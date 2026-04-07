@@ -9,7 +9,7 @@ use App\Services\Turn\QueueService;
 use App\Attributes\{GET, RoutePrefix};
 
 #[RoutePrefix('/api/queues')]
-class QueueController extends BaseController
+final readonly class QueueController extends BaseController
 {
     public function __construct(
         private readonly QueueService $queueService
