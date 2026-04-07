@@ -2,8 +2,6 @@
 Tests for GET /api/barbershops
 """
 
-import random
-
 import pytest
 import requests
 
@@ -15,6 +13,7 @@ from domain.dtos.barbershops import (
     CreateBarbershopRequest,
     UpdateBarbershopStatusRequest,
 )
+from domain.utils import random_bool
 from domain.value_objects import BarbershopName
 from helpers.assertions import (
     assert_content_type,
@@ -92,7 +91,7 @@ def test_is_open_filter(client: ApiClient) -> None:
     Filtering by isOpen returns barbershops matching the requested state.
     """
 
-    is_open_value = random.choice((True, False))
+    is_open_value = random_bool()
     response = client.barbershops.get_all(is_open=is_open_value)
     body = response.json()
 
