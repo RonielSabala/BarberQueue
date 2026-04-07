@@ -1,12 +1,20 @@
 {
   "editor.formatOnSave": true,
+  "prettier.endOfLine": "lf",
+  "cSpell.language": "en",
+  "cSpell.caseSensitive": true,
+  "cSpell.words": ["barberqueue", "dtos", "unwait"],
+  "markdown.extension.toc.levels": "2..3",
+  "markdown.extension.toc.omittedFromToc": {
+    "README.md": ["## Table of Contents"],
+    "backend/ROUTES.md": ["## Table of Contents"]
+  },
   "python.defaultInterpreterPath": "${workspaceFolder}/tests/.venv/Scripts/python.exe",
-  "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
-  "[php]": { "editor.defaultFormatter": "junstyle.php-cs-fixer" },
-  "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
-  "[yaml]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
-  "[sql]": {
-    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[php]": {
+    "editor.defaultFormatter": "junstyle.php-cs-fixer"
   },
   "php-cs-fixer.executablePath": "${workspaceFolder}/backend/vendor/bin/php-cs-fixer",
   "php-cs-fixer.config": "backend/.php-cs-fixer.php",
@@ -26,16 +34,16 @@
   "phpserver.port": 3000,
   "phpserver.relativePath": "backend",
   "phpserver.autoOpenOnReload": false,
-  "prettier.endOfLine": "lf",
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
   "Prettier-SQL.SQLFlavourOverride": "mysql",
   "Prettier-SQL.keywordCase": "upper",
   "Prettier-SQL.expressionWidth": 88,
-  "markdown.extension.toc.levels": "2..3",
-  "markdown.extension.toc.omittedFromToc": {
-    "README.md": ["## Table of Contents"],
-    "backend/ROUTES.md": ["## Table of Contents"]
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
-  "cSpell.language": "en",
-  "cSpell.caseSensitive": true,
-  "cSpell.words": ["barberqueue", "dtos", "unwait"]
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  }
 }
