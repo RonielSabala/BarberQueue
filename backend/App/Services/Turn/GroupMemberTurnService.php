@@ -9,7 +9,7 @@ use App\DTOs\GroupMembers\Responses\GroupMemberTurnResponse;
 use App\Exceptions\Turn\GroupMemberTurnException;
 use App\Repositories\Turn\{GroupMemberTurnRepository, TurnRepository};
 
-class GroupMemberTurnService extends BaseTurnService
+final readonly class GroupMemberTurnService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,

@@ -12,7 +12,7 @@ use App\Services\BaseService;
 use App\DTOs\Barbers\Responses\{BarberDashboardResponse, BarberResponse};
 use App\Repositories\{Barber\BarberRepository, UserRepository};
 
-class BarberService extends BaseService
+final readonly class BarberService extends BaseService
 {
     public function __construct(
         private readonly UserRepository $userRepository,

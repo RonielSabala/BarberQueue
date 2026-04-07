@@ -13,7 +13,7 @@ use App\Repositories\Barbershop\BarbershopClientRepository;
 use App\Domain\Enums\{ClientStatusEnum, RoleEnum};
 use App\Services\{BaseService, UserService};
 
-class BarbershopClientService extends BaseService
+final readonly class BarbershopClientService extends BaseService
 {
     public function __construct(
         private readonly BarbershopClientRepository $barbershopClientRepository,

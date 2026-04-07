@@ -19,7 +19,7 @@ use App\Repositories\{
     WorkingDayRepository
 };
 
-class EmployeeService extends BaseService
+final readonly class EmployeeService extends BaseService
 {
     public function __construct(
         private readonly RoleRepository $roleRepository,

@@ -13,7 +13,7 @@ use App\DTOs\Barbershops\Responses\{
     GetBarbershopPhotosResponse
 };
 
-class BarbershopPhotoService extends BaseService
+final readonly class BarbershopPhotoService extends BaseService
 {
     public function __construct(
         private readonly BarbershopPhotoRepository $barbershopPhotoRepository,

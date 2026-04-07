@@ -15,7 +15,7 @@ use App\DTOs\Clients\Responses\{
 };
 use App\Repositories\Turn\{ClientTurnRepository, TurnRepository};
 
-class ClientTurnService extends BaseTurnService
+final readonly class ClientTurnService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,

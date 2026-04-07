@@ -8,7 +8,7 @@ use App\Config\LoggerProvider;
 use App\Domain\Entities\UserEntity;
 use Monolog\Logger;
 
-class MockMailService implements MailerInterface
+final readonly class MockMailService implements MailerInterface
 {
     private readonly Logger $logger;
 

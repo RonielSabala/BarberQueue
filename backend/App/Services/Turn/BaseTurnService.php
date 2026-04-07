@@ -8,7 +8,7 @@ use App\Repositories\Turn\TurnRepository;
 use App\Services\BaseService;
 use App\Domain\Queue\{QueueScheduler, ScheduledQueue};
 
-class BaseTurnService extends BaseService
+abstract readonly class BaseTurnService extends BaseService
 {
     protected function getScheduledQueue(TurnRepository $turnRepository, int $barbershopId): ScheduledQueue
     {

@@ -12,7 +12,7 @@ use App\Exceptions\Barber\BarberReviewException;
 use App\Repositories\Barber\BarberReviewRepository;
 use App\Services\{BaseService, UserService};
 
-class BarberReviewService extends BaseService
+final readonly class BarberReviewService extends BaseService
 {
     public function __construct(
         private readonly BarberReviewRepository $barberReviewRepository,

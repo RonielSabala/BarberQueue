@@ -19,7 +19,7 @@ use App\Repositories\{
 };
 use App\Services\{BaseService, PasswordService, UserService};
 
-class BarbershopEmployeeService extends BaseService
+final readonly class BarbershopEmployeeService extends BaseService
 {
     public function __construct(
         private readonly RoleRepository $roleRepository,

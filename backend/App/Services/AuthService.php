@@ -19,7 +19,7 @@ use App\DTOs\Auth\Requests\{
 use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
 use App\Repositories\{PasswordResetRepository, UserRepository};
 
-class AuthService extends BaseService
+final readonly class AuthService extends BaseService
 {
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;

@@ -21,7 +21,7 @@ use App\Repositories\{
 };
 use App\Services\Barbershop\{BarbershopClientService, BarbershopService};
 
-class TurnService extends BaseTurnService
+final readonly class TurnService extends BaseTurnService
 {
     public function __construct(
         private readonly TurnRepository $turnRepository,

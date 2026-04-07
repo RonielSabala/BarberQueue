@@ -11,7 +11,7 @@ use App\Exceptions\UserException;
 use App\Repositories\UserRepository;
 use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
-class UserService extends BaseService
+final readonly class UserService extends BaseService
 {
     public function __construct(
         private readonly UserRepository $userRepository,

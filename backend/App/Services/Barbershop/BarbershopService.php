@@ -19,7 +19,7 @@ use App\DTOs\Barbershops\Responses\{
 };
 use App\Services\{BaseService, UserService};
 
-class BarbershopService extends BaseService
+final readonly class BarbershopService extends BaseService
 {
     public function __construct(
         private readonly BarbershopRepository $barbershopRepository,

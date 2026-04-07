@@ -8,7 +8,7 @@ use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
 use App\Exceptions\Base\ServiceException;
 
-class BaseService
+abstract readonly class BaseService
 {
     protected function validateFieldsToUpdate(BaseRequest $request): array
     {

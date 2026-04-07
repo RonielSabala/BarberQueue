@@ -12,7 +12,7 @@ use App\Domain\Queue\{BarberSlotData, ScheduledQueue};
 use App\DTOs\Queues\Responses\{QueueResponse, TurnResponse};
 use App\Repositories\{Turn\QueueRepository, Turn\TurnRepository, AssignmentRepository};
 
-class QueueService extends BaseTurnService
+final readonly class QueueService extends BaseTurnService
 {
     public function __construct(
         private readonly AssignmentRepository $assignmentRepository,
