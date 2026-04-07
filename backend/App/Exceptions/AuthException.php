@@ -6,4 +6,4 @@ namespace App\Exceptions;
 
 use App\Exceptions\Base\ServiceException;
 
-class AuthException extends ServiceException {}
+final class AuthException extends ServiceException {}

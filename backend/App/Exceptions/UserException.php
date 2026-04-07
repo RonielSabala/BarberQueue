@@ -6,4 +6,4 @@ namespace App\Exceptions;
 
 use App\Exceptions\Base\ServiceException;
 
-class UserException extends ServiceException {}
+final class UserException extends ServiceException {}

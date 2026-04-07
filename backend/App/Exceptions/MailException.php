@@ -6,4 +6,4 @@ namespace App\Exceptions;
 
 use App\Exceptions\Base\ServiceException;
 
-class MailException extends ServiceException {}
+final class MailException extends ServiceException {}

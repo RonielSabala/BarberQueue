@@ -6,4 +6,4 @@ namespace App\Exceptions;
 
 use App\Exceptions\Base\ServiceException;
 
-class PasswordException extends ServiceException {}
+final class PasswordException extends ServiceException {}
