@@ -212,13 +212,6 @@ VALUES
         4
     );
 
--- BARBER STATUS OVERRIDES
-UPDATE barbershops
-SET
-    is_active = TRUE
-WHERE
-    id IN (1, 2, 3);
-
 -- CLIENT STATUS OVERRIDES
 UPDATE client_status
 SET
@@ -282,6 +275,13 @@ SET
     current_status = 'resting'
 WHERE
     staff_id = 5;
+
+-- BARBER STATUS OVERRIDES
+UPDATE barbershops
+SET
+    is_active = TRUE
+WHERE
+    id IN (1, 2, 3);
 
 -- STAFF ASSIGNMENTS
 INSERT INTO

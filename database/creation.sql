@@ -48,15 +48,6 @@ CREATE TABLE
         FOREIGN KEY (admin_id) REFERENCES users (id) ON DELETE RESTRICT
     );
 
--- BARBERSHOP PHOTOS
-CREATE TABLE
-    barbershop_photos (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        barbershop_id INT NOT NULL,
-        photo_url TEXT NOT NULL,
-        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
-    );
-
 -- CLIENT STATUS
 CREATE TABLE
     client_status (
@@ -76,6 +67,41 @@ CREATE TABLE
         is_accepting BOOLEAN DEFAULT FALSE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- BARBER REVIEWS
+CREATE TABLE
+    barber_reviews (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        client_id INT NOT NULL,
+        barber_id INT NOT NULL,
+        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- BARBERSHOP REVIEWS
+CREATE TABLE
+    barbershop_reviews (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        client_id INT NOT NULL,
+        barbershop_id INT NOT NULL,
+        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        content TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
+    );
+
+-- BARBERSHOP PHOTOS
+CREATE TABLE
+    barbershop_photos (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        barbershop_id INT NOT NULL,
+        photo_url TEXT NOT NULL,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
 -- STAFF ASSIGNMENTS
@@ -138,32 +164,6 @@ CREATE TABLE
         FOREIGN KEY (group_id) REFERENCES client_groups (id) ON DELETE CASCADE,
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE,
         CONSTRAINT chk_turns_owner CHECK ((client_id IS NOT NULL) <> (member_id IS NOT NULL))
-    );
-
--- BARBERSHOP REVIEWS
-CREATE TABLE
-    barbershop_reviews (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        client_id INT NOT NULL,
-        barbershop_id INT NOT NULL,
-        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
-        content TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
-    );
-
--- BARBER REVIEWS
-CREATE TABLE
-    barber_reviews (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        client_id INT NOT NULL,
-        barber_id INT NOT NULL,
-        rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
-        content TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
-        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- INDEXES
