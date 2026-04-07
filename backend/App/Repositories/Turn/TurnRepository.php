@@ -9,7 +9,7 @@ use App\Domain\Queue\BarberSlotData;
 use App\Domain\ValueObjects\DateTimeString;
 use App\Repositories\BaseRepository;
 
-final readonly class TurnRepository extends BaseRepository
+readonly class TurnRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'turns';
     protected const array UPDATABLE_FIELDS = [

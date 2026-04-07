@@ -7,7 +7,7 @@ namespace App\Core\Routing;
 use App\Controllers\BaseController;
 use App\Utils\TextUtils;
 
-final readonly class ClassesDiscovery
+final class ClassesDiscovery
 {
     private const BAD_CHARACTERS = '\/.';
     private const FILE_EXTENSION = '.php';
