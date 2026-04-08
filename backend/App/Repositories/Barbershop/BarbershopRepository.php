@@ -27,10 +27,10 @@ final readonly class BarbershopRepository extends BaseRepository
         return <<<'SQL'
             SELECT
                 b.*,
-                ROUND(AVG(r.rating), 1) AS average_rating
+                bst.avg_rating AS average_rating
             FROM
                 barbershops b
-                LEFT JOIN barbershop_reviews r ON r.barbershop_id = b.id
+                LEFT JOIN barbershop_stats bst ON bst.barbershop_id = b.id
         SQL;
     }
 
@@ -39,8 +39,6 @@ final readonly class BarbershopRepository extends BaseRepository
         $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.id = ?
-            GROUP BY
-                b.id
             LIMIT
                 1
         SQL;
@@ -53,8 +51,6 @@ final readonly class BarbershopRepository extends BaseRepository
         $sql = $this->barbershopQuery() . <<<'SQL'
             WHERE
                 b.email = ?
-            GROUP BY
-                b.id
             LIMIT
                 1
         SQL;
@@ -134,6 +130,9 @@ final readonly class BarbershopRepository extends BaseRepository
         $sql = <<<'SQL'
             SELECT
                 b.id,
+                bst.avg_service_minutes AS average_service_minutes,
+                bst.avg_rating AS average_rating,
+                bst.total_reviews AS total_reviews,
                 -- Clients today
                 (
                     SELECT
@@ -168,41 +167,13 @@ final readonly class BarbershopRepository extends BaseRepository
                         AND YEAR(t.finished_at) = YEAR(NOW())
                         AND MONTH(t.finished_at) = MONTH(NOW())
                 ) AS clients_this_month,
-                -- Average service duration in minutes
-                (
-                    SELECT
-                        ROUND(AVG(TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at) / 60.0), 1)
-                    FROM
-                        turns t
-                    WHERE
-                        t.barbershop_id = b.id
-                        AND t.finished_at IS NOT NULL
-                ) AS average_service_minutes,
-                -- Average rating
-                (
-                    SELECT
-                        ROUND(AVG(br.rating), 1)
-                    FROM
-                        barbershop_reviews br
-                    WHERE
-                        br.barbershop_id = b.id
-                ) AS average_rating,
-                -- Total reviews
-                (
-                    SELECT
-                        COUNT(*)
-                    FROM
-                        barbershop_reviews br
-                    WHERE
-                        br.barbershop_id = b.id
-                ) AS total_reviews,
                 -- Active barbers right now
                 (
                     SELECT
                         COUNT(DISTINCT sa.staff_id)
                     FROM
                         staff_assignments sa
-                        JOIN barber_status bs ON bs.staff_id = sa.staff_id
+                        JOIN barber_status bs ON bs.barber_id = sa.staff_id
                     WHERE
                         sa.barbershop_id = b.id
                         AND bs.current_status = 'active'
@@ -219,6 +190,7 @@ final readonly class BarbershopRepository extends BaseRepository
                 ) AS queue_count
             FROM
                 barbershops b
+                JOIN barbershop_stats bst ON bst.barbershop_id = b.id
             WHERE
                 b.id = ?
             LIMIT

@@ -196,9 +196,9 @@ function BarberDashboard() {
         </div>
 
         <div className="barber-kpi-card">
-          <p className="barber-kpi-label">Tiempo promedio</p>
+          <p className="barber-kpi-label">Tiempo promedio (minutos)</p>
           <p className="barber-kpi-value small">
-            {dashboard?.averageTimeWithClients || "Sin datos"}
+            {dashboard?.averageServiceMinutes || "Sin datos"}
           </p>
         </div>
 

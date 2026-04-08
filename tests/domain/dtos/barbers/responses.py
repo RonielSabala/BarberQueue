@@ -14,7 +14,7 @@ class BarberResponse(BaseResponse):
 @dataclass(slots=True, kw_only=True, frozen=True)
 class BarberDashboardResponse(BaseResponse):
     total_attended_clients: int
-    average_time_with_clients: str | None
+    average_service_minutes: float | None
     average_rating: float | None
     join_date: str
 

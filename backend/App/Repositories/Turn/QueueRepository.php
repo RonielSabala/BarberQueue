@@ -34,29 +34,16 @@ final readonly class QueueRepository extends TurnRepository
                 u.username AS barber_name,
                 bs.current_status AS barber_status,
                 bs.is_accepting,
-                ROUND(
-                    AVG(
-                        CASE
-                            WHEN th.finished_at IS NOT NULL
-                            THEN TIMESTAMPDIFF(SECOND, th.attended_at, th.finished_at) / 60.0
-                        END
-                    ),
-                    1
-                ) AS avg_service_minutes
+                bst.avg_service_minutes
             FROM
                 users u
                 JOIN roles r ON r.id = u.role_id
-                JOIN barber_status bs ON bs.staff_id = u.id
-                LEFT JOIN turns th ON th.barber_id = u.id
-                AND th.finished_at IS NOT NULL
+                JOIN barber_status bs ON bs.barber_id = u.id
+                JOIN barber_stats bst ON bst.barber_id = u.id
             WHERE
                 u.id = ?
                 AND r.role_name = 'barber'
-            GROUP BY
-                u.id,
-                u.username,
-                bs.current_status,
-                bs.is_accepting
+                AND bs.current_status = 'active'
             LIMIT
                 1
         SQL;

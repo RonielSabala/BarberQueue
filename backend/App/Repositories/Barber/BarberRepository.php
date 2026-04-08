@@ -25,7 +25,7 @@ final readonly class BarberRepository extends BaseRepository
                 bs.is_accepting
             FROM
                 users u
-                JOIN barber_status bs ON u.id = bs.staff_id
+                JOIN barber_status bs ON u.id = bs.barber_id
             WHERE
                 u.id = ?
             LIMIT
@@ -39,35 +39,15 @@ final readonly class BarberRepository extends BaseRepository
     {
         $sql = <<<'SQL'
             SELECT
-                COUNT(
-                    CASE
-                        WHEN t.finished_at IS NOT NULL THEN 1
-                    END
-                ) AS total_attended_clients,
-                SEC_TO_TIME(
-                    CAST(
-                        ROUND(
-                            AVG(
-                                CASE
-                                    WHEN t.finished_at IS NOT NULL
-                                    THEN TIMESTAMPDIFF(SECOND, t.attended_at, t.finished_at)
-                                END
-                            ),
-                            1
-                        ) AS SIGNED
-                    )
-                ) AS average_time_with_clients,
-                ROUND(AVG(br.rating), 1) AS average_rating,
+                bst.total_attended AS total_attended_clients,
+                bst.avg_service_minutes AS average_service_minutes,
+                bst.avg_rating AS average_rating,
                 u.created_at AS join_date
             FROM
                 users u
-                LEFT JOIN turns t ON t.barber_id = u.id
-                LEFT JOIN barber_reviews br ON br.barber_id = u.id
+                JOIN barber_stats bst ON bst.barber_id = u.id
             WHERE
                 u.id = ?
-            GROUP BY
-                u.id,
-                u.created_at
             LIMIT
                 1
         SQL;
@@ -77,6 +57,6 @@ final readonly class BarberRepository extends BaseRepository
 
     public function updateStatus(int $barberId, array $fields): void
     {
-        $this->updateFrom(self::TABLE_NAME, $fields, ['staff_id' => $barberId]);
+        $this->updateFrom(self::TABLE_NAME, $fields, ['barber_id' => $barberId]);
     }
 }

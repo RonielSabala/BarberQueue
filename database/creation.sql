@@ -62,11 +62,11 @@ CREATE TABLE
 -- BARBER STATUS
 CREATE TABLE
     barber_status (
-        staff_id INT PRIMARY KEY,
+        barber_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
         is_accepting BOOLEAN DEFAULT FALSE,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (staff_id) REFERENCES users (id) ON DELETE CASCADE
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 -- BARBER REVIEWS
@@ -82,6 +82,26 @@ CREATE TABLE
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
+-- BARBER STATS
+CREATE TABLE
+    barber_stats (
+        barber_id INT PRIMARY KEY,
+        avg_service_minutes DECIMAL(6, 1) NULL,
+        avg_rating DECIMAL(3, 1) NULL,
+        total_attended INT UNSIGNED NOT NULL DEFAULT 0,
+        total_reviews INT UNSIGNED NOT NULL DEFAULT 0,
+        FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+
+-- BARBERSHOP PHOTOS
+CREATE TABLE
+    barbershop_photos (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        barbershop_id INT NOT NULL,
+        photo_url TEXT NOT NULL,
+        FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
+    );
+
 -- BARBERSHOP REVIEWS
 CREATE TABLE
     barbershop_reviews (
@@ -95,12 +115,14 @@ CREATE TABLE
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 
--- BARBERSHOP PHOTOS
+-- BARBERSHOP STATS
 CREATE TABLE
-    barbershop_photos (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        barbershop_id INT NOT NULL,
-        photo_url TEXT NOT NULL,
+    barbershop_stats (
+        barbershop_id INT PRIMARY KEY,
+        avg_service_minutes DECIMAL(6, 1) NULL,
+        avg_rating DECIMAL(3, 1) NULL,
+        total_attended INT UNSIGNED NOT NULL DEFAULT 0,
+        total_reviews INT UNSIGNED NOT NULL DEFAULT 0,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 

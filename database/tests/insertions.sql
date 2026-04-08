@@ -268,13 +268,13 @@ SET
     is_accepting = TRUE,
     current_status = 'active'
 WHERE
-    staff_id IN (4, 6, 8);
+    barber_id IN (4, 6, 8);
 
 UPDATE barber_status
 SET
     current_status = 'resting'
 WHERE
-    staff_id = 5;
+    barber_id = 5;
 
 -- BARBER STATUS OVERRIDES
 UPDATE barbershops
@@ -375,8 +375,10 @@ VALUES
     (4, 2, 'client_mark', 'in_service');
 
 -- TURNS
+-- 1. INSERT EVERYTHING WITH NULL finished_at
 INSERT INTO
     turns (
+        id,
         barbershop_id,
         client_id,
         member_id,
@@ -388,79 +390,83 @@ INSERT INTO
     )
 VALUES
     -- Past completed turns (individual clients)
-    (
-        1,
-        9,
-        NULL,
-        NULL,
-        4,
-        '2026-03-05 09:00:00',
-        '2026-03-05 09:10:00',
-        '2026-03-05 09:35:00'
-    ),
-    (
-        1,
-        10,
-        NULL,
-        NULL,
-        6,
-        '2026-03-05 09:05:00',
-        '2026-03-05 09:20:00',
-        '2026-03-05 09:50:00'
-    ),
-    (
-        2,
-        11,
-        NULL,
-        NULL,
-        4,
-        '2026-03-06 10:00:00',
-        '2026-03-06 10:05:00',
-        '2026-03-06 10:30:00'
-    ),
-    (
-        2,
-        12,
-        NULL,
-        NULL,
-        8,
-        '2026-03-06 10:30:00',
-        '2026-03-06 10:45:00',
-        '2026-03-06 11:10:00'
-    ),
+    (1, 1, 9, NULL, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', NULL),
+    (2, 1, 10, NULL, NULL, 6, '2026-03-05 09:05:00', '2026-03-05 09:20:00', NULL),
+    (3, 2, 11, NULL, NULL, 4, '2026-03-06 10:00:00', '2026-03-06 10:05:00', NULL),
+    (4, 2, 12, NULL, NULL, 8, '2026-03-06 10:30:00', '2026-03-06 10:45:00', NULL),
     -- Past completed turns (group 1 members)
-    (3, NULL, 1, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
-    (3, NULL, 2, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
+    (5, 3, NULL, 1, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', NULL),
+    (6, 3, NULL, 2, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', NULL),
     -- Past completed turns (individual)
-    (
-        1,
-        15,
-        NULL,
-        NULL,
-        4,
-        '2026-03-08 10:00:00',
-        '2026-03-08 10:10:00',
-        '2026-03-08 10:40:00'
-    ),
-    (
-        2,
-        16,
-        NULL,
-        NULL,
-        6,
-        '2026-03-08 11:00:00',
-        '2026-03-08 11:10:00',
-        '2026-03-08 11:45:00'
-    ),
+    (7, 1, 15, NULL, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', NULL),
+    (8, 2, 16, NULL, NULL, 6, '2026-03-08 11:00:00', '2026-03-08 11:10:00', NULL),
     -- Past completed turns (group 2 members)
-    (3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', '2026-03-09 09:40:00'),
-    (3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', '2026-03-09 10:10:00'),
+    (9, 3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', NULL),
+    (10, 3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', NULL),
     -- Currently in service
-    (3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
-    (2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
-    -- Waiting in queue (individual)
-    (1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
-    (1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
-    -- Waiting in queue (group 2)
-    (3, NULL, 3, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
-    (3, NULL, 4, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
+    (11, 3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (12, 2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    -- Waiting in queue
+    (13, 1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (14, 1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL);
+
+-- 2. UPDATE COMPLETED TURNS TO TRIGGER STATS CALCULATION
+UPDATE turns
+SET
+    finished_at = '2026-03-05 09:35:00'
+WHERE
+    id = 1;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-05 09:50:00'
+WHERE
+    id = 2;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-06 10:30:00'
+WHERE
+    id = 3;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-06 11:10:00'
+WHERE
+    id = 4;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-07 08:40:00'
+WHERE
+    id = 5;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-07 09:15:00'
+WHERE
+    id = 6;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-08 10:40:00'
+WHERE
+    id = 7;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-08 11:45:00'
+WHERE
+    id = 8;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-09 09:40:00'
+WHERE
+    id = 9;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-09 10:10:00'
+WHERE
+    id = 10;

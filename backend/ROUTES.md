@@ -794,7 +794,7 @@ Returns summary stats for a barber's dashboard.
 ```json
 {
   "totalAttendedClients": 142,
-  "averageTimeWithClients": "00:22:15",
+  "averageServiceMinutes": 22.25,
   "averageRating": 4.7,
   "joinDate": "2026-01-01 09:00:00"
 }

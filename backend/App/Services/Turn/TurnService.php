@@ -314,6 +314,14 @@ final readonly class TurnService extends BaseTurnService
     public function deleteTurn(int $turnId): void
     {
         $turn = $this->validateTurnExists($turnId);
+
+        if ($turn->attendedAt !== null) {
+            throw new TurnException(
+                'Cannot delete a turn that has been completed',
+                HttpStatus::UnprocessableEntity
+            );
+        }
+
         $this->turnRepository->transaction(
             fn () => $this->orchestrateTurnDeletion($turn)
         );

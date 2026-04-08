@@ -10,7 +10,7 @@ final readonly class BarberDashboardResponse extends BaseResponse
 {
     public function __construct(
         public int $totalAttendedClients,
-        public ?string $averageTimeWithClients,
+        public ?float $averageServiceMinutes,
         public ?float $averageRating,
         public string $joinDate,
     ) {}
