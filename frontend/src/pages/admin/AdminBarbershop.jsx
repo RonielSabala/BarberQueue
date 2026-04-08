@@ -232,7 +232,7 @@ function AdminBarbershop() {
           </div>
 
           <div className="admin-barbershop-status-card">
-            <h3>Estado actual</h3>
+            <h3>Activa/Inactiva</h3>
 
             <div className="admin-barbershop-status-buttons">
               <button
@@ -242,7 +242,7 @@ function AdminBarbershop() {
                   barbershop.isActive ? "status-btn-open active" : ""
                 }`}
               >
-                Abierta
+                Activa
               </button>
 
               <button
@@ -252,7 +252,7 @@ function AdminBarbershop() {
                   !barbershop.isActive ? "status-btn-closed active" : ""
                 }`}
               >
-                Cerrada
+                Inactiva
               </button>
             </div>
 
@@ -262,7 +262,7 @@ function AdminBarbershop() {
               }`}
             >
               <span className="dot">●</span>
-              {barbershop.isActive ? "Abierta" : "Cerrada"}
+              {barbershop.isActive ? "Activa" : "Inactiva"}
             </div>
           </div>
         </div>

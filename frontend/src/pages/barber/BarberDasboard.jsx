@@ -6,6 +6,7 @@ import {
   updateBarberStatus,
 } from "../../services/barberService";
 import { getBarberQueue } from "../../services/queueService";
+import { attendTurn } from "../../services/turnService";
 import "../../styles/barber/BarberDashboard.css";
 
 function BarberDashboard() {
@@ -20,6 +21,7 @@ function BarberDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [savingStatus, setSavingStatus] = useState(false);
+  const [attendLoading, setAttendLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -71,9 +73,7 @@ function BarberDashboard() {
     return status || "Sin estado";
   };
 
-  const getAcceptingValueByStatus = (status) => {
-    return status === "active";
-  };
+  const getAcceptingValueByStatus = (status) => status === "active";
 
   const handleStatusUpdate = async () => {
     try {
@@ -98,9 +98,7 @@ function BarberDashboard() {
     }
   };
 
-  const handleGoToProfile = () => {
-    navigate("/barber/profile");
-  };
+  const handleGoToProfile = () => navigate("/barber/profile");
 
   const handleEndShift = async () => {
     try {
@@ -122,6 +120,33 @@ function BarberDashboard() {
       setError(err.message || "Error al terminar la jornada");
     } finally {
       setSavingStatus(false);
+    }
+  };
+
+  // Finalizar servicio del cliente actual → PATCH /api/turns/{id}/attend
+  // Requiere que currentClient esté en in_service
+  const handleAttendTurn = async () => {
+    if (!currentClient?.id) {
+      setError("No hay cliente en servicio para finalizar.");
+      return;
+    }
+
+    try {
+      setAttendLoading(true);
+      setError("");
+      setSuccessMessage("");
+
+      await attendTurn(currentClient.id);
+
+      setSuccessMessage(
+        "Servicio finalizado correctamente. El siguiente cliente pasó a in_service.",
+      );
+      await fetchAll();
+    } catch (err) {
+      console.error("Error al finalizar servicio:", err);
+      setError(err.message || "Error al finalizar el servicio");
+    } finally {
+      setAttendLoading(false);
     }
   };
 
@@ -281,16 +306,28 @@ function BarberDashboard() {
             <h2>Acciones de la jornada</h2>
 
             <div className="barber-actions-grid">
+              {/* Finalizar servicio — activo solo si hay cliente en in_service */}
               <button
                 className="barber-action-card finish-service"
                 type="button"
-                disabled
-                title="Pendiente de integración de finalizar servicio"
+                onClick={handleAttendTurn}
+                disabled={attendLoading || !currentClient}
+                title={
+                  !currentClient
+                    ? "No hay cliente en servicio"
+                    : "Marcar servicio como finalizado"
+                }
               >
                 <span className="material-icons-round">content_cut</span>
                 <div>
                   <strong>Finalizar servicio</strong>
-                  <p>Pendiente de integración</p>
+                  <p>
+                    {attendLoading
+                      ? "Finalizando..."
+                      : currentClient
+                        ? `Atendiendo a ${currentClient.ownerName}`
+                        : "Sin cliente activo"}
+                  </p>
                 </div>
               </button>
 
@@ -345,7 +382,10 @@ function BarberDashboard() {
                 </div>
               ) : (
                 waitingQueue.map((turn) => (
-                  <div key={turn.id} className="barber-queue-turn">
+                  <div
+                    key={turn.id}
+                    className={`barber-queue-turn${turn.ownerStatus === "waiting" ? " waiting" : ""}`}
+                  >
                     <span className="barber-queue-turn-position">
                       {turn.position}
                     </span>
@@ -353,6 +393,7 @@ function BarberDashboard() {
                       <p>{turn.ownerName}</p>
                       <span>
                         {turn.ownerType} · {turn.ownerStatus}
+                        {turn.ownerStatus === "waiting" ? " ⏸ pausado" : ""}
                         {turn.groupSize ? ` · Grupo ${turn.groupSize}` : ""}
                       </span>
                     </div>

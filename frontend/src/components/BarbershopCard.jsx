@@ -5,6 +5,10 @@ function BarbershopCard({ shop }) {
 
   const fallbackImage = "https://via.placeholder.com/400x200?text=Barberia";
 
+  // isActive = estado controlado por admin (abierta/cerrada manualmente)
+  // open = alias de isActive que viene del mapper
+  const isOpen = shop.isActive ?? shop.open ?? false;
+
   return (
     <div
       style={{
@@ -56,13 +60,8 @@ function BarbershopCard({ shop }) {
 
       <p style={{ marginBottom: "12px" }}>
         Estado:{" "}
-        <span
-          style={{
-            color: shop.open ? "green" : "red",
-            fontWeight: "bold",
-          }}
-        >
-          {shop.open ? "Abierta" : "Cerrada"}
+        <span style={{ color: isOpen ? "green" : "red", fontWeight: "bold" }}>
+          {isOpen ? "Abierta" : "Cerrada"}
         </span>
       </p>
 

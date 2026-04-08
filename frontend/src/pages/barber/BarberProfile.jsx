@@ -49,15 +49,12 @@ function BarberProfile() {
         const storedUser = JSON.parse(localStorage.getItem("user") || "null");
         const barberId = storedUser?.id;
 
-        if (!barberId) {
-          setReviewError("No se encontró el barbero autenticado.");
-          return;
-        }
+        if (!barberId) return;
 
         const data = await getBarberReviews(barberId);
         setReviews(data);
       } catch (err) {
-        console.error("Error al cargar reseñas del barbero:", err);
+        console.error("Error al cargar reseñas:", err);
         setReviewError(err.message || "Error al cargar las reseñas");
       } finally {
         setReviewsLoading(false);
@@ -77,23 +74,31 @@ function BarberProfile() {
   const getStatusClass = (status) => {
     if (status === "active") return "active";
     if (status === "resting") return "resting";
-    if (status === "inactive") return "inactive";
     return "inactive";
   };
 
   const renderStars = (rating) => {
-    const safeRating = Math.max(0, Math.min(5, Math.round(rating || 0)));
-    return "⭐".repeat(safeRating);
+    const safe = Math.max(0, Math.min(5, Math.round(rating || 0)));
+    return "⭐".repeat(safe);
   };
 
-  const handleStartShift = () => {
-    navigate("/barber/dashboard");
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    try {
+      return new Date(dateStr).toLocaleDateString("es-DO", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return dateStr;
+    }
   };
 
   if (loading) {
     return (
       <div className="barber-profile-page">
-        <p>Cargando perfil...</p>
+        <p style={{ color: "#7c839e" }}>Cargando perfil...</p>
       </div>
     );
   }
@@ -109,37 +114,38 @@ function BarberProfile() {
   if (!barber) {
     return (
       <div className="barber-profile-page">
-        <p>No se encontró el perfil del barbero.</p>
+        <p style={{ color: "#7c839e" }}>
+          No se encontró el perfil del barbero.
+        </p>
       </div>
     );
   }
 
+  const statusClass = getStatusClass(barber.currentStatus);
+
   return (
     <div className="barber-profile-page">
       <div className="barber-profile-card">
-        <div className="barber-profile-main">
+        {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+        <div className="barber-profile-hero">
+          {/* Avatar */}
           <div className="barber-profile-avatar-section">
             <div className="barber-profile-avatar">
               <span className="material-icons-round">face</span>
+              <div className={`barber-avatar-status-dot ${statusClass}`} />
             </div>
           </div>
 
+          {/* Info */}
           <div className="barber-profile-info-section">
             <h1 className="barber-profile-name">{barber.username}</h1>
 
             <div className="barber-profile-status-row">
-              <span
-                className={`barber-status-pill ${getStatusClass(
-                  barber.currentStatus,
-                )}`}
-              >
+              <span className={`barber-status-pill ${statusClass}`}>
                 {getStatusLabel(barber.currentStatus)}
               </span>
-
               <span
-                className={`barber-accepting-pill ${
-                  barber.isAccepting ? "accepting" : "not-accepting"
-                }`}
+                className={`barber-accepting-pill ${barber.isAccepting ? "accepting" : "not-accepting"}`}
               >
                 {barber.isAccepting
                   ? "Aceptando clientes"
@@ -148,34 +154,47 @@ function BarberProfile() {
             </div>
 
             <div className="barber-profile-details-card">
-              <p>
-                <strong>ID:</strong> {barber.id}
-              </p>
-              <p>
-                <strong>Nombre:</strong> {barber.username}
-              </p>
-              <p>
-                <strong>Estado actual:</strong>{" "}
-                {getStatusLabel(barber.currentStatus)}
-              </p>
-              <p>
-                <strong>Disponibilidad:</strong>{" "}
-                {barber.isAccepting
-                  ? "Aceptando clientes"
-                  : "No acepta clientes"}
-              </p>
+              <div className="barber-detail-item">
+                <span className="barber-detail-label">ID</span>
+                <span className="barber-detail-value">#{barber.id}</span>
+              </div>
+              <div className="barber-detail-item">
+                <span className="barber-detail-label">Nombre</span>
+                <span className="barber-detail-value">{barber.username}</span>
+              </div>
+              <div className="barber-detail-item">
+                <span className="barber-detail-label">Estado</span>
+                <span className="barber-detail-value">
+                  {getStatusLabel(barber.currentStatus)}
+                </span>
+              </div>
+              <div className="barber-detail-item">
+                <span className="barber-detail-label">Disponibilidad</span>
+                <span className="barber-detail-value">
+                  {barber.isAccepting ? "Aceptando" : "No acepta"}
+                </span>
+              </div>
             </div>
 
             <div className="barber-profile-actions">
-              <button className="start-shift-btn" onClick={handleStartShift}>
+              <button
+                className="start-shift-btn"
+                onClick={() => navigate("/barber/dashboard")}
+              >
+                <span className="material-icons-round" style={{ fontSize: 18 }}>
+                  content_cut
+                </span>
                 Iniciar jornada
               </button>
             </div>
           </div>
         </div>
 
+        {/* ─── Reviews ──────────────────────────────────────────────────────── */}
         <div className="barber-reviews-section">
-          <h2 className="barber-reviews-title">Reseñas del barbero</h2>
+          <h2 className="barber-reviews-title">
+            Reseñas {reviews.length > 0 && <span>({reviews.length})</span>}
+          </h2>
 
           {reviewError && (
             <div className="barber-profile-alert error">{reviewError}</div>
@@ -194,14 +213,14 @@ function BarberProfile() {
                   <div className="barber-review-header">
                     <div>
                       <p className="barber-review-user">{review.username}</p>
-                      <p className="barber-review-date">{review.createdAt}</p>
+                      <p className="barber-review-date">
+                        {formatDate(review.createdAt)}
+                      </p>
                     </div>
-
                     <div className="barber-review-stars">
                       {renderStars(review.rating)}
                     </div>
                   </div>
-
                   <p className="barber-review-content">{review.content}</p>
                 </div>
               ))}

@@ -62,9 +62,7 @@ function normalizeSingleBarberQueue(data) {
 export async function getBarbershopQueue(barbershopId) {
   const response = await fetch(`${API_URL}/queues/barbershop/${barbershopId}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
 
   const data = await response.json();
@@ -81,9 +79,7 @@ export async function getBarbershopQueue(barbershopId) {
 export async function getBarberQueue(barberId) {
   const response = await fetch(`${API_URL}/queues/barber/${barberId}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
 
   const data = await response.json();
@@ -95,4 +91,61 @@ export async function getBarberQueue(barberId) {
   }
 
   return normalizeSingleBarberQueue(data);
+}
+
+// Devuelve los barberos de una barbería que están en resting,
+// comparando employees vs los que ya aparecen en la cola (activos).
+// activeBarberIds: Set de IDs que ya vienen en la cola
+export async function getRestingBarbers(barbershopId, activeBarberIds = new Set()) {
+  // 1. Obtener todos los employees de la barbería
+  const empResponse = await fetch(
+    `${API_URL}/barbershops/${barbershopId}/employees`,
+    { method: "GET", headers: { "Content-Type": "application/json" } }
+  );
+
+  const employees = await empResponse.json();
+
+  if (!empResponse.ok) {
+    throw new Error(
+      getErrorMessage(employees, "Error al obtener empleados de la barbería")
+    );
+  }
+
+  // 2. Filtrar los que NO están en la cola activa (no son active)
+  const nonActive = Array.isArray(employees)
+    ? employees.filter(
+        (emp) => emp.role === "barber" && !activeBarberIds.has(Number(emp.id))
+      )
+    : [];
+
+  if (nonActive.length === 0) return [];
+
+  // 3. Para cada uno, obtener su currentStatus individual
+  const barberProfiles = await Promise.allSettled(
+    nonActive.map((emp) =>
+      fetch(`${API_URL}/barbers/${emp.id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }).then((r) => r.json())
+    )
+  );
+
+  // 4. Quedarse solo con los que están en resting
+  const resting = barberProfiles
+    .filter(
+      (result) =>
+        result.status === "fulfilled" &&
+        result.value?.currentStatus === "resting"
+    )
+    .map((result) => ({
+      id: result.value.id,
+      name: result.value.username,
+      status: "resting",
+      isAccepting: false,
+      current: null,
+      queue: [],
+      turns: [],
+    }));
+
+  return resting;
 }
