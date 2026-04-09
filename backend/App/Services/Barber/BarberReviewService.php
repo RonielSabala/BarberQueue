@@ -23,14 +23,14 @@ final readonly class BarberReviewService extends BaseService
     /** @return BarberReviewResponse[] */
     public function getReviews(int $barberId): array
     {
-        $this->barberService->validateBarberExists($barberId);
+        $this->barberService->validateBarberUserExists($barberId);
         $reviews = $this->barberReviewRepository->getAllByBarberId($barberId);
         return BarberReviewResponse::fromEntities($reviews);
     }
 
     public function createReview(int $barberId, CreateBarberReviewRequest $request): BarberReviewResponse
     {
-        $this->barberService->validateBarberExists($barberId);
+        $this->barberService->validateBarberUserExists($barberId);
 
         // Validate client
         $clientId = $request->clientId->value;
@@ -58,7 +58,7 @@ final readonly class BarberReviewService extends BaseService
 
     public function deleteReview(int $barberId, int $reviewId): bool
     {
-        $this->barberService->validateBarberExists($barberId);
+        $this->barberService->validateBarberUserExists($barberId);
         return $this->barberReviewRepository->deleteReview($reviewId, $barberId);
     }
 }

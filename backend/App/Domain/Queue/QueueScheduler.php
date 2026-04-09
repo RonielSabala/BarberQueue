@@ -39,27 +39,18 @@ final class QueueScheduler
         return [$bestId, $bestSlot];
     }
 
-    private static function isOwnerWaiting(TurnEntity $turn): bool
-    {
-        return $turn->ownerStatus->value === ClientStatusEnum::Waiting->value;
-    }
-
     /**
-     * If the first turn in the queue is waiting, finds the first non-waiting turn
-     * and moves it to position 0. All other turns keep their relative order.
+     * Finds the first non-waiting turn and moves it to position 0. All other
+     * turns keep their relative order.
      *
      * @param TurnEntity[] $queue
      *
      * @return TurnEntity[]
      */
-    private static function promoteFirstEligible(array $queue): array
+    private static function promoteFirstNonWaiting(array $queue): array
     {
-        if (empty($queue) || !self::isOwnerWaiting($queue[0])) {
-            return $queue;
-        }
-
         foreach ($queue as $i => $turn) {
-            if (self::isOwnerWaiting($turn)) {
+            if ($turn->ownerStatus->value === ClientStatusEnum::Waiting->value) {
                 continue;
             }
 
@@ -119,9 +110,15 @@ final class QueueScheduler
             }
         }
 
-        // If position 1 is waiting, promote the first eligible turn to the front
+        // Promote position-1 turns if applicable
         foreach ($queues as $barberId => $queue) {
-            $queues[$barberId] = self::promoteFirstEligible($queue);
+            if (empty($queue)) {
+                continue;
+            }
+
+            if ($queue[0]->ownerStatus->value === ClientStatusEnum::Waiting->value) {
+                $queues[$barberId] = self::promoteFirstNonWaiting($queue);
+            }
         }
 
         return new ScheduledQueue($barberSlots, $slotsById, $queues, $allTurns);
