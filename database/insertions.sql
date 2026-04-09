@@ -164,6 +164,7 @@ VALUES
 INSERT INTO
     barbershops (
         id,
+        admin_id,
         barbershop_name,
         email,
         phone,
@@ -171,11 +172,11 @@ INSERT INTO
         photo_url,
         opens_at,
         closes_at,
-        capacity,
-        is_active
+        capacity
     )
 VALUES
     (
+        1,
         1,
         'BarberKing Santo Domingo',
         'info@barberking.com',
@@ -184,11 +185,11 @@ VALUES
         'https://placehold.co/600x400?text=BarberKing',
         '08:00:00',
         '20:00:00',
-        3,
-        TRUE
+        3
     ),
     (
         2,
+        1,
         'The Gentleman Cut',
         'info@gentlemancut.com',
         '8092345000',
@@ -196,11 +197,11 @@ VALUES
         'https://placehold.co/600x400?text=GentlemanCut',
         '09:00:00',
         '19:00:00',
-        2,
-        TRUE
+        2
     ),
     (
         3,
+        1,
         'Elite Barbers',
         'info@elitebarbers.com',
         '8093456000',
@@ -208,9 +209,105 @@ VALUES
         'https://placehold.co/600x400?text=EliteBarbers',
         '07:00:00',
         '21:00:00',
-        4,
-        TRUE
+        4
     );
+
+-- CLIENT STATUS OVERRIDES
+UPDATE client_status
+SET
+    barbershop_id = 2,
+    current_status = 'at_barbershop'
+WHERE
+    client_id = 16;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'on_queue'
+WHERE
+    client_id = 18;
+
+UPDATE client_status
+SET
+    barbershop_id = 3,
+    current_status = 'waiting'
+WHERE
+    client_id = 14;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'in_service'
+WHERE
+    client_id = 17;
+
+UPDATE client_status
+SET
+    barbershop_id = 1,
+    current_status = 'attended'
+WHERE
+    client_id = 15;
+
+UPDATE client_status
+SET
+    barbershop_id = 2,
+    current_status = 'attended'
+WHERE
+    client_id = 12;
+
+UPDATE client_status
+SET
+    barbershop_id = 3,
+    current_status = 'paid'
+WHERE
+    client_id = 13;
+
+-- BARBER STATUS OVERRIDES
+UPDATE barber_status
+SET
+    is_accepting = TRUE,
+    current_status = 'active'
+WHERE
+    barber_id IN (4, 6, 8);
+
+UPDATE barber_status
+SET
+    current_status = 'resting'
+WHERE
+    barber_id = 5;
+
+-- BARBER STATUS OVERRIDES
+UPDATE barbershops
+SET
+    is_active = TRUE
+WHERE
+    id IN (1, 2, 3);
+
+-- BARBER REVIEWS
+INSERT INTO
+    barber_reviews (client_id, barber_id, rating, content)
+VALUES
+    (9, 4, 5, 'Carlos es un crack, me dejó el fade perfecto.'),
+    (10, 5, 4, 'Luis muy detallista, quedé satisfecho con el resultado.'),
+    (11, 6, 5, 'Miguel tiene manos de artista, 100% recomendado.'),
+    (12, 7, 3, 'Ramón es bueno pero se tardó más de lo esperado.'),
+    (13, 8, 5, 'Félix es el mejor barbero que he tenido, un nivel diferente.'),
+    (14, 8, 5, 'Increíble trabajo, se nota la experiencia.'),
+    (15, 4, 4, 'Carlos siempre constante, buen corte como siempre.'),
+    (16, 6, 5, 'Miguel muy profesional y rápido, sin sacrificar calidad.');
+
+-- BARBERSHOP REVIEWS
+INSERT INTO
+    barbershop_reviews (client_id, barbershop_id, rating, content)
+VALUES
+    (9, 1, 5, 'Excelente servicio, el lugar siempre limpio y el ambiente genial.'),
+    (10, 1, 4, 'Muy buena atención, solo un poco de espera al principio.'),
+    (11, 2, 5, 'La mejor barbería de la Zona Colonial, super recomendada.'),
+    (12, 2, 3, 'Buen corte pero el local es pequeño y se llena rápido.'),
+    (13, 3, 5, 'Elite de verdad, ambiente premium y barberos muy profesionales.'),
+    (14, 3, 4, 'Muy buena experiencia, precios justos para la calidad.'),
+    (15, 1, 4, 'Buen servicio, volveré sin duda.'),
+    (16, 2, 5, 'Me encantó, encontré mi barbería fija.');
 
 -- BARBERSHOP PHOTOS
 INSERT INTO
@@ -225,138 +322,80 @@ VALUES
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge'),
     (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos');
 
--- CLIENT STATUS OVERRIDES
-UPDATE client_status
-SET
-    current_status = 'on_queue'
-WHERE
-    user_id = 10;
-
-UPDATE client_status
-SET
-    current_status = 'in_service'
-WHERE
-    user_id = 11;
-
-UPDATE client_status
-SET
-    current_status = 'attended'
-WHERE
-    user_id = 12;
-
-UPDATE client_status
-SET
-    current_status = 'paid'
-WHERE
-    user_id = 13;
-
-UPDATE client_status
-SET
-    current_status = 'waiting'
-WHERE
-    user_id = 14;
-
-UPDATE client_status
-SET
-    current_status = 'at_barbershop'
-WHERE
-    user_id = 16;
-
-UPDATE client_status
-SET
-    current_status = 'on_queue'
-WHERE
-    user_id = 18;
-
--- BARBER STATUS OVERRIDES
-UPDATE barber_status
-SET
-    current_status = 'active'
-WHERE
-    staff_id = 4;
-
-UPDATE barber_status
-SET
-    current_status = 'resting'
-WHERE
-    staff_id = 5;
-
-UPDATE barber_status
-SET
-    current_status = 'active'
-WHERE
-    staff_id = 6;
-
-UPDATE barber_status
-SET
-    current_status = 'active'
-WHERE
-    staff_id = 8;
-
 -- STAFF ASSIGNMENTS
 INSERT INTO
     staff_assignments (staff_id, barbershop_id, start_time, end_time)
 VALUES
-    (2, 1, '08:00:00', '20:00:00'),
-    (3, 2, '09:00:00', '19:00:00'),
-    (3, 3, '07:00:00', '21:00:00'),
-    (4, 1, '08:00:00', '16:00:00'),
-    (4, 3, '16:30:00', '21:00:00'),
-    (5, 1, '12:00:00', '20:00:00'),
-    (6, 2, '09:00:00', '17:00:00'),
-    (7, 2, '11:00:00', '19:00:00'),
-    (8, 3, '07:00:00', '15:00:00');
+    -- Maria
+    (2, 1, '08:00:00', '17:00:00'),
+    (2, 2, '08:30:00', '17:30:00'),
+    -- Pedro
+    (3, 2, '09:00:00', '18:00:00'),
+    (3, 3, '09:25:00', '18:25:00'),
+    -- Carlos
+    (4, 3, '10:00:00', '19:00:00'),
+    -- Luis
+    (5, 3, '08:00:00', '17:00:00'),
+    (5, 1, '08:30:00', '17:30:00'),
+    -- Miguel
+    (6, 2, '09:00:00', '18:00:00'),
+    (6, 3, '09:00:00', '18:00:00'),
+    -- Ramon
+    (7, 3, '10:00:00', '19:00:00'),
+    (7, 1, '10:00:00', '19:00:00'),
+    -- Felix
+    (8, 1, '08:00:00', '17:00:00');
 
 -- WORKING DAYS
 INSERT INTO
-    working_days (staff_id, day_of_week)
+    working_days (staff_id, barbershop_id, day_of_week)
 VALUES
-    -- Carlos
-    (4, 1),
-    (4, 2),
-    (4, 3),
-    (4, 4),
-    (4, 5),
-    -- Luis
-    (5, 2),
-    (5, 3),
-    (5, 4),
-    (5, 5),
-    (5, 6),
-    -- Miguel
-    (6, 1),
-    (6, 2),
-    (6, 3),
-    (6, 4),
-    (6, 5),
-    (6, 6),
-    -- Ramon
-    (7, 3),
-    (7, 4),
-    (7, 5),
-    (7, 6),
-    (7, 7),
-    -- Felix
-    (8, 1),
-    (8, 2),
-    (8, 3),
-    (8, 4),
-    (8, 5),
     -- Maria
-    (2, 1),
-    (2, 2),
-    (2, 3),
-    (2, 4),
-    (2, 5),
-    (2, 6),
+    (2, 1, 1),
+    (2, 1, 2),
+    (2, 1, 3),
+    (2, 1, 4),
+    (2, 2, 5),
+    (2, 2, 6),
     -- Pedro
-    (3, 1),
-    (3, 2),
-    (3, 3),
-    (3, 4),
-    (3, 5),
-    (3, 6),
-    (3, 7);
+    (3, 2, 1),
+    (3, 2, 2),
+    (3, 2, 3),
+    (3, 2, 4),
+    (3, 3, 5),
+    (3, 3, 6),
+    (3, 3, 7),
+    -- Carlos
+    (4, 3, 1),
+    (4, 3, 2),
+    (4, 3, 3),
+    (4, 3, 4),
+    (4, 3, 5),
+    -- Luis
+    (5, 3, 2),
+    (5, 3, 3),
+    (5, 1, 4),
+    (5, 1, 5),
+    (5, 1, 6),
+    -- Miguel
+    (6, 2, 1),
+    (6, 2, 2),
+    (6, 2, 3),
+    (6, 3, 4),
+    (6, 3, 5),
+    (6, 3, 6),
+    -- Ramon
+    (7, 3, 3),
+    (7, 3, 4),
+    (7, 3, 5),
+    (7, 1, 6),
+    (7, 1, 7),
+    -- Felix
+    (8, 1, 1),
+    (8, 1, 2),
+    (8, 1, 3),
+    (8, 1, 4),
+    (8, 1, 5);
 
 -- CLIENT GROUPS
 INSERT INTO
@@ -365,51 +404,108 @@ VALUES
     (1, 13),
     (2, 9);
 
+-- GROUP MEMBERS
+INSERT INTO
+    group_members (id, group_id, member_name, current_status)
+VALUES
+    (1, 1, 'client_peter', 'paid'),
+    (2, 1, 'client_will', 'paid'),
+    (3, 2, 'client_bob', 'in_service'),
+    (4, 2, 'client_mark', 'in_service');
+
 -- TURNS
--- Historical completed turns are inserted directly with explicit timestamps.
+-- 1. INSERT EVERYTHING WITH NULL finished_at
 INSERT INTO
-    turns (barbershop_id, client_id, group_id, barber_id, created_at, attended_at, finished_at)
+    turns (
+        id,
+        barbershop_id,
+        client_id,
+        member_id,
+        group_id,
+        barber_id,
+        created_at,
+        attended_at,
+        finished_at
+    )
 VALUES
-    -- Past completed turns
-    (1, 9, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', '2026-03-05 09:35:00'),
-    (1, 10, NULL, 5, '2026-03-05 09:05:00', '2026-03-05 09:20:00', '2026-03-05 09:50:00'),
-    (2, 11, NULL, 6, '2026-03-06 10:00:00', '2026-03-06 10:05:00', '2026-03-06 10:30:00'),
-    (2, 12, NULL, 7, '2026-03-06 10:30:00', '2026-03-06 10:45:00', '2026-03-06 11:10:00'),
-    (3, 13, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', '2026-03-07 08:40:00'),
-    (3, 14, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', '2026-03-07 09:15:00'),
-    (1, 15, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', '2026-03-08 10:40:00'),
-    (2, 16, NULL, 6, '2026-03-08 11:00:00', '2026-03-08 11:10:00', '2026-03-08 11:45:00'),
+    -- Past completed turns (individual clients)
+    (1, 1, 9, NULL, NULL, 4, '2026-03-05 09:00:00', '2026-03-05 09:10:00', NULL),
+    (2, 1, 10, NULL, NULL, 6, '2026-03-05 09:05:00', '2026-03-05 09:20:00', NULL),
+    (3, 2, 11, NULL, NULL, 4, '2026-03-06 10:00:00', '2026-03-06 10:05:00', NULL),
+    (4, 2, 12, NULL, NULL, 8, '2026-03-06 10:30:00', '2026-03-06 10:45:00', NULL),
+    -- Past completed turns (group 1 members)
+    (5, 3, NULL, 1, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:10:00', NULL),
+    (6, 3, NULL, 2, 1, 8, '2026-03-07 08:00:00', '2026-03-07 08:45:00', NULL),
+    -- Past completed turns (individual)
+    (7, 1, 15, NULL, NULL, 4, '2026-03-08 10:00:00', '2026-03-08 10:10:00', NULL),
+    (8, 2, 16, NULL, NULL, 6, '2026-03-08 11:00:00', '2026-03-08 11:10:00', NULL),
+    -- Past completed turns (group 2 members)
+    (9, 3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', NULL),
+    (10, 3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', NULL),
     -- Currently in service
-    (1, 15, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
-    (2, 16, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    (11, 3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
+    (12, 2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
     -- Waiting in queue
-    (1, 17, NULL, NULL, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
-    (1, 18, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
-    (3, 9, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL),
-    (3, 13, 2, NULL, NOW() - INTERVAL 8 MINUTE, NULL, NULL);
+    (13, 1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
+    (14, 1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL);
 
--- BARBERSHOP REVIEWS
-INSERT INTO
-    barbershop_reviews (user_id, barbershop_id, rating, content)
-VALUES
-    (9, 1, 5, 'Excelente servicio, el lugar siempre limpio y el ambiente genial.'),
-    (10, 1, 4, 'Muy buena atención, solo un poco de espera al principio.'),
-    (11, 2, 5, 'La mejor barbería de la Zona Colonial, super recomendada.'),
-    (12, 2, 3, 'Buen corte pero el local es pequeño y se llena rápido.'),
-    (13, 3, 5, 'Elite de verdad, ambiente premium y barberos muy profesionales.'),
-    (14, 3, 4, 'Muy buena experiencia, precios justos para la calidad.'),
-    (15, 1, 4, 'Buen servicio, volveré sin duda.'),
-    (16, 2, 5, 'Me encantó, encontré mi barbería fija.');
+-- 2. UPDATE COMPLETED TURNS TO TRIGGER STATS CALCULATION
+UPDATE turns
+SET
+    finished_at = '2026-03-05 09:35:00'
+WHERE
+    id = 1;
 
--- BARBER REVIEWS
-INSERT INTO
-    barber_reviews (client_id, barber_id, rating, content)
-VALUES
-    (9, 4, 5, 'Carlos es un crack, me dejó el fade perfecto.'),
-    (10, 5, 4, 'Luis muy detallista, quedé satisfecho con el resultado.'),
-    (11, 6, 5, 'Miguel tiene manos de artista, 100% recomendado.'),
-    (12, 7, 3, 'Ramón es bueno pero se tardó más de lo esperado.'),
-    (13, 8, 5, 'Félix es el mejor barbero que he tenido, un nivel diferente.'),
-    (14, 8, 5, 'Increíble trabajo, se nota la experiencia.'),
-    (15, 4, 4, 'Carlos siempre constante, buen corte como siempre.'),
-    (16, 6, 5, 'Miguel muy profesional y rápido, sin sacrificar calidad.');
+UPDATE turns
+SET
+    finished_at = '2026-03-05 09:50:00'
+WHERE
+    id = 2;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-06 10:30:00'
+WHERE
+    id = 3;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-06 11:10:00'
+WHERE
+    id = 4;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-07 08:40:00'
+WHERE
+    id = 5;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-07 09:15:00'
+WHERE
+    id = 6;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-08 10:40:00'
+WHERE
+    id = 7;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-08 11:45:00'
+WHERE
+    id = 8;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-09 09:40:00'
+WHERE
+    id = 9;
+
+UPDATE turns
+SET
+    finished_at = '2026-03-09 10:10:00'
+WHERE
+    id = 10;

@@ -6,9 +6,9 @@ namespace App\Repositories;
 
 use App\Domain\Entities\RoleEntity;
 
-class RoleRepository extends BaseRepository
+final readonly class RoleRepository extends BaseRepository
 {
-    public function findByValue(string $roleName): ?RoleEntity
+    public function getByValue(string $roleName): ?RoleEntity
     {
         $sql = <<<'SQL'
             SELECT

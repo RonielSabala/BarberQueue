@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Core\HttpStatus;
 use App\Exceptions\PasswordException;
 
-class PasswordService extends BaseService
+final readonly class PasswordService extends BaseService
 {
     private function exception(string $message): PasswordException
     {

@@ -4,101 +4,49 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Attributes\ArrayOf;
 use App\Config\DbConfig;
 use App\Domain\Entities\BaseEntity;
-use App\Utils\TextUtils;
 
-abstract class BaseRepository
+abstract readonly class BaseRepository
 {
     protected \PDO $db;
 
     protected const ?string TABLE_NAME = null;
-    protected const ?array UPDATABLE_FIELDS = [];
+    protected const array UPDATABLE_FIELDS = [];
 
     public function __construct()
     {
         $this->db = DbConfig::getConnection();
     }
 
-    private function missingVariablesException(string $varName): \RuntimeException
-    {
-        return new \RuntimeException("Repository `{$varName}` variable is not set");
-    }
+    // Helpers
 
-    protected function mapToEntity(string $entityClass, array $row): BaseEntity
+    private function getTableName(): string
     {
-        $reflection = new \ReflectionClass($entityClass);
-        $constructor = $reflection->getConstructor();
-
-        if (!$constructor) {
-            return new $entityClass();
+        $tableName = static::TABLE_NAME;
+        if ($tableName === null) {
+            throw new \RuntimeException('Repository `TABLE_NAME` variable is not set');
         }
 
-        $arguments = [];
-        foreach ($constructor->getParameters() as $param) {
-            $dbKey = TextUtils::toSnakeCase($param->getName());
-            $dbValue = $row[$dbKey] ?? null;
-            $valueExists = $dbValue !== null;
-            $type = $param->getType();
-
-            // Handle #[ArrayOf]
-            $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
-            if ($arrayOf !== null) {
-                $itemType = $arrayOf->newInstance()->type;
-                $items = $valueExists
-                    ? array_map('trim', explode(',', (string) $dbValue))
-                    : [];
-
-                $arguments[] = array_map(
-                    static fn (string $item) => new $itemType($item),
-                    $items
-                );
-
-                continue;
-            }
-
-            // Value Object
-            if (
-                $valueExists
-                && $type instanceof \ReflectionNamedType
-                && !$type->isBuiltin()
-            ) {
-                $className = $type->getName();
-                $arguments[] = new $className($dbValue);
-                continue;
-            }
-
-            $arguments[] = $dbValue;
-        }
-
-        return $reflection->newInstanceArgs($arguments);
+        return $tableName;
     }
 
-    protected function query(string $sql, array $params = []): \PDOStatement
+    private function getClauses(string $clauseToken, array $columns): string
     {
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        return implode($clauseToken, array_map(
+            static fn (string $column) => "{$column} = ?",
+            $columns
+        ));
     }
 
-    protected function fetchOne(string $entityClass, string $sql, array $params = []): ?BaseEntity
+    private function getSetClauses(array $fields): string
     {
-        $stmt = $this->query($sql, $params);
-        $row = $stmt->fetch();
-        return $row ? $this->mapToEntity($entityClass, $row) : null;
+        return $this->getClauses(', ', $fields);
     }
 
-    protected function fetchAll(string $entityClass, string $sql, array $params = []): array
+    private function getWhereClauses(array $params): string
     {
-        $stmt = $this->query($sql, $params);
-        $results = [];
-
-        while ($row = $stmt->fetch()) {
-            $results[] = $this->mapToEntity($entityClass, $row);
-        }
-
-        return $results;
+        return $this->getClauses(' AND ', array_keys($params));
     }
 
     public function transaction(callable $callback): mixed
@@ -120,33 +68,148 @@ abstract class BaseRepository
         }
     }
 
-    public function updateFields(int $entityId, array $entityFields): void
+    // Query methods
+
+    protected function query(string $sql, array $params = []): \PDOStatement
     {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    /** @param class-string<BaseEntity> $entityClass */
+    protected function fetchOne(string $entityClass, string $sql, array $params = []): ?BaseEntity
+    {
+        $stmt = $this->query($sql, $params);
+        $row = $stmt->fetch();
+        return $row ? $entityClass::fromDbRow($row) : null;
+    }
+
+    /**
+     * @param class-string<BaseEntity> $entityClass
+     *
+     * @return BaseEntity[]
+     */
+    protected function fetchAll(string $entityClass, string $sql, array $params = []): array
+    {
+        $rows = $this->query($sql, $params)->fetchAll();
+        return array_map(
+            static fn (array $row) => $entityClass::fromDbRow($row),
+            $rows
+        );
+    }
+
+    // General CRUD methods
+
+    public function entityExists(string $tableName, array $params): bool
+    {
+        if (empty($params)) {
+            return false;
+        }
+
+        $sql = <<<SQL
+            SELECT
+                1
+            FROM
+                {$tableName}
+            WHERE
+                {$this->getWhereClauses($params)}
+            LIMIT
+                1
+        SQL;
+
+        $stmt = $this->query($sql, array_values($params));
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function insert(array $entityFields): int
+    {
+        $tableName = $this->getTableName();
         if (empty($entityFields)) {
+            throw new \InvalidArgumentException("Cannot insert an empty field set into {$tableName}");
+        }
+
+        $columns = implode(', ', array_keys($entityFields));
+        $placeholders = implode(', ', array_fill(0, \count($entityFields), '?'));
+        $sql = <<<SQL
+            INSERT INTO
+                {$tableName} ({$columns})
+            VALUES
+                ({$placeholders})
+        SQL;
+
+        $this->query($sql, array_values($entityFields));
+        return (int) $this->db->lastInsertId();
+    }
+
+    public function updateFrom(string $tableName, array $entityFields, array $params): void
+    {
+        if (empty($entityFields) || empty($params)) {
             return;
         }
 
-        $tableName = static::TABLE_NAME;
-        if ($tableName === null) {
-            throw $this->missingVariablesException('TABLE_NAME');
-        }
-
+        $fields = array_keys($entityFields);
         $updatableFields = static::UPDATABLE_FIELDS;
-        $keys = array_keys($entityFields);
 
-        foreach ($keys as $field) {
+        foreach ($fields as $field) {
             if (!\in_array($field, $updatableFields, true)) {
-                throw new \InvalidArgumentException("Field '{$field}' is not allowed for updates in {$tableName}");
+                throw new \InvalidArgumentException(
+                    "Field '{$field}' is not allowed for updates in {$tableName}"
+                );
             }
         }
 
-        $setClauses = implode(', ', array_map(
-            static fn (string $field) => "{$field} = ?",
-            $keys
-        ));
+        $sql = <<<SQL
+            UPDATE {$tableName}
+            SET
+                {$this->getSetClauses($fields)}
+            WHERE
+                {$this->getWhereClauses($params)}
+        SQL;
 
-        // Execute the query
-        $sql = 'UPDATE ' . $tableName . " SET {$setClauses} WHERE id = ?";
-        $this->query($sql, [...array_values($entityFields), $entityId]);
+        $this->query($sql, [...array_values($entityFields), ...array_values($params)]);
+    }
+
+    public function deleteFrom(string $tableName, array $params): bool
+    {
+        if (empty($params)) {
+            return false;
+        }
+
+        $sql = <<<SQL
+            DELETE FROM {$tableName}
+            WHERE
+                {$this->getWhereClauses($params)}
+        SQL;
+
+        $stmt = $this->query($sql, array_values($params));
+        return $stmt->rowCount() > 0;
+    }
+
+    // Entity specific CRUD methods
+
+    public function exists(int $entityId, array $params = []): bool
+    {
+        return $this->entityExists(
+            $this->getTableName(),
+            ['id' => $entityId, ...$params]
+        );
+    }
+
+    public function update(int $entityId, array $entityFields, array $params = []): void
+    {
+        $this->updateFrom(
+            $this->getTableName(),
+            $entityFields,
+            ['id' => $entityId, ...$params]
+        );
+    }
+
+    public function delete(int $entityId, array $params = []): bool
+    {
+        return $this->deleteFrom(
+            $this->getTableName(),
+            ['id' => $entityId, ...$params]
+        );
     }
 }

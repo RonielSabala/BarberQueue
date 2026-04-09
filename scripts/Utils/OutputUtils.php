@@ -10,7 +10,7 @@ enum Color: int
     case Green = 32;
 }
 
-class OutputUtils
+final readonly class OutputUtils
 {
     public static function error(string $text): string
     {

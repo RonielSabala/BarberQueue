@@ -15,11 +15,10 @@ function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setMessage("");
     setError("");
 
-    if (!resetCode) {
+    if (!resetCode.trim()) {
       setError("Debes ingresar el código de recuperación.");
       return;
     }
@@ -37,61 +36,112 @@ function ResetPassword() {
         password,
       });
 
-      console.log("Respuesta reset password:", data);
-
       setMessage(
         data.message ||
           "Contraseña restablecida correctamente. Redirigiendo...",
       );
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       console.error("Error en reset password:", err);
-      setError(err.message);
+      setError(err.message || "Error al restablecer la contraseña.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthLayout tagline="Establece tu nueva contraseña.">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Restablecer contraseña</h2>
-
-        <input
-          type="text"
-          placeholder="Código de recuperación"
-          value={resetCode}
-          onChange={(e) => setResetCode(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Nueva contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Confirmar nueva contraseña"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-
-        {error && <p className="error-message">{error}</p>}
-        {message && <p className="success-message">{message}</p>}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Actualizando..." : "Actualizar contraseña"}
-        </button>
-
-        <p>
-          <Link to="/login">Volver al inicio de sesión</Link>
+    <AuthLayout>
+      <div className="auth-card">
+        <h2 className="auth-card-title">Nueva contraseña</h2>
+        <p className="auth-card-desc">
+          Ingresa el código que recibiste y tu nueva contraseña.
         </p>
-      </form>
+
+        {error && (
+          <div className="auth-error">
+            <span>⚠️</span>
+            {error}
+          </div>
+        )}
+
+        {message && (
+          <div
+            style={{
+              background: "#f0fdf4",
+              border: "1px solid #bbf7d0",
+              color: "#166534",
+              fontSize: "13px",
+              fontWeight: 500,
+              padding: "12px 16px",
+              borderRadius: "12px",
+              marginBottom: "20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <span>✅</span>
+            {message}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label htmlFor="resetCode">Código de recuperación</label>
+            <input
+              id="resetCode"
+              type="text"
+              placeholder="Ej: 123456"
+              value={resetCode}
+              onChange={(e) => setResetCode(e.target.value)}
+              required
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="password">Nueva contraseña</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="confirmPassword">Confirmar contraseña</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Repite tu nueva contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="auth-submit-btn"
+            disabled={loading}
+            style={{ marginTop: "8px" }}
+          >
+            {loading ? "Actualizando..." : "Actualizar contraseña →"}
+          </button>
+        </form>
+
+        <div className="auth-links" style={{ marginTop: "8px" }}>
+          <p className="auth-link-row">
+            <Link to="/login">← Volver al inicio de sesión</Link>
+          </p>
+        </div>
+      </div>
     </AuthLayout>
   );
 }

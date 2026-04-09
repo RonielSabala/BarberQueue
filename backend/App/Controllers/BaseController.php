@@ -7,10 +7,10 @@ namespace App\Controllers;
 use App\Attributes\ArrayOf;
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
-use App\Exceptions\ValidationException;
+use App\Exceptions\Base\ValidationException;
 use App\Utils\{TextUtils, TypeCoercion};
 
-abstract class BaseController
+abstract readonly class BaseController
 {
     private static function getJsonBody(): array
     {
@@ -125,7 +125,7 @@ abstract class BaseController
         mixed $value,
         string $fieldPath
     ): mixed {
-        $arrayOf = $param->getAttributes(ArrayOf::class)[0] ?? null;
+        $arrayOf = ArrayOf::fromParam($param);
         if ($arrayOf === null) {
             // Plain array with no attribute
             return $value;
@@ -138,24 +138,26 @@ abstract class BaseController
             );
         }
 
-        $count = \count($value);
         $instance = $arrayOf->newInstance();
+        $minItems = $instance->minItems;
+        $maxItems = $instance->maxItems;
+        $itemsCount = \count($value);
 
-        if ($instance->minItems !== null && $count < $instance->minItems) {
+        if ($minItems !== null && $itemsCount < $minItems) {
             throw new ValidationException(
-                "Field '{$fieldPath}[]' must have at least {$instance->minItems} item(s)",
+                "Field '{$fieldPath}[]' must have at least {$minItems} item(s)",
                 HttpStatus::BadRequest
             );
         }
 
-        if ($instance->maxItems !== null && $count > $instance->maxItems) {
+        if ($maxItems !== null && $itemsCount > $maxItems) {
             throw new ValidationException(
-                "Field '{$fieldPath}[]' must have at most {$instance->maxItems} item(s)",
+                "Field '{$fieldPath}[]' must have at most {$maxItems} item(s)",
                 HttpStatus::BadRequest
             );
         }
 
-        $itemType = $arrayOf->newInstance()->type;
+        $itemType = $instance->type;
         return array_map(
             static function (mixed $item) use ($itemType, $fieldPath): mixed {
                 if (!is_subclass_of($itemType, BaseRequest::class)) {

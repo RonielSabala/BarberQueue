@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ValueObjects\Base;
 
 use App\Core\HttpStatus;
-use App\Exceptions\ValidationException;
+use App\Exceptions\Base\ValidationException;
 
 abstract readonly class BaseField
 {

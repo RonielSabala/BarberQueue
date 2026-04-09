@@ -7,6 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.users import GetUserResponse
 from helpers.assertions import (
@@ -54,6 +55,6 @@ def test_non_existing_user(client: ApiClient) -> None:
     Non-existent user returns 404.
     """
 
-    response = client.users.get_user(999_999)
+    response = client.users.get_user(NON_EXISTENT_ID)
     assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)

@@ -4,17 +4,27 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Attributes\{GET, PATCH, RoutePrefix};
 use App\Core\HttpResponse;
-use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 use App\Services\UserService;
+use App\Attributes\{GET, PATCH, RoutePrefix};
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
 #[RoutePrefix('/api/users')]
-class UserController extends BaseController
+final readonly class UserController extends BaseController
 {
     public function __construct(
         private readonly UserService $userService
     ) {}
+
+    #[GET('')]
+    public function getAll(
+        ?string $username = null,
+        ?string $email = null,
+        ?string $role = null
+    ): void {
+        $response = $this->userService->getAll($username, $email, $role);
+        HttpResponse::json($response);
+    }
 
     #[GET('/{id}')]
     public function get(int $id): void

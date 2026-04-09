@@ -123,6 +123,7 @@ Create a `.env` file at the **repo root** and fill in the required values:
 ```env
 # Application
 APP_NAME=BarberQueue
+APP_ENV=development
 APP_TIMEZONE=America/Santo_Domingo
 
 # URLs
@@ -147,6 +148,16 @@ MAIL_PASSWORD=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
+
+#### Environment Modes
+
+The application switches behavior based on the `APP_ENV` variable:
+
+- **`development`**: Standard mode. Emails are sent using the credentials in `.env` and all data is written to the production database (`DB_DATABASE`).
+
+- **`testing`**: Test mode. Real emails are suppressed to avoid sending noise during automated test runs, and all data is written to a separate test database. This keeps test data completely isolated from production.
+
+> The test mode is also activated on a per-request basis when the backend receives the `X-App-Env: testing` HTTP header, regardless of `APP_ENV`. Backend tests send this header automatically, so you can run tests against a `development` server without changing your `.env`.
 
 #### JWT Secret
 
@@ -184,6 +195,10 @@ From the **repo root**:
 ```bash
 php scripts/install-db.php
 ```
+
+This creates and seeds two databases, one for local development and one for running tests.
+
+Both databases share the same schema (`creation.sql`, `triggers.sql`). They differ only in their seed data: the development DB is filled with realistic examples so you can start using the app immediately, while the testing DB uses a controlled, minimal dataset designed to support specific test scenarios.
 
 ---
 

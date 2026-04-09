@@ -7,7 +7,6 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from domain.dtos import ErrorResponse
 from domain.dtos.auth import RegisterRequest, UserResponse
 from helpers.assertions import (
     assert_body,
@@ -15,8 +14,7 @@ from helpers.assertions import (
     assert_content_type,
     assert_status,
 )
-
-_EMAIL_ALREADY_IN_USE = ErrorResponse(error="User email already in use")
+from helpers.common_responses import EMAIL_ALREADY_IN_USE
 
 
 @pytest.fixture(scope="module")
@@ -67,5 +65,5 @@ def test_duplicate_email(client: ApiClient) -> None:
     client.auth.register(request)
     response = client.auth.register(request)
 
-    assert_body(response, _EMAIL_ALREADY_IN_USE)
+    assert_body(response, EMAIL_ALREADY_IN_USE)
     assert_status(response, HttpStatus.CONFLICT)

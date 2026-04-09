@@ -6,7 +6,7 @@ namespace App\DTOs\Auth\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class UserResponse extends BaseResponse
+final readonly class UserResponse extends BaseResponse
 {
     public function __construct(
         public readonly int $id,

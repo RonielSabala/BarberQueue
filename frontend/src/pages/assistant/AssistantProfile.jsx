@@ -1,75 +1,66 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProfilePhotoUpload from "../../components/ProfilePhotoUpload";
+import UserProfileCard from "../../components/UserProfileCard";
+import { useUserProfile } from "../../hooks/useUserProfile";
 
 function AssistantProfile() {
   const navigate = useNavigate();
-
-  const [assistant, setAssistant] = useState(null);
-  const [photo, setPhoto] = useState(null);
-
-  useEffect(() => {
-    const mockAssistant = {
-      name: "María",
-      email: "maria@email.com",
-      phone: "809-555-8888",
-      address: "Santo Domingo, RD",
-      barbershop: "Barbería El Flow",
-    };
-
-    setAssistant(mockAssistant);
-  }, []);
-
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      setPhoto(URL.createObjectURL(file));
-    }
-  };
-
-  if (!assistant) return <p>Cargando perfil...</p>;
+  const {
+    user,
+    error,
+    successMessage,
+    loading,
+    saving,
+    isEditing,
+    isChangingPassword,
+    formData,
+    passwordData,
+    handleFieldChange,
+    handlePasswordFieldChange,
+    handleEditClick,
+    handlePasswordClick,
+    handleCancel,
+    handleSubmitProfile,
+    handleSubmitPassword,
+  } = useUserProfile();
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Perfil del Asistente</h1>
+    <UserProfileCard
+      title="Perfil del Asistente"
+      subtitle="Consulta y actualiza tu información personal registrada en BarberQueue."
+      user={user}
+      error={error}
+      successMessage={successMessage}
+      loading={loading}
+      saving={saving}
+      isEditing={isEditing}
+      isChangingPassword={isChangingPassword}
+      formData={formData}
+      passwordData={passwordData}
+      onFieldChange={handleFieldChange}
+      onPasswordFieldChange={handlePasswordFieldChange}
+      onEditClick={handleEditClick}
+      onPasswordClick={handlePasswordClick}
+      onCancel={handleCancel}
+      onSubmitProfile={handleSubmitProfile}
+      onSubmitPassword={handleSubmitPassword}
+      extraActions={
+        <>
+          <button
+            onClick={() => navigate("/assistant/home")}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-3 rounded-2xl transition"
+          >
+            Volver al home
+          </button>
 
-      <hr />
-
-      {/* FOTO PERFIL */}
-
-      <ProfilePhotoUpload />
-
-      <hr />
-
-      {/* INFO */}
-
-      <p>
-        <strong>Nombre:</strong> {assistant.name}
-      </p>
-
-      <p>
-        <strong>Email:</strong> {assistant.email}
-      </p>
-
-      <p>
-        <strong>Teléfono:</strong> {assistant.phone}
-      </p>
-
-      <p>
-        <strong>Dirección:</strong> {assistant.address}
-      </p>
-
-      <p>
-        <strong>Barbería:</strong> {assistant.barbershop}
-      </p>
-
-      <br />
-
-      <button onClick={() => navigate("/assistant/home")}>
-        Volver al inicio
-      </button>
-    </div>
+          <button
+            onClick={() => navigate("/assistant/register-client")}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-2xl transition"
+          >
+            Registrar clientes
+          </button>
+        </>
+      }
+    />
   );
 }
 

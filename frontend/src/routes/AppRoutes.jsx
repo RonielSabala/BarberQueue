@@ -24,6 +24,7 @@ import AdminBarbershop from "../pages/admin/AdminBarbershop";
 import AdminEmployees from "../pages/admin/AdminEmployees";
 import AdminEmployeeForm from "../pages/admin/AdminEmployeeForm";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminCreateBarbershop from "../pages/admin/AdminCreateBarbershop";
 
 //client
 import ClientProfile from "../pages/client/ClientProfile";
@@ -73,10 +74,17 @@ function AppRoutes() {
           path="/admin/barbershop/:id/employees/:employeeId/edit"
           element={<AdminEmployeeForm />}
         />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route
+          path="/admin/barbershop/:id/dashboard"
+          element={<AdminDashboard />}
+        />
+        <Route
+          path="/admin/barbershop/new"
+          element={<AdminCreateBarbershop />}
+        />
 
         {/*Barber*/}
-        <Route path="/barber/1/profile" element={<BarberProfile />} />
+        <Route path="/barber/profile" element={<BarberProfile />} />
         <Route path="/barber/dashboard" element={<BarberDashboard />} />
 
         {/*Assistant*/}

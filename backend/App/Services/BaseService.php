@@ -6,20 +6,10 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
-use App\Exceptions\ServiceException;
+use App\Exceptions\Base\ServiceException;
 
-class BaseService
+abstract readonly class BaseService
 {
-    protected function getEnvVariable(string $variableName): string
-    {
-        $value = $_ENV[$variableName] ?? null;
-        if (!$value) {
-            throw new ServiceException("`{$variableName}` is not defined in the environment.", HttpStatus::InternalServerError);
-        }
-
-        return $value;
-    }
-
     protected function validateFieldsToUpdate(BaseRequest $request): array
     {
         $fields = $request->toUpdateArray();

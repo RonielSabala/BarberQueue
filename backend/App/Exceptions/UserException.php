@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-class UserException extends ServiceException {}
+use App\Exceptions\Base\ServiceException;
+
+final class UserException extends ServiceException {}

@@ -33,12 +33,12 @@ class BodyRoute:
     request_class: type[BaseRequest]
 
     @classmethod
-    def from_function(cls, func: Callable, http_method: HttpMethod, path: str) -> Self:
+    def from_function(
+        cls, func: Callable, http_method: HttpMethod, path: str
+    ) -> Self | None:
         request_class = _extract_request_class(func)
         if request_class is None:
-            raise ValueError(
-                f"No BaseRequest subclass found in {func.__qualname__} type hints"
-            )
+            return
 
         return cls(func.__qualname__, http_method, path, request_class)
 

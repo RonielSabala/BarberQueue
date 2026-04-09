@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Attributes;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class HttpMethod
+abstract readonly class HttpMethod
 {
     public function __construct(public readonly string $uri) {}
 
@@ -16,16 +16,16 @@ class HttpMethod
 }
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class GET extends HttpMethod {}
+final readonly class GET extends HttpMethod {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class POST extends HttpMethod {}
+final readonly class POST extends HttpMethod {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class PUT extends HttpMethod {}
+final readonly class PUT extends HttpMethod {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class PATCH extends HttpMethod {}
+final readonly class PATCH extends HttpMethod {}
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class DELETE extends HttpMethod {}
+final readonly class DELETE extends HttpMethod {}

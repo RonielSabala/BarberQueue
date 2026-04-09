@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Config\LoggerProvider;
-use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
-use App\Exceptions\BaseException;
+use App\Exceptions\Base\BaseException;
 use Monolog\Logger;
+use App\Core\Routing\{ClassesDiscovery, RouteRegistry};
 
-class Router
+final class Router
 {
     private const CONTROLLERS_PATH = __DIR__ . '/../Controllers';
     private const CONTROLLER_SUFFIX = 'Controller';
@@ -18,9 +18,8 @@ class Router
     private static RouteRegistry $registry;
     private static Logger $logger;
 
-    public static function init(): void
+    public static function init(Container $container): void
     {
-        $container = new Container();
         self::$registry = new RouteRegistry($container);
         self::$logger = LoggerProvider::get();
 
