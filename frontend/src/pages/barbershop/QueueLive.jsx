@@ -4,6 +4,7 @@ import QueueColumn from "../../components/queue/QueueColumn";
 import AssistantRegisterPanel from "../../components/assistant/AssistantRegisterPanel";
 import {
   getBarbershopClients,
+  getBarbershopById,
   checkInBarbershopClient,
   checkOutBarbershopClient,
 } from "../../services/barbershopService";
@@ -34,6 +35,7 @@ function QueueLive() {
 
   const [barbers, setBarbers] = useState([]);
   const [restingBarbers, setRestingBarbers] = useState([]);
+  const [barbershopName, setBarbershopName] = useState("");
   const [loadingQueue, setLoadingQueue] = useState(true);
   const [queueError, setQueueError] = useState("");
 
@@ -74,15 +76,13 @@ function QueueLive() {
     try {
       setLoadingQueue(true);
       setQueueError("");
-
-      const queueData = await getBarbershopQueue(id);
+      const [queueData, barbershopData] = await Promise.all([
+        getBarbershopQueue(id),
+        getBarbershopById(id),
+      ]);
       setBarbers(queueData);
-
-      // IDs de barberos que ya aparecen como activos en la cola
+      setBarbershopName(barbershopData?.name || "");
       const activeIds = new Set(queueData.map((b) => Number(b.id)));
-
-      // Barberos que NO están en la cola → consultamos su estado individual
-      // getRestingBarbers filtra solo los que tienen currentStatus === "resting"
       const resting = await getRestingBarbers(id, activeIds);
       setRestingBarbers(resting);
     } catch (err) {
@@ -115,8 +115,22 @@ function QueueLive() {
       const data = await getClientActiveTurn(currentUserId);
       setMyTurn(data);
     } catch (err) {
-      console.error("Error al obtener mi turno:", err);
-      setTurnError(err.message || "Error al obtener tu turno");
+      // Si el cliente no tiene turno o no está registrado en ninguna barbería
+      // es un estado normal — no mostramos error al usuario
+      const msg = err.message?.toLowerCase() || "";
+      const isNoTurn =
+        msg.includes("checked into") ||
+        msg.includes("no active") ||
+        msg.includes("not found") ||
+        msg.includes("no tiene") ||
+        msg.includes("barbershop");
+
+      if (isNoTurn) {
+        setMyTurn(null);
+      } else {
+        console.error("Error al obtener mi turno:", err);
+        setTurnError(err.message || "Error al obtener tu turno");
+      }
     } finally {
       setLoadingMyTurn(false);
     }
@@ -146,7 +160,7 @@ function QueueLive() {
     const barber = barbers.find(
       (item) => Number(item.id) === Number(myTurn.barberId),
     );
-    return barber?.name || `Barbero #${myTurn.barberId}`;
+    return barber?.name || myTurn.barberName || "Sin asignar";
   }, [myTurn, barbers]);
 
   const estimatedTurnTime = useMemo(() => {
@@ -156,7 +170,7 @@ function QueueLive() {
     if (status === "attended") return "Servicio finalizado — pendiente de pago";
     if (status === "waiting") return "Turno pausado — no perderás tu posición";
     if (!myTurn.position || myTurn.position <= 1) return "Próximo en atención";
-    const minutes = (myTurn.position - 1) * 25;
+    const minutes = (myTurn.position - 1) * 20;
     return `~${minutes} minutos`;
   }, [myTurn]);
 
@@ -238,7 +252,6 @@ function QueueLive() {
         fetchClientsAtBarbershop(),
         fetchMyTurn(),
       ]);
-      setIsTurnModalOpen(true);
     } catch (err) {
       setTurnError(err.message || "Error al registrarte en la cola");
     } finally {
@@ -342,7 +355,7 @@ function QueueLive() {
               Cola en tiempo real
             </h1>
             <p className="text-slate-500 dark:text-slate-400">
-              Sucursal BarberQueue · ID: {id}
+              {barbershopName || "Sucursal BarberQueue"}
             </p>
           </div>
 
@@ -437,7 +450,6 @@ function QueueLive() {
           </div>
 
           <div className="w-full xl:w-80 space-y-6">
-            {/* ─── Descansando — datos reales ─── */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
                 <span className="material-icons-round text-slate-400">
@@ -461,7 +473,6 @@ function QueueLive() {
                             face
                           </span>
                         </div>
-                        {/* Dot amarillo = descansando */}
                         <div className="absolute bottom-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white dark:border-slate-900"></div>
                       </div>
                       <div>
@@ -487,7 +498,7 @@ function QueueLive() {
               </h4>
               <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 El tiempo promedio de servicio actual es de{" "}
-                <span className="font-bold text-primary">~25 minutos</span> por
+                <span className="font-bold text-primary">~20 minutos</span> por
                 turno.
               </p>
             </div>
@@ -572,7 +583,9 @@ function QueueLive() {
                               {client.username}
                             </p>
                             <p className="text-xs text-slate-500">
-                              Estado: {client.currentStatus}
+                              Estado:{" "}
+                              {STATUS_LABELS[client.currentStatus] ||
+                                client.currentStatus}
                             </p>
                           </div>
                           <button
@@ -698,36 +711,43 @@ function QueueLive() {
                       </span>
                     </div>
                     <div className="space-y-3">
-                      {myTurn.group.members.map((member) => (
-                        <div
-                          key={member.turnId}
-                          className="rounded-2xl bg-white border border-slate-200 p-4"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div>
-                              <p className="font-bold text-slate-800">
-                                {member.memberName}
-                              </p>
-                              <p className="text-sm text-slate-500">
-                                Miembro del grupo
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
-                                Posición: {member.position ?? "—"}
-                              </span>
-                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                                {STATUS_LABELS[member.status] || member.status}
-                              </span>
+                      {myTurn.group.members.map((member) => {
+                        const memberStatus = member.status;
+                        const hidePosition = ["attended", "paid"].includes(
+                          memberStatus,
+                        );
+                        return (
+                          <div
+                            key={member.turnId}
+                            className="rounded-2xl bg-white border border-slate-200 p-4"
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                              <div>
+                                <p className="font-bold text-slate-800">
+                                  {member.memberName}
+                                </p>
+                                <p className="text-sm text-slate-500">
+                                  Miembro del grupo
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {!hidePosition && (
+                                  <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+                                    Posición: {member.position ?? "—"}
+                                  </span>
+                                )}
+                                <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                  {STATUS_LABELS[memberStatus] || memberStatus}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
 
-                {/* Acciones contextuales según estado */}
                 <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                   {myTurnStatus === "on_queue" && (
                     <button

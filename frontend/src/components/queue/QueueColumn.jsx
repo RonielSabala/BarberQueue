@@ -1,3 +1,12 @@
+const STATUS_LABELS = {
+  at_barbershop: "En barbería",
+  on_queue: "En cola",
+  waiting: "Pausado",
+  in_service: "En servicio",
+  attended: "Atendido",
+  paid: "Pagado",
+};
+
 function QueueColumn({
   barber,
   showJoinAction = false,
@@ -8,10 +17,13 @@ function QueueColumn({
   const renderTurnMeta = (turn) => {
     const isGroup = Number(turn.groupSize) > 1;
 
+    // FIX: estados mapeados a texto legible en lugar de valores literales de la API
+    const statusLabel = STATUS_LABELS[turn.ownerStatus] || turn.ownerStatus;
+
     return (
       <div className="flex flex-wrap items-center gap-2 mt-1">
         <span className="text-[11px] text-slate-400 truncate">
-          {turn.ownerStatus === "in_service" ? "En servicio" : turn.ownerStatus}
+          {statusLabel}
         </span>
 
         {turn.ownerType === "member" && (
@@ -46,9 +58,7 @@ function QueueColumn({
 
         <h3 className="font-bold text-lg">{barber.name}</h3>
 
-        <span className="text-xs font-semibold text-primary uppercase tracking-tighter">
-          Barbero {barber.id}
-        </span>
+        {/* FIX: eliminado "Barbero {id}" — solo queda el nombre */}
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
           <span
@@ -109,7 +119,6 @@ function QueueColumn({
                   <span className="font-medium text-sm truncate">
                     {barber.current.ownerName}
                   </span>
-
                   {renderTurnMeta(barber.current)}
                 </div>
               </div>
@@ -150,7 +159,6 @@ function QueueColumn({
                   <span className="text-sm font-medium truncate">
                     {client.ownerName}
                   </span>
-
                   {renderTurnMeta(client)}
                 </div>
               </div>

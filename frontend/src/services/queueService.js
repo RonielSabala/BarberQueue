@@ -82,6 +82,20 @@ export async function getBarberQueue(barberId) {
     headers: { "Content-Type": "application/json" },
   });
 
+  // Si el barbero no tiene cola activa el backend devuelve 404
+  // Retornamos estructura vacía en lugar de lanzar error
+  if (response.status === 404) {
+    return {
+      barberId,
+      barberName: null,
+      barberStatus: null,
+      isAccepting: null,
+      current: null,
+      queue: [],
+      turns: [],
+    };
+  }
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -92,6 +106,7 @@ export async function getBarberQueue(barberId) {
 
   return normalizeSingleBarberQueue(data);
 }
+
 
 // Devuelve los barberos de una barbería que están en resting,
 // comparando employees vs los que ya aparecen en la cola (activos).
