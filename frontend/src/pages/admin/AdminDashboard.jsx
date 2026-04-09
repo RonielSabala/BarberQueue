@@ -1,61 +1,126 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getBarbershopDashboard } from "../../services/barbershopService";
 import "../../styles/admin/AdminDashboard.css";
 
 function AdminDashboard() {
-  const stats = {
-    dailyClients: 28,
-    weeklyClients: 173,
-    incomeToday: 18500,
-    incomeWeek: 112300,
-    averageWait: 18,
-    rating: 4.7,
-    totalReviews: 126,
-  };
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getBarbershopDashboard(id);
+        setDashboard(data);
+      } catch (err) {
+        console.error("Error al cargar dashboard:", err);
+        setError(err.message || "Error al cargar el dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchDashboard();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard-page">
+        <p>Cargando dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-dashboard-page">
+        <div className="admin-dashboard-alert error">{error}</div>
+      </div>
+    );
+  }
+
+  if (!dashboard) {
+    return (
+      <div className="admin-dashboard-page">
+        <p>No se encontraron datos del dashboard.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard-page">
-      <div className="admin-dashboard-header">
-        <h1>Dashboard ADMIN</h1>
-        <p>Resumen general de la barbería</p>
+      <div className="admin-dashboard-topbar">
+        <button
+          className="admin-dashboard-back-btn"
+          onClick={() => navigate(`/admin/barbershop/${id}`)}
+        >
+          ← Volver a barbería
+        </button>
       </div>
 
-      <section className="admin-kpis-section">
-        <h2 className="admin-kpis-title">KPIs</h2>
+      <div className="admin-dashboard-header">
+        <h1>Dashboard de la Barbería</h1>
+        <p>Resumen de métricas operativas y de servicio.</p>
+      </div>
 
-        <div className="admin-kpis-grid">
-          <div className="admin-kpi-card admin-kpi-rect">
-            <span className="admin-kpi-label">Clientes</span>
-            <div className="admin-kpi-main-value">{stats.dailyClients}</div>
-            <p className="admin-kpi-detail">
-              diarios / <strong>{stats.weeklyClients}</strong> semanales
-            </p>
-          </div>
-
-          <div className="admin-kpi-card admin-kpi-circle">
-            <span className="admin-kpi-label">Ingresos</span>
-            <div className="admin-kpi-main-value">
-              RD${stats.incomeToday.toLocaleString()}
-            </div>
-            <p className="admin-kpi-detail">
-              hoy / <strong>RD${stats.incomeWeek.toLocaleString()}</strong>{" "}
-              semana
-            </p>
-          </div>
-
-          <div className="admin-kpi-card admin-kpi-rect">
-            <span className="admin-kpi-label">Promedio de espera</span>
-            <div className="admin-kpi-main-value">{stats.averageWait} min</div>
-            <p className="admin-kpi-detail">Tiempo promedio por cliente</p>
-          </div>
+      <div className="admin-dashboard-grid">
+        <div className="dashboard-card">
+          <h3>Clientes hoy</h3>
+          <p>{dashboard.clientsToday}</p>
         </div>
 
-        <div className="admin-rating-card">
-          <span className="admin-kpi-label">Rating general ⭐</span>
-          <div className="admin-rating-value">{stats.rating}</div>
-          <p className="admin-kpi-detail">
-            Basado en <strong>{stats.totalReviews}</strong> reseñas
+        <div className="dashboard-card">
+          <h3>Clientes esta semana</h3>
+          <p>{dashboard.clientsThisWeek}</p>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Clientes este mes</h3>
+          <p>{dashboard.clientsThisMonth}</p>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Tiempo promedio</h3>
+          <p>
+            {dashboard.averageServiceMinutes !== null
+              ? `${dashboard.averageServiceMinutes} min`
+              : "Sin datos"}
           </p>
         </div>
-      </section>
+
+        <div className="dashboard-card">
+          <h3>Rating promedio</h3>
+          <p>
+            {dashboard.averageRating !== null
+              ? `⭐ ${dashboard.averageRating}`
+              : "Sin datos"}
+          </p>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Total de reseñas</h3>
+          <p>{dashboard.totalReviews}</p>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Barberos activos</h3>
+          <p>{dashboard.activeBarbers}</p>
+        </div>
+
+        <div className="dashboard-card">
+          <h3>Clientes en cola</h3>
+          <p>{dashboard.queueCount}</p>
+        </div>
+      </div>
     </div>
   );
 }

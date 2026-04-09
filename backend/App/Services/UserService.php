@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\User;
-use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
+use App\Domain\Entities\UserEntity;
 use App\DTOs\Users\Responses\GetUserResponse;
 use App\Exceptions\UserException;
 use App\Repositories\UserRepository;
+use App\DTOs\Users\Requests\{UpdateUserPasswordRequest, UpdateUserRequest};
 
-class UserService extends BaseService
+final readonly class UserService extends BaseService
 {
     public function __construct(
-        private readonly PasswordService $passwordService,
         private readonly UserRepository $userRepository,
+        private readonly PasswordService $passwordService,
     ) {}
 
-    public function validateUserExists(int $userId): User
+    public function validateUserExists(int $userId): UserEntity
     {
-        $user = $this->userRepository->findById($userId);
+        $user = $this->userRepository->getById($userId);
         if ($user === null) {
             throw new UserException('User not found', HttpStatus::NotFound);
         }
@@ -30,17 +30,17 @@ class UserService extends BaseService
 
     public function validateInexistentUserEmail(string $userEmail): void
     {
-        $user = $this->userRepository->findByEmail($userEmail);
+        $user = $this->userRepository->getByEmail($userEmail);
         if ($user) {
             throw new UserException('User email already in use', HttpStatus::Conflict);
         }
     }
 
-    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
+    /** @return GetUserResponse[] */
+    public function getAll(?string $username, ?string $email, ?string $role): array
     {
-        $newPasswordHash = $this->passwordService->hash($newPassword);
-        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
-        $this->userRepository->updatePassword($userId, $newPasswordHash);
+        $users = $this->userRepository->getAll($username, $email, $role);
+        return GetUserResponse::fromEntities($users);
     }
 
     public function get(int $userId): GetUserResponse
@@ -53,7 +53,7 @@ class UserService extends BaseService
     {
         $this->validateUserExists($userId);
         $fields = $this->validateFieldsToUpdate($request);
-        $this->userRepository->updateFields($userId, $fields);
+        $this->userRepository->update($userId, $fields);
     }
 
     public function updatePassword(int $userId, UpdateUserPasswordRequest $request): void
@@ -66,5 +66,12 @@ class UserService extends BaseService
 
         $this->passwordService->validateMatch($currentPassword, $userPasswordHash);
         $this->updateUserPassword($userId, $newPassword, $userPasswordHash);
+    }
+
+    public function updateUserPassword(int $userId, string $newPassword, $userPasswordHash): void
+    {
+        $newPasswordHash = $this->passwordService->hash($newPassword);
+        $this->passwordService->validateDiffers($newPassword, $userPasswordHash);
+        $this->userRepository->updatePassword($userId, $newPasswordHash);
     }
 }

@@ -7,7 +7,7 @@ namespace App\DTOs\Barbershops\Requests;
 use App\Domain\ValueObjects\PhotoUrl;
 use App\DTOs\BaseRequest;
 
-readonly class UpdateBarbershopPhotoRequest extends BaseRequest
+final readonly class UpdateBarbershopPhotoRequest extends BaseRequest
 {
     public function __construct(
         public PhotoUrl $photoUrl,

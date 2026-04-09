@@ -4,35 +4,40 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\{Container, HttpStatus};
-use App\Domain\Entities\User;
-use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
-use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
+use App\Core\HttpStatus;
+use App\Domain\Entities\UserEntity;
 use App\Exceptions\AuthException;
-use App\Repositories\{PasswordResetRepository, UserRepository};
+use App\Services\Mail\MailerInterface;
+use App\Utils\EnvUtils;
 use Firebase\JWT\JWT;
+use App\DTOs\Auth\Requests\{
+    ForgotPasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    ResetPasswordRequest
+};
+use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
+use App\Repositories\{PasswordResetRepository, UserRepository};
 
-class AuthService extends BaseService
+final readonly class AuthService extends BaseService
 {
     private const JWT_ALGORITHM = 'HS256';
     private const JWT_TOKEN_EXPIRY_HOURS = 24;
     private const CLIENT_ROLE_ID = 1;
 
-    private ?MailService $mailService;
     private readonly string $jwtSecret;
 
     public function __construct(
-        private readonly PasswordService $passwordService,
-        private readonly UserService $userService,
         private readonly UserRepository $userRepository,
         private readonly PasswordResetRepository $passwordResetRepository,
-        private readonly Container $container,
+        private readonly PasswordService $passwordService,
+        private readonly MailerInterface $mailService,
+        private readonly UserService $userService,
     ) {
-        $this->mailService = null;
-        $this->jwtSecret = $this->getEnvVariable('JWT_SECRET');
+        $this->jwtSecret = EnvUtils::get('JWT_SECRET');
     }
 
-    private function generateJwt(User $user): string
+    private function generateJwt(UserEntity $user): string
     {
         $now = time();
         $payload = [
@@ -47,7 +52,7 @@ class AuthService extends BaseService
 
     public function login(LoginRequest $request): LoginResponse
     {
-        $user = $this->userRepository->findByEmail($request->email->value);
+        $user = $this->userRepository->getByEmail($request->email->value);
         if ($user === null || !password_verify(
             $request->password->value,
             $user->passwordHash->value
@@ -66,7 +71,7 @@ class AuthService extends BaseService
         $email = $request->email->value;
         $this->userService->validateInexistentUserEmail($email);
 
-        $user = $this->userRepository->create(
+        $userId = $this->userRepository->createUser(
             roleId: self::CLIENT_ROLE_ID,
             username: $request->username->value,
             email: $email,
@@ -74,6 +79,7 @@ class AuthService extends BaseService
             passwordHash: $this->passwordService->hash($request->password->value),
         );
 
+        $user = $this->userRepository->getById($userId);
         if ($user === null) {
             throw new \RuntimeException('Failed to save user');
         }
@@ -84,13 +90,9 @@ class AuthService extends BaseService
     public function forgotPassword(ForgotPasswordRequest $request): void
     {
         $email = $request->email->value;
-        $user = $this->userRepository->findByEmail($email);
+        $user = $this->userRepository->getByEmail($email);
         if ($user === null) {
             return;
-        }
-
-        if ($this->mailService === null) {
-            $this->mailService = $this->container->make(MailService::class);
         }
 
         $this->mailService->sendPasswordReset($user);
@@ -99,7 +101,7 @@ class AuthService extends BaseService
     public function resetPassword(ResetPasswordRequest $request): void
     {
         $resetCode = $request->resetCode->value;
-        $passwordReset = $this->passwordResetRepository->findByValue($resetCode);
+        $passwordReset = $this->passwordResetRepository->getByValue($resetCode);
 
         if ($passwordReset === null) {
             throw new AuthException('Invalid or expired code', HttpStatus::BadRequest);

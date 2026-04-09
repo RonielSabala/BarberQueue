@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Config;
 
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\StreamHandler;
-use Monolog\{Level, LogRecord, Logger};
+use Monolog\{Formatter\LineFormatter, Handler\StreamHandler, Level, Logger, LogRecord};
 
-class ColoredLineFormatter extends LineFormatter
+final class ColoredLineFormatter extends LineFormatter
 {
     private const ANSI_RESET = "\e[0m";
 
@@ -31,7 +29,7 @@ class ColoredLineFormatter extends LineFormatter
     }
 }
 
-class LoggerProvider
+final class LoggerProvider
 {
     private static ?Logger $logger = null;
 

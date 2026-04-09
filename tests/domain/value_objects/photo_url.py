@@ -1,11 +1,12 @@
 import random
 import string
 from dataclasses import dataclass
-from typing import ClassVar
 from urllib.parse import urlparse
 
+from typing_extensions import Annotated, TypeAlias
+
 from domain.utils import random_string_len
-from domain.value_objects.base import StringField
+from domain.value_objects.base import ListOf, StringField
 
 _URL_PREFIXES = ("http", "https")
 _IMAGE_EXTENSIONS = ("jpg", "jpeg", "png", "webp")
@@ -21,7 +22,7 @@ _MAX_FILENAME_LENGTH = 16
 
 @dataclass(slots=True, frozen=True)
 class PhotoUrl(StringField):
-    _min_len: ClassVar[int] = 12
+    _min_len = 12
 
     def __post_init__(self) -> None:
         StringField.__post_init__(self)
@@ -41,3 +42,8 @@ class PhotoUrl(StringField):
         ext = random.choice(_IMAGE_EXTENSIONS)
 
         return f"{scheme}://{host}.{tld}/{filename}.{ext}"
+
+
+PhotoUrls: TypeAlias = Annotated[
+    list[PhotoUrl], ListOf(base_type=PhotoUrl, min_items=1)
+]

@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Services\AuthService;
 use App\Attributes\{POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
-use App\DTOs\Auth\Requests\{ForgotPasswordRequest, LoginRequest, RegisterRequest, ResetPasswordRequest};
-use App\Services\AuthService;
+use App\DTOs\Auth\Requests\{
+    ForgotPasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    ResetPasswordRequest
+};
 
 #[RoutePrefix('/api/auth')]
-class AuthController extends BaseController
+final readonly class AuthController extends BaseController
 {
     public function __construct(
         private readonly AuthService $authService

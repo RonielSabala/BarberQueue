@@ -1,114 +1,63 @@
-import { useState } from "react";
-import "../../styles/assistant/registerClient.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getAssignedBarbershopId } from "../../utils/getAssignedBarbershopId";
 
 function RegisterClientsForm() {
-  // barberos estáticos (luego vendrán del backend)
-  const barbers = [
-    { id: 1, name: "Carlos" },
-    { id: 2, name: "Miguel" },
-    { id: 3, name: "José" },
-    { id: 4, name: "Luis" },
-  ];
+  const navigate = useNavigate();
+  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
-  const [clients, setClients] = useState([{ name: "", barber_id: "" }]);
+  const [barbershopId, setBarbershopId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const addClient = () => {
-    setClients([...clients, { name: "", barber_id: "" }]);
-  };
+  useEffect(() => {
+    const loadAssignedBarbershop = async () => {
+      setLoading(true);
 
-  const removeClient = (index) => {
-    if (clients.length === 1) return;
+      const assignedId = await getAssignedBarbershopId(storedUser?.id);
+      setBarbershopId(assignedId);
 
-    const updated = clients.filter((_, i) => i !== index);
+      if (assignedId) {
+        navigate(`/barbershops/${assignedId}/queue`, { replace: true });
+      }
 
-    setClients(updated);
-  };
+      setLoading(false);
+    };
 
-  const updateClient = (index, field, value) => {
-    const updated = [...clients];
+    loadAssignedBarbershop();
+  }, [navigate, storedUser?.id]);
 
-    updated[index][field] = value;
-
-    setClients(updated);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("/api/queue/register-group", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clients,
-        }),
-      });
-
-      const data = await response.json();
-
-      console.log("Grupo registrado:", data);
-
-      // limpiar formulario
-      setClients([{ name: "", barber_id: "" }]);
-    } catch (error) {
-      console.error("Error registrando grupo:", error);
-    }
-  };
   return (
-    <form className="register-form" onSubmit={handleSubmit}>
-      <h1 className="title">Registrar Clientes</h1>
-      <p className="subtitle">Agrega clientes a la cola de espera</p>
+    <div className="p-8">
+      <div className="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-sm p-8 text-center">
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-3">
+          Redirigiendo...
+        </h1>
+        <p className="text-slate-500 mb-6">
+          Te estamos llevando a la cola en vivo de tu barbería para registrar
+          clientes.
+        </p>
 
-      {clients.map((client, index) => (
-        <div key={index} className="client-card">
-          <div className="client-header">Cliente No. {index + 1}</div>
+        {loading && (
+          <p className="text-slate-500 font-medium mb-4">
+            Buscando la barbería asignada...
+          </p>
+        )}
 
-          <label>Nombre cliente</label>
-
-          <input
-            type="text"
-            placeholder="Nombre del cliente a registrar"
-            value={client.name}
-            onChange={(e) => updateClient(index, "name", e.target.value)}
-          />
-
-          <label>Barbero asignado</label>
-
-          <select
-            value={client.barber_id}
-            onChange={(e) => updateClient(index, "barber_id", e.target.value)}
-          >
-            <option value="">N/A</option>
-
-            {barbers.map((barber) => (
-              <option key={barber.id} value={barber.id}>
-                {barber.name}
-              </option>
-            ))}
-          </select>
-
-          <div className="buttons">
-            <button type="button" className="btn-add" onClick={addClient}>
-              +
-            </button>
-
+        {!loading && !barbershopId && (
+          <>
+            <p className="text-red-500 font-medium mb-4">
+              No se encontró una barbería asignada para este assistant.
+            </p>
             <button
-              type="button"
-              className="btn-remove"
-              onClick={() => removeClient(index)}
+              onClick={() => navigate("/assistant/home")}
+              className="bg-primary hover:bg-blue-600 text-white font-bold px-6 py-3 rounded-2xl"
             >
-              -
+              Volver al home
             </button>
-          </div>
-        </div>
-      ))}
-
-      <button type="submit" className="confirm-btn">
-        Confirmar
-      </button>
-    </form>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 

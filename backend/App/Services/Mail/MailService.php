@@ -1,0 +1,78 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Mail;
+
+use App\Core\HttpStatus;
+use App\Domain\Entities\UserEntity;
+use App\Domain\ValueObjects\ResetCode;
+use App\Exceptions\MailException;
+use App\Repositories\PasswordResetRepository;
+use App\Services\BaseService;
+use App\Utils\EnvUtils;
+use PHPMailer\PHPMailer\PHPMailer;
+
+final readonly class MailService extends BaseService implements MailerInterface
+{
+    private const PORT = 587;
+    private const HOST = 'smtp.gmail.com';
+    private const RESET_EXPIRY_MINUTES = 30;
+
+    private readonly string $appName;
+    private readonly string $username;
+    private readonly string $password;
+
+    public function __construct(
+        private readonly PasswordResetRepository $passwordResetRepository,
+    ) {
+        $this->appName = EnvUtils::get('APP_NAME');
+        $this->username = EnvUtils::get('MAIL_USERNAME');
+        $this->password = EnvUtils::get('MAIL_PASSWORD');
+    }
+
+    private function sendEmail(PHPMailer $mail, string $to, string $subject, string $body): void
+    {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = self::HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = $this->username;
+        $mail->Password = $this->password;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = self::PORT;
+
+        // Recipients
+        $mail->setFrom($this->username, $this->appName);
+        $mail->addAddress($to);
+
+        // Send
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        $mail->send();
+    }
+
+    public function sendPasswordReset(UserEntity $user): void
+    {
+        $userId = $user->id->value;
+        $userEmail = $user->email->value;
+
+        // Persist reset code
+        $resetCode = ResetCode::getNewCode();
+        $minutes = self::RESET_EXPIRY_MINUTES . ' minutes';
+        $expiresAt = new \DateTimeImmutable("+{$minutes}");
+        $this->passwordResetRepository->createPasswordReset($userId, $resetCode, $expiresAt);
+
+        // Send email
+        $mail = new PHPMailer(true);
+        $subject = 'Code to reset your password';
+        $body = "Your code is: <b>{$resetCode}</b>. Valid for {$minutes}.";
+
+        try {
+            $this->sendEmail($mail, $userEmail, $subject, $body);
+        } catch (\Exception $e) {
+            throw new MailException("Message could not be sent. Mailer Error: {$mail->ErrorInfo}", HttpStatus::InternalServerError);
+        }
+    }
+}

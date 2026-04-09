@@ -8,3 +8,4 @@
 *.json  text eol=lf
 *.yaml  text eol=lf
 *.toml  text eol=lf
+*.sql   text eol=lf

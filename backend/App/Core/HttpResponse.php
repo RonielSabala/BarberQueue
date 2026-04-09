@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-class HttpResponse
+final readonly class HttpResponse
 {
     private static function filterForJson(mixed $data): mixed
     {
@@ -39,7 +39,7 @@ class HttpResponse
 
         $header->send();
         $data = self::filterForJson($data);
-        echo json_encode($data);
+        echo json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
     }
 
     public static function success(

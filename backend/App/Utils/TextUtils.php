@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Utils;
 
-class TextUtils
+final readonly class TextUtils
 {
     public static function removePrefix(string $text, string $prefix): string
     {

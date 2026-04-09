@@ -6,7 +6,7 @@ namespace App\DTOs\Barbershops\Responses;
 
 use App\DTOs\BaseResponse;
 
-readonly class CreateBarbershopResponse extends BaseResponse
+final readonly class CreateBarbershopResponse extends BaseResponse
 {
     public function __construct(
         public int $id,

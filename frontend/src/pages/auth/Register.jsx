@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layouts/AuthLayout";
-import { register } from "../../services/authService";
+import { registerUser } from "../../services/authService";
+import logo from "../../assets/logo.png";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -13,22 +16,16 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setError("");
     setLoading(true);
 
     try {
-      const data = await register({
-        username,
-        email,
-        phone,
-        password,
-      });
-
-      console.log("Respuesta del registro:", data);
+      await registerUser({ username, email, phone, password });
+      // Registro exitoso → ir al login
+      navigate("/login");
     } catch (err) {
       console.error("Error en register:", err);
-      setError(err.message);
+      setError(err.message || "Error al crear la cuenta. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -36,47 +33,90 @@ function Register() {
 
   return (
     <AuthLayout>
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Crear Cuenta</h2>
+      <div className="auth-card">
+        <div className="auth-card-logo-row">
+          <img src={logo} alt="BarberQueue" className="auth-card-logo" />
+        </div>
+        <h2 className="auth-card-title">Crear cuenta</h2>
+        <p className="auth-card-desc">Únete a BarberQueue gratis</p>
 
-        {error && <p className="error-message">{error}</p>}
+        {error && (
+          <div className="auth-error">
+            <span>⚠️</span>
+            {error}
+          </div>
+        )}
 
-        <input
-          type="text"
-          placeholder="Nombre de usuario"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label htmlFor="username">Nombre de usuario</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="tu_nombre"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Correo"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <div className="auth-field">
+            <label htmlFor="email">Correo electrónico</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="tucorreo@ejemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+          </div>
 
-        <input
-          type="text"
-          placeholder="Teléfono"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+          <div className="auth-field">
+            <label htmlFor="phone">Teléfono</label>
+            <input
+              id="phone"
+              type="text"
+              placeholder="8091234567"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              autoComplete="tel"
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <div className="auth-field">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+            />
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Registrando..." : "Registrarse"}
-        </button>
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
+            {loading ? "Creando cuenta..." : "Crear cuenta →"}
+          </button>
+        </form>
 
-        <p>
-          ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
-        </p>
-      </form>
+        <div className="auth-divider">
+          <div className="auth-divider-line"></div>
+          <span className="auth-divider-text">o</span>
+          <div className="auth-divider-line"></div>
+        </div>
+
+        <div className="auth-links">
+          <p className="auth-link-row">
+            ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
+          </p>
+        </div>
+      </div>
     </AuthLayout>
   );
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Scripts\Utils;
 
-class DatabaseInstaller
+final readonly class DatabaseInstaller
 {
     public function __construct(private readonly \PDO $pdo) {}
 

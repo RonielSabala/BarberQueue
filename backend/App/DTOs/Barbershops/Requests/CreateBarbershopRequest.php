@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace App\DTOs\Barbershops\Requests;
 
+use App\DTOs\BaseRequest;
 use App\Domain\ValueObjects\{
     Address,
     BarbershopName,
     Capacity,
     Email,
+    Id,
     Phone,
     PhotoUrl,
     TimeOfDay
 };
-use App\DTOs\BaseRequest;
 
-readonly class CreateBarbershopRequest extends BaseRequest
+final readonly class CreateBarbershopRequest extends BaseRequest
 {
     public function __construct(
+        public Id $adminId,
         public BarbershopName $barbershopName,
         public Email $email,
         public Phone $phone,

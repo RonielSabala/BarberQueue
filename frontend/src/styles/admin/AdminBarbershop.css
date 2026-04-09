@@ -1,287 +1,317 @@
 .admin-barbershop-page {
-  padding: 32px;
-  min-height: 100vh;
-  background: #f8fafc;
+  padding: 30px;
 }
 
-.admin-barbershop-header {
+.admin-barbershop-topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
-.back-btn,
-.queue-btn,
-.cancel-btn,
+.admin-barbershop-back-btn,
+.admin-barbershop-queue-btn,
+.admin-barbershop-employees-btn,
 .save-btn,
-.toggle-btn {
-  border: none;
+.status-btn {
   cursor: pointer;
+  font-weight: 700;
+  border: none;
   transition: 0.2s ease;
-  font-family: inherit;
 }
 
-.back-btn {
-  background: #ffffff;
-  color: #1e3a5f;
-  border: 1px solid #dbe4ee;
+.admin-barbershop-back-btn {
   padding: 12px 18px;
   border-radius: 12px;
-  font-weight: 600;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #0f172a;
 }
 
-.back-btn:hover {
-  background: #f1f5f9;
+.admin-barbershop-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.queue-btn {
+.admin-barbershop-queue-btn {
   background: #f59e0b;
   color: white;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: 700;
-}
-
-.queue-btn:hover {
-  background: #d97706;
-}
-
-.admin-employees-btn {
-  background: #1e3a5f;
-  color: #ffffff;
-  border: none;
-  border-radius: 14px;
   padding: 14px 24px;
-  font-size: 16px;
+  border-radius: 14px;
+}
+
+.admin-barbershop-employees-btn {
+  background: #16396b;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 14px;
+}
+
+.admin-barbershop-dashboard-btn {
+  background: #0f172a;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 14px;
   font-weight: 700;
+  border: none;
   cursor: pointer;
-  transition: 0.2s ease;
-  gap: 16px;
 }
 
-.admin-employees-btn:hover {
-  background: #163047;
+.admin-barbershop-alert {
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-weight: 500;
 }
 
-.admin-barbershop-grid {
+.admin-barbershop-alert.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.admin-barbershop-alert.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.admin-barbershop-layout {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 360px 1fr;
   gap: 24px;
   align-items: start;
 }
 
-.admin-left-panel,
-.admin-right-panel {
+.admin-barbershop-left {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
-.photo-card,
-.status-card,
-.form-card {
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5edf5;
+.admin-barbershop-image-card,
+.admin-barbershop-status-card,
+.admin-barbershop-right {
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
 }
 
-.photo-card {
-  padding: 16px;
+.admin-barbershop-photo-card {
+  background: white;
+  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid #e5e7eb;
 }
 
-.barbershop-main-photo {
-  width: 100%;
-  height: 320px;
-  object-fit: cover;
-  border-radius: 16px;
+.admin-barbershop-photo-card h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 20px;
+  color: #0f172a;
 }
 
-.status-card {
-  padding: 20px;
+.admin-photo-form {
+  display: grid;
+  gap: 12px;
 }
 
-.status-label {
-  margin: 0 0 14px 0;
-  color: #1e3a5f;
+.admin-photo-form label {
   font-weight: 700;
-  font-size: 18px;
+  color: #0f172a;
 }
 
-.status-toggle-group {
+.admin-photo-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.admin-photo-form input:focus {
+  border-color: #16396b;
+}
+
+.admin-barbershop-image-card {
+  padding: 18px;
+}
+
+.admin-barbershop-image {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.admin-barbershop-status-card {
+  padding: 22px;
+}
+
+.admin-barbershop-status-card h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.admin-barbershop-status-buttons {
   display: flex;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
-.toggle-btn {
+.status-btn {
   flex: 1;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: #eef4fa;
-  color: #1e3a5f;
-  font-weight: 700;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e5e7eb;
 }
 
-.toggle-btn:hover {
-  transform: translateY(-1px);
-}
-
-.active-open {
+.status-btn-open.active {
   background: #dcfce7;
-  color: #15803d;
+  color: #166534;
   border: 1px solid #86efac;
 }
 
-.active-closed {
+.status-btn-closed.active {
   background: #fee2e2;
   color: #b91c1c;
-  border: 1px solid #fca5a5;
+  border: 1px solid #fecaca;
 }
 
-.status-badge {
-  display: inline-block;
-  padding: 10px 14px;
+.admin-barbershop-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border-radius: 999px;
+  padding: 8px 14px;
   font-weight: 700;
-  font-size: 14px;
 }
 
-.status-badge.open {
+.admin-barbershop-status-pill.open {
   background: #dcfce7;
-  color: #15803d;
+  color: #166534;
 }
 
-.status-badge.closed {
+.admin-barbershop-status-pill.closed {
   background: #fee2e2;
   color: #b91c1c;
 }
 
-.form-card {
+.admin-barbershop-status-pill .dot {
+  font-size: 12px;
+}
+
+.admin-barbershop-right {
   padding: 28px;
 }
 
-.form-card h1 {
-  margin: 0;
-  color: #1e3a5f;
+.admin-barbershop-right h1 {
   font-size: 40px;
-  font-weight: 800;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #16396b;
 }
 
-.admin-barbershop-subtitle {
-  margin-top: 8px;
-  margin-bottom: 24px;
+.admin-barbershop-right > p {
+  margin-top: 0;
+  margin-bottom: 26px;
   color: #64748b;
-  font-size: 16px;
+  font-size: 18px;
 }
 
-.admin-form-grid {
+.admin-barbershop-form {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group.full {
-  grid-column: 1 / -1;
-}
-
 .form-group label {
+  display: block;
   margin-bottom: 8px;
-  color: #1e3a5f;
   font-weight: 700;
-  font-size: 15px;
+  color: #0f172a;
 }
 
 .form-group input {
-  height: 50px;
-  border-radius: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
   border: 1px solid #cbd5e1;
-  padding: 0 14px;
-  font-size: 15px;
-  color: #0f172a;
+  font-size: 16px;
   outline: none;
-  background: #fff;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+  border-color: #16396b;
 }
 
-.admin-form-actions {
-  margin-top: 28px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 14px;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
-.cancel-btn {
-  background: #eef2f7;
-  color: #334155;
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: 700;
+.form-capacity {
+  max-width: 260px;
 }
 
-.cancel-btn:hover {
-  background: #e2e8f0;
+.form-submit {
+  margin-top: 10px;
 }
 
 .save-btn {
-  background: #f59e0b;
+  background: #16396b;
   color: white;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-weight: 800;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-size: 16px;
 }
 
-.save-btn:hover {
-  background: #d97706;
+.save-btn:disabled,
+.status-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-@media (max-width: 1100px) {
-  .admin-barbershop-grid {
+@media (max-width: 992px) {
+  .admin-barbershop-layout {
     grid-template-columns: 1fr;
   }
 
-  .barbershop-main-photo {
+  .admin-barbershop-image {
     height: 260px;
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 640px) {
   .admin-barbershop-page {
-    padding: 18px;
+    padding: 20px;
   }
 
-  .admin-barbershop-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .admin-form-grid {
+  .form-row {
     grid-template-columns: 1fr;
   }
 
-  .form-card h1 {
+  .admin-barbershop-right h1 {
     font-size: 30px;
   }
 
-  .admin-form-actions {
-    flex-direction: column;
+  .admin-barbershop-actions {
+    width: 100%;
   }
 
-  .cancel-btn,
-  .save-btn,
-  .queue-btn,
-  .back-btn {
+  .admin-barbershop-queue-btn,
+  .admin-barbershop-employees-btn {
     width: 100%;
   }
 }

@@ -29,8 +29,8 @@ _EMAIL_PATTERN = re.compile(
 
 @dataclass(slots=True, frozen=True)
 class Email(StringField):
-    _min_len: ClassVar[int] = _MIN_EMAIL_LENGTH
-    _max_len: ClassVar[int] = _MAX_EMAIL_LENGTH
+    _min_len = _MIN_EMAIL_LENGTH
+    _max_len = _MAX_EMAIL_LENGTH
     _min_local_len: ClassVar[int] = _MIN_EMAIL_LOCAL_LENGTH
     _max_local_len: ClassVar[int] = _MAX_EMAIL_LOCAL_LENGTH
     _pattern = _EMAIL_PATTERN

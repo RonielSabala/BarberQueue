@@ -1,20 +1,26 @@
 import logo from "../assets/logo.png";
 import "../styles/auth/login.css";
 
-function AuthLayout({
-  children,
-  tagline = "Gestiona tu tiempo. Olvida las filas.",
-}) {
+function AuthLayout({ children }) {
   return (
-    <div className="login-container">
-      <div className="login-left">
-        <div className="brand-container">
-          <img src={logo} alt="BarberQueue Logo" className="logo" />
-          <p className="brand-tagline">{tagline}</p>
+    <div className="auth-container">
+      {/* ─── Panel izquierdo ─── */}
+      <div className="auth-left">
+        <div className="auth-left-inner">
+          <h1 className="auth-tagline">
+            Gestiona tu tiempo.
+            <br />
+            <span>Olvida las filas.</span>
+          </h1>
+
+          <p className="auth-tagline-sub">
+            La plataforma de gestión de colas para barberías modernas.
+          </p>
         </div>
       </div>
 
-      <div className="login-right">{children}</div>
+      {/* ─── Panel derecho ─── */}
+      <div className="auth-right">{children}</div>
     </div>
   );
 }

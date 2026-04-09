@@ -11,7 +11,7 @@ import requests
 from api.base_controller import BaseController
 from api.core import HttpMethod
 from domain.dtos import BaseRequest
-from domain.exceptions import RequestError
+from domain.utils import to_camel_case
 from helpers.body_route import BodyRoute
 
 _PATH_PARAM_PATTERN = re.compile(r"\{[^}]+\}")
@@ -32,19 +32,18 @@ def _route(method: HttpMethod, path: str, *, body: bool = False) -> Callable:
 
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
-        def wrapper(self: BaseController, *args) -> requests.Response:
+        def wrapper(self: BaseController, *args, **kwargs) -> requests.Response:
             request_body = None
             if body:
                 body_args = args[param_count:]
-                if not body_args or not isinstance(body_args[0], BaseRequest):
-                    raise RequestError(
-                        "Expected a BaseRequest object after path params"
-                    )
 
-                request_body = body_args[0].to_json()
+                request_body = None
+                if body_args and isinstance(body_args[0], BaseRequest):
+                    request_body = body_args[0].to_json()
 
             url = self.prefix + _build_url(path, args[:param_count])
-            return self._client.request(method, url, body=request_body)
+            params = {to_camel_case(k): v for k, v in kwargs.items()} or None
+            return self._client.request(method, url, body=request_body, params=params)
 
         # Store metadata for route discovery
         if body:

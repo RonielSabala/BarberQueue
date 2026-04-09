@@ -1,20 +1,22 @@
 {
   "recommendations": [
-    "ms-python.python",
-    "ms-python.vscode-pylance",
-    "njqdev.vscode-python-typehint",
-    "charliermarsh.ruff",
-    "junstyle.php-cs-fixer",
-    "mehedidracula.php-namespace-resolver",
     "bmewburn.vscode-intelephense-client",
-    "st-pham.php-refactor-tool",
     "brapifra.phpserver",
+    "charliermarsh.ruff",
+    "davidanson.vscode-markdownlint",
     "devsense.composer-php-vscode",
     "esbenp.prettier-vscode",
+    "junstyle.php-cs-fixer",
+    "mehedidracula.php-namespace-resolver",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "neilbrayfield.php-docblocker",
+    "njqdev.vscode-python-typehint",
     "redhat.vscode-yaml",
+    "st-pham.php-refactor-tool",
+    "streetsidesoftware.code-spell-checker",
     "tamasfe.even-better-toml",
-    "yzhang.markdown-all-in-one",
-    "davidanson.vscode-markdownlint",
-    "streetsidesoftware.code-spell-checker"
+    "tarik02.php-imports",
+    "yzhang.markdown-all-in-one"
   ]
 }
