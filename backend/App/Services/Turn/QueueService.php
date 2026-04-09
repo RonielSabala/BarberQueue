@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace App\Services\Turn;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\Turn\TurnEntity;
 use App\Exceptions\Turn\QueueException;
 use App\Services\Barbershop\BarbershopService;
 use App\Domain\Queue\{BarberSlotData, ScheduledQueue};
 use App\DTOs\Queues\Responses\{QueueResponse, TurnResponse};
-use App\Repositories\{Turn\QueueRepository, Turn\TurnRepository, AssignmentRepository};
+use App\Repositories\Turn\{QueueRepository, TurnRepository};
 
 final readonly class QueueService extends BaseTurnService
 {
     public function __construct(
-        private readonly AssignmentRepository $assignmentRepository,
         private readonly TurnRepository $turnRepository,
         private readonly QueueRepository $queueRepository,
         private readonly BarbershopService $barbershopService,
@@ -27,24 +25,26 @@ final readonly class QueueService extends BaseTurnService
     ): QueueResponse {
         $barberId = $slot->barberId;
         $barberQueue = $scheduled->queueOf($barberId);
+        $turnResponses = [];
+
+        foreach ($barberQueue as $i => $turn) {
+            $turnId = $turn->id->value;
+            $turnResponses[] = TurnResponse::fromEntity(
+                $turn,
+                [
+                    'position' => $i + 1,
+                    'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                    'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+                ]
+            );
+        }
 
         return new QueueResponse(
             barberId: $barberId,
             barberName: $slot->barberName,
             barberStatus: $slot->barberStatus,
             isAccepting: $slot->isAccepting,
-            turns: array_map(
-                static fn (TurnEntity $turn) => TurnResponse::fromEntity(
-                    $turn,
-                    [
-                        'position' => $scheduled->positionOf(
-                            $barberQueue,
-                            $turn->id->value
-                        ),
-                    ]
-                ),
-                $barberQueue
-            ),
+            turns: $turnResponses,
         );
     }
 
@@ -62,8 +62,7 @@ final readonly class QueueService extends BaseTurnService
 
     public function getBarberQueue(int $barberId): QueueResponse
     {
-        $barbershopId = $this->queueRepository->findActiveBarbershopForBarber($barberId) ?? $this->assignmentRepository->getBarbershopIdByStaffId($barberId);
-
+        $barbershopId = $this->queueRepository->findActiveBarbershopForBarber($barberId);
         $slot = $barbershopId !== null
             ? $this->queueRepository->getSingleBarberSlot($barbershopId, $barberId)
             : null;

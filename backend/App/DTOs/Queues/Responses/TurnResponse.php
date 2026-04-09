@@ -17,6 +17,8 @@ final readonly class TurnResponse extends BaseResponse
         public string $ownerType,
         public string $ownerStatus,
         public ?int $position,
+        public ?int $absolutePosition,
+        public ?float $estimatedTime,
         public ?int $groupSize
     ) {}
 }

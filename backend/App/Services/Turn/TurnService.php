@@ -36,7 +36,7 @@ final readonly class TurnService extends BaseTurnService
 
     // Private helpers
 
-    private function scheduledQueue(int $barbershopId): ScheduledQueue
+    public function scheduledQueue(int $barbershopId): ScheduledQueue
     {
         return $this->getScheduledQueue($this->turnRepository, $barbershopId);
     }
@@ -79,7 +79,7 @@ final readonly class TurnService extends BaseTurnService
         }
     }
 
-    private function promoteToInService(TurnEntity $turn, int $barberId): bool
+    public function promoteToInService(TurnEntity $turn, int $barberId): bool
     {
         // Only promote on queue owners
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
@@ -87,11 +87,6 @@ final readonly class TurnService extends BaseTurnService
         }
 
         $this->setOwnerStatus($turn, ClientStatusEnum::InService->value);
-
-        // Assign barber to this turn
-        if ($turn->barberId === null) {
-            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
-        }
 
         // Assign barber to this turn
         if ($turn->barberId === null) {
@@ -118,9 +113,14 @@ final readonly class TurnService extends BaseTurnService
         TurnEntity $turn,
         ScheduledQueue $scheduled,
     ): TurnDetailResponse {
+        $turnId = $turn->id->value;
         return TurnDetailResponse::fromEntity(
             $turn,
-            ['position' => $scheduled->findTurnPosition($turn->id->value)]
+            [
+                'position' => $scheduled->findTurnPosition($turnId),
+                'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+            ]
         );
     }
 

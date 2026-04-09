@@ -27,13 +27,12 @@ final readonly class BarberSlotData
      */
     public static function fromDbRow(array $row, array $assignedTurns): self
     {
-        $avgServiceMinutes = isset($row['avg_service_minutes']) ? (float) $row['avg_service_minutes'] : null;
         return new self(
             barberId: (int) $row['barber_id'],
             barberName: $row['barber_name'],
             barberStatus: $row['barber_status'],
             isAccepting: (bool) $row['is_accepting'],
-            avgServiceMinutes: $avgServiceMinutes,
+            avgServiceMinutes: (float) $row['avg_service_minutes'],
             assignedTurns: $assignedTurns,
         );
     }
