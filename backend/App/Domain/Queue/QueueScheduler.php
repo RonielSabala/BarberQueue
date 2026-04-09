@@ -124,6 +124,6 @@ final class QueueScheduler
             $queues[$barberId] = self::promoteFirstEligible($queue);
         }
 
-        return new ScheduledQueue($barberSlots, $slotsById, $queues);
+        return new ScheduledQueue($barberSlots, $slotsById, $queues, $allTurns);
     }
 }

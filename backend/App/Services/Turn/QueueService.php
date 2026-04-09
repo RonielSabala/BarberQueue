@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Turn;
 
 use App\Core\HttpStatus;
-use App\Domain\Entities\Turn\TurnEntity;
 use App\Exceptions\Turn\QueueException;
 use App\Services\Barbershop\BarbershopService;
 use App\Domain\Queue\{BarberSlotData, ScheduledQueue};
@@ -27,24 +26,26 @@ final readonly class QueueService extends BaseTurnService
     ): QueueResponse {
         $barberId = $slot->barberId;
         $barberQueue = $scheduled->queueOf($barberId);
+        $turnResponses = [];
+
+        foreach ($barberQueue as $i => $turn) {
+            $turnId = $turn->id->value;
+            $turnResponses[] = TurnResponse::fromEntity(
+                $turn,
+                [
+                    'position' => $i + 1,
+                    'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                    'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+                ]
+            );
+        }
 
         return new QueueResponse(
             barberId: $barberId,
             barberName: $slot->barberName,
             barberStatus: $slot->barberStatus,
             isAccepting: $slot->isAccepting,
-            turns: array_map(
-                static fn (TurnEntity $turn) => TurnResponse::fromEntity(
-                    $turn,
-                    [
-                        'position' => $scheduled->positionOf(
-                            $barberQueue,
-                            $turn->id->value
-                        ),
-                    ]
-                ),
-                $barberQueue
-            ),
+            turns: $turnResponses,
         );
     }
 

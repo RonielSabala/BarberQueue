@@ -16,6 +16,9 @@ final readonly class ClientTurnResponse extends BaseResponse
         public string $username,
         public string $status,
         public ?int $position,
+        public ?int $absolutePosition,
+        public ?float $estimatedTime,
+        public ?float $estimatedGroupTime,
         public string $createdAt,
         public ?GroupResponse $group,
     ) {}

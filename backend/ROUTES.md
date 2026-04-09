@@ -898,12 +898,15 @@ Fetch the active turn for a specific client. If the client is a group leader, th
 ```json
 {
   "id": 1,
-  "barbershopId": 2,
-  "clientId": 3,
-  "barberId": 4,
+  "barbershopId": 1,
+  "clientId": 1,
+  "barberId": 1,
   "username": "client_example",
-  "status": "on_queue",
+  "status": "in_service",
   "position": 1,
+  "absolutePosition": 1,
+  "estimatedTime": 0.0,
+  "estimatedGroupTime": null,
   "createdAt": "2026-03-18 10:00:00",
   "group": null
 }
@@ -914,15 +917,18 @@ With group (leader):
 ```json
 {
   "id": 1,
-  "barbershopId": 2,
-  "clientId": 3,
-  "barberId": 4,
+  "barbershopId": 1,
+  "clientId": 1,
+  "barberId": 1,
   "username": "client_example",
   "status": "in_service",
   "position": 1,
+  "absolutePosition": 1,
+  "estimatedTime": 0.0,
+  "estimatedGroupTime": 20.0,
   "createdAt": "2026-03-18 10:00:00",
   "group": {
-    "groupId": 2,
+    "groupId": 1,
     "members": [
       {
         "id": 2,
@@ -930,6 +936,8 @@ With group (leader):
         "memberName": "member_example",
         "barberId": null,
         "position": 2,
+        "absolutePosition": 2,
+        "estimatedTime": 20.0,
         "status": "on_queue"
       }
     ]
@@ -949,14 +957,16 @@ Fetch the active turn for a specific group member.
 
 ```json
 {
-  "id": 1,
+  "id": 2,
   "barbershopId": 1,
   "memberId": 1,
   "barberId": 1,
   "groupId": 1,
   "memberName": "member_example",
-  "status": "in_service",
-  "position": 1,
+  "status": "on_queue",
+  "position": 2,
+  "absolutePosition": 2,
+  "estimatedTime": 20.0,
   "createdAt": "2026-03-18 10:00:00"
 }
 ```
@@ -988,6 +998,8 @@ Shows all active barbers at a barbershop and their queues. Turns with no assigne
         "ownerType": "client",
         "ownerStatus": "in_service",
         "position": 1,
+        "absolutePosition": 1,
+        "estimatedTime": 0.0,
         "groupSize": null
       }
     ]
@@ -1021,6 +1033,8 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
       "ownerType": "client",
       "ownerStatus": "in_service",
       "position": 1,
+      "absolutePosition": 1,
+      "estimatedTime": 0.0,
       "groupSize": null
     }
   ]
@@ -1048,6 +1062,8 @@ Fetch a specific turn's details.
   "ownerType": "client",
   "ownerStatus": "in_service",
   "position": 1,
+  "absolutePosition": 1,
+  "estimatedTime": 0.0,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
   "attendedAt": null,
@@ -1097,6 +1113,8 @@ If `barberId` is omitted, the system auto-assigns each turn to the barber with t
     "ownerType": "client",
     "ownerStatus": "in_service",
     "position": 1,
+    "absolutePosition": 1,
+    "estimatedTime": 0.0,
     "groupSize": 2,
     "createdAt": "2026-03-18 10:00:00",
     "attendedAt": null,
@@ -1112,6 +1130,8 @@ If `barberId` is omitted, the system auto-assigns each turn to the barber with t
     "ownerType": "member",
     "ownerStatus": "on_queue",
     "position": 2,
+    "absolutePosition": 2,
+    "estimatedTime": 20.0,
     "groupSize": 2,
     "createdAt": "2026-03-18 10:00:00",
     "attendedAt": null,
@@ -1161,6 +1181,8 @@ While waiting, the owner is skipped if they reach position 1, the next `on_queue
   "ownerType": "client",
   "ownerStatus": "waiting",
   "position": 2,
+  "absolutePosition": 2,
+  "estimatedTime": 20.0,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
   "attendedAt": null,
@@ -1189,6 +1211,8 @@ If they re-enter at position 1 and no one is currently `in_service` for their ba
   "ownerType": "client",
   "ownerStatus": "in_service",
   "position": 1,
+  "absolutePosition": 1,
+  "estimatedTime": 0.0,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
   "attendedAt": null,
@@ -1217,6 +1241,8 @@ After marking the turn as attended, the server promotes the next eligible turn i
   "ownerType": "client",
   "ownerStatus": "attended",
   "position": null,
+  "absolutePosition": null,
+  "estimatedTime": null,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
   "attendedAt": "2026-03-18 10:25:00",
@@ -1247,6 +1273,8 @@ Mark a turn as paid and close it. Only client turns can trigger this, member tur
   "ownerType": "client",
   "ownerStatus": "paid",
   "position": null,
+  "absolutePosition": null,
+  "estimatedTime": null,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
   "attendedAt": "2026-03-18 10:25:00",

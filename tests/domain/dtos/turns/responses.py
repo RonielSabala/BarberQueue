@@ -14,6 +14,8 @@ class TurnDetailResponse(BaseResponse):
     owner_type: str
     owner_status: str
     position: int | None
+    absolute_position: int | None
+    estimated_time: float | None
     group_size: int | None
     created_at: str
     attended_at: str | None

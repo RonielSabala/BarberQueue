@@ -118,9 +118,14 @@ final readonly class TurnService extends BaseTurnService
         TurnEntity $turn,
         ScheduledQueue $scheduled,
     ): TurnDetailResponse {
+        $turnId = $turn->id->value;
         return TurnDetailResponse::fromEntity(
             $turn,
-            ['position' => $scheduled->findTurnPosition($turn->id->value)]
+            [
+                'position' => $scheduled->findTurnPosition($turnId),
+                'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+            ]
         );
     }
 
