@@ -141,13 +141,15 @@ Register a new client account.
 
 ### `GET /api/auth/google/url` <!-- omit from toc -->
 
-Get a Google url to authenticate in the app.
+Returns the Google OAuth URL.
+
+The frontend must open this URL in the browser using `window.location.href`, **not** fetch it with `axios` or `fetch`, since the user needs to be redirected to Google's login page.
 
 - Response: `200`
 
 ```json
 {
-  "url": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=online&client_id=123456789-example.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fgoogle&state&scope=email%20profile&approval_prompt=auto"
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?..."
 }
 ```
 
@@ -155,25 +157,27 @@ Get a Google url to authenticate in the app.
 
 ### `GET /api/auth/google` <!-- omit from toc -->
 
-Authenticate with Google.
+Google's OAuth callback endpoint.
 
-| Query param | Type   | Description              |
-| ----------- | ------ | ------------------------ |
-| `code`      | string | Google redirect uri code |
+This is called automatically by the browser after the user authenticates with Google, it should **never be called directly** by the frontend.
 
-- Response: `200`
+After processing, the backend redirects the browser to the frontend callback route with the session data in the query string:
 
-```json
-{
-  "token": "jwt_token",
-  "user": {
-    "id": 1,
-    "username": "google_user_example",
-    "email": "google_user_example@gmail.com",
-    "role": "client"
-  }
-}
 ```
+{FRONTEND_URL}/auth/callback?token=jwt_token&id=1&username=user_example&role=client
+```
+
+On error, the backend redirects to:
+
+```
+{FRONTEND_URL}/auth/callback?error=auth_failed
+```
+
+The frontend `/auth/callback` route is responsible for reading these query params, storing the token, and redirecting the user to the home page.
+
+| Query param | Type   | Description                                        |
+| ----------- | ------ | -------------------------------------------------- |
+| `code`      | string | Authorization code sent by Google after user login |
 
 ---
 
