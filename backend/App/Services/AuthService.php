@@ -37,7 +37,7 @@ final readonly class AuthService extends BaseService
         $this->jwtSecret = EnvUtils::get('JWT_SECRET');
     }
 
-    private function generateJwt(UserEntity $user): string
+    public function generateJwt(UserEntity $user): string
     {
         $now = time();
         $payload = [

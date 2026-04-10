@@ -139,6 +139,44 @@ Register a new client account.
 
 ---
 
+### `GET /api/auth/google/url` <!-- omit from toc -->
+
+Get a Google url to authenticate in the app.
+
+- Response: `200`
+
+```json
+{
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=online&client_id=123456789-example.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fapi%2Fauth%2Fgoogle&state&scope=email%20profile&approval_prompt=auto"
+}
+```
+
+---
+
+### `GET /api/auth/google` <!-- omit from toc -->
+
+Authenticate with Google.
+
+| Query param | Type   | Description              |
+| ----------- | ------ | ------------------------ |
+| `code`      | string | Google redirect uri code |
+
+- Response: `200`
+
+```json
+{
+  "token": "jwt_token",
+  "user": {
+    "id": 1,
+    "username": "google_user_example",
+    "email": "google_user_example@gmail.com",
+    "role": "client"
+  }
+}
+```
+
+---
+
 ### `POST /api/auth/forgot-password` <!-- omit from toc -->
 
 Send a password recovery email.
