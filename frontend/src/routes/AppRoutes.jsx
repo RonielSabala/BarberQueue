@@ -37,6 +37,9 @@ import BarberDashboard from "../pages/barber/BarberDasboard";
 import RegisterClientsForm from "../pages/assistant/RegisterClientsForm";
 import AssistantProfile from "../pages/assistant/AssistantProfile";
 
+//Google authentication
+import AuthCallback from "../pages/auth/AuthCallback";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -95,6 +98,8 @@ function AppRoutes() {
         />
         <Route path="/assistant/profile" element={<AssistantProfile />} />
       </Route>
+
+      <Route path="/auth/callback" element={<AuthCallback />} />
 
       {/* 404 */}
       <Route path="*" element={<h1>404 - Página no encontrada</h1>} />

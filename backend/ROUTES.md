@@ -139,6 +139,48 @@ Register a new client account.
 
 ---
 
+### `GET /api/auth/google/url` <!-- omit from toc -->
+
+Returns the Google OAuth URL.
+
+The frontend must open this URL in the browser using `window.location.href`, **not** fetch it with `axios` or `fetch`, since the user needs to be redirected to Google's login page.
+
+- Response: `200`
+
+```json
+{
+  "url": "https://accounts.google.com/o/oauth2/v2/auth?..."
+}
+```
+
+---
+
+### `GET /api/auth/google` <!-- omit from toc -->
+
+Google's OAuth callback endpoint.
+
+This is called automatically by the browser after the user authenticates with Google, it should **never be called directly** by the frontend.
+
+After processing, the backend redirects the browser to the frontend callback route with the session data in the query string:
+
+```
+{FRONTEND_URL}/auth/callback?token=jwt_token&id=1&username=user_example&role=client
+```
+
+On error, the backend redirects to:
+
+```
+{FRONTEND_URL}/auth/callback?error=auth_failed
+```
+
+The frontend `/auth/callback` route is responsible for reading these query params, storing the token, and redirecting the user to the home page.
+
+| Query param | Type   | Description                                        |
+| ----------- | ------ | -------------------------------------------------- |
+| `code`      | string | Authorization code sent by Google after user login |
+
+---
+
 ### `POST /api/auth/forgot-password` <!-- omit from toc -->
 
 Send a password recovery email.
