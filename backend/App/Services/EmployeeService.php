@@ -45,7 +45,7 @@ final readonly class EmployeeService extends BaseService
             || $employeeRole === RoleEnum::Admin->value
         ) {
             throw new EmployeeException(
-                'The employee role must be \'barber\' or \'assistant\'',
+                'This user is not an employee',
                 HttpStatus::UnprocessableEntity
             );
         }

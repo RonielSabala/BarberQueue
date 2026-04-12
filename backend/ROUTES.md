@@ -329,11 +329,11 @@ List all active barbershops. Supports optional filters.
 
 **Query params**
 
-| Param     | Type                  | Description                         |
-| --------- | --------------------- | ----------------------------------- |
-| `search`  | string                | Filter by name                      |
-| `isOpen`  | **true** \| **false** | Filter by current open/closed state |
-| `adminId` | int                   | Filter by admin id                  |
+| Param     | Type   | Description                         |
+| --------- | ------ | ----------------------------------- |
+| `search`  | string | Filter by name                      |
+| `isOpen`  | bool   | Filter by current open/closed state |
+| `adminId` | int    | Filter by admin id                  |
 
 - Response: `200`
 

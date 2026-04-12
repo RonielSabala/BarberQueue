@@ -36,6 +36,14 @@ final readonly class BarbershopService extends BaseService
         return $barbershop;
     }
 
+    private function validateNonExistentBarbershopEmail(string $email): void
+    {
+        $existing = $this->barbershopRepository->getByEmail($email);
+        if ($existing !== null) {
+            throw new BarbershopException('Barbershop email already in use', HttpStatus::Conflict);
+        }
+    }
+
     /** @return BarbershopResponse[] */
     public function getAll(?string $search, ?bool $isOpen, ?int $adminId): array
     {
@@ -56,11 +64,7 @@ final readonly class BarbershopService extends BaseService
         }
 
         $email = $request->email->value;
-        $existing = $this->barbershopRepository->getByEmail($email);
-
-        if ($existing !== null) {
-            throw new BarbershopException('Barbershop email already in use', HttpStatus::Conflict);
-        }
+        $this->validateNonExistentBarbershopEmail($email);
 
         $barbershop = $this->barbershopRepository->createBarbershop(
             adminId: $request->adminId->value,
@@ -98,6 +102,13 @@ final readonly class BarbershopService extends BaseService
     {
         $this->validateBarbershopExists($barbershopId);
         $fields = $this->validateFieldsToUpdate($request);
+
+        // Validate email
+        $email = $fields['email'] ?? null;
+        if ($email !== null) {
+            $this->validateNonExistentBarbershopEmail($email);
+        }
+
         $this->barbershopRepository->update($barbershopId, $fields);
     }
 }

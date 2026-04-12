@@ -35,6 +35,28 @@ final readonly class BarberRepository extends BaseRepository
         return $this->fetchOne(BarberEntity::class, $sql, [$barberId]);
     }
 
+    public function getByAssignment(int $barberId, int $barbershopId): ?BarberEntity
+    {
+        $sql = <<<'SQL'
+            SELECT
+                u.id,
+                u.username,
+                bs.current_status,
+                bs.is_accepting
+            FROM
+                users u
+                JOIN barber_status bs ON u.id = bs.barber_id
+                JOIN staff_assignments sa ON u.id = sa.staff_id
+            WHERE
+                u.id = ?
+                AND sa.barbershop_id = ?
+            LIMIT
+                1
+        SQL;
+
+        return $this->fetchOne(BarberEntity::class, $sql, [$barberId, $barbershopId]);
+    }
+
     public function getDashboard(int $barberId): ?BarberDashboardEntity
     {
         $sql = <<<'SQL'

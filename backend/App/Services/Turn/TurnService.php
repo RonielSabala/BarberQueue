@@ -51,22 +51,6 @@ final readonly class TurnService extends BaseTurnService
         return $turn;
     }
 
-    private function validateBarberIsAccepting(int $barberId): void
-    {
-        $barber = $this->barberRepository->getById($barberId);
-        if ($barber === null) {
-            throw new TurnException('Barber not found', HttpStatus::NotFound);
-        }
-
-        if ($barber->currentStatus->value !== BarberStatusEnum::Active->value) {
-            throw new TurnException('Barber is not active', HttpStatus::UnprocessableEntity);
-        }
-
-        if (!$barber->isAccepting) {
-            throw new TurnException('Barber is not accepting new clients', HttpStatus::UnprocessableEntity);
-        }
-    }
-
     private function setOwnerStatus(TurnEntity $turn, string $newStatus): void
     {
         $ownerId = $turn->ownerId->value;
@@ -227,7 +211,18 @@ final readonly class TurnService extends BaseTurnService
         // Validate barber
         $barberId = $request->barberId?->value;
         if ($barberId !== null) {
-            $this->validateBarberIsAccepting($barberId);
+            $barber = $this->barberRepository->getByAssignment($barberId, $barbershopId);
+            if ($barber === null) {
+                throw new TurnException('Barber not found in this barbershop', HttpStatus::NotFound);
+            }
+
+            if ($barber->currentStatus->value !== BarberStatusEnum::Active->value) {
+                throw new TurnException('Barber is not active', HttpStatus::UnprocessableEntity);
+            }
+
+            if (!$barber->isAccepting) {
+                throw new TurnException('Barber is not accepting new clients', HttpStatus::UnprocessableEntity);
+            }
         }
 
         return $this->turnRepository->transaction(
