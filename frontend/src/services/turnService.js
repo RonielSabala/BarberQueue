@@ -4,6 +4,25 @@ function getErrorMessage(data, defaultMessage) {
   return data?.message || data?.error || data?.details || defaultMessage;
 }
 
+// Normaliza el response de GET /api/clients/{id}/turn
+// Ese endpoint usa: status, username (en lugar de ownerStatus, ownerName)
+// y agrega estimatedTime y estimatedGroupTime
+function normalizeClientTurn(data) {
+  if (!data) return null;
+
+  return {
+    ...data,
+    // Aliases para compatibilidad con el frontend existente
+    ownerStatus: data.ownerStatus ?? data.status ?? null,
+    ownerName: data.ownerName ?? data.username ?? null,
+    // Campos nuevos
+    estimatedTime: data.estimatedTime ?? null,
+    estimatedGroupTime: data.estimatedGroupTime ?? null,
+    absolutePosition: data.absolutePosition ?? null,
+    group: data.group ?? null,
+  };
+}
+
 export async function getTurnById(turnId) {
   const response = await fetch(`${API_URL}/turns/${turnId}`, {
     method: "GET",
@@ -35,7 +54,7 @@ export async function getClientActiveTurn(clientId) {
     );
   }
 
-  return data;
+  return normalizeClientTurn(data);
 }
 
 export async function createTurn(turnData) {

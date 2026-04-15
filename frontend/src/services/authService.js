@@ -134,3 +134,23 @@ export async function resetPassword(data) {
 
   return result;
 }
+
+// GET /api/auth/google/url
+// Obtiene la URL de autenticación de Google desde el backend
+export async function getGoogleAuthUrl() {
+  const response = await fetch(`${API_URL}/auth/google/url`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(data, "Error al obtener la URL de Google")
+    );
+  }
+
+  // El backend puede devolver { url: "https://..." } o la URL directamente
+  return data?.url || data;
+}

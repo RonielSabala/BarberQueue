@@ -115,8 +115,6 @@ function QueueLive() {
       const data = await getClientActiveTurn(currentUserId);
       setMyTurn(data);
     } catch (err) {
-      // Si el cliente no tiene turno o no está registrado en ninguna barbería
-      // es un estado normal — no mostramos error al usuario
       const msg = err.message?.toLowerCase() || "";
       const isNoTurn =
         msg.includes("checked into") ||
@@ -166,12 +164,28 @@ function QueueLive() {
   const estimatedTurnTime = useMemo(() => {
     if (!myTurn) return "Sin turno";
     const status = myTurn.ownerStatus || myTurn.status;
+
     if (status === "in_service") return "Te están atendiendo ahora";
     if (status === "attended") return "Servicio finalizado — pendiente de pago";
     if (status === "waiting") return "Turno pausado — no perderás tu posición";
+
+    // Usar estimatedTime del backend si está disponible
+    if (myTurn.estimatedTime !== null && myTurn.estimatedTime !== undefined) {
+      if (myTurn.estimatedTime === 0) return "Próximo en atención";
+      return `~${Math.round(myTurn.estimatedTime)} minutos`;
+    }
+
+    // Fallback manual
     if (!myTurn.position || myTurn.position <= 1) return "Próximo en atención";
     const minutes = (myTurn.position - 1) * 20;
     return `~${minutes} minutos`;
+  }, [myTurn]);
+
+  // Tiempo estimado del grupo completo (solo líder)
+  const estimatedGroupTime = useMemo(() => {
+    if (!myTurn?.estimatedGroupTime) return null;
+    if (myTurn.estimatedGroupTime === 0) return "Todo el grupo siendo atendido";
+    return `~${Math.round(myTurn.estimatedGroupTime)} minutos para todo el grupo`;
   }, [myTurn]);
 
   const isGroupLeader = useMemo(() => {
@@ -667,6 +681,12 @@ function QueueLive() {
                     </p>
                     <p className="font-bold text-slate-800">
                       {myTurn.position ?? "—"}
+                      {myTurn.absolutePosition != null &&
+                        myTurn.absolutePosition !== myTurn.position && (
+                          <span className="text-xs font-normal text-slate-400 ml-2">
+                            (absoluta: {myTurn.absolutePosition})
+                          </span>
+                        )}
                     </p>
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -694,6 +714,18 @@ function QueueLive() {
                   </div>
                 </div>
 
+                {/* Tiempo estimado del grupo completo — solo líder */}
+                {isGroupLeader && estimatedGroupTime && (
+                  <div className="mb-5 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 flex items-center gap-3">
+                    <span className="material-icons-round text-blue-500 text-base">
+                      group
+                    </span>
+                    <p className="text-sm font-semibold text-blue-700">
+                      {estimatedGroupTime}
+                    </p>
+                  </div>
+                )}
+
                 {isGroupLeader && (
                   <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                     <div className="flex items-center justify-between gap-3 mb-4">
@@ -718,7 +750,7 @@ function QueueLive() {
                         );
                         return (
                           <div
-                            key={member.turnId}
+                            key={member.id}
                             className="rounded-2xl bg-white border border-slate-200 p-4"
                           >
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -729,6 +761,14 @@ function QueueLive() {
                                 <p className="text-sm text-slate-500">
                                   Miembro del grupo
                                 </p>
+                                {member.estimatedTime != null &&
+                                  !hidePosition && (
+                                    <p className="text-xs text-slate-400 mt-1">
+                                      {member.estimatedTime === 0
+                                        ? "Siendo atendido"
+                                        : `~${Math.round(member.estimatedTime)} min`}
+                                    </p>
+                                  )}
                               </div>
                               <div className="flex flex-wrap gap-2">
                                 {!hidePosition && (
