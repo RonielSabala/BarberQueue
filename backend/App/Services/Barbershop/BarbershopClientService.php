@@ -83,6 +83,13 @@ final readonly class BarbershopClientService extends BaseService
             );
         }
 
+        if ($this->barbershopClientRepository->isBarbershopFull($barbershopId)) {
+            throw new BarbershopClientException(
+                'Barbershop is full',
+                HttpStatus::UnprocessableEntity
+            );
+        }
+
         $this->barbershopClientRepository->updateBarbershopStatus(
             clientId: $clientId,
             barbershopId: $barbershopId,
