@@ -21,6 +21,7 @@ function BarberDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [savingStatus, setSavingStatus] = useState(false);
+  const [savingAccepting, setSavingAccepting] = useState(false);
   const [attendLoading, setAttendLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [error, setError] = useState("");
@@ -58,9 +59,7 @@ function BarberDashboard() {
     fetchAll();
   }, []);
 
-  const currentClient = useMemo(() => {
-    return queueData?.current || null;
-  }, [queueData]);
+  const currentClient = useMemo(() => queueData?.current || null, [queueData]);
 
   const waitingQueue = useMemo(() => {
     return Array.isArray(queueData?.queue) ? queueData.queue : [];
@@ -75,6 +74,7 @@ function BarberDashboard() {
 
   const getAcceptingValueByStatus = (status) => status === "active";
 
+  // Actualiza currentStatus + isAccepting según el estado seleccionado
   const handleStatusUpdate = async () => {
     try {
       setSavingStatus(true);
@@ -95,6 +95,33 @@ function BarberDashboard() {
       setError(err.message || "Error al actualizar el estado");
     } finally {
       setSavingStatus(false);
+    }
+  };
+
+  // Toggle independiente de isAccepting — no cambia currentStatus
+  const handleToggleAccepting = async () => {
+    const newValue = !barber?.isAccepting;
+
+    try {
+      setSavingAccepting(true);
+      setError("");
+      setSuccessMessage("");
+
+      await updateBarberStatus(barberId, {
+        isAccepting: newValue,
+      });
+
+      setSuccessMessage(
+        newValue
+          ? "Ahora estás aceptando clientes en tu cola."
+          : "Tu cola está cerrada. No se registrarán nuevos clientes.",
+      );
+      await fetchAll();
+    } catch (err) {
+      console.error("Error al cambiar disponibilidad:", err);
+      setError(err.message || "Error al cambiar la disponibilidad");
+    } finally {
+      setSavingAccepting(false);
     }
   };
 
@@ -123,8 +150,6 @@ function BarberDashboard() {
     }
   };
 
-  // Finalizar servicio del cliente actual → PATCH /api/turns/{id}/attend
-  // Requiere que currentClient esté en in_service
   const handleAttendTurn = async () => {
     if (!currentClient?.id) {
       setError("No hay cliente en servicio para finalizar.");
@@ -166,6 +191,8 @@ function BarberDashboard() {
     );
   }
 
+  const isAccepting = barber?.isAccepting ?? false;
+
   return (
     <div className="barber-dashboard-page">
       <div className="barber-dashboard-header">
@@ -194,14 +221,12 @@ function BarberDashboard() {
             {dashboard?.totalAttendedClients ?? 0}
           </p>
         </div>
-
         <div className="barber-kpi-card">
           <p className="barber-kpi-label">Tiempo promedio (minutos)</p>
           <p className="barber-kpi-value small">
             {dashboard?.averageServiceMinutes || "Sin datos"}
           </p>
         </div>
-
         <div className="barber-kpi-card">
           <p className="barber-kpi-label">Rating promedio</p>
           <p className="barber-kpi-value">
@@ -210,7 +235,6 @@ function BarberDashboard() {
               : "Sin datos"}
           </p>
         </div>
-
         <div className="barber-kpi-card">
           <p className="barber-kpi-label">Fecha de ingreso</p>
           <p className="barber-kpi-value small">
@@ -221,6 +245,7 @@ function BarberDashboard() {
 
       <div className="barber-dashboard-main-grid">
         <div className="barber-dashboard-left">
+          {/* ─── Estado actual ─── */}
           <div className="barber-dashboard-card compact-status-card">
             <h2>Estado actual</h2>
 
@@ -231,13 +256,10 @@ function BarberDashboard() {
                   {getStatusLabel(barber?.currentStatus)}
                 </span>
               </div>
-
               <div className="barber-status-mini-card">
-                <span className="barber-status-mini-label">Disponibilidad</span>
+                <span className="barber-status-mini-label">Cola</span>
                 <span className="barber-status-mini-value">
-                  {barber?.isAccepting
-                    ? "Aceptando clientes"
-                    : "No acepta clientes"}
+                  {isAccepting ? "Abierta" : "Cerrada"}
                 </span>
               </div>
             </div>
@@ -265,6 +287,33 @@ function BarberDashboard() {
             </div>
           </div>
 
+          {/* ─── Control de cola — toggle independiente ─── */}
+          <div className="barber-dashboard-card">
+            <h2>Control de cola</h2>
+            <p className="barber-queue-control-desc">
+              {isAccepting
+                ? "Tu cola está abierta. Los clientes pueden registrarse contigo."
+                : "Tu cola está cerrada. No se aceptarán nuevos clientes."}
+            </p>
+
+            <button
+              type="button"
+              className={`barber-accepting-toggle ${isAccepting ? "accepting" : "not-accepting"}`}
+              onClick={handleToggleAccepting}
+              disabled={savingAccepting}
+            >
+              <span className="material-icons-round">
+                {isAccepting ? "lock_open" : "lock"}
+              </span>
+              {savingAccepting
+                ? "Actualizando..."
+                : isAccepting
+                  ? "Cerrar mi cola"
+                  : "Abrir mi cola"}
+            </button>
+          </div>
+
+          {/* ─── Cliente actual ─── */}
           <div className="barber-dashboard-card">
             <h2>Cliente actual</h2>
 
@@ -273,12 +322,10 @@ function BarberDashboard() {
                 <div className="barber-current-client-avatar large">
                   <span className="material-icons-round">person</span>
                 </div>
-
                 <div className="barber-current-client-info">
                   <p className="barber-current-client-name">
                     {currentClient.ownerName}
                   </p>
-
                   <div className="barber-current-client-tags">
                     <span className="client-tag blue">
                       {currentClient.ownerType}
@@ -302,11 +349,11 @@ function BarberDashboard() {
             )}
           </div>
 
+          {/* ─── Acciones ─── */}
           <div className="barber-dashboard-card">
             <h2>Acciones de la jornada</h2>
 
             <div className="barber-actions-grid">
-              {/* Finalizar servicio — activo solo si hay cliente en in_service */}
               <button
                 className="barber-action-card finish-service"
                 type="button"
@@ -347,6 +394,7 @@ function BarberDashboard() {
           </div>
         </div>
 
+        {/* ─── Cola ─── */}
         <div className="barber-dashboard-right">
           <div className="barber-queue-column-card">
             <div className="barber-queue-column-header">

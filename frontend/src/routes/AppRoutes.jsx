@@ -40,6 +40,9 @@ import AssistantProfile from "../pages/assistant/AssistantProfile";
 //Google authentication
 import AuthCallback from "../pages/auth/AuthCallback";
 
+//404 ERROR
+import NotFound from "../pages/NotFound";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -102,7 +105,7 @@ function AppRoutes() {
       <Route path="/auth/callback" element={<AuthCallback />} />
 
       {/* 404 */}
-      <Route path="*" element={<h1>404 - Página no encontrada</h1>} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

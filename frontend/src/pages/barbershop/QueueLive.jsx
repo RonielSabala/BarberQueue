@@ -30,6 +30,21 @@ const STATUS_LABELS = {
   paid: "Pagado",
 };
 
+function mapCheckoutError(message) {
+  const msg = message?.toLowerCase() || "";
+  if (
+    msg.includes("at_barbershop") ||
+    msg.includes("paid") ||
+    msg.includes("status")
+  ) {
+    return "No puedes salir de la barbería mientras tienes un turno activo. Cancela tu turno primero.";
+  }
+  if (msg.includes("not found") || msg.includes("no encontrado")) {
+    return "No se encontró tu registro en esta barbería.";
+  }
+  return message || "Error al salir de la barbería.";
+}
+
 function QueueLive() {
   const { id } = useParams();
 
@@ -51,6 +66,22 @@ function QueueLive() {
   const [turnError, setTurnError] = useState("");
   const [turnSuccess, setTurnSuccess] = useState("");
   const [isTurnModalOpen, setIsTurnModalOpen] = useState(false);
+
+  // Modal de salidas para el assistant
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(null);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [checkoutSuccess, setCheckoutSuccess] = useState("");
+
+  // Modal de grupo para el cliente
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
+  const [selectedBarberId, setSelectedBarberId] = useState("");
+  const [groupMode, setGroupMode] = useState("single"); // single | group
+  const [groupMembers, setGroupMembers] = useState([
+    { id: 1, memberName: "", barberId: "" },
+  ]);
+  const [joiningGroup, setJoiningGroup] = useState(false);
+  const [groupError, setGroupError] = useState("");
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const currentUserId = storedUser?.id;
@@ -122,11 +153,9 @@ function QueueLive() {
         msg.includes("not found") ||
         msg.includes("no tiene") ||
         msg.includes("barbershop");
-
       if (isNoTurn) {
         setMyTurn(null);
       } else {
-        console.error("Error al obtener mi turno:", err);
         setTurnError(err.message || "Error al obtener tu turno");
       }
     } finally {
@@ -146,18 +175,13 @@ function QueueLive() {
 
   const currentUserCheckedIn = useMemo(() => {
     if (!currentUserId) return false;
-
-    // Está en la lista de clientes en espera general de esta barbería
     const inClientList = clientsAtBarbershop.some(
       (client) => Number(client.clientId) === Number(currentUserId),
     );
-
-    // O tiene un turno activo en esta barbería específica
     const hasActiveTurnHere =
       myTurn !== null &&
       myTurn !== undefined &&
       Number(myTurn.barbershopId) === Number(id);
-
     return inClientList || hasActiveTurnHere;
   }, [clientsAtBarbershop, currentUserId, myTurn, id]);
 
@@ -174,24 +198,17 @@ function QueueLive() {
   const estimatedTurnTime = useMemo(() => {
     if (!myTurn) return "Sin turno";
     const status = myTurn.ownerStatus || myTurn.status;
-
     if (status === "in_service") return "Te están atendiendo ahora";
     if (status === "attended") return "Servicio finalizado — pendiente de pago";
     if (status === "waiting") return "Turno pausado — no perderás tu posición";
-
-    // Usar estimatedTime del backend si está disponible
     if (myTurn.estimatedTime !== null && myTurn.estimatedTime !== undefined) {
       if (myTurn.estimatedTime === 0) return "Próximo en atención";
       return `~${Math.round(myTurn.estimatedTime)} minutos`;
     }
-
-    // Fallback manual
     if (!myTurn.position || myTurn.position <= 1) return "Próximo en atención";
-    const minutes = (myTurn.position - 1) * 20;
-    return `~${minutes} minutos`;
+    return `~${(myTurn.position - 1) * 20} minutos`;
   }, [myTurn]);
 
-  // Tiempo estimado del grupo completo (solo líder)
   const estimatedGroupTime = useMemo(() => {
     if (!myTurn?.estimatedGroupTime) return null;
     if (myTurn.estimatedGroupTime === 0) return "Todo el grupo siendo atendido";
@@ -203,6 +220,36 @@ function QueueLive() {
   }, [myTurn]);
 
   const myTurnStatus = myTurn?.ownerStatus || myTurn?.status || null;
+
+  // ─── Helpers grupo ─────────────────────────────────────────────────────────
+
+  const addGroupMember = () => {
+    setGroupMembers((prev) => [
+      ...prev,
+      { id: Date.now(), memberName: "", barberId: "" },
+    ]);
+  };
+
+  const removeGroupMember = (memberId) => {
+    if (groupMembers.length === 1) {
+      setGroupMembers([{ id: 1, memberName: "", barberId: "" }]);
+      return;
+    }
+    setGroupMembers((prev) => prev.filter((m) => m.id !== memberId));
+  };
+
+  const updateGroupMember = (memberId, field, value) => {
+    setGroupMembers((prev) =>
+      prev.map((m) => (m.id === memberId ? { ...m, [field]: value } : m)),
+    );
+  };
+
+  const resetGroupModal = () => {
+    setSelectedBarberId("");
+    setGroupMode("single");
+    setGroupMembers([{ id: 1, memberName: "", barberId: "" }]);
+    setGroupError("");
+  };
 
   // ─── Acciones ──────────────────────────────────────────────────────────────
 
@@ -219,18 +266,15 @@ function QueueLive() {
       setClientSuccess("Tu llegada fue registrada correctamente.");
       await fetchClientsAtBarbershop();
     } catch (err) {
-      // Si el backend indica que ya está en otra barbería, mostramos mensaje legible
       const msg = err.message?.toLowerCase() || "";
       const alreadyElsewhere =
         msg.includes("already") ||
         msg.includes("active in") ||
         msg.includes("currently");
-
       const notOpen =
         msg.includes("not open") ||
         msg.includes("closed") ||
         msg.includes("cerrada");
-
       if (alreadyElsewhere) {
         setClientError(
           "Ya estás registrado en otra barbería. Debes salir de ella antes de registrarte aquí.",
@@ -245,61 +289,109 @@ function QueueLive() {
     }
   };
 
-  const handleCheckOut = async (clientId) => {
+  const handleSelfCheckOut = async () => {
     try {
       setClientActionLoading(true);
       setClientError("");
       setClientSuccess("");
-      await checkOutBarbershopClient(id, clientId);
-      setClientSuccess("Cliente retirado correctamente.");
-      await fetchClientsAtBarbershop();
+      await checkOutBarbershopClient(id, currentUserId);
+      setClientSuccess("Saliste de la barbería correctamente.");
+      setMyTurn(null);
+      await Promise.all([fetchClientsAtBarbershop(), fetchQueue()]);
     } catch (err) {
-      setClientError(err.message || "Error al retirar el cliente");
+      setClientError(mapCheckoutError(err.message));
     } finally {
       setClientActionLoading(false);
     }
   };
 
-  const handleJoinBarberQueue = async (barberId) => {
+  const handleAssistantCheckOut = async (clientId) => {
     try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
+      setCheckoutLoading(clientId);
+      setCheckoutError("");
+      setCheckoutSuccess("");
+      await checkOutBarbershopClient(id, clientId);
+      setCheckoutSuccess("Cliente retirado correctamente.");
+      await Promise.all([fetchClientsAtBarbershop(), fetchQueue()]);
+    } catch (err) {
+      setCheckoutError(mapCheckoutError(err.message));
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  // Entrar a cola — abre modal para elegir individual o grupo
+  const handleOpenJoinModal = (barberId) => {
+    resetGroupModal();
+    setSelectedBarberId(String(barberId));
+    setIsGroupModalOpen(true);
+  };
+
+  const handleJoinQueue = async () => {
+    try {
+      setJoiningGroup(true);
+      setGroupError("");
+
       if (!currentUserId) {
-        setTurnError("Debes iniciar sesión para tomar un turno.");
+        setGroupError("Debes iniciar sesión para tomar un turno.");
         return;
       }
       if (!currentUserCheckedIn) {
-        setTurnError("Primero debes registrar tu llegada a la barbería.");
+        setGroupError("Primero debes registrar tu llegada a la barbería.");
         return;
       }
       if (myTurn) {
-        setTurnError("Ya tienes un turno activo.");
+        setGroupError("Ya tienes un turno activo.");
         return;
       }
+
+      // Construir payload de grupo si aplica
+      let groupMembersPayload = [];
+      if (groupMode === "group") {
+        const valid = groupMembers.filter((m) => m.memberName.trim());
+        if (valid.length === 0) {
+          setGroupError("Agrega al menos un miembro al grupo.");
+          return;
+        }
+        groupMembersPayload = valid.map((m) => ({
+          memberName: m.memberName.trim(),
+          barberId: m.barberId ? Number(m.barberId) : null,
+        }));
+      }
+
       const createdTurns = await createTurn({
         clientId: currentUserId,
         barbershopId: Number(id),
-        barberId: Number(barberId),
+        barberId: selectedBarberId ? Number(selectedBarberId) : null,
+        groupMembers: groupMembersPayload,
       });
+
       const mainTurn = Array.isArray(createdTurns)
         ? createdTurns.find(
-            (turn) =>
-              Number(turn.ownerId) === Number(currentUserId) &&
-              turn.ownerType === "client",
+            (t) =>
+              Number(t.ownerId) === Number(currentUserId) &&
+              t.ownerType === "client",
           )
         : createdTurns;
+
       if (mainTurn) setMyTurn(mainTurn);
-      setTurnSuccess("Te registraste correctamente en la cola del barbero.");
+
+      setTurnSuccess(
+        groupMode === "group"
+          ? "Grupo registrado correctamente en la cola."
+          : "Te registraste correctamente en la cola del barbero.",
+      );
+      setIsGroupModalOpen(false);
+      resetGroupModal();
       await Promise.all([
         fetchQueue(),
         fetchClientsAtBarbershop(),
         fetchMyTurn(),
       ]);
     } catch (err) {
-      setTurnError(err.message || "Error al registrarte en la cola");
+      setGroupError(err.message || "Error al registrarte en la cola");
     } finally {
-      setTurnActionLoading(false);
+      setJoiningGroup(false);
     }
   };
 
@@ -403,7 +495,6 @@ function QueueLive() {
               {barbershopName || "Sucursal BarberQueue"}
             </p>
           </div>
-
           <div className="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="text-right">
               <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
@@ -452,8 +543,8 @@ function QueueLive() {
                     barber={barber}
                     showJoinAction={isClient}
                     canJoin={currentUserCheckedIn && !myTurn}
-                    joining={turnActionLoading}
-                    onJoinQueue={handleJoinBarberQueue}
+                    joining={turnActionLoading || joiningGroup}
+                    onJoinQueue={handleOpenJoinModal}
                   />
                 ))
               )}
@@ -549,13 +640,33 @@ function QueueLive() {
             </div>
 
             {isAssistant ? (
-              <AssistantRegisterPanel
-                barbers={activeBarbers}
-                barbershopId={id}
-                onRegistered={async () => {
-                  await Promise.all([fetchQueue(), fetchClientsAtBarbershop()]);
-                }}
-              />
+              <div className="space-y-4">
+                <AssistantRegisterPanel
+                  barbers={activeBarbers}
+                  barbershopId={id}
+                  onRegistered={async () => {
+                    await Promise.all([
+                      fetchQueue(),
+                      fetchClientsAtBarbershop(),
+                    ]);
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckoutError("");
+                    setCheckoutSuccess("");
+                    setIsCheckoutModalOpen(true);
+                    fetchClientsAtBarbershop();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl shadow-sm transition"
+                >
+                  <span className="material-icons-round text-slate-500">
+                    exit_to_app
+                  </span>
+                  Gestionar salidas
+                </button>
+              </div>
             ) : (
               <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                 <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
@@ -579,9 +690,24 @@ function QueueLive() {
                       la barbería.
                     </p>
                     {currentUserCheckedIn ? (
-                      <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
-                        Ya estás registrado dentro de la barbería.
-                      </div>
+                      <>
+                        <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
+                          Ya estás registrado dentro de la barbería.
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleSelfCheckOut}
+                          disabled={clientActionLoading}
+                          className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                        >
+                          <span className="material-icons-round text-base">
+                            logout
+                          </span>
+                          {clientActionLoading
+                            ? "Saliendo..."
+                            : "Salir de la barbería"}
+                        </button>
+                      </>
                     ) : (
                       <button
                         onClick={handleCheckIn}
@@ -609,7 +735,7 @@ function QueueLive() {
                   </div>
                 )}
 
-                {canManageClients && !isClient && (
+                {canManageClients && !isClient && !isAssistant && (
                   <div className="space-y-3">
                     {loadingClients ? (
                       <p className="text-slate-400 text-sm">
@@ -636,11 +762,13 @@ function QueueLive() {
                             </p>
                           </div>
                           <button
-                            onClick={() => handleCheckOut(client.clientId)}
-                            disabled={clientActionLoading}
+                            onClick={() =>
+                              handleAssistantCheckOut(client.clientId)
+                            }
+                            disabled={checkoutLoading === client.clientId}
                             className="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-60"
                           >
-                            Check-out
+                            Retirar
                           </button>
                         </div>
                       ))
@@ -652,6 +780,287 @@ function QueueLive() {
           </div>
         </div>
       </main>
+
+      {/* ─── Modal unirse a cola (cliente) ──────────────────────────────────── */}
+      {isGroupModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">
+                  Entrar a la cola
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  ¿Vienes solo o en grupo?
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsGroupModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <span className="material-icons-round">close</span>
+              </button>
+            </div>
+
+            {groupError && (
+              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {groupError}
+              </div>
+            )}
+
+            {/* Tipo: individual o grupo */}
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <button
+                type="button"
+                onClick={() => setGroupMode("single")}
+                className={`py-3 rounded-2xl font-semibold border transition flex items-center justify-center gap-2 ${
+                  groupMode === "single"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <span className="material-icons-round text-base">person</span>
+                Solo
+              </button>
+              <button
+                type="button"
+                onClick={() => setGroupMode("group")}
+                className={`py-3 rounded-2xl font-semibold border transition flex items-center justify-center gap-2 ${
+                  groupMode === "group"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <span className="material-icons-round text-base">group</span>
+                Grupo
+              </button>
+            </div>
+
+            {/* Barbero preferido (líder) */}
+            <div className="mb-5">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Tu barbero preferido
+              </label>
+              <select
+                value={selectedBarberId}
+                onChange={(e) => setSelectedBarberId(e.target.value)}
+                className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white"
+              >
+                <option value="">Sin preferencia (auto-asignación)</option>
+                {activeBarbers
+                  .filter((b) => b.isAccepting)
+                  .map((barber) => (
+                    <option key={barber.id} value={barber.id}>
+                      {barber.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            {/* Miembros del grupo */}
+            {groupMode === "group" && (
+              <div className="space-y-4 mb-5">
+                <p className="text-sm font-semibold text-slate-700">
+                  Miembros del grupo
+                </p>
+                {groupMembers.map((member, index) => (
+                  <div
+                    key={member.id}
+                    className="rounded-2xl border border-slate-200 p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-slate-700 text-sm">
+                        Miembro {index + 1}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => removeGroupMember(member.id)}
+                        className="w-8 h-8 rounded-xl bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center transition"
+                      >
+                        <span className="material-icons-round text-sm">
+                          close
+                        </span>
+                      </button>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        value={member.memberName}
+                        onChange={(e) =>
+                          updateGroupMember(
+                            member.id,
+                            "memberName",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Nombre del acompañante"
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">
+                        Barbero preferido
+                      </label>
+                      <select
+                        value={member.barberId}
+                        onChange={(e) =>
+                          updateGroupMember(
+                            member.id,
+                            "barberId",
+                            e.target.value,
+                          )
+                        }
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm bg-white"
+                      >
+                        <option value="">Sin preferencia</option>
+                        {activeBarbers
+                          .filter((b) => b.isAccepting)
+                          .map((barber) => (
+                            <option key={barber.id} value={barber.id}>
+                              {barber.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addGroupMember}
+                  className="w-full border border-dashed border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold py-3 rounded-2xl transition flex items-center justify-center gap-2"
+                >
+                  <span className="material-icons-round text-base">add</span>
+                  Agregar miembro
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleJoinQueue}
+                disabled={joiningGroup}
+                className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60"
+              >
+                {joiningGroup ? "Registrando..." : "Confirmar"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsGroupModalOpen(false)}
+                className="flex-1 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Modal salidas (Assistant) ──────────────────────────────────────── */}
+      {isCheckoutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-xl font-bold text-slate-800">
+                  Gestionar salidas
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Retira clientes de la barbería cuando sea necesario.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCheckoutModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <span className="material-icons-round">close</span>
+              </button>
+            </div>
+
+            {checkoutError && (
+              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {checkoutError}
+              </div>
+            )}
+            {checkoutSuccess && (
+              <div className="mb-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                {checkoutSuccess}
+              </div>
+            )}
+
+            {loadingClients ? (
+              <p className="text-slate-400 text-sm text-center py-6">
+                Cargando clientes...
+              </p>
+            ) : clientsAtBarbershop.length === 0 ? (
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <span className="material-icons-round text-slate-300 text-4xl mb-2 block">
+                  people_outline
+                </span>
+                <p className="text-slate-500 text-sm">
+                  No hay clientes dentro de la barbería.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {clientsAtBarbershop.map((client) => (
+                  <div
+                    key={client.clientId}
+                    className="flex items-center justify-between gap-4 border border-slate-100 rounded-2xl p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                        <span className="material-icons-round text-slate-400 text-lg">
+                          person
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-800">
+                          {client.username}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          {STATUS_LABELS[client.currentStatus] ||
+                            client.currentStatus}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleAssistantCheckOut(client.clientId)}
+                      disabled={checkoutLoading === client.clientId}
+                      className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-4 py-2 rounded-xl transition disabled:opacity-60 flex-shrink-0"
+                    >
+                      <span className="material-icons-round text-base">
+                        {checkoutLoading === client.clientId
+                          ? "hourglass_empty"
+                          : "exit_to_app"}
+                      </span>
+                      {checkoutLoading === client.clientId
+                        ? "Retirando..."
+                        : "Retirar"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsCheckoutModalOpen(false)}
+                className="border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-6 py-3 rounded-2xl transition"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── Modal Mi turno ─────────────────────────────────────────────────── */}
       {isTurnModalOpen && (
@@ -747,7 +1156,6 @@ function QueueLive() {
                   </div>
                 </div>
 
-                {/* Tiempo estimado del grupo completo — solo líder */}
                 {isGroupLeader && estimatedGroupTime && (
                   <div className="mb-5 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 flex items-center gap-3">
                     <span className="material-icons-round text-blue-500 text-base">

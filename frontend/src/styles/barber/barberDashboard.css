@@ -32,8 +32,14 @@
   border-radius: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
+.barber-dashboard-back-btn:hover {
+  opacity: 0.88;
+}
+
+/* ─── Alertas ─── */
 .barber-dashboard-alert {
   padding: 14px 16px;
   border-radius: 12px;
@@ -53,6 +59,7 @@
   border: 1px solid #bbf7d0;
 }
 
+/* ─── KPIs ─── */
 .barber-dashboard-kpis {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
@@ -87,6 +94,7 @@
   line-height: 1.4;
 }
 
+/* ─── Grid principal ─── */
 .barber-dashboard-main-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
@@ -99,6 +107,7 @@
   gap: 20px;
 }
 
+/* ─── Card base ─── */
 .barber-dashboard-card {
   background: white;
   border: 1px solid #e5e7eb;
@@ -114,6 +123,7 @@
   font-weight: 800;
 }
 
+/* ─── Estado actual ─── */
 .compact-status-card {
   padding: 20px;
 }
@@ -177,23 +187,67 @@
   font-weight: 800;
   cursor: pointer;
   width: 100%;
+  transition: opacity 0.2s;
 }
 
+.barber-save-status-btn:hover:not(:disabled) {
+  opacity: 0.88;
+}
 .barber-save-status-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .barber-status-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .barber-status-form-inline {
-    grid-template-columns: 1fr;
-  }
+/* ─── Control de cola ─── */
+.barber-queue-control-desc {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.65;
 }
 
+.barber-accepting-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+}
+
+.barber-accepting-toggle:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.barber-accepting-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Cola abierta → botón rojo para cerrarla */
+.barber-accepting-toggle.accepting {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* Cola cerrada → botón verde para abrirla */
+.barber-accepting-toggle.not-accepting {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+/* ─── Cliente actual ─── */
 .barber-current-client-premium {
   display: flex;
   align-items: center;
@@ -226,6 +280,13 @@
   gap: 8px;
 }
 
+.barber-current-client-name {
+  margin: 0;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 17px;
+}
+
 .barber-current-client-tags {
   display: flex;
   flex-wrap: wrap;
@@ -244,10 +305,13 @@
   background: #dbeafe;
   color: #1d4ed8;
 }
-
 .client-tag.green {
   background: #dcfce7;
   color: #166534;
+}
+.client-tag.amber {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .barber-empty-state-box {
@@ -265,6 +329,7 @@
   font-size: 24px;
 }
 
+/* ─── Acciones ─── */
 .barber-actions-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(220px, 1fr));
@@ -323,111 +388,7 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
-  .barber-actions-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.barber-status-form label {
-  color: #334155;
-  font-weight: 700;
-}
-
-.barber-status-select {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid #cbd5e1;
-  background: white;
-  font-size: 16px;
-  outline: none;
-}
-
-.barber-status-select:focus {
-  border-color: #16396b;
-}
-
-.barber-save-status-btn {
-  border: none;
-  background: #16396b;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.barber-save-status-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.barber-current-client-content {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.barber-current-client-avatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  background: #dbeafe;
-  color: #1d4ed8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.barber-current-client-name {
-  margin: 0 0 4px 0;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.barber-current-client-meta {
-  margin: 0;
-  color: #64748b;
-  font-size: 14px;
-}
-
-.barber-empty-text,
-.barber-queue-empty {
-  color: #64748b;
-  font-size: 14px;
-}
-
-.barber-dashboard-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
-.barber-action-btn {
-  border: none;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.barber-action-btn.finish-service {
-  background: #fbbf24;
-  color: #78350f;
-}
-
-.barber-action-btn.end-shift {
-  background: #ef4444;
-  color: white;
-}
-
-.barber-action-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
+/* ─── Cola derecha ─── */
 .barber-dashboard-right {
   display: flex;
   justify-content: center;
@@ -481,6 +442,11 @@
   background: #eff6ff;
 }
 
+.barber-queue-turn.waiting {
+  opacity: 0.75;
+  border-style: dashed;
+}
+
 .barber-queue-turn-position {
   width: 48px;
   height: 48px;
@@ -506,6 +472,14 @@
   font-size: 13px;
 }
 
+.barber-queue-empty {
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+/* ─── Responsive ─── */
 @media (max-width: 1100px) {
   .barber-dashboard-kpis {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
@@ -516,13 +490,20 @@
   .barber-dashboard-main-grid {
     grid-template-columns: 1fr;
   }
-
   .barber-dashboard-right {
     justify-content: stretch;
   }
-
   .barber-queue-column-card {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .barber-status-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .barber-status-form-inline {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -530,20 +511,15 @@
   .barber-dashboard-page {
     padding: 20px;
   }
-
   .barber-dashboard-header h1 {
     font-size: 28px;
   }
-
   .barber-dashboard-kpis {
     grid-template-columns: 1fr;
   }
-
-  .barber-dashboard-actions {
-    flex-direction: column;
+  .barber-actions-grid {
+    grid-template-columns: 1fr;
   }
-
-  .barber-action-btn,
   .barber-save-status-btn,
   .barber-dashboard-back-btn {
     width: 100%;
