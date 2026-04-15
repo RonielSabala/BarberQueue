@@ -29,15 +29,13 @@ final readonly class QueueRepository extends TurnRepository
     public function findActiveBarbershopForBarber(int $barberId): ?int
     {
         $sql = <<<'SQL'
-            SELECT
-                sa.barbershop_id
+            SELECT DISTINCT
+                t.barbershop_id
             FROM
-                staff_assignments sa
-                JOIN working_days wd ON wd.staff_id = sa.staff_id
-                AND wd.barbershop_id = sa.barbershop_id
+                turns t
             WHERE
-                sa.staff_id = ?
-                AND wd.day_of_week = DAYOFWEEK(CURDATE()) - 1
+                t.barber_id = ?
+                AND t.attended_at IS NULL
             LIMIT
                 1
         SQL;
@@ -45,13 +43,15 @@ final readonly class QueueRepository extends TurnRepository
         $row = $this->query($sql, [$barberId])->fetch();
         if (!$row) {
             $sql = <<<'SQL'
-                SELECT DISTINCT
-                    t.barbershop_id
+                SELECT
+                    sa.barbershop_id
                 FROM
-                    turns t
+                    staff_assignments sa
+                    JOIN working_days wd ON wd.staff_id = sa.staff_id
+                    AND wd.barbershop_id = sa.barbershop_id
                 WHERE
-                    t.barber_id = ?
-                    AND t.finished_at IS NULL
+                    sa.staff_id = ?
+                    AND wd.day_of_week = DAYOFWEEK(CURDATE()) - 1
                 LIMIT
                     1
             SQL;
