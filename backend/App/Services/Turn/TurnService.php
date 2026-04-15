@@ -66,7 +66,7 @@ final readonly class TurnService extends BaseTurnService
     public function promoteToInService(TurnEntity $turn, int $barberId): bool
     {
         // Already promoted
-        if ($turn->ownerStatus->value !== ClientStatusEnum::InService->value) {
+        if ($turn->ownerStatus->value === ClientStatusEnum::InService->value) {
             return true;
         }
 
