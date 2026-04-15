@@ -79,8 +79,8 @@ function CheckoutModal({
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                      <span className="material-icons-round text-amber-600 text-sm">
-                        person
+                      <span className="text-amber-700 text-xs font-bold">
+                        {turn.position ?? "—"}
                       </span>
                     </div>
                     <div className="min-w-0">
