@@ -184,13 +184,13 @@ openssl rand -base64 32
 
 #### Google OAuth Setup (Optional)
 
-**Step 1. Create a Google Cloud project**
+##### Step 1. Create a Google Cloud project
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com/).
 2. Click the project dropdown at the top and select **New project**.
 3. Give it a name and click **Create**.
 
-**Step 2. Configure the OAuth consent screen**
+##### Step 2. Configure the OAuth consent screen
 
 Before creating credentials, Google requires you to describe how your application will use user data.
 
@@ -202,14 +202,14 @@ Before creating credentials, Google requires you to describe how your applicatio
    - **Developer contact email**: the value of `MAIL_USERNAME`
 4. Click **Save and continue** through the remaining steps.
 
-**Step 3. Create OAuth credentials**
+##### Step 3. Create OAuth credentials
 
 1. Go to **APIs & Services** > **Credentials**.
 2. Click **Create credentials** > **OAuth client ID**.
 3. Set the **Application type** to **Web application**.
 4. Under **Authorized redirect URIs**, click **Add URI** and enter:
 
-   ```
+   ```plain
    {BACKEND_URL}/api/auth/google
    ```
 

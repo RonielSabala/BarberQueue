@@ -14,14 +14,14 @@ unless noted otherwise.
 - [Auth](#auth)
 - [Users](#users)
 - [Barbershops](#barbershops)
-  - [Photos](#photos)
-  - [Reviews](#reviews)
-  - [Employees](#employees)
-  - [Clients](#clients)
-- [Employees](#employees-1)
+  - [Barbershop Photos](#barbershop-photos)
+  - [Barbershop Reviews](#barbershop-reviews)
+  - [Barbershop Employees](#barbershop-employees)
+  - [Barbershop Clients](#barbershop-clients)
+- [Employees](#employees)
 - [Barbers](#barbers)
-  - [Reviews](#reviews-1)
-- [Clients](#clients-1)
+  - [Barber Reviews](#barber-reviews)
+- [Clients](#clients)
 - [Group Members](#group-members)
 - [Queues](#queues)
 - [Turns](#turns)
@@ -163,13 +163,13 @@ This is called automatically by the browser after the user authenticates with Go
 
 After processing, the backend redirects the browser to the frontend callback route with the session data in the query string:
 
-```
+```plain
 {FRONTEND_URL}/auth/callback?token=jwt_token&id=1&username=user_example&role=client
 ```
 
 On error, the backend redirects to:
 
-```
+```plain
 {FRONTEND_URL}/auth/callback?error=auth_failed
 ```
 
@@ -231,8 +231,6 @@ Reset password using the reset code received by email.
 ### `GET /api/users` <!-- omit from toc -->
 
 List all users. Supports optional filters.
-
-**Query params**
 
 | Param      | Type   | Description         |
 | ---------- | ------ | ------------------- |
@@ -326,8 +324,6 @@ Update a user's password.
 ### `GET /api/barbershops` <!-- omit from toc -->
 
 List all active barbershops. Supports optional filters.
-
-**Query params**
 
 | Param     | Type   | Description                         |
 | --------- | ------ | ----------------------------------- |
@@ -513,7 +509,7 @@ Replace the barbershop's main photo.
 
 ---
 
-### Photos
+### Barbershop Photos
 
 ### `GET /api/barbershops/{id}/photos` <!-- omit from toc -->
 
@@ -576,7 +572,7 @@ Remove a photo from the gallery.
 
 ---
 
-### Reviews
+### Barbershop Reviews
 
 ### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
 
@@ -636,7 +632,7 @@ Remove a review from a barbershop's reviews.
 
 ---
 
-### Employees
+### Barbershop Employees
 
 ### `GET /api/barbershops/{id}/employees` <!-- omit from toc -->
 
@@ -703,7 +699,7 @@ Unassign an employee from a barbershop. The employee's user account remains acti
 
 ---
 
-### Clients
+### Barbershop Clients
 
 ### `GET /api/barbershops/{id}/clients` <!-- omit from toc -->
 
@@ -869,7 +865,7 @@ Update a barber's current status. All fields are optional, but at least one must
 
 ---
 
-### Reviews
+### Barber Reviews
 
 ### `GET /api/barbers/{id}/reviews` <!-- omit from toc -->
 
