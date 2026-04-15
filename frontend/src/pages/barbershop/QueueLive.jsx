@@ -146,10 +146,20 @@ function QueueLive() {
 
   const currentUserCheckedIn = useMemo(() => {
     if (!currentUserId) return false;
-    return clientsAtBarbershop.some(
+
+    // Está en la lista de clientes en espera general de esta barbería
+    const inClientList = clientsAtBarbershop.some(
       (client) => Number(client.clientId) === Number(currentUserId),
     );
-  }, [clientsAtBarbershop, currentUserId]);
+
+    // O tiene un turno activo en esta barbería específica
+    const hasActiveTurnHere =
+      myTurn !== null &&
+      myTurn !== undefined &&
+      Number(myTurn.barbershopId) === Number(id);
+
+    return inClientList || hasActiveTurnHere;
+  }, [clientsAtBarbershop, currentUserId, myTurn, id]);
 
   const currentBarberName = useMemo(() => {
     if (!myTurn) return "Sin asignar";
@@ -209,7 +219,27 @@ function QueueLive() {
       setClientSuccess("Tu llegada fue registrada correctamente.");
       await fetchClientsAtBarbershop();
     } catch (err) {
-      setClientError(err.message || "Error al registrar tu llegada");
+      // Si el backend indica que ya está en otra barbería, mostramos mensaje legible
+      const msg = err.message?.toLowerCase() || "";
+      const alreadyElsewhere =
+        msg.includes("already") ||
+        msg.includes("active in") ||
+        msg.includes("currently");
+
+      const notOpen =
+        msg.includes("not open") ||
+        msg.includes("closed") ||
+        msg.includes("cerrada");
+
+      if (alreadyElsewhere) {
+        setClientError(
+          "Ya estás registrado en otra barbería. Debes salir de ella antes de registrarte aquí.",
+        );
+      } else if (notOpen) {
+        setClientError("Esta barbería está cerrada en este momento.");
+      } else {
+        setClientError(err.message || "Error al registrar tu llegada");
+      }
     } finally {
       setClientActionLoading(false);
     }
@@ -562,17 +592,19 @@ function QueueLive() {
                           : "Registrar llegada"}
                       </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsTurnModalOpen(true);
-                        fetchMyTurn();
-                      }}
-                      disabled={loadingMyTurn}
-                      className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
-                    >
-                      {loadingMyTurn ? "Cargando..." : "Ver mi turno"}
-                    </button>
+                    {currentUserCheckedIn && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsTurnModalOpen(true);
+                          fetchMyTurn();
+                        }}
+                        disabled={loadingMyTurn}
+                        className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                      >
+                        {loadingMyTurn ? "Cargando..." : "Ver mi turno"}
+                      </button>
+                    )}
                   </div>
                 )}
 
