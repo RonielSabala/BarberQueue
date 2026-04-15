@@ -4,11 +4,11 @@ import {
   getBarbershopById,
   checkInBarbershopClient,
   checkOutBarbershopClient,
-} from "../../services/barbershopService";
+} from "../services/barbershopService";
 import {
   getBarbershopQueue,
   getRestingBarbers,
-} from "../../services/queueService";
+} from "../services/queueService";
 import {
   createTurn,
   deleteTurn,
@@ -16,7 +16,7 @@ import {
   waitTurn,
   unwaitTurn,
   payTurn,
-} from "../../services/turnService";
+} from "../services/turnService";
 
 export function mapCheckoutError(message) {
   const msg = message?.toLowerCase() || "";
