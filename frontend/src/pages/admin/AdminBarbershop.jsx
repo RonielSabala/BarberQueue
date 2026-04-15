@@ -8,6 +8,40 @@ import {
 } from "../../services/barbershopService";
 import "../../styles/admin/AdminBarbershop.css";
 
+// Mapeo de errores del backend a español legible
+function mapBarbershopError(message) {
+  const msg = message?.toLowerCase() || "";
+  if (
+    msg.includes("email") &&
+    (msg.includes("already") ||
+      msg.includes("exists") ||
+      msg.includes("duplicate"))
+  ) {
+    return "El correo electrónico ya está registrado en otra barbería.";
+  }
+  if (
+    msg.includes("phone") &&
+    (msg.includes("already") ||
+      msg.includes("exists") ||
+      msg.includes("duplicate"))
+  ) {
+    return "El teléfono ya está registrado en otra barbería.";
+  }
+  if (
+    msg.includes("name") &&
+    (msg.includes("already") || msg.includes("exists"))
+  ) {
+    return "Ya existe una barbería con ese nombre.";
+  }
+  if (msg.includes("capacity")) {
+    return "La capacidad debe ser un número válido mayor a 0.";
+  }
+  if (msg.includes("time") || msg.includes("opens") || msg.includes("closes")) {
+    return "El formato de hora no es válido.";
+  }
+  return message || "Error al actualizar la barbería.";
+}
+
 function AdminBarbershop() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,6 +56,9 @@ function AdminBarbershop() {
     closesAt: "",
     capacity: "",
   });
+
+  // Guardamos los datos originales para comparar al guardar
+  const [originalData, setOriginalData] = useState(null);
 
   const [photoUrl, setPhotoUrl] = useState("");
   const [loading, setLoading] = useState(true);
@@ -39,7 +76,7 @@ function AdminBarbershop() {
       const data = await getBarbershopById(id);
       setBarbershop(data);
 
-      setFormData({
+      const loaded = {
         barbershopName: data.name || "",
         email: data.email || "",
         phone: data.phone || "",
@@ -47,8 +84,10 @@ function AdminBarbershop() {
         opensAt: data.opensAt || "",
         closesAt: data.closesAt || "",
         capacity: data.capacity ?? "",
-      });
+      };
 
+      setFormData(loaded);
+      setOriginalData(loaded);
       setPhotoUrl(data.photoUrl || "");
     } catch (err) {
       console.error("Error al cargar barbería:", err);
@@ -59,18 +98,12 @@ function AdminBarbershop() {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchBarbershop();
-    }
+    if (id) fetchBarbershop();
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -81,16 +114,30 @@ function AdminBarbershop() {
       setError("");
       setSuccessMessage("");
 
-      const response = await updateBarbershop(id, formData);
+      // Detectar solo los campos que cambiaron
+      const changedFields = {};
+      Object.keys(formData).forEach((key) => {
+        const current = String(formData[key] ?? "").trim();
+        const original = String(originalData?.[key] ?? "").trim();
+        if (current !== original) {
+          changedFields[key] = formData[key];
+        }
+      });
 
+      // Si no cambió nada, no llamamos a la API
+      if (Object.keys(changedFields).length === 0) {
+        setSuccessMessage("No hay cambios para guardar.");
+        return;
+      }
+
+      const response = await updateBarbershop(id, changedFields);
       setSuccessMessage(
         response.message || "Barbería actualizada correctamente.",
       );
-
       await fetchBarbershop();
     } catch (err) {
       console.error("Error al actualizar barbería:", err);
-      setError(err.message || "Error al actualizar la barbería");
+      setError(mapBarbershopError(err.message));
     } finally {
       setSaving(false);
     }
@@ -105,11 +152,9 @@ function AdminBarbershop() {
       setSuccessMessage("");
 
       const response = await updateBarbershopPhoto(id, photoUrl);
-
       setSuccessMessage(
         response.message || "Foto principal actualizada correctamente.",
       );
-
       await fetchBarbershop();
     } catch (err) {
       console.error("Error al actualizar foto:", err);
@@ -126,11 +171,9 @@ function AdminBarbershop() {
       setSuccessMessage("");
 
       const response = await updateBarbershopStatus(id, newStatus);
-
       setSuccessMessage(
         response.message || "Estado de la barbería actualizado.",
       );
-
       await fetchBarbershop();
     } catch (err) {
       console.error("Error al cambiar estado:", err);
@@ -215,7 +258,6 @@ function AdminBarbershop() {
 
           <div className="admin-barbershop-photo-card">
             <h3>Foto principal</h3>
-
             <form onSubmit={handlePhotoSubmit} className="admin-photo-form">
               <label>URL de la imagen</label>
               <input
@@ -224,7 +266,6 @@ function AdminBarbershop() {
                 onChange={(e) => setPhotoUrl(e.target.value)}
                 placeholder="https://..."
               />
-
               <button type="submit" disabled={savingPhoto} className="save-btn">
                 {savingPhoto ? "Actualizando..." : "Actualizar foto"}
               </button>
@@ -238,9 +279,7 @@ function AdminBarbershop() {
               <button
                 onClick={() => handleStatusChange(true)}
                 disabled={statusLoading}
-                className={`status-btn ${
-                  barbershop.isActive ? "status-btn-open active" : ""
-                }`}
+                className={`status-btn ${barbershop.isActive ? "status-btn-open active" : ""}`}
               >
                 Activa
               </button>
@@ -248,18 +287,14 @@ function AdminBarbershop() {
               <button
                 onClick={() => handleStatusChange(false)}
                 disabled={statusLoading}
-                className={`status-btn ${
-                  !barbershop.isActive ? "status-btn-closed active" : ""
-                }`}
+                className={`status-btn ${!barbershop.isActive ? "status-btn-closed active" : ""}`}
               >
                 Inactiva
               </button>
             </div>
 
             <div
-              className={`admin-barbershop-status-pill ${
-                barbershop.isActive ? "open" : "closed"
-              }`}
+              className={`admin-barbershop-status-pill ${barbershop.isActive ? "open" : "closed"}`}
             >
               <span className="dot">●</span>
               {barbershop.isActive ? "Activa" : "Inactiva"}

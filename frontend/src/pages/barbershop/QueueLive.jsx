@@ -315,6 +315,7 @@ function QueueLive() {
       await deleteTurn(myTurn.id);
       setTurnSuccess("Tu turno fue cancelado correctamente.");
       setMyTurn(null);
+      setIsTurnModalOpen(false);
       await Promise.all([
         fetchQueue(),
         fetchClientsAtBarbershop(),
