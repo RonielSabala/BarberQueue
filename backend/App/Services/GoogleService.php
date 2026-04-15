@@ -53,7 +53,12 @@ final readonly class GoogleService extends BaseService
         $user = $this->userRepository->getByEmail($email);
 
         if ($user === null) {
-            $username = trim($userData['givenName'] . ' ' . $userData['familyName']);
+            // Build username
+            $username = trim($userData['given_name'] . ' ' . $userData['family_name']);
+            while (mb_strlen($username) < Username::MIN_LEN) {
+                $username .= random_int(0, 9);
+            }
+
             $randomPassword = bin2hex(random_bytes(16));
 
             $request = new RegisterRequest(
