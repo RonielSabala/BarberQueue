@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Self
 
 from domain.dtos import BaseDto
 from domain.value_objects.base import BaseField
@@ -49,7 +49,7 @@ class BaseRequest(BaseDto):
     """
 
     @classmethod
-    def random(cls, optional_chance: float = 0.5, **fields: Any | tuple):
+    def random(cls, optional_chance: float = 0.5, **fields: Any | tuple) -> Self:
         """
         Generates a random request.
 

@@ -21,6 +21,8 @@ use App\Services\{BaseService, UserService};
 
 final readonly class BarbershopService extends BaseService
 {
+    private const DEFAULT_BARBERSHOP_CAPACITY = 1;
+
     public function __construct(
         private readonly BarbershopRepository $barbershopRepository,
         private readonly UserService $userService,
@@ -75,7 +77,7 @@ final readonly class BarbershopService extends BaseService
             photoUrl: $request->photoUrl->value,
             opensAt: $request->opensAt->value,
             closesAt: $request->closesAt->value,
-            capacity: $request->capacity?->value ?? 1
+            capacity: $request->capacity?->value ?? self::DEFAULT_BARBERSHOP_CAPACITY
         );
 
         if ($barbershop === null) {

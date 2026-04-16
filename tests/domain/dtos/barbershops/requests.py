@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any, Self
 
 from domain.dtos import BaseRequest
 from domain.value_objects import (
@@ -30,6 +31,13 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
     start_time: TimeOfDay
     end_time: TimeOfDay
     working_days: WorkingDays
+
+    @classmethod
+    def random(cls, optional_chance: float = 0.5, **fields: Any | tuple) -> Self:
+        start_time, end_time = TimeOfDay.random_pair()
+        return super(CreateBarbershopEmployeeRequest, cls).random(
+            optional_chance, start_time=start_time, end_time=end_time, **fields
+        )
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

@@ -10,19 +10,22 @@ from domain.dtos.barbershops import (
 )
 from domain.dtos.turns import CreateTurnMemberRequest, CreateTurnRequest
 from domain.enums import BarberStatusEnum, RoleEnum
-from domain.value_objects import BarberStatus, Id, TimeOfDay
+from domain.value_objects import BarberStatus, Capacity, Id
 
 _SEEDED_ADMIN_ID = 1
 NON_EXISTENT_ID = 999_999
 
 
 def _get_barbershop_request(**kwargs) -> CreateBarbershopRequest:
-    return CreateBarbershopRequest.random(admin_id=Id(_SEEDED_ADMIN_ID), **kwargs)
+    return CreateBarbershopRequest.random(
+        admin_id=Id(_SEEDED_ADMIN_ID), capacity=Capacity._max_value, **kwargs
+    )
 
 
 def get_open_barbershop_request() -> CreateBarbershopRequest:
-    opens_at = TimeOfDay.random()
-    return _get_barbershop_request(opens_at=opens_at, closes_at=opens_at)
+    opens_at = "00:00:00"
+    closed_at = "23:59:59"
+    return _get_barbershop_request(opens_at=opens_at, closes_at=closed_at)
 
 
 def get_closed_barbershop_request() -> CreateBarbershopRequest:
@@ -111,12 +114,12 @@ def create_group_turn(
 
 @pytest.fixture(scope="module")
 def barbershop_request() -> CreateBarbershopRequest:
-    return _get_barbershop_request()
+    return get_open_barbershop_request()
 
 
 @pytest.fixture(scope="module")
 def barbershop_id(client: ApiClient) -> int:
-    request = _get_barbershop_request()
+    request = get_open_barbershop_request()
     response = client.barbershops.create(request)
     return response.json()["id"]
 
