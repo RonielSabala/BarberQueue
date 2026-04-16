@@ -6,11 +6,11 @@ namespace App\Services;
 
 use App\Core\HttpStatus;
 use App\Domain\Entities\EmployeeEntity;
-use App\Domain\Enums\RoleEnum;
+use App\Domain\Enums\EmployeeRoleEnum;
+use App\Domain\ValueObjects\DayOfWeek;
 use App\DTOs\Employees\Requests\UpdateEmployeeAssignmentRequest;
 use App\DTOs\Employees\Responses\EmployeeResponse;
 use App\Exceptions\EmployeeException;
-use App\Services\Barbershop\BarbershopService;
 use App\Repositories\{
     AssignmentRepository,
     EmployeeRepository,
@@ -18,6 +18,7 @@ use App\Repositories\{
     UserRepository,
     WorkingDayRepository
 };
+use App\Services\Barbershop\{BarbershopEmployeeService, BarbershopService};
 
 final readonly class EmployeeService extends BaseService
 {
@@ -28,6 +29,7 @@ final readonly class EmployeeService extends BaseService
         private readonly EmployeeRepository $employeeRepository,
         private readonly UserRepository $userRepository,
         private readonly BarbershopService $barbershopService,
+        private readonly BarbershopEmployeeService $barbershopEmployeeService,
     ) {}
 
     private function validateEmployee(int $employeeId): EmployeeEntity
@@ -41,8 +43,10 @@ final readonly class EmployeeService extends BaseService
         $employeeRole = $role->roleName->value;
 
         if (
-            $employeeRole === RoleEnum::Client->value
-            || $employeeRole === RoleEnum::Admin->value
+            !\in_array($employeeRole, [
+                EmployeeRoleEnum::Barber->value,
+                EmployeeRoleEnum::Assistant->value,
+            ], true)
         ) {
             throw new EmployeeException(
                 'This user is not an employee',
@@ -71,19 +75,57 @@ final readonly class EmployeeService extends BaseService
         int $barbershopId,
         UpdateEmployeeAssignmentRequest $request
     ): void {
-        $this->validateEmployee($employeeId);
-        $this->barbershopService->validateBarbershopExists($barbershopId);
+        $employee = $this->validateEmployee($employeeId);
+        $barbershop = $this->barbershopService->validateBarbershopExists($barbershopId);
 
-        if (!$this->assignmentsRepository->assignmentExists($employeeId, $barbershopId)) {
+        $employeeAssignment = null;
+        foreach ($employee->assignments as $assignment) {
+            if ($barbershopId === $assignment->barbershopId->value) {
+                $employeeAssignment = $assignment;
+                break;
+            }
+        }
+
+        if ($employeeAssignment === null) {
             throw new EmployeeException('Assignment not found', HttpStatus::NotFound);
         }
 
         $fields = $this->validateFieldsToUpdate($request);
+        $days = $fields['working_days'] ?? null;
+        $startTime = (
+            $request->startTime?->value
+            ?? $employeeAssignment->startTime->value
+        );
+        $endTime = (
+            $request->endTime?->value
+            ?? $employeeAssignment->endTime->value
+        );
+
+        $this->barbershopEmployeeService->validateEmployeeWorkingHours(
+            startTime: $startTime,
+            endTime: $endTime,
+            barbershopOpensAt: $barbershop->opensAt->value,
+            barbershopClosesAt: $barbershop->closesAt->value,
+        );
+        $this->barbershopEmployeeService->validateEmployeeWorkingDays(
+            employeeId: $employeeId,
+            barbershopId: $barbershopId,
+            startTime: $startTime,
+            endTime: $endTime,
+            workingDays: $days ?? array_map(
+                static fn (DayOfWeek $day) => $day->value,
+                $employeeAssignment->workingDays
+            ),
+        );
 
         $this->employeeRepository->transaction(
-            function () use ($employeeId, $barbershopId, $fields): void {
+            function () use (
+                $barbershopId,
+                $employeeId,
+                $days,
+                $fields
+            ): void {
                 $role = $fields['role'] ?? null;
-                $days = $fields['working_days'] ?? null;
                 unset($fields['role'], $fields['working_days']);
 
                 $this->assignmentsRepository->updateAssignment($employeeId, $barbershopId, $fields);
@@ -91,6 +133,7 @@ final readonly class EmployeeService extends BaseService
                     $this->workingDayRepository->deleteWorkingDays($employeeId, $barbershopId);
                     $this->workingDayRepository->createWorkingDays($employeeId, $barbershopId, $days);
                 }
+
                 if ($role) {
                     $roleEntity = $this->roleRepository->getByValue($role);
                     $this->userRepository->updateRole($employeeId, $roleEntity->id->value);

@@ -146,29 +146,6 @@ WHERE
 
 END;
 
--- STAFF ASSIGNMENTS - BEFORE INSERT
--- Only barbers and assistants can be assigned to a barbershop
-CREATE TRIGGER trg_staff_assignments_before_insert BEFORE
-INSERT
-    ON staff_assignments FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
-
-SELECT
-    role_id INTO v_role_id
-FROM
-    users
-WHERE
-    id = NEW.staff_id
-LIMIT
-    1;
-
-IF v_role_id NOT IN(2, 3) THEN SIGNAL SQLSTATE '45000'
-SET
-    MESSAGE_TEXT = 'Only barbers and assistants can be assigned to a barbershop';
-
-END IF;
-
-END;
-
 -- CLIENT GROUPS - BEFORE INSERT
 -- The group leader must be a client
 CREATE TRIGGER trg_client_groups_before_insert BEFORE

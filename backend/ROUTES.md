@@ -691,6 +691,30 @@ Create a new user and create their assignment record for the barbershop.
 
 ---
 
+### `POST /api/barbershops/{id}/employees/{employeeId}` <!-- omit from toc -->
+
+Assign an existing employee to a barbershop with a work schedule.
+
+- Body
+
+```json
+{
+  "startTime": "08:00:00",
+  "endTime": "16:00:00",
+  "workingDays": [1, 2, 3, 4, 5]
+}
+```
+
+- Response: `200`
+
+```json
+{
+  "message": "Employee assigned to barbershop"
+}
+```
+
+---
+
 ### `DELETE /api/barbershops/{id}/employees/{employeeId}` <!-- omit from toc -->
 
 Unassign an employee from a barbershop. The employee's user account remains active in the system.

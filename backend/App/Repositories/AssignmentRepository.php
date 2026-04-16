@@ -17,7 +17,7 @@ final readonly class AssignmentRepository extends BaseRepository
     public function assignmentExists(int $staffId, int $barbershopId): bool
     {
         return $this->entityExists(
-            'staff_assignments',
+            self::TABLE_NAME,
             [
                 'staff_id' => $staffId,
                 'barbershop_id' => $barbershopId,
@@ -51,6 +51,51 @@ final readonly class AssignmentRepository extends BaseRepository
         SQL;
 
         return $this->fetchAll(EmployeeAssignmentEntity::class, $assignmentSql, [$id]);
+    }
+
+    /**
+     * @param int[] $days The proposed working days (integers 1-7)
+     *
+     * @return int[] The subset of $days that are already blocked by a conflict
+     */
+    public function findConflictingDays(
+        int $staffId,
+        int $excludeBarbershopId,
+        string $startTime,
+        string $endTime,
+        array $days
+    ): array {
+        if (empty($days)) {
+            return [];
+        }
+
+        $sql = <<<SQL
+            SELECT DISTINCT
+                wd.day_of_week
+            FROM
+                working_days wd
+                JOIN staff_assignments sa ON sa.staff_id = wd.staff_id
+                AND sa.barbershop_id = wd.barbershop_id
+            WHERE
+                sa.staff_id = ?
+                AND sa.barbershop_id != ?
+                AND sa.start_time < ?
+                AND sa.end_time > ?
+                AND wd.day_of_week IN ({$this->getPlaceHolders($days)})
+        SQL;
+
+        $rows = $this->query(
+            $sql,
+            [
+                $staffId,
+                $excludeBarbershopId,
+                $endTime,
+                $startTime,
+                ...$days,
+            ]
+        )->fetchAll();
+
+        return array_column($rows, 'day_of_week');
     }
 
     public function createAssignment(
