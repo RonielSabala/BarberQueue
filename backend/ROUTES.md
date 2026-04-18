@@ -232,11 +232,11 @@ Reset password using the reset code received by email.
 
 List all users. Supports optional filters.
 
-| Param      | Type   | Description         |
-| ---------- | ------ | ------------------- |
-| `username` | string | Filter by username  |
-| `email`    | string | Filter by the email |
-| `role`     | string | Filter by role      |
+| Param      | Type   | Description        |
+| ---------- | ------ | ------------------ |
+| `username` | string | Filter by username |
+| `email`    | string | Filter by email    |
+| `role`     | string | Filter by role     |
 
 - Response: `200`
 
@@ -467,7 +467,7 @@ Get KPI summary for a specific barbershop.
 
 ### `PATCH /api/barbershops/{id}/status` <!-- omit from toc -->
 
-Toggle a barbershop open or closed status.
+Set a barbershop's active status.
 
 - Body
 
@@ -655,6 +655,8 @@ Retrieve all employees currently assigned to a specific barbershop.
 ]
 ```
 
+> The `workingDays` array uses the following convention: **1=Monday**, ..., **7=Sunday**.
+
 ---
 
 ### `POST /api/barbershops/{id}/employees` <!-- omit from toc -->
@@ -676,7 +678,7 @@ Create a new user and create their assignment record for the barbershop.
 }
 ```
 
-> `role` must be one of: `barber`, `assistant`
+> `role` must be one of: `barber`, `assistant`.
 
 - Response: `201`
 
@@ -808,7 +810,7 @@ Updates a specific assignment's schedule. All fields are optional, but at least 
 }
 ```
 
-> `role` must be one of: `barber`, `assistant`
+> `role` must be one of: `barber`, `assistant`.
 
 - Response: `200`
 
@@ -861,6 +863,8 @@ Returns summary stats for a barber's dashboard.
   "joinDate": "2026-01-01 09:00:00"
 }
 ```
+
+> `averageServiceMinutes` and `averageRating` are `null` when no data is available yet.
 
 ---
 
@@ -1007,6 +1011,10 @@ With group (leader):
 }
 ```
 
+> `estimatedTime` is **0.0** for the turn currently in service; it means the client is already being attended.
+>
+> `estimatedGroupTime` is the time until all group members have been attended. `null` for solo clients.
+
 ---
 
 ## Group Members
@@ -1141,9 +1149,9 @@ Fetch a specific turn's details.
 
 Creates a turn for a client. The client must have status `at_barbershop`. Afterwards, the client's status becomes `on_queue`. If the created turn is immediately at position 1, the owner's status becomes `in_service` instead.
 
-If `groupMembers` is provided, a group is created with the client as the leader and each name becomes an independent turn.
+`groupMembers` is **optional**. If provided, a group is created with the client as the leader and each name becomes an independent turn.
 
-If `barberId` is omitted, the system auto-assigns each turn to the barber with the shortest estimated queue.
+`barberId` is **optional**. If omitted, the system auto-assigns each turn to the barber with the shortest estimated queue.
 
 - Body
 
@@ -1228,7 +1236,7 @@ promoted to `in_service`.
 
 Mark a turn owner as temporarily absent. Only `on_queue` turns can trigger this. Afterwards, the owner's status becomes `waiting` and their turn is preserved in the queue at its current position.
 
-While waiting, the owner is skipped if they reach position 1, the next `on_queue` turn behind them moves to `in_service` instead.
+While waiting, the owner is skipped if they reach position 1; the next `on_queue` turn behind them moves to `in_service` instead.
 
 - Response: `200`
 
