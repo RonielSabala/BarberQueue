@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id
 from domain.dtos import ErrorResponse, MessageResponse
 from domain.dtos.barbers import UpdateBarberStatusRequest
 from domain.enums import BarberStatusEnum
@@ -19,6 +19,11 @@ _STATUS_UPDATED = MessageResponse(message="Barber status updated")
 _INVALID_STATUS = ErrorResponse(
     error="BarberStatus must be one of: 'active', 'inactive', 'resting'"
 )
+
+
+@pytest.fixture(scope="module")
+def barber_id(client: ApiClient) -> int:
+    return get_fresh_barber_id(client)
 
 
 @pytest.fixture(scope="module")

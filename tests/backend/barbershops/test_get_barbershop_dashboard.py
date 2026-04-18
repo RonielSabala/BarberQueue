@@ -19,8 +19,8 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    return client.barbershops.get_dashboard(barbershop_id)
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
+    return client.barbershops.get_dashboard(open_barbershop_id)
 
 
 def test_status(response: requests.Response) -> None:

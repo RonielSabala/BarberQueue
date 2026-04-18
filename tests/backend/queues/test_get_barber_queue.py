@@ -83,8 +83,10 @@ def test_live_turn_appears_in_queue(client: ApiClient, live_turn: dict) -> None:
     """
 
     response = client.queues.get_barber_queue(live_turn["barber_id"])
-    turn_ids = [turn["id"] for turn in response.json()["turns"]]
-    assert live_turn["turn_id"] in turn_ids
+    turn_id = live_turn["turn_id"]
+    turns = response.json()["turns"]
+
+    assert any(turn_id == turn["id"] for turn in turns)
 
 
 def test_live_turn_position_is_positive(client: ApiClient, live_turn: dict) -> None:

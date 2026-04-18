@@ -46,8 +46,6 @@ def group_turn(client: ApiClient, open_barbershop_id: int) -> dict:
         "leader_id": leader_id,
         "leader_turn_id": leader_turn["id"],
         "member_turn_ids": [turn["id"] for turn in member_turns],
-        "member_ids": [turn["ownerId"] for turn in member_turns],
-        "group_id": leader_turn["groupId"],
     }
 
 
@@ -177,11 +175,11 @@ def test_member_turn_deletion_removes_only_that_member(
     Deleting one member does not affect other members.
     """
 
-    member_turn_ids = group_turn["member_turn_ids"]
-    client.turns.delete_turn(member_turn_ids[0])
+    turn_a, turn_b = group_turn["member_turn_ids"]
+    client.turns.delete_turn(turn_a)
 
-    # Other member's turn still exists
-    response = client.turns.get_turn(member_turn_ids[1])
+    # Turn b still exists
+    response = client.turns.get_turn(turn_b)
     assert_status(response, HttpStatus.OK)
 
 

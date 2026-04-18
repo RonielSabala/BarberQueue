@@ -22,9 +22,9 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
     return client.barbershops.add_photos(
-        barbershop_id, CreateBarbershopPhotosRequest.random()
+        open_barbershop_id, CreateBarbershopPhotosRequest.random()
     )
 
 
@@ -52,13 +52,15 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, CreateBarbershopPhotosResponse)
 
 
-def test_uploaded_count_matches_input(client: ApiClient, barbershop_id: int) -> None:
+def test_uploaded_count_matches_input(
+    client: ApiClient, open_barbershop_id: int
+) -> None:
     """
     Number of uploaded photos matches the number sent.
     """
 
     request = CreateBarbershopPhotosRequest.random()
-    response = client.barbershops.add_photos(barbershop_id, request)
+    response = client.barbershops.add_photos(open_barbershop_id, request)
     body = response.json()
 
     assert len(body["uploaded"]) == len(request.photo_urls)

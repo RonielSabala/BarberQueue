@@ -1,3 +1,6 @@
+import random
+from collections.abc import Iterable
+
 import pytest
 
 from api.client import ApiClient
@@ -9,50 +12,92 @@ from domain.dtos.barbershops import (
     UpdateBarbershopStatusRequest,
 )
 from domain.dtos.turns import CreateTurnMemberRequest, CreateTurnRequest
-from domain.enums import BarberStatusEnum, RoleEnum
-from domain.value_objects import BarberStatus, Capacity, Id
+from domain.enums import BarberStatusEnum, EmployeeRoleEnum
+from domain.value_objects import BarberStatus, Capacity, DayOfWeek, Id, WorkingDays
+from domain.value_objects.day_of_week import MAX_DAY_OF_WEEK, MIN_DAY_OF_WEEK
 
-_SEEDED_ADMIN_ID = 1
+# Ids
+_SEEDED_ADMIN_ID = Id(1)
 NON_EXISTENT_ID = 999_999
 
+# Times
+_DEFAULT_BARBERSHOP_OPENS_AT = "00:00:00"
+_DEFAULT_OPEN_BARBERSHOP_CLOSES_AT = "23:59:59"
+_DEFAULT_CLOSED_BARBERSHOP_CLOSES_AT = "00:00:01"
 
-def _get_barbershop_request(**kwargs) -> CreateBarbershopRequest:
+# Days
+_ALL_DAYS = tuple(range(MIN_DAY_OF_WEEK, MAX_DAY_OF_WEEK + 1))
+
+# Requests
+_ACTIVE_BARBER_STATUS_REQUEST = UpdateBarberStatusRequest(
+    current_status=BarberStatus(BarberStatusEnum.ACTIVE), is_accepting=True
+)
+
+# Requests helpers
+
+
+def get_barbershop_request(**kwargs) -> CreateBarbershopRequest:
     return CreateBarbershopRequest.random(
-        admin_id=Id(_SEEDED_ADMIN_ID), capacity=Capacity._max_value, **kwargs
+        admin_id=_SEEDED_ADMIN_ID, capacity=Capacity._max_value, **kwargs
     )
 
 
 def get_open_barbershop_request() -> CreateBarbershopRequest:
-    opens_at = "00:00:00"
-    closed_at = "23:59:59"
-    return _get_barbershop_request(opens_at=opens_at, closes_at=closed_at)
+    return get_barbershop_request(
+        opens_at=_DEFAULT_BARBERSHOP_OPENS_AT,
+        closes_at=_DEFAULT_OPEN_BARBERSHOP_CLOSES_AT,
+    )
 
 
 def get_closed_barbershop_request() -> CreateBarbershopRequest:
-    opens_at = "00:00:00"
-    closed_at = "00:00:01"
-    return _get_barbershop_request(opens_at=opens_at, closes_at=closed_at)
+    return get_barbershop_request(
+        opens_at=_DEFAULT_BARBERSHOP_OPENS_AT,
+        closes_at=_DEFAULT_CLOSED_BARBERSHOP_CLOSES_AT,
+    )
 
 
-def get_open_barbershop_id(client: ApiClient) -> int:
-    request = get_open_barbershop_request()
+# Ids helpers
+
+
+def get_barbershop_id_from_request(
+    client: ApiClient, request: CreateBarbershopRequest
+) -> int:
     response = client.barbershops.create(request)
     return response.json()["id"]
 
 
-def get_active_barber_id(client: ApiClient, barbershop_id: int) -> int:
-    employee_request = CreateBarbershopEmployeeRequest.random(role=RoleEnum.BARBER)
-    employee_response = client.barbershops.create_employee(
-        barbershop_id, employee_request
-    )
-    employee_id = employee_response.json()["id"]
+def get_open_barbershop_id(
+    client: ApiClient, barbershop_request: CreateBarbershopRequest | None = None
+) -> int:
+    if barbershop_request is None:
+        barbershop_request = get_open_barbershop_request()
 
-    update_status_request = UpdateBarberStatusRequest(
-        current_status=BarberStatus(BarberStatusEnum.ACTIVE), is_accepting=True
-    )
-    client.barbers.update_status(employee_id, update_status_request)
+    barbershop_id = get_barbershop_id_from_request(client, barbershop_request)
 
-    return employee_id
+    status_request = UpdateBarbershopStatusRequest(is_active=True)
+    client.barbershops.update_status(barbershop_id, status_request)
+
+    return barbershop_id
+
+
+def get_closed_barbershop_id(
+    client: ApiClient, barbershop_request: CreateBarbershopRequest | None = None
+) -> int:
+    if barbershop_request is None:
+        barbershop_request = get_closed_barbershop_request()
+
+    barbershop_id = get_barbershop_id_from_request(client, barbershop_request)
+
+    status_request = UpdateBarbershopStatusRequest(is_active=False)
+    client.barbershops.update_status(barbershop_id, status_request)
+
+    return barbershop_id
+
+
+def get_employee_id(client: ApiClient, barbershop_id: int, **kwargs) -> int:
+    request = CreateBarbershopEmployeeRequest.random(**kwargs)
+    response = client.barbershops.create_employee(barbershop_id, request)
+    return response.json()["id"]
 
 
 def get_fresh_client_id(client: ApiClient) -> int:
@@ -61,20 +106,52 @@ def get_fresh_client_id(client: ApiClient) -> int:
     return response.json()["id"]
 
 
-def get_fresh_employee_id(client: ApiClient, open_barbershop_id: int) -> int:
-    employee_request = CreateBarbershopEmployeeRequest.random()
-    employee_response = client.barbershops.create_employee(
-        open_barbershop_id, employee_request
-    )
+def get_fresh_employee_id(client: ApiClient, **kwargs) -> int:
+    barbershop_id = get_open_barbershop_id(client)
+    return get_employee_id(client, barbershop_id, **kwargs)
 
-    return employee_response.json()["id"]
+
+def get_fresh_barber_id(client: ApiClient) -> int:
+    return get_fresh_employee_id(client, role=EmployeeRoleEnum.BARBER)
+
+
+def get_active_barber_id(client: ApiClient, barbershop_id: int) -> int:
+    barber_id = get_employee_id(client, barbershop_id, role=EmployeeRoleEnum.BARBER)
+    client.barbers.update_status(barber_id, _ACTIVE_BARBER_STATUS_REQUEST)
+    return barber_id
+
+
+# Working days helpers
+
+
+def get_random_working_days(
+    min_len: int = MIN_DAY_OF_WEEK,
+    max_len: int = MAX_DAY_OF_WEEK,
+    exclude: Iterable[DayOfWeek] = (),
+) -> WorkingDays:
+    excluded = tuple(day.value for day in exclude)
+    available_days = [day for day in _ALL_DAYS if day not in excluded]
+    if not available_days:
+        return []
+
+    max_len = min(max_len, len(available_days))
+    min_len = min(min_len, max_len)
+
+    k = random.randint(min_len, max_len)
+    selected_days = random.sample(available_days, k)
+    return [DayOfWeek(day) for day in sorted(selected_days)]
+
+
+def get_random_working_days_pair() -> tuple[WorkingDays, WorkingDays]:
+    first_days = get_random_working_days(max_len=MAX_DAY_OF_WEEK - 1)
+    second_days = get_random_working_days(exclude=first_days)
+    return first_days, second_days
+
+
+# Turn helpers
 
 
 def checked_in(client: ApiClient, barbershop_id: int) -> int:
-    """
-    Register and check in a fresh client. Returns the client_id.
-    """
-
     client_id = get_fresh_client_id(client)
     client.barbershops.check_in(barbershop_id, client_id)
     return client_id
@@ -97,47 +174,26 @@ def create_solo_turn(
 def create_group_turn(
     client: ApiClient, barbershop_id: int, client_id: int, member_names: list[str]
 ) -> list[dict]:
-    group_members_request = [
-        CreateTurnMemberRequest.random(member_name=name, optional_chance=0)
-        for name in member_names
-    ]
     turn_request = CreateTurnRequest(
         client_id=Id(client_id),
         barbershop_id=Id(barbershop_id),
         barber_id=None,
-        group_members=group_members_request,
+        group_members=[
+            CreateTurnMemberRequest.random(member_name=name, optional_chance=0)
+            for name in member_names
+        ],
     )
 
     response = client.turns.create_turn(turn_request)
     return response.json()
 
 
-@pytest.fixture(scope="module")
-def barbershop_request() -> CreateBarbershopRequest:
-    return get_open_barbershop_request()
-
-
-@pytest.fixture(scope="module")
-def barbershop_id(client: ApiClient) -> int:
-    request = get_open_barbershop_request()
-    response = client.barbershops.create(request)
-    return response.json()["id"]
+# Fixtures
 
 
 @pytest.fixture(scope="module")
 def open_barbershop_id(client: ApiClient) -> int:
     return get_open_barbershop_id(client)
-
-
-@pytest.fixture(scope="module")
-def closed_barbershop_id(client: ApiClient) -> int:
-    barbershop_request = get_closed_barbershop_request()
-    barbershop_response = client.barbershops.create(barbershop_request)
-    barbershop_id = barbershop_response.json()["id"]
-
-    status_request = UpdateBarbershopStatusRequest(is_active=False)
-    client.barbershops.update_status(barbershop_id, status_request)
-    return barbershop_id
 
 
 @pytest.fixture(scope="module")

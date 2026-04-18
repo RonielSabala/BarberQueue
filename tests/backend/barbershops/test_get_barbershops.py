@@ -7,12 +7,12 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.barbershops import (
-    BarbershopResponse,
-    CreateBarbershopRequest,
-    UpdateBarbershopStatusRequest,
+from backend.conftest import (
+    NON_EXISTENT_ID,
+    get_open_barbershop_id,
+    get_open_barbershop_request,
 )
+from domain.dtos.barbershops import BarbershopResponse
 from domain.utils import random_bool
 from domain.value_objects import BarbershopName
 from helpers.assertions import (
@@ -25,19 +25,6 @@ from helpers.assertions import (
 @pytest.fixture(scope="module")
 def response(client: ApiClient) -> requests.Response:
     return client.barbershops.get_all()
-
-
-@pytest.fixture(scope="module")
-def barbershop_name(
-    client: ApiClient, barbershop_request: CreateBarbershopRequest
-) -> str:
-    response = client.barbershops.create(barbershop_request)
-    barbershop_id = response.json()["id"]
-
-    status_request = UpdateBarbershopStatusRequest(is_active=True)
-    client.barbershops.update_status(barbershop_id, status_request)
-
-    return barbershop_request.barbershop_name.value
 
 
 def test_status(response: requests.Response) -> None:
@@ -64,11 +51,15 @@ def test_body_shape(response: requests.Response) -> None:
     assert_list_body_shape(response, BarbershopResponse)
 
 
-def test_search_filter(client: ApiClient, barbershop_name: str) -> None:
+def test_search_filter(client: ApiClient) -> None:
     """
     Searching by name returns the matching barbershop.
     """
 
+    request = get_open_barbershop_request()
+    get_open_barbershop_id(client, request)
+
+    barbershop_name = request.barbershop_name.value
     response = client.barbershops.get_all(search=barbershop_name)
     body = response.json()
 

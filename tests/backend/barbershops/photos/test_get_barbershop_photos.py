@@ -22,10 +22,10 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
     request = CreateBarbershopPhotosRequest.random()
-    client.barbershops.add_photos(barbershop_id, request)
-    return client.barbershops.get_photos(barbershop_id)
+    client.barbershops.add_photos(open_barbershop_id, request)
+    return client.barbershops.get_photos(open_barbershop_id)
 
 
 def test_status(response: requests.Response) -> None:
@@ -58,6 +58,5 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     """
 
     response = client.barbershops.get_photos(NON_EXISTENT_ID)
-
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, BARBERSHOP_NOT_FOUND)

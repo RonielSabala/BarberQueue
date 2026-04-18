@@ -18,9 +18,9 @@ _STATUS_UPDATED = MessageResponse(message="Barbershop status updated")
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
     request = UpdateBarbershopStatusRequest(is_active=False)
-    return client.barbershops.update_status(barbershop_id, request)
+    return client.barbershops.update_status(open_barbershop_id, request)
 
 
 def test_status(response: requests.Response) -> None:
@@ -47,16 +47,16 @@ def test_body(response: requests.Response) -> None:
     assert_body(response, _STATUS_UPDATED)
 
 
-def test_status_reflects_change(client: ApiClient, barbershop_id: int) -> None:
+def test_status_reflects_change(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Updated isActive is reflected.
     """
 
     status_value = random_bool()
     Update_request = UpdateBarbershopStatusRequest(is_active=status_value)
-    client.barbershops.update_status(barbershop_id, Update_request)
+    client.barbershops.update_status(open_barbershop_id, Update_request)
 
-    response = client.barbershops.get(barbershop_id)
+    response = client.barbershops.get(open_barbershop_id)
     assert response.json()["isActive"] is status_value
 
 

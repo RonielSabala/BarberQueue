@@ -7,6 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
+from backend.conftest import get_open_barbershop_request
 from domain.dtos.barbershops import CreateBarbershopRequest, CreateBarbershopResponse
 from domain.dtos.base_response import ErrorResponse
 from helpers.assertions import (
@@ -17,6 +18,11 @@ from helpers.assertions import (
 )
 
 _EMAIL_ALREADY_IN_USE = ErrorResponse(error="Barbershop email already in use")
+
+
+@pytest.fixture(scope="module")
+def barbershop_request() -> CreateBarbershopRequest:
+    return get_open_barbershop_request()
 
 
 @pytest.fixture(scope="module")

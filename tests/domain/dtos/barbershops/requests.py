@@ -34,9 +34,12 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
 
     @classmethod
     def random(cls, optional_chance: float = 0.5, **fields: Any | tuple) -> Self:
-        start_time, end_time = TimeOfDay.random_pair()
+        if "start_time" not in fields and "end_time" not in fields:
+            start_time, end_time = TimeOfDay.random_sorted_times(n=2)
+            fields = {"start_time": start_time, "end_time": end_time, **fields}
+
         return super(CreateBarbershopEmployeeRequest, cls).random(
-            optional_chance, start_time=start_time, end_time=end_time, **fields
+            optional_chance, **fields
         )
 
 

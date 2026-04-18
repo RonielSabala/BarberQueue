@@ -25,27 +25,22 @@ class TimeOfDay(StringField):
     _pattern_error_msg = "must be a valid time in format HH:MM:SS"
 
     @classmethod
-    def random_datetime(cls) -> datetime.time:
+    def random_value(cls) -> str:
         return datetime.time(
             hour=random.randrange(_MAX_HOUR),
             minute=random.randrange(_MAX_MINUTE),
             second=random.randrange(_MAX_SECOND),
-        )
+        ).strftime(_TIME_FORMAT)
 
     @classmethod
-    def random_value(cls) -> str:
-        return cls.random_datetime().strftime(_TIME_FORMAT)
-
-    @classmethod
-    def _time_from_seconds(cls, total_seconds: int) -> datetime.time:
+    def _from_total_seconds(cls, total_seconds: int) -> datetime.time:
         hour, reminder = divmod(total_seconds, _SECONDS_PER_HOUR)
         minute, second = divmod(reminder, _MAX_MINUTE)
         return datetime.time(hour=hour, minute=minute, second=second)
 
     @classmethod
-    def random_pair(cls) -> tuple[Self, Self]:
-        first, second = sorted(random.sample(range(_SECONDS_PER_DAY), 2))
-        return (
-            cls(cls._time_from_seconds(first).strftime(_TIME_FORMAT)),
-            cls(cls._time_from_seconds(second).strftime(_TIME_FORMAT)),
+    def random_sorted_times(cls, *, n: int) -> tuple[Self, ...]:
+        return tuple(
+            cls(cls._from_total_seconds(time).strftime(_TIME_FORMAT))
+            for time in sorted(random.sample(range(_SECONDS_PER_DAY), n))
         )

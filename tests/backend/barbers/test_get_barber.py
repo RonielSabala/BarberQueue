@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id
 from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbers import BarberResponse
 from domain.value_objects import BarberStatus
@@ -21,7 +21,8 @@ from helpers.common_responses import BARBER_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barber_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
+    barber_id = get_fresh_barber_id(client)
     return client.barbers.get(barber_id)
 
 

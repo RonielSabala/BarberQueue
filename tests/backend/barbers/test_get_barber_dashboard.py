@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id, get_fresh_client_id
 from domain.dtos.barbers import BarberDashboardResponse
 from domain.dtos.base_response import ErrorResponse
 from helpers.assertions import (
@@ -22,7 +22,8 @@ _USER_NOT_A_BARBER = ErrorResponse(error="This user is not a barber")
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barber_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
+    barber_id = get_fresh_barber_id(client)
     return client.barbers.get_dashboard(barber_id)
 
 
@@ -61,12 +62,14 @@ def test_status_on_unknown_barber(client: ApiClient) -> None:
     assert_body(response, BARBER_NOT_FOUND)
 
 
-def test_status_on_non_barber_user(client: ApiClient, client_id: int) -> None:
+def test_status_on_non_barber_user(client: ApiClient) -> None:
     """
     Requesting a non-barber user returns 404.
     """
 
+    client_id = get_fresh_client_id(client)
     response = client.barbers.get_dashboard(client_id)
+
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, _USER_NOT_A_BARBER)
 

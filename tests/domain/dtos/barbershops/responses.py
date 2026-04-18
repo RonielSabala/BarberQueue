@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 from domain.dtos import BaseResponse
+from domain.value_objects import IntWorkingDays
 from domain.value_objects.base import ListOf
 
 
@@ -49,7 +50,7 @@ class BarbershopEmployeeResponse(BaseResponse):
     role: str
     start_time: str
     end_time: str
-    working_days: Annotated[list[int], ListOf(base_type=int, min_items=1, max_items=7)]
+    working_days: IntWorkingDays
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

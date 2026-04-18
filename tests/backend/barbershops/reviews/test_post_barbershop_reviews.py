@@ -2,19 +2,15 @@
 Tests for POST /api/barbershops/{id}/reviews
 """
 
-import pytest
 import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_employee_id
 from domain.dtos import ErrorResponse
-from domain.dtos.auth import RegisterRequest
 from domain.dtos.barbershops import (
     BarbershopReviewResponse,
-    CreateBarbershopEmployeeRequest,
     CreateBarbershopReviewRequest,
-    UpdateBarbershopStatusRequest,
 )
 from helpers.assertions import (
     assert_body,
@@ -29,74 +25,50 @@ _ONLY_CLIENTS_CAN_REVIEW = ErrorResponse(
 )
 
 
-@pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    register_request = RegisterRequest.random()
-    register_response = client.auth.register(register_request)
-    user_id = register_response.json()["id"]
-
-    review_request = CreateBarbershopReviewRequest.random(client_id=user_id)
-    return client.barbershops.add_review(barbershop_id, review_request)
-
-
-@pytest.fixture(scope="module")
-def employee_id(client: ApiClient, barbershop_id: int) -> int:
-    status_request = UpdateBarbershopStatusRequest(is_active=True)
-    client.barbershops.update_status(barbershop_id, status_request)
-
-    employee_request = CreateBarbershopEmployeeRequest.random()
-    employee_response = client.barbershops.create_employee(
-        barbershop_id, employee_request
-    )
-
-    return employee_response.json()["id"]
-
-
-def test_status(response: requests.Response) -> None:
+def test_status(create_review_response: requests.Response) -> None:
     """
     Successful review creation returns 201.
     """
 
-    assert_status(response, HttpStatus.CREATED)
+    assert_status(create_review_response, HttpStatus.CREATED)
 
 
-def test_content_type(response: requests.Response) -> None:
+def test_content_type(create_review_response: requests.Response) -> None:
     """
     Response is JSON.
     """
 
-    assert_content_type(response, HttpHeader.JSON)
+    assert_content_type(create_review_response, HttpHeader.JSON)
 
 
-def test_body_shape(response: requests.Response) -> None:
+def test_body_shape(create_review_response: requests.Response) -> None:
     """
     Response contains expected fields.
     """
 
-    assert_body_shape(response, BarbershopReviewResponse)
+    assert_body_shape(create_review_response, BarbershopReviewResponse)
 
 
-def test_non_client_cannot_review(
-    client: ApiClient, barbershop_id: int, employee_id: int
-) -> None:
+def test_non_client_cannot_review(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Non-client users cannot leave reviews. Returns 403.
     """
 
+    employee_id = get_employee_id(client, open_barbershop_id)
     request = CreateBarbershopReviewRequest.random(client_id=employee_id)
-    response = client.barbershops.add_review(barbershop_id, request)
+    response = client.barbershops.add_review(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.FORBIDDEN)
     assert_body(response, _ONLY_CLIENTS_CAN_REVIEW)
 
 
-def test_status_on_unknown_user(client: ApiClient, barbershop_id: int) -> None:
+def test_status_on_unknown_user(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Unknown user returns 404.
     """
 
     request = CreateBarbershopReviewRequest.random(client_id=NON_EXISTENT_ID)
-    response = client.barbershops.add_review(barbershop_id, request)
+    response = client.barbershops.add_review(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.NOT_FOUND)
     assert_body(response, USER_NOT_FOUND)

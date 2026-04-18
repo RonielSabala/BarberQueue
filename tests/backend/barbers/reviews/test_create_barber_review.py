@@ -7,13 +7,14 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import (
+    NON_EXISTENT_ID,
+    get_employee_id,
+    get_fresh_barber_id,
+    get_fresh_client_id,
+)
 from domain.dtos import ErrorResponse
 from domain.dtos.barbers import BarberReviewResponse, CreateBarberReviewRequest
-from domain.dtos.barbershops import (
-    CreateBarbershopEmployeeRequest,
-    CreateBarbershopRequest,
-)
 from domain.value_objects.rating import Rating
 from helpers.assertions import (
     assert_body,
@@ -23,31 +24,20 @@ from helpers.assertions import (
 )
 from helpers.common_responses import BARBER_NOT_FOUND, USER_NOT_FOUND
 
-_TEST_RATING = 5
+_TEST_RATING = Rating.random_value()
 _ONLY_CLIENTS_CAN_REVIEW = ErrorResponse(error="Only clients can leave barber reviews")
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, client_id: int, barber_id: int) -> requests.Response:
-    request = CreateBarberReviewRequest.random(
-        client_id=client_id, rating=Rating(_TEST_RATING)
+def response(client: ApiClient) -> requests.Response:
+    client_id = get_fresh_client_id(client)
+    barber_id = get_fresh_barber_id(client)
+    return client.barbers.create_review(
+        barber_id,
+        CreateBarberReviewRequest.random(
+            client_id=client_id, rating=Rating(_TEST_RATING)
+        ),
     )
-    return client.barbers.create_review(barber_id, request)
-
-
-@pytest.fixture(scope="module")
-def non_client_id(
-    client: ApiClient, barbershop_request: CreateBarbershopRequest
-) -> int:
-    barbershop_response = client.barbershops.create(barbershop_request)
-    barbershop_id = barbershop_response.json()["id"]
-
-    employee_request = CreateBarbershopEmployeeRequest.random()
-    employee_response = client.barbershops.create_employee(
-        barbershop_id, employee_request
-    )
-
-    return employee_response.json()["id"]
 
 
 def test_status(response: requests.Response) -> None:
@@ -82,12 +72,13 @@ def test_rating_matches_input(response: requests.Response) -> None:
     assert response.json()["rating"] == _TEST_RATING
 
 
-def test_non_client_cannot_review(
-    client: ApiClient, barber_id: int, non_client_id: int
-) -> None:
+def test_non_client_cannot_review(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Non-client users cannot leave reviews. Returns 403.
     """
+
+    barber_id = get_fresh_barber_id(client)
+    non_client_id = get_employee_id(client, open_barbershop_id)
 
     request = CreateBarberReviewRequest.random(client_id=non_client_id)
     response = client.barbers.create_review(barber_id, request)
@@ -96,10 +87,12 @@ def test_non_client_cannot_review(
     assert_body(response, _ONLY_CLIENTS_CAN_REVIEW)
 
 
-def test_status_on_unknown_user(client: ApiClient, barber_id: int) -> None:
+def test_status_on_unknown_user(client: ApiClient) -> None:
     """
     Unknown user returns 404.
     """
+
+    barber_id = get_fresh_barber_id(client)
 
     request = CreateBarberReviewRequest.random(client_id=NON_EXISTENT_ID)
     response = client.barbers.create_review(barber_id, request)
@@ -108,11 +101,12 @@ def test_status_on_unknown_user(client: ApiClient, barber_id: int) -> None:
     assert_body(response, USER_NOT_FOUND)
 
 
-def test_status_on_unknown_barber(client: ApiClient, client_id: int) -> None:
+def test_status_on_unknown_barber(client: ApiClient) -> None:
     """
     Unknown barber returns 404.
     """
 
+    client_id = get_fresh_client_id(client)
     request = CreateBarberReviewRequest.random(client_id=client_id)
     response = client.barbers.create_review(NON_EXISTENT_ID, request)
 

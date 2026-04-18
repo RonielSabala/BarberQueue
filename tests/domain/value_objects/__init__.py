@@ -6,7 +6,7 @@ from domain.value_objects.address import Address
 from domain.value_objects.barber_status import BarberStatus
 from domain.value_objects.barbershop_name import BarbershopName
 from domain.value_objects.capacity import Capacity
-from domain.value_objects.day_of_week import DayOfWeek, WorkingDays
+from domain.value_objects.day_of_week import DayOfWeek, IntWorkingDays, WorkingDays
 from domain.value_objects.email import Email
 from domain.value_objects.employee_role import EmployeeRole
 from domain.value_objects.id import Id
@@ -25,6 +25,7 @@ __all__ = [
     "BarbershopName",
     "Capacity",
     "DayOfWeek",
+    "IntWorkingDays",
     "WorkingDays",
     "Email",
     "EmployeeRole",

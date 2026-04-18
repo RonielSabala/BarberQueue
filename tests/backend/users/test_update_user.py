@@ -7,9 +7,8 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
 from domain.dtos import MessageResponse
-from domain.dtos.auth import RegisterRequest
 from domain.dtos.users import UpdateUserRequest
 from domain.utils import to_camel_case
 from domain.value_objects import Username
@@ -26,18 +25,12 @@ _USER_UPDATED = MessageResponse(message="User updated")
 
 
 @pytest.fixture(scope="module")
-def user_id(client: ApiClient) -> int:
-    register_request = RegisterRequest.random()
-    response = client.auth.register(register_request)
-    return response.json()["id"]
-
-
-@pytest.fixture(scope="module")
-def response(client: ApiClient, user_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
     request = UpdateUserRequest.random()
     if request.all_none:
         request = UpdateUserRequest(username=Username.random(), email=None, phone=None)
 
+    user_id = get_fresh_client_id(client)
     return client.users.update_user(user_id, request)
 
 
@@ -65,10 +58,12 @@ def test_body(response: requests.Response) -> None:
     assert_body(response, _USER_UPDATED)
 
 
-def test_updated_fields_persists(client: ApiClient, user_id: int) -> None:
+def test_updated_fields_persists(client: ApiClient) -> None:
     """
     Updated fields must persists.
     """
+
+    user_id = get_fresh_client_id(client)
 
     request = UpdateUserRequest.random()
     client.users.update_user(user_id, request)
@@ -95,11 +90,12 @@ def test_nonexistent_user(client: ApiClient) -> None:
     assert_status(response, HttpStatus.NOT_FOUND)
 
 
-def test_no_fields(client: ApiClient, user_id: int) -> None:
+def test_no_fields(client: ApiClient) -> None:
     """
     Sending no fields returns 400.
     """
 
+    user_id = get_fresh_client_id(client)
     request = UpdateUserRequest.random(optional_chance=0)
     response = client.users.update_user(user_id, request)
 

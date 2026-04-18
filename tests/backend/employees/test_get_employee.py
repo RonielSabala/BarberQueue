@@ -7,9 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.auth import RegisterRequest
-from domain.dtos.barbershops import CreateBarbershopEmployeeRequest
+from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id, get_fresh_employee_id
 from domain.dtos.employees import EmployeeResponse
 from helpers.assertions import (
     assert_body,
@@ -21,14 +19,8 @@ from helpers.common_responses import EMPLOYEE_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def employee_id(client: ApiClient, barbershop_id: int) -> int:
-    employee_request = CreateBarbershopEmployeeRequest.random()
-    response = client.barbershops.create_employee(barbershop_id, employee_request)
-    return response.json()["id"]
-
-
-@pytest.fixture(scope="module")
-def response(client: ApiClient, employee_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
+    employee_id = get_fresh_employee_id(client)
     return client.employees.get(employee_id)
 
 
@@ -72,10 +64,6 @@ def test_status_on_client_user(client: ApiClient) -> None:
     Requesting a client user as employee returns 422.
     """
 
-    register_request = RegisterRequest.random()
-    register_response = client.auth.register(register_request)
-
-    client_id = register_response.json()["id"]
+    client_id = get_fresh_client_id(client)
     response = client.employees.get(client_id)
-
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
