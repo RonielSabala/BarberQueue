@@ -9,6 +9,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import (
     NON_EXISTENT_ID,
+    LiveTurnData,
     checked_in,
     create_group_turn,
     get_fresh_client_id,
@@ -82,21 +83,23 @@ def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
     assert body["barberId"] is None
 
 
-def test_turn_id_matches_created_turn(client: ApiClient, live_turn: dict) -> None:
+def test_turn_id_matches_created_turn(
+    client: ApiClient, live_turn: LiveTurnData
+) -> None:
     """
     Response turnId matches the turn that was created.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
-    assert response.json()["id"] == live_turn["turn_id"]
+    response = client.clients.get_turn(live_turn.client_id)
+    assert response.json()["id"] == live_turn.turn_id
 
 
-def test_live_turn_has_valid_status(client: ApiClient, live_turn: dict) -> None:
+def test_live_turn_has_valid_status(client: ApiClient, live_turn: LiveTurnData) -> None:
     """
     A live turn has status on_queue or in_service.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
+    response = client.clients.get_turn(live_turn.client_id)
     assert response.json()["status"] in (
         ClientStatusEnum.ON_QUEUE,
         ClientStatusEnum.IN_SERVICE,
@@ -121,12 +124,14 @@ def test_group_turn_includes_group_key(
     assert len(body["group"]["members"]) == 2
 
 
-def test_non_group_turn_has_null_group(client: ApiClient, live_turn: dict) -> None:
+def test_non_group_turn_has_null_group(
+    client: ApiClient, live_turn: LiveTurnData
+) -> None:
     """
     A solo turn has group=null.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
+    response = client.clients.get_turn(live_turn.client_id)
     assert response.json()["group"] is None
 
 

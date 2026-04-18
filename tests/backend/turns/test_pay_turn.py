@@ -37,29 +37,19 @@ _GROUP_NOT_ALL_ATTENDED = ErrorResponse(
 
 def _attend_turn(client: ApiClient, turn_id: int) -> None:
     response = client.turns.attend_turn(turn_id)
-    assert response.status_code == HttpStatus.OK, f"attend failed: {response.json()}"
+    assert response.status_code == HttpStatus.OK
 
 
-def _reach_attended_state(
-    client: ApiClient, barbershop_id: int, barber_id: int
-) -> dict:
+@pytest.fixture(scope="module")
+def response(client: ApiClient) -> requests.Response:
+    barbershop_id = get_open_barbershop_id(client)
+    barber_id = get_active_barber_id(client, barbershop_id)
+
     client_id = checked_in(client, barbershop_id)
     turn_id = create_solo_turn(client, barbershop_id, barber_id, client_id)
 
     _attend_turn(client, turn_id)
-    return {"client_id": client_id, "turn_id": turn_id}
-
-
-@pytest.fixture(scope="module")
-def attended_solo(client: ApiClient) -> dict:
-    barbershop_id = get_open_barbershop_id(client)
-    barber_id = get_active_barber_id(client, barbershop_id)
-    return _reach_attended_state(client, barbershop_id, barber_id)
-
-
-@pytest.fixture(scope="module")
-def response(client: ApiClient, attended_solo: dict) -> requests.Response:
-    return client.turns.pay_turn(attended_solo["turn_id"])
+    return client.turns.pay_turn(turn_id)
 
 
 def test_status(response: requests.Response) -> None:
@@ -146,11 +136,10 @@ def test_member_turn_cannot_pay(client: ApiClient) -> None:
     leader_id = checked_in(client, barbershop_id)
     turns = create_group_turn(client, barbershop_id, leader_id, ["member1"])
 
-    member_turn_id = next(
+    member_turn = next(
         turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.MEMBER
-    )["id"]
-
-    response = client.turns.pay_turn(member_turn_id)
+    )
+    response = client.turns.pay_turn(member_turn["id"])
 
     assert_body(response, _MEMBER_CANNOT_PAY)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)

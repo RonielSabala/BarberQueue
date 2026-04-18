@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
+from backend.conftest import NON_EXISTENT_ID, LiveTurnData
 from domain.dtos.queues import QueueResponse
 from domain.enums import OwnerTypeEnum
 from helpers.assertions import (
@@ -90,7 +90,10 @@ def test_all_turns_owner_type_is_valid(response: requests.Response) -> None:
 
 
 def test_live_turn_appears_in_barber_queue(
-    client: ApiClient, open_barbershop_id: int, active_barber_id: int, live_turn: dict
+    client: ApiClient,
+    open_barbershop_id: int,
+    active_barber_id: int,
+    live_turn: LiveTurnData,
 ) -> None:
     """
     A turn created via POST appears in the barbershop queue under the
@@ -99,12 +102,12 @@ def test_live_turn_appears_in_barber_queue(
 
     response = client.queues.get_barbershop_queues(open_barbershop_id)
 
-    live_turn_id = live_turn["turn_id"]
+    live_turn_id = live_turn.turn_id
     barber_queue = next(
         (
             barber
             for barber in response.json()
-            if active_barber_id == barber["barberId"]
+            if barber["barberId"] == active_barber_id
         ),
         None,
     )

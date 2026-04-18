@@ -29,9 +29,9 @@ _NOT_ON_QUEUE = ErrorResponse(error="Only 'on_queue' turns can be set to 'waitin
 
 
 @pytest.fixture(scope="module")
-def on_queue_turn(
+def on_queue_turn_id(
     client: ApiClient, open_barbershop_id: int, active_barber_id: int
-) -> dict:
+) -> int:
     first_client_id = checked_in(client, open_barbershop_id)
     second_client_id = checked_in(client, open_barbershop_id)
 
@@ -40,12 +40,12 @@ def on_queue_turn(
         client, open_barbershop_id, active_barber_id, second_client_id
     )
 
-    return {"client_id": second_client_id, "turn_id": second_turn_id}
+    return second_turn_id
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, on_queue_turn: dict) -> requests.Response:
-    return client.turns.wait_turn(on_queue_turn["turn_id"])
+def response(client: ApiClient, on_queue_turn_id: int) -> requests.Response:
+    return client.turns.wait_turn(on_queue_turn_id)
 
 
 def test_status(response: requests.Response) -> None:
@@ -80,12 +80,12 @@ def test_status_becomes_waiting(response: requests.Response) -> None:
     assert response.json()["ownerStatus"] == ClientStatusEnum.WAITING
 
 
-def test_turn_preserves_position(client: ApiClient, on_queue_turn: dict) -> None:
+def test_turn_preserves_position(client: ApiClient, on_queue_turn_id: int) -> None:
     """
     Turn remains in the queue after waiting.
     """
 
-    response = client.turns.get_turn(on_queue_turn["turn_id"])
+    response = client.turns.get_turn(on_queue_turn_id)
     assert response.json()["position"] is not None
 
 
@@ -101,13 +101,13 @@ def test_status_on_unknown_turn(client: ApiClient) -> None:
 
 
 def test_already_waiting_returns_unprocessable(
-    client: ApiClient, on_queue_turn: dict
+    client: ApiClient, on_queue_turn_id: int
 ) -> None:
     """
     Calling wait on an already `waiting` turn returns 422.
     """
 
-    response = client.turns.wait_turn(on_queue_turn["turn_id"])
+    response = client.turns.wait_turn(on_queue_turn_id)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
     assert_body(response, _NOT_ON_QUEUE)

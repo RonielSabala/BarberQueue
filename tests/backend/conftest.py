@@ -1,5 +1,6 @@
 import random
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 import pytest
 
@@ -201,10 +202,19 @@ def active_barber_id(client: ApiClient, open_barbershop_id: int) -> int:
     return get_active_barber_id(client, open_barbershop_id)
 
 
+@dataclass(slots=True, kw_only=True, frozen=True)
+class LiveTurnData:
+    turn_id: int
+    client_id: int
+    barber_id: int
+
+
 @pytest.fixture(scope="module")
 def live_turn(
     client: ApiClient, open_barbershop_id: int, active_barber_id: int
-) -> dict:
+) -> LiveTurnData:
     client_id = checked_in(client, open_barbershop_id)
     turn_id = create_solo_turn(client, open_barbershop_id, active_barber_id, client_id)
-    return {"turn_id": turn_id, "client_id": client_id, "barber_id": active_barber_id}
+    return LiveTurnData(
+        turn_id=turn_id, client_id=client_id, barber_id=active_barber_id
+    )

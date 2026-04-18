@@ -2,6 +2,8 @@
 Tests for GET /api/group-members/{id}/turn
 """
 
+from dataclasses import dataclass
+
 import pytest
 import requests
 
@@ -21,8 +23,15 @@ from helpers.assertions import (
 _MEMBER_NOT_FOUND = ErrorResponse(error="Member not found")
 
 
+@dataclass(slots=True, kw_only=True, frozen=True)
+class GroupData:
+    member_turns: list[dict]
+    first_member_id: int
+    group_id: int
+
+
 @pytest.fixture(scope="module")
-def group_data(client: ApiClient, open_barbershop_id: int) -> dict:
+def group_data(client: ApiClient, open_barbershop_id: int) -> GroupData:
     """
     Creates a group turn and returns structured data for assertions.
     """
@@ -33,16 +42,16 @@ def group_data(client: ApiClient, open_barbershop_id: int) -> dict:
     )
 
     member_turns = [turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.MEMBER]
-    return {
-        "member_turns": member_turns,
-        "first_member_id": member_turns[0]["ownerId"],
-        "group_id": turns[0]["groupId"],
-    }
+    return GroupData(
+        member_turns=member_turns,
+        first_member_id=member_turns[0]["ownerId"],
+        group_id=turns[0]["groupId"],
+    )
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, group_data: dict) -> requests.Response:
-    return client.group_members.get_turn(group_data["first_member_id"])
+def response(client: ApiClient, group_data: GroupData) -> requests.Response:
+    return client.group_members.get_turn(group_data.first_member_id)
 
 
 def test_status(response: requests.Response) -> None:
@@ -78,31 +87,31 @@ def test_position_is_positive(response: requests.Response) -> None:
     assert position is None or position >= 1
 
 
-def test_group_id_matches(response: requests.Response, group_data: dict) -> None:
+def test_group_id_matches(response: requests.Response, group_data: GroupData) -> None:
     """
     Response groupId matches the created group.
     """
 
-    assert response.json()["groupId"] == group_data["group_id"]
+    assert response.json()["groupId"] == group_data.group_id
 
 
-def test_member_id_matches(response: requests.Response, group_data: dict) -> None:
+def test_member_id_matches(response: requests.Response, group_data: GroupData) -> None:
     """
     Response memberId matches the requested member.
     """
 
-    assert response.json()["memberId"] == group_data["first_member_id"]
+    assert response.json()["memberId"] == group_data.first_member_id
 
 
 def test_each_member_has_independent_position(
-    client: ApiClient, group_data: dict
+    client: ApiClient, group_data: GroupData
 ) -> None:
     """
     Each member in the group has its own independent queue position.
     """
 
     positions = set()
-    for turn in group_data["member_turns"]:
+    for turn in group_data.member_turns:
         response = client.group_members.get_turn(turn["ownerId"])
         position = response.json()["position"]
 
