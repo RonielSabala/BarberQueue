@@ -27,7 +27,7 @@ final readonly class BarbershopRepository extends BaseRepository
         return <<<'SQL'
             SELECT
                 b.*,
-                bst.avg_rating AS average_rating
+                ROUND(bst.avg_rating, 1) AS average_rating
             FROM
                 barbershops b
                 LEFT JOIN barbershop_stats bst ON bst.barbershop_id = b.id
@@ -130,8 +130,8 @@ final readonly class BarbershopRepository extends BaseRepository
         $sql = <<<'SQL'
             SELECT
                 b.id,
-                bst.avg_service_minutes AS average_service_minutes,
-                bst.avg_rating AS average_rating,
+                ROUND(bst.avg_service_minutes, 1) AS average_service_minutes,
+                ROUND(bst.avg_rating, 1) AS average_rating,
                 bst.total_reviews AS total_reviews,
                 -- Clients today
                 (

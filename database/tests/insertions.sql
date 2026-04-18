@@ -281,7 +281,7 @@ UPDATE barbershops
 SET
     is_active = TRUE
 WHERE
-    id IN (1, 2, 3);
+    id IN (1, 2, 3, 4);
 
 -- STAFF ASSIGNMENTS
 INSERT INTO
@@ -332,6 +332,8 @@ VALUES
     (4, 3, 3),
     (4, 3, 4),
     (4, 3, 5),
+    (4, 3, 6),
+    (4, 3, 7),
     -- Luis
     (5, 3, 2),
     (5, 3, 3),

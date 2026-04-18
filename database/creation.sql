@@ -86,8 +86,8 @@ CREATE TABLE
 CREATE TABLE
     barber_stats (
         barber_id INT PRIMARY KEY,
-        avg_service_minutes DECIMAL(6, 1) NULL,
-        avg_rating DECIMAL(3, 1) NULL,
+        avg_service_minutes DECIMAL(10, 4) NULL,
+        avg_rating DECIMAL(5, 4) NULL,
         total_attended INT UNSIGNED NOT NULL DEFAULT 0,
         total_reviews INT UNSIGNED NOT NULL DEFAULT 0,
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
@@ -119,8 +119,8 @@ CREATE TABLE
 CREATE TABLE
     barbershop_stats (
         barbershop_id INT PRIMARY KEY,
-        avg_service_minutes DECIMAL(6, 1) NULL,
-        avg_rating DECIMAL(3, 1) NULL,
+        avg_service_minutes DECIMAL(10, 4) NULL,
+        avg_rating DECIMAL(5, 4) NULL,
         total_attended INT UNSIGNED NOT NULL DEFAULT 0,
         total_reviews INT UNSIGNED NOT NULL DEFAULT 0,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE

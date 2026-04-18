@@ -62,8 +62,8 @@ final readonly class BarberRepository extends BaseRepository
         $sql = <<<'SQL'
             SELECT
                 bst.total_attended AS total_attended_clients,
-                bst.avg_service_minutes AS average_service_minutes,
-                bst.avg_rating AS average_rating,
+                ROUND(bst.avg_service_minutes, 1) AS average_service_minutes,
+                ROUND(bst.avg_rating, 1) AS average_rating,
                 u.created_at AS join_date
             FROM
                 users u
