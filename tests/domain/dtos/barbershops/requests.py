@@ -22,6 +22,13 @@ from domain.value_objects import (
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
+class AssignBarbershopEmployeeRequest(BaseRequest):
+    start_time: TimeOfDay
+    end_time: TimeOfDay
+    working_days: WorkingDays
+
+
+@dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopEmployeeRequest(BaseRequest):
     username: Username
     email: Email

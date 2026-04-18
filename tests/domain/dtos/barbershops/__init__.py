@@ -3,6 +3,7 @@ Barbershop DTOs package.
 """
 
 from domain.dtos.barbershops.requests import (
+    AssignBarbershopEmployeeRequest,
     CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
     CreateBarbershopRequest,
@@ -26,6 +27,7 @@ from domain.dtos.barbershops.responses import (
 )
 
 __all__ = [
+    "AssignBarbershopEmployeeRequest",
     "CreateBarbershopEmployeeRequest",
     "CreateBarbershopPhotosRequest",
     "CreateBarbershopRequest",

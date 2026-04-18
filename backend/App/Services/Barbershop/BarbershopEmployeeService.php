@@ -87,14 +87,14 @@ final readonly class BarbershopEmployeeService extends BaseService
 
         if ($startTime < $barbershopOpensAt) {
             throw new BarbershopEmployeeException(
-                "Start time cannot be earlier than the barbershop opening time ({$barbershopOpensAt})",
+                'Start time cannot be earlier than the barbershop opening time',
                 HttpStatus::UnprocessableEntity
             );
         }
 
         if ($endTime > $barbershopClosesAt) {
             throw new BarbershopEmployeeException(
-                "End time cannot be later than the barbershop closing time ({$barbershopClosesAt})",
+                'End time cannot be later than the barbershop closing time',
                 HttpStatus::UnprocessableEntity
             );
         }
