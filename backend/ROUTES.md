@@ -2,8 +2,7 @@
 
 Base URL: `BACKEND_URL`
 
-All endpoints are prefixed with `/api`. All request and response bodies use `application/json`
-unless noted otherwise.
+All endpoints are prefixed with `/api`. All request and response bodies use `application/json`.
 
 ---
 
@@ -38,7 +37,7 @@ For operations that return a resource:
 ```json
 {
   "id": 1,
-  "username": "Juan"
+  "username": "username_example"
 }
 ```
 
