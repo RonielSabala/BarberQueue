@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 from domain.dtos import BaseRequest
+from domain.utils import DEFAULT_OPTIONAL_CHANCE
 from domain.value_objects import (
     Address,
     BarbershopName,
@@ -40,7 +41,9 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
     working_days: WorkingDays
 
     @classmethod
-    def random(cls, optional_chance: float = 0.5, **fields: Any | tuple) -> Self:
+    def random(
+        cls, optional_chance: float = DEFAULT_OPTIONAL_CHANCE, **fields: Any | tuple
+    ) -> Self:
         if "start_time" not in fields and "end_time" not in fields:
             start_time, end_time = TimeOfDay.random_sorted_times(n=2)
             fields = {"start_time": start_time, "end_time": end_time, **fields}

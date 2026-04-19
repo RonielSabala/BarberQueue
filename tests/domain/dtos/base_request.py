@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Self
 
 from domain.dtos import BaseDto
+from domain.utils import DEFAULT_OPTIONAL_CHANCE, random_bool
 from domain.value_objects.base import BaseField
 from helpers.unwrap_type import unwrap_list_of
 
@@ -37,7 +38,7 @@ def _get_random_value_by_type(value_type: Any, optional_chance: float) -> Any:
         return value_type.random()
 
     if is_type and value_type is bool:
-        return random.random() > 0.5
+        return random_bool()
 
     raise ValueError(f"Type '{value_type}' cannot be randomized")
 
@@ -49,13 +50,15 @@ class BaseRequest(BaseDto):
     """
 
     @classmethod
-    def random(cls, optional_chance: float = 0.5, **fields: Any | tuple) -> Self:
+    def random(
+        cls, optional_chance: float = DEFAULT_OPTIONAL_CHANCE, **fields: Any | tuple
+    ) -> Self:
         """
         Generates a random request.
 
         Args:
             - `optional_chance`: Probability (0.0 to 1.0) that an Optional
-            field is populated. By default it's set to 0.5.
+            field is populated.
 
             - `fields`: Field overrides.
 

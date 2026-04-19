@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import ClassVar, Self
 
 from domain.dtos import BaseRequest
-from domain.utils import to_camel_case
+from domain.utils import DEFAULT_OPTIONAL_CHANCE, to_camel_case
 from domain.value_objects.base import NameField
 from helpers.unwrap_type import unwrap_list_of
 
@@ -222,7 +222,9 @@ def missing_field_cases(
         if field.is_nested:
             nested_fields.append(field)
 
-    if _mark.available and (not nested_fields or random.random() > 0.5):
+    if _mark.available and (
+        not nested_fields or random.random() > DEFAULT_OPTIONAL_CHANCE
+    ):
         _mark.consume()
         yield _get_unexpected_field_case(_path, payload)
 

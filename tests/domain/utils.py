@@ -1,5 +1,7 @@
 import random
 
+DEFAULT_OPTIONAL_CHANCE = 0.5
+
 
 def random_bool() -> bool:
     return random.choice((True, False))
