@@ -35,36 +35,40 @@ def assert_type(value: Any, expected: type, *, name_on_error: str) -> None:
 
 
 def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
-    for field_name, field_type, is_optional in response_class.iter_field_types():
-        json_key = to_camel_case(field_name)
+    for field_info in response_class.class_fields():
+        # Validate key exists
+        json_key = to_camel_case(field_info.field_name)
         assert json_key in json, f"Missing key {json_key!r} in response"
 
-        value = json[json_key]
-
-        # Skip optional value
-        if value is None and is_optional:
+        # Skip optional key
+        json_value = json[json_key]
+        if json_value is None and field_info.is_optional:
             continue
 
+        # Validate array shape
+        field_type = field_info.field_type
         list_metadata = unwrap_list_of(field_type)
         if list_metadata:
             min_items = list_metadata.min_items
-            assert min_items is None or len(value) >= min_items
+            assert min_items is None or len(json_value) >= min_items
 
             max_items = list_metadata.max_items
-            assert max_items is None or len(value) <= max_items
+            assert max_items is None or len(json_value) <= max_items
 
-            _assert_list_shape(value, list_metadata.base_type)
-            return
+            _assert_list_shape(json_value, list_metadata.base_type)
+            continue
 
         if not isinstance(field_type, type):
             raise ValueError(f"field_type '{field_type}' is not a valid type")
 
+        # Validate nested object
         if issubclass(field_type, BaseResponse):
-            assert_type(value, dict, name_on_error=json_key)
-            _assert_shape(value, field_type)
-            return
+            assert_type(json_value, dict, name_on_error=json_key)
+            _assert_shape(json_value, field_type)
+            continue
 
-        assert_type(value, field_type, name_on_error=json_key)
+        # Validate key type
+        assert_type(json_value, field_type, name_on_error=json_key)
 
 
 def _assert_list_shape(data: list, expected: Any) -> None:

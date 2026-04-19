@@ -54,8 +54,10 @@ class BaseRequest(BaseDto):
         Generates a random request.
 
         Args:
-            `optional_chance`: Probability (0.0 to 1.0) that an Optional
+            - `optional_chance`: Probability (0.0 to 1.0) that an Optional
             field is populated. By default it's set to 0.5.
+
+            - `fields`: Field overrides.
 
         Raises:
             **ValueError**: If `optional_chance` is not between 0 and 1.
@@ -66,8 +68,8 @@ class BaseRequest(BaseDto):
                 f"optional_chance ({optional_chance}) must be between 0 and 1."
             )
 
-        field_info = list(cls.iter_field_types())
-        valid_names = {name for name, _, _ in field_info}
+        class_fields = tuple(cls.class_fields())
+        valid_names = {field_info.field_name for field_info in class_fields}
 
         for field_name in fields:
             if field_name not in valid_names:
@@ -76,19 +78,22 @@ class BaseRequest(BaseDto):
                 )
 
         kwargs = {}
-        for field_name, field_type, is_optional in field_info:
+        for field_info in class_fields:
+            field_name = field_info.field_name
+            field_value = None
+
+            # Override field value
             if field_name in fields:
                 value = fields[field_name]
-                kwargs[field_name] = (
+                field_value = (
                     random.choice(value) if isinstance(value, tuple) else value
                 )
-                continue
+            # Populate field
+            elif not field_info.is_optional or random.random() < optional_chance:
+                field_value = _get_random_value_by_type(
+                    field_info.field_type, optional_chance
+                )
 
-            populate = not is_optional or random.random() < optional_chance
-            kwargs[field_name] = (
-                _get_random_value_by_type(field_type, optional_chance)
-                if populate
-                else None
-            )
+            kwargs[field_name] = field_value
 
         return cls(**kwargs)

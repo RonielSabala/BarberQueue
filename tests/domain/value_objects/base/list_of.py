@@ -7,7 +7,7 @@ class ListOf[T]:
     min_items: int = 0
     max_items: int | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.min_items < 0:
             raise ValueError("min_items must be >= 0")
 
