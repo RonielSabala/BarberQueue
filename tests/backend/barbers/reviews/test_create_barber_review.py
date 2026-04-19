@@ -69,7 +69,8 @@ def test_rating_matches_input(response: requests.Response) -> None:
     Response rating matches the submitted rating.
     """
 
-    assert response.json()["rating"] == _TEST_RATING
+    review = BarberReviewResponse.from_response(response)
+    assert review.rating == _TEST_RATING
 
 
 def test_non_client_cannot_review(client: ApiClient, open_barbershop_id: int) -> None:

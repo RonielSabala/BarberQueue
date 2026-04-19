@@ -8,6 +8,7 @@ import requests
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from domain.dtos.auth import RegisterRequest, UserResponse
+from domain.enums import RoleEnum
 from helpers.assertions import (
     assert_body,
     assert_body_shape,
@@ -52,8 +53,8 @@ def test_role_is_client(response: requests.Response) -> None:
     Registered users always get the client role.
     """
 
-    body = response.json()
-    assert body["role"] == "client"
+    user = UserResponse.from_response(response)
+    assert user.role == RoleEnum.CLIENT
 
 
 def test_duplicate_email(client: ApiClient) -> None:
@@ -65,5 +66,5 @@ def test_duplicate_email(client: ApiClient) -> None:
     client.auth.register(request)
     response = client.auth.register(request)
 
-    assert_body(response, EMAIL_ALREADY_IN_USE)
     assert_status(response, HttpStatus.CONFLICT)
+    assert_body(response, EMAIL_ALREADY_IN_USE)

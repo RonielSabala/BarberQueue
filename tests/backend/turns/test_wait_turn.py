@@ -77,7 +77,8 @@ def test_status_becomes_waiting(response: requests.Response) -> None:
     Turn status becomes waiting.
     """
 
-    assert response.json()["ownerStatus"] == ClientStatusEnum.WAITING
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.owner_status == ClientStatusEnum.WAITING
 
 
 def test_turn_preserves_position(client: ApiClient, on_queue_turn_id: int) -> None:
@@ -86,7 +87,8 @@ def test_turn_preserves_position(client: ApiClient, on_queue_turn_id: int) -> No
     """
 
     response = client.turns.get_turn(on_queue_turn_id)
-    assert response.json()["position"] is not None
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.position is not None
 
 
 def test_status_on_unknown_turn(client: ApiClient) -> None:
@@ -151,19 +153,22 @@ def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(
 
     # Delete A so B gets promoted
     client.turns.delete_turn(turn_a_id)
-    turn_b = client.turns.get_turn(turn_b_id)
-    assert turn_b.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_b_response = client.turns.get_turn(turn_b_id)
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Delete B so C gets promoted
     client.turns.delete_turn(turn_b_id)
-    turn_c = client.turns.get_turn(turn_c_id)
-    assert turn_c.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_c_response = client.turns.get_turn(turn_c_id)
+    turn_c = TurnDetailResponse.from_response(turn_c_response)
+    assert turn_c.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Add client D
     client_d = checked_in(client, barbershop_id)
     turn_d_id = create_solo_turn(client, barbershop_id, barber_id, client_d)
-    turn_d = client.turns.get_turn(turn_d_id)
-    assert turn_d.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
+    turn_d_response = client.turns.get_turn(turn_d_id)
+    turn_d = TurnDetailResponse.from_response(turn_d_response)
+    assert turn_d.owner_status == ClientStatusEnum.ON_QUEUE
 
     # Clean setup
 
@@ -182,13 +187,15 @@ def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(
 
     # Wait fresh_b
     client.turns.wait_turn(turn_fresh_b_id)
-    turn_fresh_b = client.turns.get_turn(turn_fresh_b_id).json()
-    assert turn_fresh_b["ownerStatus"] == ClientStatusEnum.WAITING
+    fresh_turn_b_response = client.turns.get_turn(turn_fresh_b_id)
+    fresh_turn_b = TurnDetailResponse.from_response(fresh_turn_b_response)
+    assert fresh_turn_b.owner_status == ClientStatusEnum.WAITING
 
     # Delete fresh_a so fresh_c gets promoted
     client.turns.delete_turn(turn_fresh_a_id)
-    turn_fresh_c = client.turns.get_turn(turn_fresh_c_id)
-    assert turn_fresh_c.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    fresh_turn_c_response = client.turns.get_turn(turn_fresh_c_id)
+    fresh_turn_c = TurnDetailResponse.from_response(fresh_turn_c_response)
+    assert fresh_turn_c.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Clean up
     client.turns.delete_turn(turn_fresh_b_id)

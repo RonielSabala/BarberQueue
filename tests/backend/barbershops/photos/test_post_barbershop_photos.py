@@ -61,9 +61,8 @@ def test_uploaded_count_matches_input(
 
     request = CreateBarbershopPhotosRequest.random()
     response = client.barbershops.add_photos(open_barbershop_id, request)
-    body = response.json()
-
-    assert len(body["uploaded"]) == len(request.photo_urls)
+    photos = CreateBarbershopPhotosResponse.from_response(response).uploaded
+    assert len(photos) == len(request.photo_urls)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

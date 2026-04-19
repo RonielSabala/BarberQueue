@@ -58,9 +58,5 @@ class BaseDto:
             for field in dataclasses.fields(self)
         )
 
-    @property
-    def all_none(self) -> bool:
-        return all(value is None for _, value in self.items())
-
     def to_json(self) -> dict:
         return {to_camel_case(k): _serialize(v) for k, v in self.items()}

@@ -56,37 +56,26 @@ def test_seeded_barber_appears(response: requests.Response) -> None:
     The seeded active barber appears in the queue.
     """
 
-    assert any(SEEDED_BARBER_ID == barber["barberId"] for barber in response.json())
+    queues = QueueResponse.from_array_response(response)
+    assert any(SEEDED_BARBER_ID == queue.barber_id for queue in queues)
 
 
-def test_positions_are_sequential(response: requests.Response) -> None:
+def test_all_turns_are_valid(response: requests.Response) -> None:
     """
-    Turns within each barber queue have sequential positions starting at 1.
+    All turns in any barber queue have valid turns.
     """
 
-    for barber in response.json():
-        positions = [turn["position"] for turn in barber["turns"]]
+    queues = QueueResponse.from_array_response(response)
+    for queue in queues:
+        positions = []
+        for turn in queue.turns:
+            position = turn.position
+            assert position is not None and position >= 1
+            assert turn.owner_type in (OwnerTypeEnum.CLIENT, OwnerTypeEnum.MEMBER)
+
+            positions.append(position)
+
         assert positions == list(range(1, len(positions) + 1))
-
-
-def test_all_turns_have_positive_position(response: requests.Response) -> None:
-    """
-    All turns in any barber queue have a non-zero position.
-    """
-
-    for barber in response.json():
-        for turn in barber["turns"]:
-            assert turn["position"] >= 1
-
-
-def test_all_turns_owner_type_is_valid(response: requests.Response) -> None:
-    """
-    Every turn ownerType is client or member.
-    """
-
-    for barber in response.json():
-        for turn in barber["turns"]:
-            assert turn["ownerType"] in (OwnerTypeEnum.CLIENT, OwnerTypeEnum.MEMBER)
 
 
 def test_live_turn_appears_in_barber_queue(
@@ -100,21 +89,16 @@ def test_live_turn_appears_in_barber_queue(
     correct barber.
     """
 
-    response = client.queues.get_barbershop_queues(open_barbershop_id)
-
     live_turn_id = live_turn.turn_id
+    response = client.queues.get_barbershop_queues(open_barbershop_id)
+    queues = QueueResponse.from_array_response(response)
     barber_queue = next(
-        (
-            barber
-            for barber in response.json()
-            if barber["barberId"] == active_barber_id
-        ),
-        None,
+        (queue for queue in queues if queue.barber_id == active_barber_id), None
     )
 
     assert_status(response, HttpStatus.OK)
     assert barber_queue is not None
-    assert any(live_turn_id == turn["id"] for turn in barber_queue["turns"])
+    assert any(live_turn_id == turn._id for turn in barber_queue.turns)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

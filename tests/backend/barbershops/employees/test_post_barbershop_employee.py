@@ -53,24 +53,18 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, CreateBarbershopEmployeeResponse)
 
 
-def test_email_matches_input(client: ApiClient, open_barbershop_id: int) -> None:
+def test_fields_matches_input(client: ApiClient, open_barbershop_id: int) -> None:
     """
-    Response email matches the submitted email.
-    """
-
-    request = CreateBarbershopEmployeeRequest.random()
-    response = client.barbershops.create_employee(open_barbershop_id, request)
-    assert response.json()["email"] == request.email.value
-
-
-def test_role_matches_input(client: ApiClient, open_barbershop_id: int) -> None:
-    """
-    Response role matches the submitted role.
+    Response fields matches the submitted request fields.
     """
 
     request = CreateBarbershopEmployeeRequest.random()
     response = client.barbershops.create_employee(open_barbershop_id, request)
-    assert response.json()["role"] == request.role.value
+    employee = CreateBarbershopEmployeeResponse.from_response(response)
+
+    assert employee.username == request.username.value
+    assert employee.email == request.email.value
+    assert employee.role == request.role.value
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

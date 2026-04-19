@@ -17,6 +17,7 @@ from domain.utils import random_bool
 from domain.value_objects import BarbershopName
 from helpers.assertions import (
     assert_content_type,
+    assert_empty_body_array,
     assert_list_body_shape,
     assert_status,
 )
@@ -61,10 +62,11 @@ def test_search_filter(client: ApiClient) -> None:
 
     barbershop_name = request.barbershop_name.value
     response = client.barbershops.get_all(search=barbershop_name)
-    body = response.json()
+    barbershops = BarbershopResponse.from_array_response(response)
 
-    assert_list_body_shape(response, BarbershopResponse)
-    assert any(barbershop["barbershopName"] == barbershop_name for barbershop in body)
+    assert any(
+        barbershop_name == barbershop.barbershop_name for barbershop in barbershops
+    )
 
 
 def test_search_no_results(client: ApiClient) -> None:
@@ -74,7 +76,7 @@ def test_search_no_results(client: ApiClient) -> None:
 
     search_value = BarbershopName.random_value()
     response = client.barbershops.get_all(search=search_value)
-    assert response.json() == []
+    assert_empty_body_array(response)
 
 
 def test_is_open_filter(client: ApiClient) -> None:
@@ -84,11 +86,10 @@ def test_is_open_filter(client: ApiClient) -> None:
 
     is_open_value = random_bool()
     response = client.barbershops.get_all(is_open=is_open_value)
-    body = response.json()
+    barbershops = BarbershopResponse.from_array_response(response)
 
     assert_status(response, HttpStatus.OK)
-    assert_list_body_shape(response, BarbershopResponse)
-    assert all(barbershop["isOpen"] is is_open_value for barbershop in body)
+    assert all(barbershop.is_open is is_open_value for barbershop in barbershops)
 
 
 def test_admin_id_filter_unknown_admin(client: ApiClient) -> None:
@@ -97,4 +98,4 @@ def test_admin_id_filter_unknown_admin(client: ApiClient) -> None:
     """
 
     response = client.barbershops.get_all(admin_id=NON_EXISTENT_ID)
-    assert response.json() == []
+    assert_empty_body_array(response)

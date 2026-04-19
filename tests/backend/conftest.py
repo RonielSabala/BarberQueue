@@ -5,14 +5,20 @@ from dataclasses import dataclass
 import pytest
 
 from api.client import ApiClient
-from domain.dtos.auth import RegisterRequest
+from domain.dtos.auth import RegisterRequest, UserResponse
 from domain.dtos.barbers import UpdateBarberStatusRequest
 from domain.dtos.barbershops import (
     CreateBarbershopEmployeeRequest,
+    CreateBarbershopEmployeeResponse,
     CreateBarbershopRequest,
+    CreateBarbershopResponse,
     UpdateBarbershopStatusRequest,
 )
-from domain.dtos.turns import CreateTurnMemberRequest, CreateTurnRequest
+from domain.dtos.turns import (
+    CreateTurnMemberRequest,
+    CreateTurnRequest,
+    TurnDetailResponse,
+)
 from domain.enums import BarberStatusEnum, EmployeeRoleEnum
 from domain.value_objects import BarberStatus, Capacity, DayOfWeek, Id, WorkingDays
 from domain.value_objects.day_of_week import MAX_DAY_OF_WEEK, MIN_DAY_OF_WEEK
@@ -64,7 +70,8 @@ def get_barbershop_id_from_request(
     client: ApiClient, request: CreateBarbershopRequest
 ) -> int:
     response = client.barbershops.create(request)
-    return response.json()["id"]
+    barbershop = CreateBarbershopResponse.from_response(response)
+    return barbershop._id
 
 
 def get_open_barbershop_id(
@@ -98,13 +105,15 @@ def get_closed_barbershop_id(
 def get_employee_id(client: ApiClient, barbershop_id: int, **kwargs) -> int:
     request = CreateBarbershopEmployeeRequest.random(**kwargs)
     response = client.barbershops.create_employee(barbershop_id, request)
-    return response.json()["id"]
+    employee = CreateBarbershopEmployeeResponse.from_response(response)
+    return employee._id
 
 
 def get_fresh_client_id(client: ApiClient) -> int:
     request = RegisterRequest.random()
     response = client.auth.register(request)
-    return response.json()["id"]
+    user = UserResponse.from_response(response)
+    return user._id
 
 
 def get_fresh_employee_id(client: ApiClient, **kwargs) -> int:
@@ -169,12 +178,14 @@ def create_solo_turn(
     )
 
     response = client.turns.create_turn(request)
-    return response.json()[0]["id"]
+    turns = TurnDetailResponse.from_array_response(response)
+    solo_turn = next(turns)
+    return solo_turn._id
 
 
 def create_group_turn(
     client: ApiClient, barbershop_id: int, client_id: int, member_names: list[str]
-) -> list[dict]:
+) -> tuple[TurnDetailResponse, ...]:
     turn_request = CreateTurnRequest(
         client_id=Id(client_id),
         barbershop_id=Id(barbershop_id),
@@ -186,7 +197,7 @@ def create_group_turn(
     )
 
     response = client.turns.create_turn(turn_request)
-    return response.json()
+    return tuple(TurnDetailResponse.from_array_response(response))
 
 
 # Fixtures

@@ -49,6 +49,10 @@ class BaseRequest(BaseDto):
     Base request DTO.
     """
 
+    @property
+    def all_none(self) -> bool:
+        return all(value is None for _, value in self.items())
+
     @classmethod
     def random(
         cls, optional_chance: float = DEFAULT_OPTIONAL_CHANCE, **fields: Any | tuple

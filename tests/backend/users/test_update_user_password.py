@@ -11,7 +11,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse, MessageResponse
-from domain.dtos.auth import LoginRequest, RegisterRequest
+from domain.dtos.auth import LoginRequest, RegisterRequest, UserResponse
 from domain.dtos.users import UpdateUserPasswordRequest
 from domain.value_objects import Password
 from helpers.assertions import assert_body, assert_content_type, assert_status
@@ -41,7 +41,8 @@ class PasswordUpdate:
 def registered(client: ApiClient) -> Registered:
     register_request = RegisterRequest.random()
     response = client.auth.register(register_request)
-    return Registered(user_id=response.json()["id"], request=register_request)
+    user = UserResponse.from_response(response)
+    return Registered(user_id=user._id, request=register_request)
 
 
 @pytest.fixture(scope="module")
@@ -52,10 +53,9 @@ def password_update(client: ApiClient) -> PasswordUpdate:
     )
 
     register_response = client.auth.register(register_request)
-    response = client.users.update_user_password(
-        register_response.json()["id"], request
-    )
+    user = UserResponse.from_response(register_response)
 
+    response = client.users.update_user_password(user._id, request)
     return PasswordUpdate(
         request=request, register_request=register_request, api_response=response
     )

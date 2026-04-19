@@ -61,7 +61,8 @@ def test_is_not_active_by_default(response: requests.Response) -> None:
     Newly created barbershops are not active by default.
     """
 
-    assert response.json()["isActive"] is False
+    barbershop = CreateBarbershopResponse.from_response(response)
+    assert barbershop.is_active is False
 
 
 def test_email_matches_input(
@@ -71,7 +72,8 @@ def test_email_matches_input(
     Response email matches the submitted email.
     """
 
-    assert response.json()["email"] == barbershop_request.email.value
+    barbershop = CreateBarbershopResponse.from_response(response)
+    assert barbershop.email == barbershop_request.email.value
 
 
 def test_duplicate_email(

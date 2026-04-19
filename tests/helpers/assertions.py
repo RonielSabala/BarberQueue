@@ -2,7 +2,7 @@
 Reusable assertion helpers for API response testing.
 """
 
-from typing import Any, Protocol
+from typing import Any
 
 import requests
 
@@ -10,10 +10,6 @@ from api.core import HttpHeader, HttpStatus
 from domain.dtos import BaseResponse
 from domain.utils import to_camel_case
 from helpers.unwrap_type import unwrap_list_of
-
-
-class JSONSerializable(Protocol):
-    def to_json(self) -> dict: ...
 
 
 def assert_status(response: requests.Response, status: HttpStatus) -> None:
@@ -24,13 +20,17 @@ def assert_content_type(response: requests.Response, header: HttpHeader) -> None
     assert response.headers.get("Content-Type") == header.with_charset
 
 
-def assert_body(response: requests.Response, expected: JSONSerializable) -> None:
+def assert_body(response: requests.Response, expected: BaseResponse) -> None:
     assert response.json() == expected.to_json()
+
+
+def assert_empty_body_array(response: requests.Response) -> None:
+    assert response.json() == []
 
 
 def assert_type(value: Any, expected: type, *, name_on_error: str) -> None:
     assert isinstance(value, expected), (
-        f"Expected {name_on_error!r} to be <{expected.__name__}>, got <{type(value).__name__}>"
+        f"Expected {name_on_error} to be <{expected.__name__}>, got <{type(value).__name__}>"
     )
 
 
@@ -38,7 +38,7 @@ def _assert_shape(json: dict, response_class: type[BaseResponse]) -> None:
     for field_info in response_class.class_fields():
         # Validate key exists
         json_key = to_camel_case(field_info.field_name)
-        assert json_key in json, f"Missing key {json_key!r} in response"
+        assert json_key in json, f"Missing key {json_key} in response"
 
         # Skip optional key
         json_value = json[json_key]

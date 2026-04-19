@@ -79,4 +79,5 @@ def test_total_attended_clients_is_non_negative(response: requests.Response) -> 
     totalAttendedClients is a non-negative integer.
     """
 
-    assert response.json()["totalAttendedClients"] >= 0
+    dashboard = BarberDashboardResponse.from_response(response)
+    assert dashboard.total_attended_clients >= 0
