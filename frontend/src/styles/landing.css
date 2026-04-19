@@ -29,7 +29,7 @@
 }
 
 .lp-nav-logo {
-  height: 42px;
+  height: 60px;
   width: auto;
 }
 
@@ -88,9 +88,10 @@
 }
 
 .lp-hero-logo {
-  height: 80px;
+  height: 130px;
   width: auto;
-  margin-bottom: 36px;
+  display: block;
+  margin: 0 auto 36px;
 }
 
 .lp-hero-badge {
@@ -266,16 +267,16 @@
   position: relative;
 }
 
-/* Connector line between steps */
+/* Connector line between steps
 .lp-steps::before {
   content: "";
   position: absolute;
-  top: 32px;
+  top: 60px;
   left: calc(16.67% + 16px);
   right: calc(16.67% + 16px);
   height: 2px;
   background: linear-gradient(90deg, #e4e9f4, #3b82f6, #e4e9f4);
-}
+} */
 
 .lp-step {
   background: #f8faff;

@@ -1,7 +1,8 @@
 /* ─── Auth Pages ────────────────────────────────────────────────────────────── */
 
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap");
+/* ─── Auth Pages ────────────────────────────────────────────────────────────── */
 
+/* Fonts handled by index.html (Inter, Outfit) */
 html,
 body,
 #root {
@@ -15,7 +16,7 @@ body,
 .auth-container {
   display: flex;
   min-height: 100vh;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* ─── LEFT PANEL ────────────────────────────────────────────────────────────── */
@@ -73,7 +74,7 @@ body,
 }
 
 .auth-tagline {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 42px;
   font-weight: 700;
   color: #ffffff;
@@ -91,15 +92,15 @@ body,
   line-height: 1.65;
 }
 
-/* ─── Logo en esquina superior del form card ────────────────────────────────── */
+/* ─── Logo en la parte superior del form card ────────────────────────────────── */
 .auth-card-logo-row {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  justify-content: flex-start;
+  margin-bottom: 24px;
 }
 
 .auth-card-logo {
-  height: 34px;
+  height: 72px;
   width: auto;
 }
 
@@ -125,7 +126,7 @@ body,
 }
 
 .auth-card-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 30px;
   font-weight: 800;
   color: #1a2236;
@@ -174,7 +175,7 @@ body,
   border: 1.5px solid #e4e9f4;
   border-radius: 12px;
   font-size: 15px;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1a2236;
   background: #f8faff;
   transition:
@@ -222,7 +223,7 @@ body,
   border-radius: 14px;
   font-size: 16px;
   font-weight: 700;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   cursor: pointer;
   transition:
     background 0.2s,
@@ -313,7 +314,7 @@ body,
   border-radius: 14px;
   font-size: 15px;
   font-weight: 600;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1a2236;
   text-decoration: none;
   transition:

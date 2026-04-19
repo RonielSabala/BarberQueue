@@ -1,5 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
+import ProtectedRoute from "../components/ProtectedRoute";
+
+import PublicRoute from "../components/PublicRoute";
 
 // Auth
 import Login from "../pages/auth/Login";
@@ -46,60 +49,71 @@ import NotFound from "../pages/NotFound";
 function AppRoutes() {
   return (
     <Routes>
-      {/* LANDING */}
-      <Route path="/" element={<Landing />} />
+      <Route element={<PublicRoute />}>
+        {/* LANDING */}
+        <Route path="/" element={<Landing />} />
 
-      {/* Auth */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Route>
 
       {/* APP (con layout) */}
       <Route element={<MainLayout />}>
         {/*Client*/}
-        <Route path="/client/home" element={<ClientHome />} />
-        <Route path="/client/profile" element={<ClientProfile />} />
+        <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
+          <Route path="/client/home" element={<ClientHome />} />
+          <Route path="/client/profile" element={<ClientProfile />} />
+        </Route>
 
-        {/*Barbershop*/}
+        {/*Barbershop (Public/Shared inside App)*/}
         <Route path="/barbershops/:id" element={<BarbershopProfile />} />
         <Route path="/barbershops/:id/queue" element={<QueueLive />} />
 
         {/*Admin*/}
-        <Route path="/admin/home" element={<AdminHome />} />
-        <Route path="/admin/barbershop/:id" element={<AdminBarbershop />} />
-        <Route
-          path="/admin/barbershop/:id/employees"
-          element={<AdminEmployees />}
-        />
-        <Route
-          path="/admin/barbershop/:id/employees/new"
-          element={<AdminEmployeeForm />}
-        />
-        <Route
-          path="/admin/barbershop/:id/employees/:employeeId/edit"
-          element={<AdminEmployeeForm />}
-        />
-        <Route
-          path="/admin/barbershop/:id/dashboard"
-          element={<AdminDashboard />}
-        />
-        <Route
-          path="/admin/barbershop/new"
-          element={<AdminCreateBarbershop />}
-        />
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/home" element={<AdminHome />} />
+          <Route path="/admin/profile" element={<ClientProfile />} />
+          <Route path="/admin/barbershop/:id" element={<AdminBarbershop />} />
+          <Route
+            path="/admin/barbershop/:id/employees"
+            element={<AdminEmployees />}
+          />
+          <Route
+            path="/admin/barbershop/:id/employees/new"
+            element={<AdminEmployeeForm />}
+          />
+          <Route
+            path="/admin/barbershop/:id/employees/:employeeId/edit"
+            element={<AdminEmployeeForm />}
+          />
+          <Route
+            path="/admin/barbershop/:id/dashboard"
+            element={<AdminDashboard />}
+          />
+          <Route
+            path="/admin/barbershop/new"
+            element={<AdminCreateBarbershop />}
+          />
+        </Route>
 
         {/*Barber*/}
-        <Route path="/barber/profile" element={<BarberProfile />} />
-        <Route path="/barber/dashboard" element={<BarberDashboard />} />
+        <Route element={<ProtectedRoute allowedRoles={["barber"]} />}>
+          <Route path="/barber/profile" element={<BarberProfile />} />
+          <Route path="/barber/dashboard" element={<BarberDashboard />} />
+        </Route>
 
         {/*Assistant*/}
-        <Route path="/assistant/home" element={<AssistantHome />} />
-        <Route
-          path="/assistant/register-client"
-          element={<RegisterClientsForm />}
-        />
-        <Route path="/assistant/profile" element={<AssistantProfile />} />
+        <Route element={<ProtectedRoute allowedRoles={["assistant"]} />}>
+          <Route path="/assistant/home" element={<AssistantHome />} />
+          <Route
+            path="/assistant/register-client"
+            element={<RegisterClientsForm />}
+          />
+          <Route path="/assistant/profile" element={<AssistantProfile />} />
+        </Route>
       </Route>
 
       <Route path="/auth/callback" element={<AuthCallback />} />

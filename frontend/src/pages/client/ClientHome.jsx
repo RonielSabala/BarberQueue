@@ -41,30 +41,35 @@ function ClientHome() {
   }, [search, filter]);
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>BarberQueue</h1>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-8 gap-4 border border-slate-100 dark:border-slate-700">
+        <div className="relative w-full sm:max-w-md">
+          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            search
+          </span>
+          <input
+            type="text"
+            placeholder="Buscar barbería..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
+          />
+        </div>
 
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
-        <input
-          type="text"
-          placeholder="Buscar barbería 🔎"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "300px",
-            padding: "10px",
-            borderRadius: "20px",
-            border: "1px solid #ccc",
-          }}
-        />
-      </div>
-
-      <div style={{ textAlign: "right", marginBottom: "20px" }}>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="all">Todas</option>
-          <option value="open">Abiertas</option>
-          <option value="closed">Cerradas</option>
-        </select>
+        <div className="w-full sm:w-auto relative">
+          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            filter_alt
+          </span>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700 dark:text-slate-200 cursor-pointer"
+          >
+            <option value="all">Todas</option>
+            <option value="open">Abiertas</option>
+            <option value="closed">Cerradas</option>
+          </select>
+        </div>
       </div>
 
       {loading && (

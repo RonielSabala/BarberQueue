@@ -160,10 +160,13 @@ function AdminEmployeeForm() {
     <div className="admin-employee-form-page">
       <div className="admin-employee-form-topbar">
         <button
-          className="admin-employee-form-back-btn"
           onClick={() => navigate(`/admin/barbershop/${id}/employees`)}
+          className="admin-employee-form-back-btn flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-bold bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100 dark:border-slate-700 w-fit"
         >
-          ← Volver
+          <span className="material-icons-round text-xl">
+            arrow_back_ios_new
+          </span>
+          Volver
         </button>
       </div>
 

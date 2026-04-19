@@ -194,261 +194,265 @@ function BarberDashboard() {
   const isAccepting = barber?.isAccepting ?? false;
 
   return (
-    <div className="barber-dashboard-page">
-      <div className="barber-dashboard-header">
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1>Dashboard del Barbero</h1>
-          <p>Gestiona tu jornada, visualiza tu cliente actual y tu cola.</p>
+          <h1 className="text-3xl font-display font-bold text-slate-800 dark:text-white">
+            Dashboard del Barbero
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Gestiona tu jornada, visualiza tu cliente actual y tu fila.
+          </p>
         </div>
-
         <button
-          className="barber-dashboard-back-btn"
+          className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-colors shadow-sm"
           onClick={handleGoToProfile}
         >
+          <span className="material-icons-round text-sm">person</span>
           Ir al perfil
         </button>
       </div>
 
-      {error && <div className="barber-dashboard-alert error">{error}</div>}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl font-medium">
+          {error}
+        </div>
+      )}
       {successMessage && (
-        <div className="barber-dashboard-alert success">{successMessage}</div>
+        <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl font-medium">
+          {successMessage}
+        </div>
       )}
 
-      <div className="barber-dashboard-kpis">
-        <div className="barber-kpi-card">
-          <p className="barber-kpi-label">Clientes atendidos</p>
-          <p className="barber-kpi-value">
-            {dashboard?.totalAttendedClients ?? 0}
-          </p>
-        </div>
-        <div className="barber-kpi-card">
-          <p className="barber-kpi-label">Tiempo promedio (minutos)</p>
-          <p className="barber-kpi-value small">
-            {dashboard?.averageServiceMinutes || "Sin datos"}
-          </p>
-        </div>
-        <div className="barber-kpi-card">
-          <p className="barber-kpi-label">Rating promedio</p>
-          <p className="barber-kpi-value">
-            {dashboard?.averageRating != null
-              ? `⭐ ${dashboard.averageRating}`
-              : "Sin datos"}
-          </p>
-        </div>
-        <div className="barber-kpi-card">
-          <p className="barber-kpi-label">Fecha de ingreso</p>
-          <p className="barber-kpi-value small">
-            {dashboard?.joinDate || "Sin datos"}
-          </p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI Cards */}
+        {[
+          {
+            label: "Clientes atendidos",
+            value: dashboard?.totalAttendedClients ?? 0,
+            icon: "groups",
+          },
+          {
+            label: "Tiempo promedio",
+            value: dashboard?.averageServiceMinutes
+              ? `${dashboard.averageServiceMinutes} min`
+              : "Sin datos",
+            icon: "timer",
+          },
+          {
+            label: "Rating promedio",
+            value:
+              dashboard?.averageRating != null
+                ? `⭐ ${dashboard.averageRating}`
+                : "Sin datos",
+            icon: "star",
+          },
+          {
+            label: "Fecha de ingreso",
+            value: dashboard?.joinDate || "Sin datos",
+            icon: "calendar_today",
+          },
+        ].map((kpi, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-4"
+          >
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <span className="material-icons-round">{kpi.icon}</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
+              <p className="text-xl font-bold text-slate-800 dark:text-white mt-0.5">
+                {kpi.value}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="barber-dashboard-main-grid">
-        <div className="barber-dashboard-left">
-          {/* ─── Estado actual ─── */}
-          <div className="barber-dashboard-card compact-status-card">
-            <h2>Estado actual</h2>
-
-            <div className="barber-status-summary-grid">
-              <div className="barber-status-mini-card">
-                <span className="barber-status-mini-label">Estado</span>
-                <span className="barber-status-mini-value">
-                  {getStatusLabel(barber?.currentStatus)}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Estado actual & Control de cola en una sola fila */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <span className="material-icons-round text-slate-400">
+                  tune
                 </span>
-              </div>
-              <div className="barber-status-mini-card">
-                <span className="barber-status-mini-label">Cola</span>
-                <span className="barber-status-mini-value">
-                  {isAccepting ? "Abierta" : "Cerrada"}
-                </span>
+                Estado general
+              </h2>
+              <div className="flex gap-3 mt-4">
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                >
+                  <option value="active">🟢 Activo</option>
+                  <option value="resting">🟡 Descansando</option>
+                  <option value="inactive">🔴 Inactivo</option>
+                </select>
+                <button
+                  type="button"
+                  className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm disabled:opacity-50"
+                  onClick={handleStatusUpdate}
+                  disabled={savingStatus || !selectedStatus}
+                >
+                  Guardar
+                </button>
               </div>
             </div>
 
-            <div className="barber-status-form-inline">
-              <select
-                id="barber-status-select"
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="barber-status-select"
-              >
-                <option value="active">Activo</option>
-                <option value="resting">Descansando</option>
-                <option value="inactive">Inactivo</option>
-              </select>
-
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col justify-center">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+                <span className="material-icons-round text-slate-400">
+                  front_hand
+                </span>
+                Recepción de clientes
+              </h2>
+              <p className="text-sm text-slate-500 mb-4 h-10">
+                {isAccepting
+                  ? "Permitiendo nuevos clientes a tu fila"
+                  : "Bloqueando nuevos clientes"}
+              </p>
               <button
                 type="button"
-                className="barber-save-status-btn"
-                onClick={handleStatusUpdate}
-                disabled={savingStatus || !selectedStatus}
+                className={`w-full py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-sm ${isAccepting ? "bg-green-50 text-green-700 hover:bg-green-100 border border-green-200" : "bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"}`}
+                onClick={handleToggleAccepting}
+                disabled={savingAccepting}
               >
-                {savingStatus ? "Guardando..." : "Actualizar estado"}
+                <span className="material-icons-round text-[18px]">
+                  {isAccepting ? "lock_open" : "lock"}
+                </span>
+                {savingAccepting
+                  ? "Actualizando..."
+                  : isAccepting
+                    ? "Cerrar mi fila"
+                    : "Abrir mi fila"}
               </button>
             </div>
           </div>
 
-          {/* ─── Control de cola — toggle independiente ─── */}
-          <div className="barber-dashboard-card">
-            <h2>Control de cola</h2>
-            <p className="barber-queue-control-desc">
-              {isAccepting
-                ? "Tu cola está abierta. Los clientes pueden registrarse contigo."
-                : "Tu cola está cerrada. No se aceptarán nuevos clientes."}
-            </p>
-
-            <button
-              type="button"
-              className={`barber-accepting-toggle ${isAccepting ? "accepting" : "not-accepting"}`}
-              onClick={handleToggleAccepting}
-              disabled={savingAccepting}
-            >
-              <span className="material-icons-round">
-                {isAccepting ? "lock_open" : "lock"}
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+              <span className="material-icons-round text-slate-400">
+                content_cut
               </span>
-              {savingAccepting
-                ? "Actualizando..."
-                : isAccepting
-                  ? "Cerrar mi cola"
-                  : "Abrir mi cola"}
-            </button>
-          </div>
-
-          {/* ─── Cliente actual ─── */}
-          <div className="barber-dashboard-card">
-            <h2>Cliente actual</h2>
+              Cliente actual en servicio
+            </h2>
 
             {currentClient ? (
-              <div className="barber-current-client-premium">
-                <div className="barber-current-client-avatar large">
-                  <span className="material-icons-round">person</span>
+              <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="w-20 h-20 bg-primary/10 border-4 border-white dark:border-slate-800 rounded-full flex items-center justify-center text-primary shadow-sm">
+                  <span className="material-icons-round text-4xl">
+                    {currentClient.ownerType === "member" ? "groups" : "person"}
+                  </span>
                 </div>
-                <div className="barber-current-client-info">
-                  <p className="barber-current-client-name">
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
                     {currentClient.ownerName}
-                  </p>
-                  <div className="barber-current-client-tags">
-                    <span className="client-tag blue">
+                  </h3>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
+                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                       {currentClient.ownerType}
                     </span>
-                    <span className="client-tag green">
+                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                       {currentClient.ownerStatus}
                     </span>
                     {Number(currentClient.groupSize) > 1 && (
-                      <span className="client-tag amber">
+                      <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                         Grupo {currentClient.groupSize}
                       </span>
                     )}
                   </div>
                 </div>
+
+                <button
+                  className="w-full sm:w-auto mt-4 sm:mt-0 flex flex-col items-center justify-center gap-1 bg-primary hover:bg-blue-600 text-white px-6 py-4 rounded-xl font-bold transition-colors shadow-md disabled:opacity-50"
+                  onClick={handleAttendTurn}
+                  disabled={attendLoading}
+                >
+                  <span className="material-icons-round">check_circle</span>
+                  {attendLoading ? "Finalizando..." : "Terminar Servicio"}
+                </button>
               </div>
             ) : (
-              <div className="barber-empty-state-box">
-                <span className="material-icons-round">event_busy</span>
-                <p>No hay cliente en servicio.</p>
+              <div className="flex flex-col items-center justify-center space-y-3 py-10 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-400">
+                <span className="material-icons-round text-5xl opacity-50">
+                  event_seat
+                </span>
+                <p className="font-medium">
+                  No hay cliente en servicio ahora mismo.
+                </p>
               </div>
             )}
           </div>
 
-          {/* ─── Acciones ─── */}
-          <div className="barber-dashboard-card">
-            <h2>Acciones de la jornada</h2>
-
-            <div className="barber-actions-grid">
-              <button
-                className="barber-action-card finish-service"
-                type="button"
-                onClick={handleAttendTurn}
-                disabled={attendLoading || !currentClient}
-                title={
-                  !currentClient
-                    ? "No hay cliente en servicio"
-                    : "Marcar servicio como finalizado"
-                }
-              >
-                <span className="material-icons-round">content_cut</span>
-                <div>
-                  <strong>Finalizar servicio</strong>
-                  <p>
-                    {attendLoading
-                      ? "Finalizando..."
-                      : currentClient
-                        ? `Atendiendo a ${currentClient.ownerName}`
-                        : "Sin cliente activo"}
-                  </p>
-                </div>
-              </button>
-
-              <button
-                className="barber-action-card end-shift"
-                type="button"
-                onClick={handleEndShift}
-                disabled={savingStatus}
-              >
-                <span className="material-icons-round">logout</span>
-                <div>
-                  <strong>Terminar jornada</strong>
-                  <p>Cerrar jornada del día</p>
-                </div>
-              </button>
-            </div>
+          <div className="flex justify-end">
+            <button
+              className="flex items-center gap-2 px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-100 shadow-sm disabled:opacity-50"
+              onClick={handleEndShift}
+              disabled={savingStatus}
+            >
+              <span className="material-icons-round text-sm">logout</span>
+              Terminar mi jornada
+            </button>
           </div>
         </div>
 
-        {/* ─── Cola ─── */}
-        <div className="barber-dashboard-right">
-          <div className="barber-queue-column-card">
-            <div className="barber-queue-column-header">
-              <h2>Cola actual</h2>
-              <p>{queueData?.barberName || barber?.username || "Barbero"}</p>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col h-[600px]">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-4 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="material-icons-round text-slate-400">
+                format_list_numbered
+              </span>
+              Mi Fila Virtual
             </div>
+            <span className="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs px-2 py-1 rounded-full font-bold">
+              {waitingQueue.length}
+            </span>
+          </h2>
 
-            <div className="barber-queue-column-body">
-              {currentClient ? (
-                <div className="barber-queue-turn current">
-                  <span className="barber-queue-turn-position">
-                    {currentClient.position ?? 1}
-                  </span>
-                  <div className="barber-queue-turn-info">
-                    <p>{currentClient.ownerName}</p>
-                    <span>
-                      En servicio
-                      {Number(currentClient.groupSize) > 1
-                        ? ` · Grupo ${currentClient.groupSize}`
-                        : ""}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="barber-queue-empty">
-                  No hay cliente en servicio.
-                </div>
-              )}
-
-              {waitingQueue.length === 0 ? (
-                <div className="barber-queue-empty">
-                  No hay clientes en espera.
-                </div>
-              ) : (
-                waitingQueue.map((turn) => (
+          <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+            {waitingQueue.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                <span className="material-icons-round text-4xl mb-2 opacity-50">
+                  inbox
+                </span>
+                <p className="text-sm">No hay nadie esperando.</p>
+              </div>
+            ) : (
+              waitingQueue.map((turn, i) => (
+                <div
+                  key={turn.id}
+                  className={`flex items-center gap-4 p-3 rounded-xl border ${turn.ownerStatus === "waiting" ? "border-amber-200 bg-amber-50 dark:bg-amber-900/10" : "border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50"}`}
+                >
                   <div
-                    key={turn.id}
-                    className={`barber-queue-turn${turn.ownerStatus === "waiting" ? " waiting" : ""}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${turn.ownerStatus === "waiting" ? "bg-amber-200 text-amber-800" : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}
                   >
-                    <span className="barber-queue-turn-position">
-                      {turn.position}
-                    </span>
-                    <div className="barber-queue-turn-info">
-                      <p>{turn.ownerName}</p>
-                      <span>
-                        {turn.ownerType} · {turn.ownerStatus}
-                        {turn.ownerStatus === "waiting" ? " ⏸ pausado" : ""}
-                        {turn.groupSize ? ` · Grupo ${turn.groupSize}` : ""}
-                      </span>
-                    </div>
+                    {turn.position}
                   </div>
-                ))
-              )}
-            </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-slate-800 dark:text-slate-200 truncate">
+                      {turn.ownerName}
+                    </p>
+                    <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest mt-0.5 truncate">
+                      {turn.ownerStatus === "waiting" ? "Pausado" : "En fila"}
+                      {Number(turn.groupSize) > 1
+                        ? ` · Grupo ${turn.groupSize}`
+                        : ""}
+                    </p>
+                  </div>
+                  {turn.ownerType === "member" && (
+                    <span
+                      className="material-icons-round text-slate-300"
+                      title="Miembro de grupo"
+                    >
+                      groups
+                    </span>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

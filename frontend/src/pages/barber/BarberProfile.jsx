@@ -138,7 +138,9 @@ function BarberProfile() {
 
           {/* Info */}
           <div className="barber-profile-info-section">
-            <h1 className="barber-profile-name">{barber.username}</h1>
+            <h1 className="text-4xl md:text-5xl font-display font-extrabold text-slate-900 tracking-tight mb-4">
+              {barber.username}
+            </h1>
 
             <div className="barber-profile-status-row">
               <span className={`barber-status-pill ${statusClass}`}>
@@ -192,7 +194,7 @@ function BarberProfile() {
 
         {/* ─── Reviews ──────────────────────────────────────────────────────── */}
         <div className="barber-reviews-section">
-          <h2 className="barber-reviews-title">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-slate-900 tracking-tight mb-6">
             Reseñas {reviews.length > 0 && <span>({reviews.length})</span>}
           </h2>
 

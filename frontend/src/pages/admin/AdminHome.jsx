@@ -46,35 +46,54 @@ function AdminHome() {
   }, [search, statusFilter]);
 
   return (
-    <div className="admin-home">
-      <h1>BarberQueue</h1>
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900 dark:text-white">
+            Barberías
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Administra los locales registrados en el sistema.
+          </p>
+        </div>
 
-      <div className="admin-home-top-actions">
         <button
-          className="create-barbershop-btn"
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg"
           onClick={() => navigate("/admin/barbershop/new")}
         >
-          + Crear barbería
+          <span className="material-icons-round">add_circle</span>
+          Crear barbería
         </button>
       </div>
 
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Buscar barbería a administrar 🔍"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-8 gap-4 border border-slate-100 dark:border-slate-700">
+        <div className="relative w-full sm:max-w-md">
+          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+            search
+          </span>
+          <input
+            type="text"
+            placeholder="Buscar barbería a administrar..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
+          />
+        </div>
 
-        <select
-          className="filter-btn"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="all">Todas</option>
-          <option value="open">Abiertas</option>
-          <option value="closed">Cerradas</option>
-        </select>
+        <div className="w-full sm:w-auto relative">
+          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            filter_alt
+          </span>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700 dark:text-slate-200 cursor-pointer"
+          >
+            <option value="all">Todas</option>
+            <option value="open">Abiertas</option>
+            <option value="closed">Cerradas</option>
+          </select>
+        </div>
       </div>
 
       {loading && <p>Cargando barberías...</p>}

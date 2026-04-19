@@ -55,7 +55,9 @@ function Login() {
     <AuthLayout>
       <div className="auth-card">
         <div className="auth-card-logo-row">
-          <img src={logo} alt="BarberQueue" className="auth-card-logo" />
+          <Link to="/">
+            <img src={logo} alt="BarberQueue" className="auth-card-logo" />
+          </Link>
         </div>
 
         <h2 className="auth-card-title">Bienvenido</h2>
@@ -96,11 +98,13 @@ function Login() {
           </div>
 
           <div className="auth-forgot-row">
-            <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>
+            <Link to="/forgot-password" style={{ fontWeight: "bold" }}>
+              Restablecer contraseña
+            </Link>
           </div>
 
           <button type="submit" className="auth-submit-btn" disabled={loading}>
-            {loading ? "Ingresando..." : "Iniciar sesión →"}
+            {loading ? "Ingresando..." : "Iniciar sesión"}
           </button>
         </form>
 
@@ -154,9 +158,7 @@ function Login() {
           <p className="auth-link-row">
             ¿No tienes cuenta? <Link to="/register">Crear cuenta gratis</Link>
           </p>
-          <p className="auth-link-secondary">
-            <Link to="/reset-password">Actualizar contraseña</Link>
-          </p>
+          {/* Removed Actualizar contraseña */}
         </div>
       </div>
     </AuthLayout>

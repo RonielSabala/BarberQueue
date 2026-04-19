@@ -7,9 +7,11 @@ function Landing() {
     <div className="lp">
       {/* ─── NAV ─────────────────────────────────────────────────────────────── */}
       <nav className="lp-nav">
-        <img src={logo} alt="BarberQueue" className="lp-nav-logo" />
+        <Link to="/">
+          <img src={logo} alt="BarberQueue" className="lp-nav-logo" />
+        </Link>
         <Link to="/login" className="lp-nav-btn">
-          Iniciar sesión →
+          Iniciar sesión
         </Link>
       </nav>
 
@@ -38,7 +40,7 @@ function Landing() {
 
           <div className="lp-hero-actions">
             <Link to="/login" className="lp-btn-primary">
-              Iniciar sesión →
+              Iniciar sesión
             </Link>
             <Link to="/register" className="lp-btn-secondary">
               Crear cuenta gratis

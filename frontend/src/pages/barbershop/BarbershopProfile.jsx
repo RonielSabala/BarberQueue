@@ -102,6 +102,13 @@ function BarbershopProfile() {
     }));
   };
 
+  const handleStarClick = (rating) => {
+    setReviewForm((prev) => ({
+      ...prev,
+      rating,
+    }));
+  };
+
   const handleSubmitReview = async (e) => {
     e.preventDefault();
 
@@ -309,19 +316,25 @@ function BarbershopProfile() {
 
               <form onSubmit={handleSubmitReview}>
                 <div className="barbershop-form-group">
-                  <label>Calificación</label>
-                  <select
-                    name="rating"
-                    value={reviewForm.rating}
-                    onChange={handleReviewChange}
-                    className="barbershop-input"
-                  >
-                    <option value={5}>5 estrellas</option>
-                    <option value={4}>4 estrellas</option>
-                    <option value={3}>3 estrellas</option>
-                    <option value={2}>2 estrellas</option>
-                    <option value={1}>1 estrella</option>
-                  </select>
+                  <label className="block mb-3 text-center">Calificación</label>
+                  <div className="flex justify-center gap-3 mt-2 mb-6">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => handleStarClick(star)}
+                        className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          reviewForm.rating >= star
+                            ? "bg-amber-50 text-amber-500 scale-110 shadow-sm border border-amber-100"
+                            : "bg-slate-50 text-slate-300 hover:bg-slate-100 border border-transparent"
+                        }`}
+                      >
+                        <span className="material-icons-round text-3xl text-inherit">
+                          star
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="barbershop-form-group">
@@ -348,45 +361,54 @@ function BarbershopProfile() {
             </div>
 
             {reviewsLoading ? (
-              <div className="barbershop-empty-card">Cargando reseñas...</div>
+              <div className="text-center py-8 text-slate-500">
+                Cargando reseñas...
+              </div>
             ) : reviews.length === 0 ? (
-              <div className="barbershop-empty-card">
+              <div className="text-center py-8 text-slate-500 italic">
                 Aún no hay reseñas para esta barbería.
               </div>
             ) : (
-              <div className="barbershop-reviews-list">
+              <div className="flex flex-col gap-4 mt-6">
                 {reviews.map((review) => (
-                  <div key={review.id} className="barbershop-review-card">
-                    <div className="barbershop-review-header">
+                  <div
+                    key={review.id}
+                    className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col gap-3"
+                  >
+                    <div className="flex justify-between items-start gap-4">
                       <div>
-                        <p className="barbershop-review-user">
-                          {review.username}
-                        </p>
-                        <p className="barbershop-review-date">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-1">
+                          <p className="font-bold text-slate-800 dark:text-slate-200">
+                            {review.username}
+                          </p>
+                          <div className="text-xs tracking-widest text-amber-500">
+                            {renderStars(review.rating)}
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">
                           {review.createdAt}
                         </p>
                       </div>
 
-                      <div className="barbershop-review-header-right">
-                        <div className="barbershop-review-stars">
-                          {renderStars(review.rating)}
-                        </div>
-
-                        {canDeleteReview(review) && (
-                          <button
-                            className="barbershop-delete-review-btn"
-                            onClick={() => handleDeleteReview(review.id)}
-                            disabled={deletingReviewId === review.id}
-                          >
+                      {canDeleteReview(review) && (
+                        <button
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                          onClick={() => handleDeleteReview(review.id)}
+                          disabled={deletingReviewId === review.id}
+                        >
+                          <span className="material-icons-round text-[16px]">
+                            delete
+                          </span>
+                          <span className="hidden sm:inline">
                             {deletingReviewId === review.id
                               ? "Eliminando..."
                               : "Eliminar"}
-                          </button>
-                        )}
-                      </div>
+                          </span>
+                        </button>
+                      )}
                     </div>
 
-                    <p className="barbershop-review-content">
+                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
                       {review.content}
                     </p>
                   </div>

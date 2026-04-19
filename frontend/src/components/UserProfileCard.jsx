@@ -54,9 +54,11 @@ function UserProfileCard({
   return (
     <div className="p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-800">{title}</h1>
-          <p className="text-slate-500 mt-1">{subtitle}</p>
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold text-slate-900 tracking-tight">
+            {title}
+          </h1>
+          <p className="text-slate-500 font-medium mt-2">{subtitle}</p>
         </div>
 
         {error && (
@@ -77,19 +79,19 @@ function UserProfileCard({
               {user.username?.charAt(0)?.toUpperCase() || "U"}
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-800">
+            <h2 className="text-2xl font-display font-bold text-slate-900">
               {user.username}
             </h2>
 
-            <p className="text-slate-500 mt-1 break-all">{user.email}</p>
+            <p className="text-slate-500 font-medium mt-1 break-all">
+              {user.email}
+            </p>
 
-            <span className="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-              Rol: {user.role}
-            </span>
+            {/* Role removed per request */}
           </div>
 
           <div className="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
-            <h3 className="text-xl font-bold text-slate-800 mb-6">
+            <h3 className="text-xl font-display font-bold text-slate-900 tracking-tight mb-8">
               Información personal
             </h3>
 
@@ -121,12 +123,7 @@ function UserProfileCard({
                     </p>
                   </div>
 
-                  <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                    <p className="text-sm text-slate-500 mb-1">Rol</p>
-                    <p className="text-base font-semibold text-slate-800">
-                      {user.role}
-                    </p>
-                  </div>
+                  {/* Role details box removed per request */}
                 </div>
 
                 <div className="mt-8 flex flex-wrap gap-3">

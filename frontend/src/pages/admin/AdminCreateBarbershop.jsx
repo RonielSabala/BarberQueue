@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createBarbershop } from "../../services/barbershopService";
-import "../../styles/admin/AdminCreateBarbershop.css";
 
 function AdminCreateBarbershop() {
   const navigate = useNavigate();
@@ -55,123 +54,181 @@ function AdminCreateBarbershop() {
   };
 
   return (
-    <div className="admin-create-barbershop-page">
-      <div className="admin-create-barbershop-topbar">
+    <div className="py-10 px-4 sm:px-6 flex flex-col items-center min-h-[calc(100vh-4rem)] relative">
+      <div className="w-full max-w-3xl mb-6">
         <button
           onClick={() => navigate("/admin/home")}
-          className="admin-create-back-btn"
+          className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-bold bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100 dark:border-slate-700 w-fit"
         >
-          ← Volver
+          <span className="material-icons-round text-xl">
+            arrow_back_ios_new
+          </span>
+          Volver
         </button>
       </div>
 
-      {error && <div className="admin-create-alert error">{error}</div>}
+      <div className="w-full max-w-3xl bg-white dark:bg-slate-800 p-8 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700">
+        <div className="mb-8">
+          <h1 className="text-3xl font-display font-extrabold text-slate-900 dark:text-white mb-2">
+            Crear Barbería
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">
+            Completa la información para registrar una nueva sucursal en el
+            sistema.
+          </p>
+        </div>
 
-      {successMessage && (
-        <div className="admin-create-alert success">{successMessage}</div>
-      )}
+        {error && (
+          <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 flex items-center gap-2">
+            <span className="material-icons-round">error</span>
+            {error}
+          </div>
+        )}
 
-      <div className="admin-create-card">
-        <h1>Crear Barbería</h1>
-        <p>Completa la información para registrar una nueva sucursal.</p>
+        {successMessage && (
+          <div className="bg-green-50 border border-green-100 text-green-600 p-4 rounded-xl text-sm font-bold mb-6 flex items-center gap-2">
+            <span className="material-icons-round">check_circle</span>
+            {successMessage}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="admin-create-form">
-          <div className="form-group">
-            <label>Nombre de la barbería</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Nombre de la barbería
+            </label>
             <input
               type="text"
               name="barbershopName"
               value={formData.barbershopName}
               onChange={handleChange}
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
               required
             />
           </div>
 
-          <div className="form-group">
-            <label>Dirección</label>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              Dirección
+            </label>
             <input
               type="text"
               name="barbershopAddress"
               value={formData.barbershopAddress}
               onChange={handleChange}
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
               required
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Correo</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Correo
+              </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label>Teléfono</label>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Teléfono
+              </label>
               <input
                 type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
                 required
               />
             </div>
           </div>
 
-          <div className="form-group">
-            <label>URL de foto principal</label>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+              URL de foto principal
+            </label>
             <input
-              type="text"
+              type="url"
               name="photoUrl"
               value={formData.photoUrl}
               onChange={handleChange}
               placeholder="https://..."
+              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
               required
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Hora de apertura</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Hora de apertura
+              </label>
               <input
                 type="time"
                 name="opensAt"
                 value={formData.opensAt}
                 onChange={handleChange}
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label>Hora de cierre</label>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Hora de cierre
+              </label>
               <input
                 type="time"
                 name="closesAt"
                 value={formData.closesAt}
                 onChange={handleChange}
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                Capacidad
+              </label>
+              <input
+                type="number"
+                name="capacity"
+                value={formData.capacity}
+                onChange={handleChange}
+                min="1"
+                className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
               />
             </div>
           </div>
 
-          <div className="form-group form-capacity">
-            <label>Capacidad</label>
-            <input
-              type="number"
-              name="capacity"
-              value={formData.capacity}
-              onChange={handleChange}
-              min="1"
-            />
-          </div>
-
-          <div className="form-submit">
-            <button type="submit" disabled={saving} className="save-btn">
-              {saving ? "Creando..." : "Crear barbería"}
+          <div className="pt-4">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full bg-primary hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex justify-center items-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <span className="material-icons-round animate-spin">
+                    refresh
+                  </span>
+                  Creando...
+                </>
+              ) : (
+                <>
+                  <span className="material-icons-round">storefront</span>
+                  Crear barbería
+                </>
+              )}
             </button>
           </div>
         </form>
