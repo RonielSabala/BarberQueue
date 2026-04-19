@@ -51,7 +51,7 @@ final readonly class QueueRepository extends TurnRepository
                     AND wd.barbershop_id = sa.barbershop_id
                 WHERE
                     sa.staff_id = ?
-                    AND wd.day_of_week = DAYOFWEEK(CURDATE()) - 1
+                    AND wd.day_of_week = MOD(DAYOFWEEK(CURDATE()) + 5, 7) + 1
                 LIMIT
                     1
             SQL;
