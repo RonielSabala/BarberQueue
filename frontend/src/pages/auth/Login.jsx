@@ -25,7 +25,7 @@ function Login() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       if (data.user.role === "client") navigate("/client/home");
-      else if (data.user.role === "barber") navigate("/barber/profile");
+      else if (data.user.role === "barber") navigate("/barber/home");
       else if (data.user.role === "assistant") navigate("/assistant/home");
       else if (data.user.role === "admin") navigate("/admin/home");
       else navigate("/");

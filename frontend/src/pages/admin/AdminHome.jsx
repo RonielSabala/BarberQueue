@@ -129,8 +129,6 @@ function AdminHome() {
                 <p className={`status ${shop.open ? "open" : "closed"}`}>
                   {shop.open ? "Abierta" : "Cerrada"}
                 </p>
-
-                <p>Personas en cola: N/D</p>
               </div>
 
               <button

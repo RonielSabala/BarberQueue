@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBarbershops } from "../../services/barbershopService";
-import BarbershopCard from "../../components/BarbershopCard";
+import BarbershopCard from "../../components/barbershop/BarbershopCard";
 
 function ClientHome() {
   const [shops, setShops] = useState([]);

@@ -48,17 +48,17 @@ function MainLayout() {
       items.push({ name: "Perfil", path: "/client/profile", icon: "person" });
     } else if (user.role === "barber") {
       items.push({
-        name: "Dashboard",
-        path: "/barber/dashboard",
-        icon: "dashboard",
+        name: "Inicio",
+        path: "/barber/home",
+        icon: "home",
       });
       items.push({ name: "Perfil", path: "/barber/profile", icon: "person" });
     } else if (user.role === "assistant") {
       items.push({ name: "Inicio", path: "/assistant/home", icon: "home" });
       items.push({
-        name: "Registrar",
-        path: "/assistant/register-client",
-        icon: "person_add",
+        name: "Perfil",
+        path: "/assistant/profile",
+        icon: "person",
       });
     }
     return items;

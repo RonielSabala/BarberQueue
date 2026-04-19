@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import ProtectedRoute from "../components/ProtectedRoute";
+import ProtectedRoute from "../components/routes/ProtectedRoute";
 
-import PublicRoute from "../components/PublicRoute";
+import PublicRoute from "../components/routes/PublicRoute";
 
 // Auth
 import Login from "../pages/auth/Login";
@@ -17,6 +17,7 @@ import Landing from "../pages/Landing";
 import ClientHome from "../pages/client/ClientHome";
 import AdminHome from "../pages/admin/AdminHome";
 import AssistantHome from "../pages/assistant/AssistantHome";
+import BarberHome from "../pages/barber/BarberHome";
 
 // MainLayout
 import BarbershopProfile from "../pages/barbershop/BarbershopProfile";
@@ -34,7 +35,7 @@ import ClientProfile from "../pages/client/ClientProfile";
 
 //barber
 import BarberProfile from "../pages/barber/BarberProfile";
-import BarberDashboard from "../pages/barber/BarberDasboard";
+import BarberWorkspace from "../pages/barber/BarberWorkspace";
 
 //assistant
 import RegisterClientsForm from "../pages/assistant/RegisterClientsForm";
@@ -101,18 +102,28 @@ function AppRoutes() {
 
         {/*Barber*/}
         <Route element={<ProtectedRoute allowedRoles={["barber"]} />}>
+          <Route path="/barber/home" element={<BarberHome />} />
           <Route path="/barber/profile" element={<BarberProfile />} />
-          <Route path="/barber/dashboard" element={<BarberDashboard />} />
+          {/* Workspace dentro de una barbería específica */}
+          <Route
+            path="/barber/barbershop/:barbershopId/workspace"
+            element={<BarberWorkspace />}
+          />
         </Route>
 
         {/*Assistant*/}
         <Route element={<ProtectedRoute allowedRoles={["assistant"]} />}>
           <Route path="/assistant/home" element={<AssistantHome />} />
+          <Route path="/assistant/profile" element={<AssistantProfile />} />
+          {/* Cola en vivo y registro dentro de una barbería específica */}
           <Route
-            path="/assistant/register-client"
+            path="/assistant/barbershop/:barbershopId/queue"
+            element={<QueueLive />}
+          />
+          <Route
+            path="/assistant/barbershop/:barbershopId/register-client"
             element={<RegisterClientsForm />}
           />
-          <Route path="/assistant/profile" element={<AssistantProfile />} />
         </Route>
       </Route>
 

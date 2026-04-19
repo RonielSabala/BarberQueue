@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getMyBarbershops } from "../../utils/getMyBarbershops";
 import EmployeeBarbershopCard from "../../components/barbershop/EmployeeBarbershopCard";
 
-function AssistantHome() {
+function BarberHome() {
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
@@ -29,8 +29,8 @@ function AssistantHome() {
   }, [storedUser?.id]);
 
   const handleEnter = (shop) => {
-    // Al entrar a la barbería, el asistente va directo a la cola en vivo
-    navigate(`/assistant/barbershop/${shop.barbershopId}/queue`);
+    // Al entrar a la barbería, el barbero va a su workspace en esa barbería
+    navigate(`/barber/barbershop/${shop.barbershopId}/workspace`);
   };
 
   return (
@@ -69,7 +69,7 @@ function AssistantHome() {
               <EmployeeBarbershopCard
                 key={shop.barbershopId}
                 shop={shop}
-                actionLabel="Trabajar aquí"
+                actionLabel="Ir a trabajar"
                 onAction={() => handleEnter(shop)}
               />
             ))}
@@ -80,4 +80,4 @@ function AssistantHome() {
   );
 }
 
-export default AssistantHome;
+export default BarberHome;

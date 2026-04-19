@@ -1,30 +1,90 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBarbershopEmployees } from "../../services/barbershopService";
+import {
+  getBarbershopEmployees,
+  getBarbershopById,
+} from "../../services/barbershopService";
 import { deleteEmployeePermanently } from "../../services/employeeService";
-import "../../styles/admin/AdminEmployees.css";
 
+// ── Modal de confirmación ──────────────────────────────────────────────────
+function DeleteConfirmModal({ employee, onConfirm, onCancel, deleting }) {
+  if (!employee) return null;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        backgroundColor: "rgba(15,23,42,0.5)",
+        backdropFilter: "blur(4px)",
+      }}
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-center pt-8 pb-4">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center">
+            <span className="material-icons-round text-red-500 text-3xl">
+              person_remove
+            </span>
+          </div>
+        </div>
+        <div className="px-6 pb-6 text-center">
+          <h2 className="text-lg font-black text-slate-800 mb-2">
+            ¿Eliminar empleado?
+          </h2>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            Estás a punto de eliminar a{" "}
+            <span className="font-bold text-slate-700">
+              {employee.username}
+            </span>{" "}
+            del sistema. Esta acción eliminará también todas sus asignaciones y
+            no se puede deshacer.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 px-6 pb-6">
+          <button
+            onClick={onConfirm}
+            disabled={deleting}
+            className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-sm"
+          >
+            {deleting ? "Eliminando..." : "Sí, eliminar empleado"}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={deleting}
+            className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Página principal ───────────────────────────────────────────────────────
 function AdminEmployees() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [employees, setEmployees] = useState([]);
+  const [barbershopName, setBarbershopName] = useState("");
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       setError("");
-
       const data = await getBarbershopEmployees(id);
       setEmployees(data);
     } catch (err) {
-      console.error("Error al obtener empleados:", err);
       setError(err.message || "Error al cargar los empleados");
     } finally {
       setLoading(false);
@@ -32,21 +92,21 @@ function AdminEmployees() {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchEmployees();
-    }
+    if (!id) return;
+    fetchEmployees();
+    getBarbershopById(id)
+      .then((shop) => setBarbershopName(shop.name || shop.barbershopName || ""))
+      .catch(() => {});
   }, [id]);
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter((employee) => {
+    return employees.filter((emp) => {
+      const q = search.toLowerCase();
       const matchesSearch =
-        employee.username?.toLowerCase().includes(search.toLowerCase()) ||
-        employee.email?.toLowerCase().includes(search.toLowerCase()) ||
-        employee.phone?.toLowerCase().includes(search.toLowerCase());
-
-      const matchesRole =
-        roleFilter === "all" ? true : employee.role === roleFilter;
-
+        emp.username?.toLowerCase().includes(q) ||
+        emp.email?.toLowerCase().includes(q) ||
+        emp.phone?.toLowerCase().includes(q);
+      const matchesRole = roleFilter === "all" ? true : emp.role === roleFilter;
       return matchesSearch && matchesRole;
     });
   }, [employees, search, roleFilter]);
@@ -57,156 +117,264 @@ function AdminEmployees() {
     return role;
   };
 
-  const handleDelete = async (employeeId) => {
-    const confirmed = window.confirm(
-      "¿Seguro que deseas eliminar este empleado del sistema? Esta acción eliminará también todas sus asignaciones.",
-    );
-
-    if (!confirmed) return;
-
+  const handleDeleteConfirm = async () => {
+    if (!employeeToDelete) return;
     try {
-      setDeletingId(employeeId);
+      setDeletingId(employeeToDelete.id);
       setError("");
       setSuccessMessage("");
-
-      await deleteEmployeePermanently(employeeId);
-
+      await deleteEmployeePermanently(employeeToDelete.id);
       setSuccessMessage("Empleado eliminado correctamente.");
+      setEmployeeToDelete(null);
       await fetchEmployees();
     } catch (err) {
-      console.error("Error al eliminar empleado:", err);
       setError(err.message || "Error al eliminar el empleado");
+      setEmployeeToDelete(null);
     } finally {
       setDeletingId(null);
     }
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <button
-            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors mb-2"
-            onClick={() => navigate(`/admin/barbershop/${id}`)}
-          >
-            <span className="material-icons-round text-sm">arrow_back</span>
-            Volver a la barbería
-          </button>
-          <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900 dark:text-white">
-            Empleados
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
-            Gestiona el personal de la barbería.
-          </p>
-        </div>
+    <>
+      <DeleteConfirmModal
+        employee={employeeToDelete}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setEmployeeToDelete(null)}
+        deleting={deletingId !== null}
+      />
 
-        <button
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg"
-          onClick={() => navigate(`/admin/barbershop/${id}/employees/new`)}
+      <div className="bg-slate-50 min-h-screen">
+        {/* ── HERO ──────────────────────────────────────────────────────── */}
+        <div
+          className="relative overflow-hidden border-b border-slate-100"
+          style={{
+            background:
+              "linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%)",
+          }}
         >
-          <span className="material-icons-round">person_add</span>
-          Añadir empleado
-        </button>
-      </div>
-
-      {error && <div className="admin-employees-alert error">{error}</div>}
-      {successMessage && (
-        <div className="admin-employees-alert success">{successMessage}</div>
-      )}
-
-      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-8 gap-4 border border-slate-100 dark:border-slate-700">
-        <div className="relative w-full sm:max-w-md">
-          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            search
-          </span>
-          <input
-            type="text"
-            placeholder="Buscar empleado..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
+          <div
+            className="absolute inset-0 opacity-[0.25]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #cbd5e1 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
           />
+          <div className="absolute inset-0 flex items-center justify-end pr-12 opacity-[0.04] pointer-events-none select-none">
+            <span
+              className="material-icons-round text-slate-900"
+              style={{ fontSize: 240 }}
+            >
+              people
+            </span>
+          </div>
+
+          <div className="relative max-w-6xl mx-auto px-6 py-10">
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <button
+                  onClick={() => navigate(`/admin/barbershop/${id}`)}
+                  className="flex items-center gap-1.5 text-slate-400 hover:text-slate-700 transition-colors text-sm font-medium mb-3"
+                >
+                  <span className="material-icons-round text-[16px]">
+                    arrow_back
+                  </span>
+                  Volver a la barbería
+                </button>
+                <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none mb-2">
+                  Empleados
+                </h1>
+                {barbershopName && (
+                  <p className="text-slate-400 text-sm flex items-center gap-1">
+                    <span className="material-icons-round text-[14px]">
+                      storefront
+                    </span>
+                    {barbershopName}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={() =>
+                  navigate(`/admin/barbershop/${id}/employees/new`)
+                }
+                className="flex items-center gap-2 px-5 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-700 transition-colors shadow-sm text-sm"
+              >
+                <span className="material-icons-round text-[18px]">
+                  person_add
+                </span>
+                Añadir empleado
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="w-full sm:w-auto relative">
-          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-            filter_alt
-          </span>
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700 dark:text-slate-200 cursor-pointer"
-          >
-            <option value="all">Todos</option>
-            <option value="barber">Barbero</option>
-            <option value="assistant">Asistente</option>
-          </select>
+        {/* ── CONTENT ───────────────────────────────────────────────────── */}
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {/* Alerts */}
+          {error && (
+            <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm font-medium">
+              {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="mb-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm font-medium">
+              {successMessage}
+            </div>
+          )}
+
+          {/* Filtros */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="relative flex-1 max-w-md">
+              <span className="material-icons-round absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+                search
+              </span>
+              <input
+                type="text"
+                placeholder="Buscar empleado..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition text-sm text-slate-700 shadow-sm"
+              />
+            </div>
+            <div className="relative">
+              <span className="material-icons-round absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">
+                filter_alt
+              </span>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="h-11 pl-10 pr-8 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-sm text-slate-700 cursor-pointer appearance-none shadow-sm"
+              >
+                <option value="all">Todos</option>
+                <option value="barber">Barbero</option>
+                <option value="assistant">Asistente</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Tabla */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            {loading ? (
+              <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+                <span className="material-icons-round animate-pulse text-3xl">
+                  badge
+                </span>
+                <p className="text-sm font-medium">Cargando empleados...</p>
+              </div>
+            ) : filteredEmployees.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+                <span className="material-icons-round text-5xl mb-3 opacity-30">
+                  person_search
+                </span>
+                <p className="font-medium text-sm">
+                  No se encontraron empleados para esta barbería.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-100">
+                      <th className="text-left px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Nombre
+                      </th>
+                      <th className="text-left px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Rol
+                      </th>
+                      <th className="text-left px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="text-left px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Teléfono
+                      </th>
+                      <th className="text-left px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Horario
+                      </th>
+                      <th className="text-right px-5 py-3.5 text-xs font-black text-slate-400 uppercase tracking-wider">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEmployees.map((emp, i) => (
+                      <tr
+                        key={emp.id}
+                        className={`hover:bg-slate-50 transition-colors ${i < filteredEmployees.length - 1 ? "border-b border-slate-50" : ""}`}
+                      >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
+                              <span className="material-icons-round text-slate-400 text-[16px]">
+                                person
+                              </span>
+                            </div>
+                            <span className="font-bold text-slate-800">
+                              {emp.username}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
+                              emp.role === "barber"
+                                ? "bg-blue-50 text-blue-700"
+                                : "bg-indigo-50 text-indigo-700"
+                            }`}
+                          >
+                            {formatRole(emp.role)}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 text-slate-500">
+                          {emp.email}
+                        </td>
+                        <td className="px-5 py-4 text-slate-500">
+                          {emp.phone}
+                        </td>
+                        <td className="px-5 py-4 text-slate-500 font-mono text-xs">
+                          {emp.startTime?.slice(0, 5)} –{" "}
+                          {emp.endTime?.slice(0, 5)}
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/admin/barbershop/${id}/employees/${emp.id}/edit`,
+                                )
+                              }
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors text-xs"
+                            >
+                              <span className="material-icons-round text-[14px]">
+                                edit
+                              </span>
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => setEmployeeToDelete(emp)}
+                              disabled={deletingId === emp.id}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg transition-colors text-xs disabled:opacity-50"
+                            >
+                              <span className="material-icons-round text-[14px]">
+                                delete
+                              </span>
+                              {deletingId === emp.id
+                                ? "Eliminando..."
+                                : "Eliminar"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      <div className="admin-employees-table-card">
-        {loading ? (
-          <p className="admin-employees-loading">Cargando empleados...</p>
-        ) : filteredEmployees.length === 0 ? (
-          <div className="admin-employees-empty">
-            No se encontraron empleados para esta barbería.
-          </div>
-        ) : (
-          <div className="admin-employees-table-wrapper">
-            <table className="admin-employees-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Rol</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Horario</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredEmployees.map((employee) => (
-                  <tr key={employee.id}>
-                    <td>{employee.username}</td>
-                    <td>{formatRole(employee.role)}</td>
-                    <td>{employee.email}</td>
-                    <td>{employee.phone}</td>
-                    <td>
-                      {employee.startTime} - {employee.endTime}
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors text-sm"
-                          onClick={() =>
-                            navigate(
-                              `/admin/barbershop/${id}/employees/${employee.id}/edit`,
-                            )
-                          }
-                        >
-                          Editar
-                        </button>
-
-                        <button
-                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-lg transition-colors text-sm flex items-center justify-center disabled:opacity-50"
-                          onClick={() => handleDelete(employee.id)}
-                          disabled={deletingId === employee.id}
-                        >
-                          {deletingId === employee.id
-                            ? "Eliminando..."
-                            : "Eliminar"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 }
 
