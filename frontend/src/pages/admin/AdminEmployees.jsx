@@ -225,9 +225,9 @@ function AdminEmployees() {
           )}
 
           {/* Filtros */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <div className="relative flex-1 max-w-md">
-              <span className="material-icons-round absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 gap-4 border border-slate-100">
+            <div className="relative w-full sm:max-w-md">
+              <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
                 search
               </span>
               <input
@@ -235,17 +235,17 @@ function AdminEmployees() {
                 placeholder="Buscar empleado..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition text-sm text-slate-700 shadow-sm"
+                className="w-full h-12 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm text-slate-700"
               />
             </div>
-            <div className="relative">
-              <span className="material-icons-round absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">
+            <div className="w-full sm:w-auto relative">
+              <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">
                 filter_alt
               </span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="h-11 pl-10 pr-8 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900 text-sm text-slate-700 cursor-pointer appearance-none shadow-sm"
+                className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-slate-700 cursor-pointer"
               >
                 <option value="all">Todos</option>
                 <option value="barber">Barbero</option>
