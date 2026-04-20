@@ -10,7 +10,7 @@ use App\DTOs\Google\Responses\GoogleUrlResponse;
 use App\Exceptions\AuthException;
 use App\Repositories\UserRepository;
 use App\Utils\EnvUtils;
-use App\Domain\ValueObjects\{Email, Password, Phone, Username};
+use App\Domain\ValueObjects\{Email, Password, Phone, PhotoUrl, Username};
 use App\DTOs\Auth\Responses\{LoginResponse, UserResponse};
 use Google\{Service\Oauth2, Client};
 
@@ -59,12 +59,14 @@ final readonly class GoogleService extends BaseService
                 $username .= random_int(0, 9);
             }
 
+            $googlePhotoUrl = $userData['picture'] ?? null;
             $randomPassword = bin2hex(random_bytes(16));
 
             $request = new RegisterRequest(
                 username: new Username($username),
                 email: new Email($email),
                 phone: new Phone(self::DEFAULT_PHONE_ON_REGISTER),
+                photoUrl: new PhotoUrl($googlePhotoUrl),
                 password: new Password($randomPassword),
             );
 

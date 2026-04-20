@@ -9,4 +9,5 @@ class GetUserResponse(BaseResponse):
     username: str
     email: str
     phone: str
+    photo_url: str | None
     role: str

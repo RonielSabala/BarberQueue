@@ -167,11 +167,12 @@ final readonly class BarbershopEmployeeService extends BaseService
         ) {
             // Create employee
             $userId = $this->userRepository->createUser(
-                $role->id->value,
-                $request->username->value,
-                $email,
-                $request->phone->value,
-                $this->passwordService->hash($request->password->value),
+                roleId: $role->id->value,
+                username: $request->username->value,
+                email: $email,
+                phone: $request->phone->value,
+                photoUrl: null,
+                passwordHash: $this->passwordService->hash($request->password->value),
             );
 
             // Create assignment

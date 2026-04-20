@@ -13,6 +13,7 @@ CREATE TABLE
         username VARCHAR(30) NOT NULL,
         email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
+        photo_url TEXT NULL,
         password_hash VARCHAR(60) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (role_id) REFERENCES roles (id)

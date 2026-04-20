@@ -32,7 +32,7 @@ class BaseResponse(BaseDto):
             json_key = to_camel_case(field_name)
             if json_key not in data:
                 raise ValueError(
-                    f"Missing key {json_key} in response for {cls.__name__}"
+                    f"Missing key '{json_key}' in response for {cls.__name__}"
                 )
 
             json_value = data.pop(json_key)

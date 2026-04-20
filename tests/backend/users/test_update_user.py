@@ -21,7 +21,9 @@ _USER_UPDATED = MessageResponse(message="User updated")
 def response(client: ApiClient) -> requests.Response:
     request = UpdateUserRequest.random()
     if request.all_none:
-        request = UpdateUserRequest(username=Username.random(), email=None, phone=None)
+        request = UpdateUserRequest(
+            username=Username.random(), email=None, phone=None, photo_url=None
+        )
 
     user_id = get_fresh_client_id(client)
     return client.users.update_user(user_id, request)
