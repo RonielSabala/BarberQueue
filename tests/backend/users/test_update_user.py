@@ -9,16 +9,9 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
 from domain.dtos import MessageResponse
-from domain.dtos.users import UpdateUserRequest
-from domain.utils import to_camel_case
+from domain.dtos.users import GetUserResponse, UpdateUserRequest
 from domain.value_objects import Username
-from domain.value_objects.base import BaseField
-from helpers.assertions import (
-    assert_body,
-    assert_content_type,
-    assert_status,
-    assert_type,
-)
+from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import AT_LEAST_ONE_FIELD, USER_NOT_FOUND
 
 _USER_UPDATED = MessageResponse(message="User updated")
@@ -64,18 +57,15 @@ def test_updated_fields_persists(client: ApiClient) -> None:
     """
 
     user_id = get_fresh_client_id(client)
-
     request = UpdateUserRequest.random()
     client.users.update_user(user_id, request)
 
-    user_body = client.users.get_user(user_id).json()
+    user_response = client.users.get_user(user_id)
+    user = GetUserResponse.from_response(user_response)
 
-    for key, value in request.items():
-        if value is None:
-            continue
-
-        assert_type(value, BaseField, name_on_error=key)
-        assert user_body[to_camel_case(key)] == value.value
+    assert request.username is None or user.username == request.username.value
+    assert request.email is None or user.email == request.email.value
+    assert request.phone is None or user.phone == request.phone.value
 
 
 def test_nonexistent_user(client: ApiClient) -> None:

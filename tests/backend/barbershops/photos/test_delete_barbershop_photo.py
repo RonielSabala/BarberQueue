@@ -8,7 +8,10 @@ from api.client import ApiClient
 from api.core import HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse
-from domain.dtos.barbershops import CreateBarbershopPhotosRequest
+from domain.dtos.barbershops import (
+    CreateBarbershopPhotosRequest,
+    CreateBarbershopPhotosResponse,
+)
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
@@ -20,7 +23,8 @@ def photo_id(client: ApiClient, open_barbershop_id: int) -> int:
     response = client.barbershops.add_photos(
         open_barbershop_id, CreateBarbershopPhotosRequest.random()
     )
-    return response.json()["uploaded"][0]["id"]
+    photos = CreateBarbershopPhotosResponse.from_response(response).uploaded
+    return photos[0]._id
 
 
 def test_status(client: ApiClient, open_barbershop_id: int, photo_id: int) -> None:

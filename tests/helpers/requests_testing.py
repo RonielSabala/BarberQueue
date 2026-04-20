@@ -5,16 +5,29 @@ from dataclasses import dataclass
 from typing import ClassVar, Self
 
 from domain.dtos import BaseRequest
-from domain.utils import to_camel_case
+from domain.utils import DEFAULT_OPTIONAL_CHANCE, to_camel_case
 from domain.value_objects.base import NameField
 from helpers.unwrap_type import unwrap_list_of
 
+# Internal helpers
 
-def _join_with_dot(a: str | None, b: str):
-    if a == "" or a is None:
-        return b
 
-    return a + "." + b
+def _join_with_dot(path: str | None, key: str) -> str:
+    if path == "" or path is None:
+        return key
+
+    return path + "." + key
+
+
+def _case_id(attribute: str, field: str) -> str:
+    return f"{attribute}_{field}"
+
+
+def _nested_case_id(parent: str, child: str) -> str:
+    return f"{parent}__{child}"
+
+
+# Internal types
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -79,12 +92,7 @@ class _OnceMark:
         self._done = True
 
 
-def _case_id(attribute: str, field: str):
-    return f"{attribute}_{field}"
-
-
-def _nested_case_id(parent: str, child: str):
-    return f"{parent}__{child}"
+# Field cases
 
 
 def _get_unexpected_field_case(path: str | None, payload: dict) -> BadFieldCase:
@@ -164,14 +172,17 @@ def _get_too_many_items_field_case(
     )
 
 
+# Orchestrate cases
+
+
 def missing_field_cases(
     request_class: type[BaseRequest],
     _path: str | None = None,
     _mark: _OnceMark | None = None,
 ) -> Iterator[BadFieldCase]:
     """
-    Introspects `request_class` fields to produce exhaustive
-    missing-field and wrong-type scenarios automatically.
+    Introspects `request_class` fields to produce exhaustive missing-field
+    and wrong-type scenarios automatically.
     """
 
     if _mark is None:
@@ -180,12 +191,15 @@ def missing_field_cases(
     payload = request_class.random().to_json()
     nested_fields: list[_FieldMetadata] = []
 
-    for field_name, field_type, is_optional in request_class.iter_field_types():
-        if is_optional:
+    for field_info in request_class.class_fields():
+        # Skip optional fields
+        if field_info.is_optional:
             continue
 
-        field = _FieldMetadata.from_data(field_name, field_type, _path)
+        field_type = field_info.field_type
+        field = _FieldMetadata.from_data(field_info.field_name, field_type, _path)
 
+        # Add list cases
         list_metadata = unwrap_list_of(field_type)
         if list_metadata:
             min_items = list_metadata.min_items
@@ -208,8 +222,9 @@ def missing_field_cases(
         if field.is_nested:
             nested_fields.append(field)
 
-    is_leaf = not nested_fields
-    if _mark.available and (is_leaf or random.random() > 0.5):
+    if _mark.available and (
+        not nested_fields or random.random() > DEFAULT_OPTIONAL_CHANCE
+    ):
         _mark.consume()
         yield _get_unexpected_field_case(_path, payload)
 

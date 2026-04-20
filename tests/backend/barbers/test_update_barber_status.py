@@ -9,7 +9,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id
 from domain.dtos import ErrorResponse, MessageResponse
-from domain.dtos.barbers import UpdateBarberStatusRequest
+from domain.dtos.barbers import BarberResponse, UpdateBarberStatusRequest
 from domain.enums import BarberStatusEnum
 from domain.utils import random_bool
 from helpers.assertions import assert_body, assert_content_type, assert_status
@@ -120,7 +120,9 @@ def test_update_only_is_accepting(client: ApiClient, barber_id: int) -> None:
     is_accepting = random_bool()
     update_request = UpdateBarberStatusRequest.random(is_accepting=is_accepting)
     update_response = client.barbers.update_status(barber_id, update_request)
-    get_response = client.barbers.get(barber_id)
 
     assert_status(update_response, HttpStatus.OK)
-    assert get_response.json()["isAccepting"] == is_accepting
+
+    barber_response = client.barbers.get(barber_id)
+    barber = BarberResponse.from_response(barber_response)
+    assert barber.is_accepting == is_accepting

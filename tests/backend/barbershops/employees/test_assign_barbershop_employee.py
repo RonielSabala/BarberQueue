@@ -19,7 +19,11 @@ from backend.conftest import (
     get_random_working_days_pair,
 )
 from domain.dtos import ErrorResponse, MessageResponse
-from domain.dtos.barbershops import AssignBarbershopEmployeeRequest
+from domain.dtos.barbershops import (
+    AssignBarbershopEmployeeRequest,
+    BarbershopEmployeeResponse,
+)
+from domain.dtos.employees import EmployeeResponse
 from domain.utils import random_subset
 from domain.value_objects import DayOfWeek, TimeOfDay, WorkingDays
 from helpers.assertions import assert_body, assert_status
@@ -111,8 +115,8 @@ def test_employee_appears_in_list_after_assignment(client: ApiClient) -> None:
     )
 
     response = client.barbershops.get_employees(barbershop_id)
-    employees = response.json()
-    assert any(employee_id == employee["id"] for employee in employees)
+    employees = BarbershopEmployeeResponse.from_array_response(response)
+    assert any(employee_id == employee._id for employee in employees)
 
 
 def test_assignment_schedule_stored_correctly(client: ApiClient) -> None:
@@ -134,20 +138,20 @@ def test_assignment_schedule_stored_correctly(client: ApiClient) -> None:
     )
 
     response = client.employees.get(employee_id)
-    assignments = response.json()["assignments"]
+    employee = EmployeeResponse.from_response(response)
     stored = next(
         (
             assignment
-            for assignment in assignments
-            if assignment["barbershopId"] == barbershop_id
+            for assignment in employee.assignments
+            if assignment.barbershop_id == barbershop_id
         ),
         None,
     )
 
     assert stored is not None
-    assert stored["startTime"] == start_time.value
-    assert stored["endTime"] == end_time.value
-    assert stored["workingDays"] == [day.value for day in second_days]
+    assert stored.start_time == start_time.value
+    assert stored.end_time == end_time.value
+    assert stored.working_days == [day.value for day in second_days]
 
 
 def test_unknown_barbershop_returns_not_found(client: ApiClient) -> None:
@@ -309,7 +313,7 @@ def test_schedule_conflict_same_days_overlapping_hours(client: ApiClient) -> Non
         _valid_request(start_time=time_b, end_time=time_d, working_days=second_days),
     )
 
-    error_message: str | None = response.json().get("error")
+    error_message = ErrorResponse.from_response(response).error
     days_in_message = ", ".join(_ALL_DAY_NAMES[day.value - 1] for day in second_days)
 
     assert_status(response, HttpStatus.CONFLICT)

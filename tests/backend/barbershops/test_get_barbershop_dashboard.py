@@ -63,12 +63,12 @@ def test_integer_fields_are_non_negative(response: requests.Response) -> None:
     Integers fields are non-negatives.
     """
 
-    body = response.json()
-    assert body["clientsToday"] >= 0
-    assert body["clientsThisWeek"] >= 0
-    assert body["clientsThisMonth"] >= 0
-    assert body["queueCount"] >= 0
-    assert body["activeBarbers"] >= 0
+    dashboard = BarbershopDashboardResponse.from_response(response)
+    assert dashboard.clients_today >= 0
+    assert dashboard.clients_this_week >= 0
+    assert dashboard.clients_this_month >= 0
+    assert dashboard.active_barbers >= 0
+    assert dashboard.queue_count >= 0
 
 
 def test_this_week_gte_today_fields(response: requests.Response) -> None:
@@ -76,6 +76,6 @@ def test_this_week_gte_today_fields(response: requests.Response) -> None:
     ThisWeek fields are always >= Today fields.
     """
 
-    body = response.json()
-    assert body["clientsThisWeek"] >= body["clientsToday"]
-    assert body["clientsThisMonth"] >= body["clientsThisWeek"]
+    dashboard = BarbershopDashboardResponse.from_response(response)
+    assert dashboard.clients_this_week >= dashboard.clients_today
+    assert dashboard.clients_this_month >= dashboard.clients_this_week

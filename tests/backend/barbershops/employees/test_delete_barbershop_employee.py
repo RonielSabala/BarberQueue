@@ -7,6 +7,7 @@ import pytest
 from api.client import ApiClient
 from api.core import HttpStatus
 from backend.conftest import NON_EXISTENT_ID, get_employee_id
+from domain.dtos.barbershops import BarbershopEmployeeResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import ASSIGNMENT_NOT_FOUND, BARBERSHOP_NOT_FOUND
 
@@ -65,5 +66,6 @@ def test_employee_no_longer_in_list(
 
     client.barbershops.delete_employee_assignment(open_barbershop_id, employee_id)
     response = client.barbershops.get_employees(open_barbershop_id)
+    employees = BarbershopEmployeeResponse.from_array_response(response)
 
-    assert all(employee_id != employee["id"] for employee in response.json())
+    assert all(employee_id != employee._id for employee in employees)

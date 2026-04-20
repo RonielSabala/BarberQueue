@@ -9,6 +9,7 @@ from api.client import ApiClient
 from api.core import HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse
+from domain.dtos.barbershops import BarbershopReviewResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
@@ -17,7 +18,8 @@ _REVIEW_NOT_FOUND = ErrorResponse(error="Barbershop review not found")
 
 @pytest.fixture(scope="module")
 def review_id(create_review_response: requests.Response) -> int:
-    return create_review_response.json()["id"]
+    review = BarbershopReviewResponse.from_response(create_review_response)
+    return review._id
 
 
 def test_status(client: ApiClient, open_barbershop_id: int, review_id: int) -> None:

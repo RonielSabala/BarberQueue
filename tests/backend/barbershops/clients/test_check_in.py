@@ -11,6 +11,7 @@ from backend.conftest import (
     get_fresh_client_id,
 )
 from domain.dtos import ErrorResponse
+from domain.dtos.barbershops import BarbershopClientResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_NOT_FOUND
 
@@ -42,7 +43,9 @@ def test_client_appears_in_list_after_check_in(
     client.barbershops.check_in(open_barbershop_id, client_id)
 
     response = client.barbershops.get_clients(open_barbershop_id)
-    assert any(client_id == client["clientId"] for client in response.json())
+    clients = BarbershopClientResponse.from_array_response(response)
+
+    assert any(client_id == client.client_id for client in clients)
 
 
 def test_status_on_unknown_client(client: ApiClient, open_barbershop_id: int) -> None:

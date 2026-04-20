@@ -15,6 +15,7 @@ from domain.enums import RoleEnum
 from domain.value_objects import Email, Username
 from helpers.assertions import (
     assert_content_type,
+    assert_empty_body_array,
     assert_list_body_shape,
     assert_status,
 )
@@ -68,7 +69,8 @@ def test_returns_multiple_users(response: requests.Response) -> None:
     Response includes the seeded users from the test database.
     """
 
-    assert len(response.json()) > 1
+    users = tuple(GetUserResponse.from_array_response(response))
+    assert len(users) > 1
 
 
 # Username filter
@@ -81,9 +83,8 @@ def test_username_filter_returns_matching_user(client: ApiClient) -> None:
 
     username = _get_registered_username(client)
     response = client.users.get_all(username=username)
-    users = response.json()
-
-    assert any(user["username"] == username for user in users)
+    users = GetUserResponse.from_array_response(response)
+    assert any(user.username == username for user in users)
 
 
 def test_username_filter_is_case_sensitive(client: ApiClient) -> None:
@@ -93,10 +94,10 @@ def test_username_filter_is_case_sensitive(client: ApiClient) -> None:
 
     username = _get_registered_username(client)
     altered_username = username.upper()
-    response = client.users.get_all(username=altered_username)
-    users = response.json()
 
-    assert all(user["username"] != altered_username for user in users)
+    response = client.users.get_all(username=altered_username)
+    users = GetUserResponse.from_array_response(response)
+    assert all(user.username != altered_username for user in users)
 
 
 def test_username_filter_no_results(client: ApiClient) -> None:
@@ -105,7 +106,7 @@ def test_username_filter_no_results(client: ApiClient) -> None:
     """
 
     response = client.users.get_all(username=Username.random_value())
-    assert response.json() == []
+    assert_empty_body_array(response)
 
 
 # Email filter
@@ -118,10 +119,10 @@ def test_email_filter_returns_matching_user(client: ApiClient) -> None:
 
     email = _get_registered_email(client)
     response = client.users.get_all(email=email)
-    users = response.json()
+    users = tuple(GetUserResponse.from_array_response(response))
 
     assert len(users) == 1
-    assert users[0]["email"] == email
+    assert users[0].email == email
 
 
 def test_email_filter_no_results(client: ApiClient) -> None:
@@ -130,7 +131,7 @@ def test_email_filter_no_results(client: ApiClient) -> None:
     """
 
     response = client.users.get_all(email=Email.random_value())
-    assert response.json() == []
+    assert_empty_body_array(response)
 
 
 # Role filter
@@ -143,10 +144,10 @@ def test_role_filter(client: ApiClient) -> None:
 
     random_role_value = random.choice(list(RoleEnum)).value
     response = client.users.get_all(role=random_role_value)
-    users = response.json()
+    users = tuple(GetUserResponse.from_array_response(response))
 
     assert len(users) > 0
-    assert all(user["role"] == random_role_value for user in users)
+    assert all(user.role == random_role_value for user in users)
 
 
 def test_role_filter_no_results(client: ApiClient) -> None:
@@ -155,7 +156,7 @@ def test_role_filter_no_results(client: ApiClient) -> None:
     """
 
     response = client.users.get_all(role=Username.random_value())
-    assert response.json() == []
+    assert_empty_body_array(response)
 
 
 # Combined filters
@@ -168,13 +169,13 @@ def test_username_and_role_filter_combined(client: ApiClient) -> None:
 
     username = _get_registered_username(client)
     response = client.users.get_all(username=username, role=RoleEnum.CLIENT)
-    users = response.json()
+    users = tuple(GetUserResponse.from_array_response(response))
 
     assert len(users) == 1
 
     user = users[0]
-    assert user["username"] == username
-    assert user["role"] == RoleEnum.CLIENT
+    assert user.username == username
+    assert user.role == RoleEnum.CLIENT
 
 
 def test_username_and_role_mismatch_returns_empty(client: ApiClient) -> None:
@@ -184,4 +185,4 @@ def test_username_and_role_mismatch_returns_empty(client: ApiClient) -> None:
 
     username = _get_registered_username(client)
     response = client.users.get_all(username=username, role=RoleEnum.ADMIN)
-    assert response.json() == []
+    assert_empty_body_array(response)

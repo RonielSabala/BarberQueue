@@ -11,6 +11,7 @@ from backend.conftest import (
     get_open_barbershop_id,
 )
 from domain.dtos import ErrorResponse
+from domain.dtos.barbershops import BarbershopClientResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import (
     BARBERSHOP_NOT_FOUND,
@@ -46,7 +47,9 @@ def test_client_no_longer_in_list(client: ApiClient, open_barbershop_id: int) ->
     client.barbershops.check_out(open_barbershop_id, client_id)
 
     response = client.barbershops.get_clients(open_barbershop_id)
-    assert all(client_id != client["clientId"] for client in response.json())
+    clients = BarbershopClientResponse.from_array_response(response)
+
+    assert all(client_id != client.client_id for client in clients)
 
 
 def test_status_on_unknown_client(client: ApiClient, open_barbershop_id: int) -> None:

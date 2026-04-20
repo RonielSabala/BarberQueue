@@ -9,7 +9,10 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import MessageResponse
-from domain.dtos.barbershops import UpdateBarbershopStatusRequest
+from domain.dtos.barbershops import (
+    BarbershopDetailResponse,
+    UpdateBarbershopStatusRequest,
+)
 from domain.utils import random_bool
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
@@ -52,12 +55,14 @@ def test_status_reflects_change(client: ApiClient, open_barbershop_id: int) -> N
     Updated isActive is reflected.
     """
 
-    status_value = random_bool()
-    Update_request = UpdateBarbershopStatusRequest(is_active=status_value)
+    is_active_value = random_bool()
+    Update_request = UpdateBarbershopStatusRequest(is_active=is_active_value)
     client.barbershops.update_status(open_barbershop_id, Update_request)
 
     response = client.barbershops.get(open_barbershop_id)
-    assert response.json()["isActive"] is status_value
+    barbershop = BarbershopDetailResponse.from_response(response)
+
+    assert barbershop.is_active is is_active_value
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

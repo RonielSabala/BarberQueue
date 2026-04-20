@@ -54,28 +54,15 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, TurnDetailResponse)
 
 
-def test_id_matches(response: requests.Response, turn_id: int) -> None:
+def test_valid_turn_state(response: requests.Response, turn_id: int) -> None:
     """
-    Response id matches the requested turn.
-    """
-
-    assert response.json()["id"] == turn_id
-
-
-def test_owner_type_is_valid(response: requests.Response) -> None:
-    """
-    ownerType is either 'client' or 'member'.
+    Turn has a valid state.
     """
 
-    assert response.json()["ownerType"] in (OwnerTypeEnum.CLIENT, OwnerTypeEnum.MEMBER)
-
-
-def test_position_is_positive(response: requests.Response) -> None:
-    """
-    Position is a positive integer.
-    """
-
-    assert response.json()["position"] >= 1
+    turn = TurnDetailResponse.from_response(response)
+    assert turn._id == turn_id
+    assert turn.owner_type == OwnerTypeEnum.CLIENT
+    assert turn.position is not None and turn.position >= 1
 
 
 def test_status_on_unknown_turn(client: ApiClient) -> None:

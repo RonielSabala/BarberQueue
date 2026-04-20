@@ -16,6 +16,8 @@ from backend.conftest import (
     get_active_barber_id,
     get_open_barbershop_id,
 )
+from domain.dtos.barbershops import BarbershopClientResponse
+from domain.dtos.turns import TurnDetailResponse
 from domain.enums import ClientStatusEnum, OwnerTypeEnum
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import TURN_NOT_FOUND
@@ -44,16 +46,16 @@ def group_turn(client: ApiClient, open_barbershop_id: int) -> GroupTurnData:
     )
 
     leader_turn = next(
-        turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.CLIENT
+        turn for turn in turns if turn.owner_type == OwnerTypeEnum.CLIENT
     )
     member_turns = tuple(
-        turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.MEMBER
+        turn for turn in turns if turn.owner_type == OwnerTypeEnum.MEMBER
     )
 
     return GroupTurnData(
         leader_id=leader_id,
-        leader_turn_id=leader_turn["id"],
-        member_turn_ids=[turn["id"] for turn in member_turns],
+        leader_turn_id=leader_turn._id,
+        member_turn_ids=[turn._id for turn in member_turns],
     )
 
 
@@ -102,7 +104,8 @@ def test_in_service_client_restored_to_at_barbershop(
     client.turns.delete_turn(turn_id)
 
     clients_response = client.barbershops.get_clients(open_barbershop_id)
-    assert any(client_id == client["clientId"] for client in clients_response.json())
+    clients = BarbershopClientResponse.from_array_response(clients_response)
+    assert any(client_id == client.client_id for client in clients)
 
 
 def test_on_queue_client_restored_to_at_barbershop(
@@ -125,9 +128,8 @@ def test_on_queue_client_restored_to_at_barbershop(
     client.turns.delete_turn(second_turn_id)
 
     clients_response = client.barbershops.get_clients(open_barbershop_id)
-    assert any(
-        second_client_id == client["clientId"] for client in clients_response.json()
-    )
+    clients = BarbershopClientResponse.from_array_response(clients_response)
+    assert any(second_client_id == client.client_id for client in clients)
 
     client.turns.delete_turn(first_turn_id)
 
@@ -158,7 +160,8 @@ def test_group_leader_deletion_restores_leader_status(
     client.turns.delete_turn(group_turn.leader_turn_id)
 
     clients_response = client.barbershops.get_clients(open_barbershop_id)
-    assert any(leader_id == client["clientId"] for client in clients_response.json())
+    clients = BarbershopClientResponse.from_array_response(clients_response)
+    assert any(leader_id == client.client_id for client in clients)
 
 
 def test_member_turn_deletion_does_not_cancel_leader(
@@ -205,11 +208,13 @@ def test_next_on_queue_turn_promoted_after_deletion(client: ApiClient) -> None:
     turn_b_id = create_solo_turn(client, barbershop_id, barber_id, client_b)
 
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.ON_QUEUE
 
     # Delete turn A
     client.turns.delete_turn(turn_a_id)
 
     # Client B should now be in_service
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.IN_SERVICE

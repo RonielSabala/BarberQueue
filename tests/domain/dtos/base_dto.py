@@ -27,6 +27,13 @@ def _serialize(value: Any) -> Any:
     return value
 
 
+@dataclass(slots=True, kw_only=True, frozen=True)
+class FieldInfo:
+    field_name: str
+    field_type: Any
+    is_optional: bool
+
+
 @dataclass(frozen=True)
 class BaseDto:
     """
@@ -34,15 +41,15 @@ class BaseDto:
     """
 
     @classmethod
-    def iter_field_types(cls) -> Iterator[tuple[str, Any, bool]]:
+    def class_fields(cls) -> Iterator[FieldInfo]:
         hints = get_type_hints(cls, include_extras=True)
         for field in dataclasses.fields(cls):
             name = field.name
             hint = hints[name]
-            yield (
-                name,
-                hint if is_annotated(hint) else unwrap_type(hint),
-                is_union(hint),
+            yield FieldInfo(
+                field_name=name,
+                field_type=hint if is_annotated(hint) else unwrap_type(hint),
+                is_optional=is_union(hint),
             )
 
     def items(self) -> Iterator[tuple[str, Any]]:
@@ -50,10 +57,6 @@ class BaseDto:
             (name := field.name, getattr(self, name))
             for field in dataclasses.fields(self)
         )
-
-    @property
-    def all_none(self) -> bool:
-        return all(value is None for _, value in self.items())
 
     def to_json(self) -> dict:
         return {to_camel_case(k): _serialize(v) for k, v in self.items()}

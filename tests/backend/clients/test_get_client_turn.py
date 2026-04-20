@@ -67,7 +67,8 @@ def test_position_is_positive(response: requests.Response) -> None:
     Position is a positive integer.
     """
 
-    assert response.json()["position"] >= 1
+    turn = ClientTurnResponse.from_response(response)
+    assert turn.position is not None and turn.position >= 1
 
 
 def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
@@ -76,11 +77,11 @@ def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
     """
 
     response = client.clients.get_turn(SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID)
-    body = response.json()
+    turn = ClientTurnResponse.from_response(response)
 
     assert_status(response, HttpStatus.OK)
-    assert body["position"] >= 1
-    assert body["barberId"] is None
+    assert turn.position is not None and turn.position >= 1
+    assert turn.barber_id is None
 
 
 def test_turn_id_matches_created_turn(
@@ -91,7 +92,8 @@ def test_turn_id_matches_created_turn(
     """
 
     response = client.clients.get_turn(live_turn.client_id)
-    assert response.json()["id"] == live_turn.turn_id
+    turn = ClientTurnResponse.from_response(response)
+    assert turn._id == live_turn.turn_id
 
 
 def test_live_turn_has_valid_status(client: ApiClient, live_turn: LiveTurnData) -> None:
@@ -100,10 +102,8 @@ def test_live_turn_has_valid_status(client: ApiClient, live_turn: LiveTurnData) 
     """
 
     response = client.clients.get_turn(live_turn.client_id)
-    assert response.json()["status"] in (
-        ClientStatusEnum.ON_QUEUE,
-        ClientStatusEnum.IN_SERVICE,
-    )
+    turn = ClientTurnResponse.from_response(response)
+    assert turn.status in (ClientStatusEnum.ON_QUEUE, ClientStatusEnum.IN_SERVICE)
 
 
 def test_group_turn_includes_group_key(
@@ -117,11 +117,10 @@ def test_group_turn_includes_group_key(
     create_group_turn(client, open_barbershop_id, leader_id, ["member1", "member2"])
 
     response = client.clients.get_turn(leader_id)
-    body = response.json()
+    group = ClientTurnResponse.from_response(response).group
 
-    assert body["group"] is not None
-    assert "groupId" in body["group"]
-    assert len(body["group"]["members"]) == 2
+    assert group is not None
+    assert len(group.members) == 2
 
 
 def test_non_group_turn_has_null_group(
@@ -132,7 +131,8 @@ def test_non_group_turn_has_null_group(
     """
 
     response = client.clients.get_turn(live_turn.client_id)
-    assert response.json()["group"] is None
+    group = ClientTurnResponse.from_response(response).group
+    assert group is None
 
 
 def test_status_on_unknown_client(client: ApiClient) -> None:

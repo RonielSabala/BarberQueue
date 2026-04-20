@@ -15,6 +15,7 @@ from backend.conftest import (
     get_fresh_client_id,
 )
 from domain.dtos import ErrorResponse
+from domain.dtos.clients import ClientTurnResponse
 from domain.dtos.turns import CreateTurnRequest, TurnDetailResponse
 from domain.enums import ClientStatusEnum, OwnerTypeEnum
 from helpers.assertions import (
@@ -74,23 +75,20 @@ def test_returns_one_turn_without_group(response: requests.Response) -> None:
     Without groupMembers, response contains exactly one turn.
     """
 
-    assert len(response.json()) == 1
+    turns = tuple(TurnDetailResponse.from_array_response(response))
+    assert len(turns) == 1
 
 
-def test_leader_turn_has_client_owner_type(response: requests.Response) -> None:
+def test_leader_turn_state_is_valid(
+    response: requests.Response, active_barber_id: int
+) -> None:
     """
-    The leader turn has ownerType='client'.
-    """
-
-    assert response.json()[0]["ownerType"] == OwnerTypeEnum.CLIENT
-
-
-def test_barber_id_matches(response: requests.Response, active_barber_id: int) -> None:
-    """
-    Assigned barber matches the requested barber.
+    The leader turn state is valid.
     """
 
-    assert response.json()[0]["barberId"] == active_barber_id
+    leader_turn = next(TurnDetailResponse.from_array_response(response))
+    assert leader_turn.owner_type == OwnerTypeEnum.CLIENT
+    assert leader_turn.barber_id == active_barber_id
 
 
 def test_client_status_becomes_on_queue(
@@ -103,11 +101,9 @@ def test_client_status_becomes_on_queue(
     client_id = checked_in(client, open_barbershop_id)
     create_solo_turn(client, open_barbershop_id, active_barber_id, client_id)
 
-    turn_response = client.clients.get_turn(client_id)
-    assert turn_response.json()["status"] in (
-        ClientStatusEnum.ON_QUEUE,
-        ClientStatusEnum.IN_SERVICE,
-    )
+    response = client.clients.get_turn(client_id)
+    turn = ClientTurnResponse.from_response(response)
+    assert turn.status in (ClientStatusEnum.ON_QUEUE, ClientStatusEnum.IN_SERVICE)
 
 
 def test_group_turn_creates_member_turns(
@@ -124,7 +120,7 @@ def test_group_turn_creates_member_turns(
 
     assert len(turns_response) == 3
 
-    owner_types = [turn["ownerType"] for turn in turns_response]
+    owner_types = [turn.owner_type for turn in turns_response]
     assert owner_types.count(OwnerTypeEnum.CLIENT) == 1
     assert owner_types.count(OwnerTypeEnum.MEMBER) == 2
 
@@ -139,7 +135,7 @@ def test_group_turns_share_group_id(client: ApiClient, open_barbershop_id: int) 
         client, open_barbershop_id, client_id, ["member1", "member2"]
     )
 
-    group_ids = {turn["groupId"] for turn in turns_response}
+    group_ids = {turn.group_id for turn in turns_response}
     assert len(group_ids) == 1
     assert None not in group_ids
 
@@ -157,9 +153,10 @@ def test_auto_assign_without_barber_id(
     )
 
     response = client.turns.create_turn(turn_request)
+    turn = tuple(TurnDetailResponse.from_array_response(response))
 
     assert_status(response, HttpStatus.CREATED)
-    assert len(response.json()) == 1
+    assert len(turn) == 1
 
 
 def test_not_at_barbershop_returns_unprocessable(

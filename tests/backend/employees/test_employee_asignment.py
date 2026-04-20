@@ -14,7 +14,7 @@ from backend.conftest import (
     get_random_working_days_pair,
 )
 from domain.dtos import MessageResponse
-from domain.dtos.employees import UpdateEmployeeAssignmentRequest
+from domain.dtos.employees import EmployeeResponse, UpdateEmployeeAssignmentRequest
 from domain.value_objects import TimeOfDay
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import (
@@ -88,20 +88,20 @@ def test_fields_persists(client: ApiClient) -> None:
     )
 
     response = client.employees.get(employee_id)
-    assignments = response.json()["assignments"]
-    matching = next(
+    employee = EmployeeResponse.from_response(response)
+    stored = next(
         (
             assignment
-            for assignment in assignments
-            if assignment["barbershopId"] == barbershop_id
+            for assignment in employee.assignments
+            if assignment.barbershop_id == barbershop_id
         ),
         None,
     )
 
-    assert matching is not None
-    assert matching["startTime"] == start_time.value
-    assert matching["endTime"] == end_time.value
-    assert matching["workingDays"] == [day.value for day in second_days]
+    assert stored is not None
+    assert stored.start_time == start_time.value
+    assert stored.end_time == end_time.value
+    assert stored.working_days == [day.value for day in second_days]
 
 
 def test_no_fields(client: ApiClient, open_barbershop_id: int) -> None:

@@ -8,7 +8,7 @@ from api.client import ApiClient
 from api.core import HttpStatus
 from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id, get_fresh_client_id
 from domain.dtos import ErrorResponse
-from domain.dtos.barbers import CreateBarberReviewRequest
+from domain.dtos.barbers import BarberReviewResponse, CreateBarberReviewRequest
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import BARBER_NOT_FOUND
 
@@ -25,7 +25,8 @@ def review_id(client: ApiClient, barber_id: int) -> int:
     client_id = get_fresh_client_id(client)
     request = CreateBarberReviewRequest.random(client_id=client_id)
     response = client.barbers.create_review(barber_id, request)
-    return response.json()["id"]
+    review = BarberReviewResponse.from_response(response)
+    return review._id
 
 
 def test_status(client: ApiClient, barber_id: int, review_id: int) -> None:
@@ -68,4 +69,5 @@ def test_review_no_longer_in_list(
 
     client.barbers.delete_review(barber_id, review_id)
     response = client.barbers.get_reviews(barber_id)
-    assert all(review_id != review["id"] for review in response.json())
+    reviews = BarberReviewResponse.from_array_response(response)
+    assert all(review_id != review._id for review in reviews)

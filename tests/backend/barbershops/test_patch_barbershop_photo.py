@@ -9,7 +9,10 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import MessageResponse
-from domain.dtos.barbershops import UpdateBarbershopPhotoRequest
+from domain.dtos.barbershops import (
+    BarbershopDetailResponse,
+    UpdateBarbershopPhotoRequest,
+)
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
@@ -55,7 +58,9 @@ def test_photo_persists(client: ApiClient, open_barbershop_id: int) -> None:
     client.barbershops.update_photo(open_barbershop_id, update_request)
 
     response = client.barbershops.get(open_barbershop_id)
-    assert response.json()["photoUrl"] == update_request.photo_url.value
+    barbershop = BarbershopDetailResponse.from_response(response)
+
+    assert barbershop.photo_url == update_request.photo_url.value
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:
