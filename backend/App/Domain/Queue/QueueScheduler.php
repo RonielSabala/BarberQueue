@@ -82,7 +82,7 @@ final class QueueScheduler
             $barberId = $slot->barberId;
             $queues[$barberId] = [];
             $slotsById[$barberId] = $slot;
-            $finishMinutes[$barberId] = $slot->estimatedBaseFinishMinutes();
+            $finishMinutes[$barberId] = 0;
         }
 
         // Sort the entire pool by creation date
@@ -98,7 +98,7 @@ final class QueueScheduler
             // If the turn specifies a barber, we MUST assign it to them
             if ($barberId !== null && isset($queues[$barberId])) {
                 $queues[$barberId][] = $turn;
-                $finishMinutes[$barberId] += $slotsById[$barberId]->getAvgServiceMinutes();
+                $finishMinutes[$barberId] += $slotsById[$barberId]->avgServiceMinutes;
                 continue;
             }
 
@@ -106,7 +106,7 @@ final class QueueScheduler
             [$bestId, $barberSlot] = self::pickBestBarber($barberSlots, $finishMinutes);
             if ($bestId !== null && $barberSlot !== null) {
                 $queues[$bestId][] = $turn;
-                $finishMinutes[$bestId] += $barberSlot->getAvgServiceMinutes();
+                $finishMinutes[$bestId] += $barberSlot->avgServiceMinutes;
             }
         }
 
