@@ -17,7 +17,7 @@ final readonly class QueueRepository extends TurnRepository
                 turns t
             WHERE
                 t.barber_id = ?
-                AND t.attended_at is NULL
+                AND t.finished_at is NULL
             LIMIT
                 1
         SQL;
@@ -35,7 +35,7 @@ final readonly class QueueRepository extends TurnRepository
                 turns t
             WHERE
                 t.barber_id = ?
-                AND t.attended_at IS NULL
+                AND t.finished_at IS NULL
             LIMIT
                 1
         SQL;

@@ -74,7 +74,7 @@ readonly class TurnRepository extends BaseRepository
         $sql = $this->turnQuery() . <<<'SQL'
             WHERE
                 t.barbershop_id = ?
-                AND t.attended_at IS NULL
+                AND t.finished_at IS NULL
         SQL;
 
         $params = [$barbershopId];
@@ -179,14 +179,5 @@ readonly class TurnRepository extends BaseRepository
     public function setFinishedAt(int $turnId): void
     {
         $this->update($turnId, ['finished_at' => date(DateTimeString::DATETIME_FORMAT)]);
-    }
-
-    public function setGroupFinishedAt(int $groupId): void
-    {
-        $this->updateFrom(
-            self::TABLE_NAME,
-            ['finished_at' => date(DateTimeString::DATETIME_FORMAT)],
-            ['group_id' => $groupId]
-        );
     }
 }
