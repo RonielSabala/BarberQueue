@@ -7,48 +7,67 @@ const STATUS_LABELS = {
   paid: "Pagado",
 };
 
+/**
+ * QueueColumn
+ *
+ * Props:
+ * - currentUserId: id del usuario logueado (para detectar su propio grupo)
+ * - myTurn: objeto del turno del usuario logueado (para saber su groupId)
+ */
 function QueueColumn({
   barber,
   showJoinAction = false,
   canJoin = false,
   joining = false,
   onJoinQueue,
+  currentUserId,
+  myTurn,
 }) {
-  const renderTurnMeta = (turn) => {
-    const isGroup = Number(turn.groupSize) > 1;
+  // groupId del usuario logueado — viene en myTurn.group.groupId (no en myTurn.groupId)
+  const myGroupId = myTurn?.group?.groupId ?? myTurn?.groupId ?? null;
+  const myOwnerId = currentUserId ? Number(currentUserId) : null;
 
-    // FIX: estados mapeados a texto legible en lugar de valores literales de la API
+  // ¿este turn pertenece al grupo del usuario logueado?
+  const isMyGroup = (turn) => {
+    if (!myGroupId) return false;
+    const turnGroupId = turn.groupId ?? turn.group?.id ?? null;
+    return turnGroupId != null && turnGroupId === myGroupId;
+  };
+
+  // ¿este turn es el propio usuario?
+  const isMe = (turn) => {
+    if (!myOwnerId) return false;
+    return Number(turn.ownerId) === myOwnerId;
+  };
+
+  const renderTurnStatus = (turn) => {
     const statusLabel = STATUS_LABELS[turn.ownerStatus] || turn.ownerStatus;
-
     return (
-      <div className="flex flex-wrap items-center gap-2 mt-1">
-        <span className="text-[11px] text-slate-400 truncate">
-          {statusLabel}
-        </span>
-
-        {turn.ownerType === "member" && (
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/20 dark:text-violet-300">
-            Miembro
-          </span>
-        )}
-
-        {turn.ownerType === "client" && isGroup && (
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-            Líder de grupo
-          </span>
-        )}
-
-        {isGroup && (
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-            Grupo {turn.groupSize}
-          </span>
-        )}
-      </div>
+      <span className="text-[11px] text-slate-400 truncate">{statusLabel}</span>
     );
+  };
+
+  const turnItemCls = (turn, idx) => {
+    const highlight = isMyGroup(turn) || isMe(turn);
+    const base =
+      "flex items-center gap-3 rounded-xl px-2 py-1.5 transition-all";
+    if (highlight) {
+      return `${base} border border-blue-200 bg-blue-50/60`;
+    }
+    return `${base} ${idx === 0 ? "opacity-100" : "opacity-70"}`;
+  };
+
+  const numberCls = (turn) => {
+    const highlight = isMyGroup(turn) || isMe(turn);
+    if (highlight) {
+      return "w-10 h-10 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 bg-blue-100 text-blue-700";
+    }
+    return "w-10 h-10 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 bg-slate-200 text-slate-600";
   };
 
   return (
     <div className="space-y-4">
+      {/* ── Barber card ── */}
       <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
         <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-2 border-2 border-primary/20 overflow-hidden flex items-center justify-center">
           <span className="material-icons-round text-3xl text-slate-400">
@@ -58,16 +77,14 @@ function QueueColumn({
 
         <h3 className="font-bold text-lg">{barber.name}</h3>
 
-        {/* FIX: eliminado "Barbero {id}" — solo queda el nombre */}
-
         <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
           <span
             className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${
               barber.status === "active"
-                ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                ? "bg-green-100 text-green-700"
                 : barber.status === "resting"
-                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
-                  : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : "bg-slate-100 text-slate-600"
             }`}
           >
             {barber.status === "active"
@@ -80,8 +97,8 @@ function QueueColumn({
           <span
             className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${
               barber.isAccepting
-                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
-                : "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-red-100 text-red-700"
             }`}
           >
             {barber.isAccepting ? "Aceptando" : "No acepta"}
@@ -89,7 +106,9 @@ function QueueColumn({
         </div>
       </div>
 
+      {/* ── Queue card ── */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col">
+        {/* Header "siendo atendido" */}
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 flex items-center gap-2">
           <span className="material-icons-round text-blue-500 text-sm">
             content_cut
@@ -99,10 +118,17 @@ function QueueColumn({
           </span>
         </div>
 
+        {/* Cliente en servicio */}
         <div className="p-4 flex items-center gap-3">
           {barber.current ? (
             <>
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-400">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 ${
+                  isMyGroup(barber.current) || isMe(barber.current)
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-slate-200 text-slate-600"
+                }`}
+              >
                 {barber.current.position ?? 1}
               </div>
 
@@ -119,7 +145,7 @@ function QueueColumn({
                   <span className="font-medium text-sm truncate">
                     {barber.current.ownerName}
                   </span>
-                  {renderTurnMeta(barber.current)}
+                  {renderTurnStatus(barber.current)}
                 </div>
               </div>
             </>
@@ -132,20 +158,16 @@ function QueueColumn({
 
         <div className="border-t-2 border-dashed border-primary/20 mx-4"></div>
 
-        <div className="p-4 space-y-4 flex-grow min-h-[120px]">
+        {/* Cola de espera */}
+        <div className="p-4 space-y-2 flex-grow min-h-[120px]">
           {barber.queue.length === 0 ? (
             <div className="text-slate-400 text-sm text-center py-4 italic text-xs">
               Sin clientes en fila
             </div>
           ) : (
             barber.queue.map((client, idx) => (
-              <div
-                key={client.id}
-                className={`flex items-center gap-3 ${
-                  idx === 0 ? "opacity-100" : "opacity-70"
-                }`}
-              >
-                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center font-bold text-slate-400 flex-shrink-0">
+              <div key={client.id} className={turnItemCls(client, idx)}>
+                <div className={numberCls(client)}>
                   {client.position ?? idx + 2}
                 </div>
 
@@ -159,13 +181,14 @@ function QueueColumn({
                   <span className="text-sm font-medium truncate">
                     {client.ownerName}
                   </span>
-                  {renderTurnMeta(client)}
+                  {renderTurnStatus(client)}
                 </div>
               </div>
             ))
           )}
         </div>
 
+        {/* Botón unirse */}
         {showJoinAction && (
           <div className="px-4 pb-4">
             <button

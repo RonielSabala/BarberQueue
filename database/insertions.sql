@@ -182,7 +182,7 @@ VALUES
         'info@barberking.com',
         '8091234000',
         'Av. Duarte 100, Santo Domingo',
-        'https://placehold.co/600x400?text=BarberKing',
+        'https://www.shutterstock.com/image-vector/barbershop-logo-vector-design-cut-600nw-2494643347.jpg',
         '08:00:00',
         '20:00:00',
         3
@@ -194,7 +194,7 @@ VALUES
         'info@gentlemancut.com',
         '8092345000',
         'Calle El Conde 55, Zona Colonial',
-        'https://placehold.co/600x400?text=GentlemanCut',
+        'https://i.etsystatic.com/43327242/r/il/4670aa/6564473260/il_fullxfull.6564473260_oj68.jpg',
         '09:00:00',
         '19:00:00',
         2

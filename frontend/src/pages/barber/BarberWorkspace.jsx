@@ -7,7 +7,6 @@ import {
 } from "../../services/barberService";
 import { getBarberQueue } from "../../services/queueService";
 import { attendTurn } from "../../services/turnService";
-import "../../styles/barber/BarberDashboard.css";
 
 function BarberWorkspace() {
   const navigate = useNavigate();
@@ -180,13 +179,23 @@ function BarberWorkspace() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-display font-bold text-slate-800 dark:text-white">
-          Área de trabajo
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-1">
-          Gestiona tu jornada, visualiza tu cliente actual y tu fila.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-display font-bold text-slate-800 dark:text-white">
+            Área de trabajo
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            Gestiona tu jornada, visualiza tu cliente actual y tu fila.
+          </p>
+        </div>
+        <button
+          className="flex items-center gap-2 px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-100 shadow-sm disabled:opacity-50 shrink-0"
+          onClick={handleEndShift}
+          disabled={savingStatus}
+        >
+          <span className="material-icons-round text-sm">logout</span>
+          Terminar jornada
+        </button>
       </div>
 
       {error && (
@@ -286,19 +295,13 @@ function BarberWorkspace() {
                   <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
                     {currentClient.ownerName}
                   </h3>
-                  <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                      {currentClient.ownerType}
-                    </span>
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                      {currentClient.ownerStatus}
-                    </span>
-                    {Number(currentClient.groupSize) > 1 && (
+                  {Number(currentClient.groupSize) > 1 && (
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
                       <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                         Grupo {currentClient.groupSize}
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
                 <button
                   className="w-full sm:w-auto mt-4 sm:mt-0 flex flex-col items-center justify-center gap-1 bg-primary hover:bg-blue-600 text-white px-6 py-4 rounded-xl font-bold transition-colors shadow-md disabled:opacity-50"
@@ -319,18 +322,6 @@ function BarberWorkspace() {
                 </p>
               </div>
             )}
-          </div>
-
-          {/* Terminar jornada */}
-          <div className="flex justify-end">
-            <button
-              className="flex items-center gap-2 px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl transition-colors border border-red-100 shadow-sm disabled:opacity-50"
-              onClick={handleEndShift}
-              disabled={savingStatus}
-            >
-              <span className="material-icons-round text-sm">logout</span>
-              Terminar mi jornada
-            </button>
           </div>
         </div>
 

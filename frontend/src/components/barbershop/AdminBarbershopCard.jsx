@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 const fallbackImage = "https://via.placeholder.com/400x200?text=Barberia";
 
-function BarbershopCard({ shop }) {
+function AdminBarbershopCard({ shop }) {
   const navigate = useNavigate();
   const isOpen = shop.isActive ?? shop.open ?? false;
 
@@ -38,14 +38,14 @@ function BarbershopCard({ shop }) {
         </p>
 
         <button
-          onClick={() => navigate(`/barbershops/${shop.id}`)}
+          onClick={() => navigate(`/admin/barbershop/${shop.id}`)}
           className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
         >
-          Ver barbería
+          Administrar
         </button>
       </div>
     </div>
   );
 }
 
-export default BarbershopCard;
+export default AdminBarbershopCard;

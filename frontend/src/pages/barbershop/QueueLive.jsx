@@ -15,6 +15,60 @@ const STATUS_LABELS = {
   paid: "Pagado",
 };
 
+// ── Modal de capacidad excedida ────────────────────────────────────────────
+function CapacityModal({ capacity, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        backgroundColor: "rgba(15,23,42,0.5)",
+        backdropFilter: "blur(4px)",
+      }}
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Icon */}
+        <div className="flex justify-center pt-8 pb-4">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <span className="material-icons-round text-amber-500 text-3xl">
+              person_off
+            </span>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 pb-6 text-center">
+          <h2 className="text-lg font-black text-slate-800 mb-2">
+            Barbería llena
+          </h2>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            Esta barbería tiene una capacidad máxima de{" "}
+            <span className="font-bold text-slate-700">
+              {capacity} personas
+            </span>{" "}
+            y actualmente está llena. Si vienes en grupo, tu grupo no puede
+            registrarse porque superaría el límite. Intenta de nuevo cuando haya
+            espacio disponible.
+          </p>
+        </div>
+
+        {/* Action */}
+        <div className="px-6 pb-6">
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-slate-900 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors text-sm"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function QueueLive() {
   const { id } = useParams();
   const q = useQueueLive(id);
@@ -86,6 +140,8 @@ function QueueLive() {
                     canJoin={q.currentUserCheckedIn && !q.myTurn}
                     joining={q.turnActionLoading || q.joiningGroup}
                     onJoinQueue={q.handleOpenJoinModal}
+                    currentUserId={q.currentUserId}
+                    myTurn={q.myTurn}
                   />
                 ))
               )}
@@ -214,7 +270,7 @@ function QueueLive() {
                 </button>
               </div>
             ) : (
-              /* Panel cliente / otros roles */
+              /* Panel cliente */
               <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                 <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
                   <span className="material-icons-round text-slate-400">
@@ -257,6 +313,13 @@ function QueueLive() {
                             : "Salir de la barbería"}
                         </button>
                       </>
+                    ) : q.atCapacity ? (
+                      <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-amber-700 text-sm font-medium text-center">
+                        <span className="material-icons-round text-base align-middle mr-1">
+                          groups_off
+                        </span>
+                        Barbería llena — capacidad máxima alcanzada.
+                      </div>
                     ) : (
                       <button
                         onClick={q.handleCheckIn}
@@ -333,6 +396,13 @@ function QueueLive() {
       </main>
 
       {/* ─── Modales ─── */}
+      {q.isCapacityModalOpen && (
+        <CapacityModal
+          capacity={q.barbershopCapacity}
+          onClose={() => q.setIsCapacityModalOpen(false)}
+        />
+      )}
+
       <JoinQueueModal
         isOpen={q.isGroupModalOpen}
         onClose={() => q.setIsGroupModalOpen(false)}
@@ -381,7 +451,6 @@ function QueueLive() {
         onCheckOut={q.handleAssistantCheckOut}
       />
 
-      {/* Modal registrar cliente (assistant) */}
       {q.isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">

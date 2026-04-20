@@ -34,54 +34,55 @@ export function useQueueLive(id) {
   const currentUserId = storedUser?.id;
   const currentUserRole = storedUser?.role;
 
-  const isClient = currentUserRole === "client";
+  const isClient    = currentUserRole === "client";
   const isAssistant = currentUserRole === "assistant";
   const canManageClients =
     currentUserRole === "admin" ||
     currentUserRole === "assistant" ||
     currentUserRole === "barber";
 
-  // ─── Estado cola ────────────────────────────────────────────────────────────
-  const [barbers, setBarbers] = useState([]);
-  const [restingBarbers, setRestingBarbers] = useState([]);
-  const [barbershopName, setBarbershopName] = useState("");
+  // ─── Estado cola ─────────────────────────────────────────────────────────────
+  const [barbers, setBarbers]                   = useState([]);
+  const [restingBarbers, setRestingBarbers]     = useState([]);
+  const [barbershopName, setBarbershopName]     = useState("");
   const [barbershopCapacity, setBarbershopCapacity] = useState(null);
-  const [loadingQueue, setLoadingQueue] = useState(true);
-  const [queueError, setQueueError] = useState("");
+  const [loadingQueue, setLoadingQueue]         = useState(true);
+  const [queueError, setQueueError]             = useState("");
 
-  // ─── Estado clientes ─────────────────────────────────────────────────────────
+  // ─── Estado clientes ──────────────────────────────────────────────────────────
   const [clientsAtBarbershop, setClientsAtBarbershop] = useState([]);
-  const [loadingClients, setLoadingClients] = useState(true);
+  const [loadingClients, setLoadingClients]           = useState(true);
   const [clientActionLoading, setClientActionLoading] = useState(false);
-  const [clientError, setClientError] = useState("");
-  const [clientSuccess, setClientSuccess] = useState("");
+  const [clientError, setClientError]                 = useState("");
+  const [clientSuccess, setClientSuccess]             = useState("");
 
-  // ─── Estado turno propio ─────────────────────────────────────────────────────
-  const [myTurn, setMyTurn] = useState(null);
-  const [loadingMyTurn, setLoadingMyTurn] = useState(false);
+  // ─── Estado turno propio ──────────────────────────────────────────────────────
+  const [myTurn, setMyTurn]                       = useState(null);
+  const [loadingMyTurn, setLoadingMyTurn]         = useState(false);
   const [turnActionLoading, setTurnActionLoading] = useState(false);
-  const [turnError, setTurnError] = useState("");
-  const [turnSuccess, setTurnSuccess] = useState("");
+  const [turnError, setTurnError]                 = useState("");
+  const [turnSuccess, setTurnSuccess]             = useState("");
 
-  // ─── Estado modales ──────────────────────────────────────────────────────────
-  const [isTurnModalOpen, setIsTurnModalOpen] = useState(false);
+  // ─── Estado modales ───────────────────────────────────────────────────────────
+  const [isTurnModalOpen, setIsTurnModalOpen]         = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
-  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
+  const [isGroupModalOpen, setIsGroupModalOpen]       = useState(false);
+  const [isCapacityModalOpen, setIsCapacityModalOpen] = useState(false); // ← nuevo
 
-  // ─── Estado checkout assistant ───────────────────────────────────────────────
+  // ─── Estado checkout assistant ────────────────────────────────────────────────
   const [checkoutActionLoading, setCheckoutActionLoading] = useState(null);
-  const [checkoutError, setCheckoutError] = useState("");
-  const [checkoutSuccess, setCheckoutSuccess] = useState("");
+  const [checkoutError, setCheckoutError]                 = useState("");
+  const [checkoutSuccess, setCheckoutSuccess]             = useState("");
 
-  // ─── Estado modal grupo cliente ──────────────────────────────────────────────
+  // ─── Estado modal grupo cliente ───────────────────────────────────────────────
   const [selectedBarberId, setSelectedBarberId] = useState("");
-  const [groupMode, setGroupMode] = useState("single");
-  const [groupMembers, setGroupMembers] = useState([{ id: 1, memberName: "", barberId: "" }]);
-  const [joiningGroup, setJoiningGroup] = useState(false);
-  const [groupError, setGroupError] = useState("");
+  const [groupMode, setGroupMode]               = useState("single");
+  const [groupMembers, setGroupMembers]         = useState([{ id: 1, memberName: "", barberId: "" }]);
+  const [joiningGroup, setJoiningGroup]         = useState(false);
+  const [groupError, setGroupError]             = useState("");
 
-  // ─── Fetches ─────────────────────────────────────────────────────────────────
+  // ─── Fetches ──────────────────────────────────────────────────────────────────
 
   const fetchQueue = async () => {
     try {
@@ -98,7 +99,6 @@ export function useQueueLive(id) {
       const resting = await getRestingBarbers(id, activeIds);
       setRestingBarbers(resting);
     } catch (err) {
-      console.error("Error al obtener cola de barbería:", err);
       setQueueError(err.message || "Error al cargar la cola");
     } finally {
       setLoadingQueue(false);
@@ -112,7 +112,6 @@ export function useQueueLive(id) {
       const data = await getBarbershopClients(id);
       setClientsAtBarbershop(data);
     } catch (err) {
-      console.error("Error al obtener clientes en barbería:", err);
       setClientError(err.message || "Error al cargar los clientes en barbería");
     } finally {
       setLoadingClients(false);
@@ -246,9 +245,20 @@ export function useQueueLive(id) {
     setGroupError("");
   };
 
+  // ─── Helper: verifica si hay capacidad disponible ─────────────────────────────
+  const checkCapacity = (extraCount = 1) => {
+    if (barbershopCapacity == null) return true; // sin límite definido
+    return totalActivos + extraCount <= barbershopCapacity;
+  };
+
   // ─── Acciones ─────────────────────────────────────────────────────────────────
 
   const handleCheckIn = async () => {
+    // Validar capacidad antes de llamar al backend
+    if (!checkCapacity(1)) {
+      setIsCapacityModalOpen(true);
+      return;
+    }
     try {
       setClientActionLoading(true);
       setClientError("");
@@ -263,6 +273,8 @@ export function useQueueLive(id) {
         setClientError("Ya estás registrado en otra barbería. Debes salir de ella antes de registrarte aquí.");
       } else if (msg.includes("not open") || msg.includes("closed")) {
         setClientError("Esta barbería está cerrada en este momento.");
+      } else if (msg.includes("capacity") || msg.includes("full") || msg.includes("limit")) {
+        setIsCapacityModalOpen(true);
       } else {
         setClientError(err.message || "Error al registrar tu llegada");
       }
@@ -339,7 +351,15 @@ export function useQueueLive(id) {
           memberName: m.memberName.trim(),
           barberId: m.barberId ? Number(m.barberId) : null,
         }));
+
+        // El líder ya está en totalActivos (hizo check-in), solo los miembros son nuevos
+        if (!checkCapacity(groupMembersPayload.length)) {
+          setIsGroupModalOpen(false);
+          setIsCapacityModalOpen(true);
+          return;
+        }
       }
+      // Para turno individual: el cliente ya está en totalActivos, no suma nada nuevo
 
       const createdTurns = await createTurn({
         clientId: currentUserId,
@@ -352,12 +372,22 @@ export function useQueueLive(id) {
       const mainTurn = turnsArray.find((t) => t.ownerType === "client") || turnsArray[0];
       if (mainTurn) setMyTurn(mainTurn);
 
-      setTurnSuccess(groupMode === "group" ? "Grupo registrado correctamente en la cola." : "Te registraste correctamente en la cola del barbero.");
+      setTurnSuccess(
+        groupMode === "group"
+          ? "Grupo registrado correctamente en la cola."
+          : "Te registraste correctamente en la cola del barbero."
+      );
       setIsGroupModalOpen(false);
       resetGroupModal();
       await Promise.all([fetchQueue(), fetchClientsAtBarbershop(), fetchMyTurn()]);
     } catch (err) {
-      setGroupError(err.message || "Error al registrarte en la cola");
+      const msg = err.message?.toLowerCase() || "";
+      if (msg.includes("capacity") || msg.includes("full") || msg.includes("limit")) {
+        setIsGroupModalOpen(false);
+        setIsCapacityModalOpen(true);
+      } else {
+        setGroupError(err.message || "Error al registrarte en la cola");
+      }
     } finally {
       setJoiningGroup(false);
     }
@@ -442,6 +472,7 @@ export function useQueueLive(id) {
     barbershopName, barbershopCapacity,
     loadingQueue, queueError,
     totalActivos, clientsWithTurns,
+    atCapacity: barbershopCapacity != null && totalActivos >= barbershopCapacity,
 
     // Clientes en barbería
     clientsAtBarbershop, loadingClients,
@@ -459,6 +490,7 @@ export function useQueueLive(id) {
     isRegisterModalOpen, setIsRegisterModalOpen,
     isCheckoutModalOpen, setIsCheckoutModalOpen,
     isGroupModalOpen, setIsGroupModalOpen,
+    isCapacityModalOpen, setIsCapacityModalOpen, // ← nuevo
 
     // Checkout assistant
     checkoutActionLoading, checkoutError, checkoutSuccess,

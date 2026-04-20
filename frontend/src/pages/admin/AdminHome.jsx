@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getBarbershops } from "../../services/barbershopService";
-import "../../styles/admin/adminHome.css";
+import AdminBarbershopCard from "../../components/barbershop/AdminBarbershopCard";
 
 function AdminHome() {
   const navigate = useNavigate();
@@ -18,24 +18,14 @@ function AdminHome() {
         setLoading(true);
         setError("");
 
-        const filters = {
-          adminId: 1,
-        };
-
-        if (search.trim()) {
-          filters.search = search.trim();
-        }
-
-        if (statusFilter === "open") {
-          filters.isOpen = true;
-        } else if (statusFilter === "closed") {
-          filters.isOpen = false;
-        }
+        const filters = { adminId: 1 };
+        if (search.trim()) filters.search = search.trim();
+        if (statusFilter === "open") filters.isOpen = true;
+        else if (statusFilter === "closed") filters.isOpen = false;
 
         const data = await getBarbershops(filters);
         setShops(data);
       } catch (err) {
-        console.error("Error al obtener barberías del admin:", err);
         setError(err.message || "Error al cargar las barberías");
       } finally {
         setLoading(false);
@@ -47,6 +37,7 @@ function AdminHome() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900 dark:text-white">
@@ -56,7 +47,6 @@ function AdminHome() {
             Administra los locales registrados en el sistema.
           </p>
         </div>
-
         <button
           className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg"
           onClick={() => navigate("/admin/barbershop/new")}
@@ -66,6 +56,7 @@ function AdminHome() {
         </button>
       </div>
 
+      {/* Filtros */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-8 gap-4 border border-slate-100 dark:border-slate-700">
         <div className="relative w-full sm:max-w-md">
           <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
@@ -79,7 +70,6 @@ function AdminHome() {
             className="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
           />
         </div>
-
         <div className="w-full sm:w-auto relative">
           <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
             filter_alt
@@ -96,48 +86,35 @@ function AdminHome() {
         </div>
       </div>
 
-      {loading && <p>Cargando barberías...</p>}
+      {/* Estados */}
+      {loading && (
+        <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
+          <span className="material-icons-round animate-pulse text-3xl">
+            storefront
+          </span>
+          <p className="text-sm font-medium">Cargando barberías...</p>
+        </div>
+      )}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
+          {error}
+        </div>
+      )}
 
       {!loading && !error && shops.length === 0 && (
-        <p>No se encontraron barberías para este administrador.</p>
+        <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+          <span className="material-icons-round text-5xl mb-3 opacity-30">
+            search_off
+          </span>
+          <p className="font-medium text-sm">No se encontraron barberías.</p>
+        </div>
       )}
 
       {!loading && !error && shops.length > 0 && (
-        <div className="barbershop-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {shops.map((shop) => (
-            <div key={shop.id} className="shop-card">
-              <img
-                src={
-                  shop.image ||
-                  "https://via.placeholder.com/400x200?text=Barberia"
-                }
-                alt={shop.name}
-                onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/400x200?text=Barberia";
-                }}
-                className="shop-image"
-              />
-
-              <div className="shop-info">
-                <p className="shop-name">{shop.name}</p>
-
-                <p>Rating ⭐ {shop.rating ?? "Sin rating"}</p>
-
-                <p className={`status ${shop.open ? "open" : "closed"}`}>
-                  {shop.open ? "Abierta" : "Cerrada"}
-                </p>
-              </div>
-
-              <button
-                className="manage-btn"
-                onClick={() => navigate(`/admin/barbershop/${shop.id}`)}
-              >
-                Administrar
-              </button>
-            </div>
+            <AdminBarbershopCard key={shop.id} shop={shop} />
           ))}
         </div>
       )}
