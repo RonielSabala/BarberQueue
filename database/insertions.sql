@@ -206,7 +206,7 @@ VALUES
         'info@elitebarbers.com',
         '8093456000',
         'Av. Winston Churchill 300, Piantini',
-        'https://placehold.co/600x400?text=EliteBarbers',
+        'https://static.vecteezy.com/system/resources/previews/026/961/220/non_2x/barbershop-logo-design-barbershop-illustration-logo-simple-vector.jpg',
         '07:00:00',
         '21:00:00',
         4
