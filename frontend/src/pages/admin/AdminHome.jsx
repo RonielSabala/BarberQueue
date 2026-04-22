@@ -16,7 +16,7 @@ function AdminHome() {
 
   // Debounce: espera 400ms tras dejar de escribir
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 250);
+    const timer = setTimeout(() => setDebouncedSearch(search), 100);
     return () => clearTimeout(timer);
   }, [search]);
 
