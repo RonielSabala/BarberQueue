@@ -206,7 +206,7 @@ function AdminDashboard() {
             </span>
           )}
           {onClick && (
-            <span className="material-icons-round text-slate-300 text-[15px]">
+            <span className="material-icons-round text-slate-300 text-[22px]">
               chevron_right
             </span>
           )}

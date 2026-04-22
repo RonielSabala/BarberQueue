@@ -1,15 +1,43 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getBarberById,
   getBarberDashboard,
   updateBarberStatus,
 } from "../../services/barberService";
+import { getEmployeeById } from "../../services/employeeService";
 import { getBarberQueue } from "../../services/queueService";
 import { attendTurn } from "../../services/turnService";
 
+// ── Verifica si el barbero está dentro de su horario laboral ──────────────
+function isWithinSchedule(assignment) {
+  if (!assignment) return true; // sin asignación, no bloqueamos
+
+  const now = new Date();
+  const todayDow = now.getDay(); // 0=Dom,1=Lun,...,6=Sáb
+  // Backend usa 1=Lun...7=Dom — convertimos
+  const backendDow = todayDow === 0 ? 7 : todayDow;
+
+  const workingDays = assignment.workingDays || [];
+  if (!workingDays.includes(backendDow)) return false;
+
+  const [startH, startM] = (assignment.startTime || "00:00:00")
+    .split(":")
+    .map(Number);
+  const [endH, endM] = (assignment.endTime || "23:59:00")
+    .split(":")
+    .map(Number);
+
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+
+  return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+}
+
 function BarberWorkspace() {
   const navigate = useNavigate();
+  const { barbershopId } = useParams();
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const barberId = storedUser?.id;
@@ -35,10 +63,31 @@ function BarberWorkspace() {
         return;
       }
 
-      const [barberData, queue] = await Promise.all([
+      const [barberData, queue, employeeData] = await Promise.all([
         getBarberById(barberId),
         getBarberQueue(barberId),
+        getEmployeeById(barberId),
       ]);
+
+      // Verificar si está dentro de su horario para esta barbería
+      const assignment = employeeData?.assignments?.find(
+        (a) => Number(a.barbershopId) === Number(barbershopId),
+      );
+      const withinSchedule = isWithinSchedule(assignment);
+
+      // Si está fuera de horario y no está ya inactivo, forzar inactivo
+      if (!withinSchedule && barberData.currentStatus !== "inactive") {
+        try {
+          await updateBarberStatus(barberId, {
+            currentStatus: "inactive",
+            isAccepting: false,
+          });
+          barberData.currentStatus = "inactive";
+          barberData.isAccepting = false;
+        } catch (e) {
+          console.warn("No se pudo forzar inactivo:", e);
+        }
+      }
 
       setBarber(barberData);
       setQueueData(queue);
@@ -295,13 +344,6 @@ function BarberWorkspace() {
                   <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
                     {currentClient.ownerName}
                   </h3>
-                  {Number(currentClient.groupSize) > 1 && (
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-2">
-                      <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                        Grupo {currentClient.groupSize}
-                      </span>
-                    </div>
-                  )}
                 </div>
                 <button
                   className="w-full sm:w-auto mt-4 sm:mt-0 flex flex-col items-center justify-center gap-1 bg-primary hover:bg-blue-600 text-white px-6 py-4 rounded-xl font-bold transition-colors shadow-md disabled:opacity-50"
@@ -372,9 +414,6 @@ function BarberWorkspace() {
                     </p>
                     <p className="text-[11px] font-medium text-slate-500 uppercase tracking-widest mt-0.5 truncate">
                       {turn.ownerStatus === "waiting" ? "Pausado" : "En fila"}
-                      {Number(turn.groupSize) > 1
-                        ? ` · Grupo ${turn.groupSize}`
-                        : ""}
                     </p>
                   </div>
                   {turn.ownerType === "member" && (

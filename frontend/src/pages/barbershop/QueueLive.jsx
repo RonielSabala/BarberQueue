@@ -141,7 +141,18 @@ function QueueLive() {
                     joining={q.turnActionLoading || q.joiningGroup}
                     onJoinQueue={q.handleOpenJoinModal}
                     currentUserId={q.currentUserId}
+                    currentUserRole={
+                      q.isClient
+                        ? "client"
+                        : q.isAssistant
+                          ? "assistant"
+                          : "other"
+                    }
                     myTurn={q.myTurn}
+                    onOpenMyTurn={() => {
+                      q.setIsTurnModalOpen(true);
+                      q.fetchMyTurn();
+                    }}
                   />
                 ))
               )}
@@ -225,21 +236,6 @@ function QueueLive() {
               </div>
             </div>
 
-            {/* Estimación */}
-            <div className="bg-primary/10 dark:bg-primary/5 rounded-3xl p-6 border border-primary/20">
-              <span className="material-icons-round text-primary mb-2 text-2xl">
-                info
-              </span>
-              <h4 className="font-bold text-primary mb-2">
-                Estimación de espera
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                El tiempo promedio de servicio actual es de{" "}
-                <span className="font-bold text-primary">~20 minutos</span> por
-                turno.
-              </p>
-            </div>
-
             {/* Panel assistant */}
             {q.isAssistant ? (
               <div className="space-y-3">
@@ -296,9 +292,6 @@ function QueueLive() {
                     </p>
                     {q.currentUserCheckedIn ? (
                       <>
-                        <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
-                          Ya estás registrado dentro de la barbería.
-                        </div>
                         <button
                           type="button"
                           onClick={q.handleSelfCheckOut}

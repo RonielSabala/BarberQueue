@@ -415,14 +415,16 @@ function BarbershopProfile() {
                           onClick={() =>
                             setReviewForm((p) => ({ ...p, rating: star }))
                           }
-                          className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                            reviewForm.rating >= star
-                              ? "bg-amber-50 text-amber-500 scale-110 shadow-sm border border-amber-200"
-                              : "bg-slate-50 text-slate-200 hover:bg-slate-100 border border-transparent"
-                          }`}
+                          className="text-3xl transition-transform hover:scale-110 focus:outline-none"
                         >
-                          <span className="material-icons-round text-2xl">
-                            star
+                          <span
+                            className={
+                              reviewForm.rating >= star
+                                ? "text-amber-400"
+                                : "text-slate-200"
+                            }
+                          >
+                            ★
                           </span>
                         </button>
                       ))}

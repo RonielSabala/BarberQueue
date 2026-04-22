@@ -8,9 +8,29 @@ function AdminHome() {
 
   const [shops, setShops] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Debounce: espera 400ms tras dejar de escribir
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Mostrar "Cargando..." solo si tarda más de 1s
+  useEffect(() => {
+    if (!loading) {
+      setShowLoading(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (loading) setShowLoading(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     const fetchAdminBarbershops = async () => {
@@ -19,7 +39,7 @@ function AdminHome() {
         setError("");
 
         const filters = { adminId: 1 };
-        if (search.trim()) filters.search = search.trim();
+        if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
         if (statusFilter === "open") filters.isOpen = true;
         else if (statusFilter === "closed") filters.isOpen = false;
 
@@ -33,7 +53,7 @@ function AdminHome() {
     };
 
     fetchAdminBarbershops();
-  }, [search, statusFilter]);
+  }, [debouncedSearch, statusFilter]);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -87,7 +107,7 @@ function AdminHome() {
       </div>
 
       {/* Estados */}
-      {loading && (
+      {showLoading && (
         <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
           <span className="material-icons-round animate-pulse text-3xl">
             storefront

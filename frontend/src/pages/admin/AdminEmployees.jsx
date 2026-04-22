@@ -344,24 +344,21 @@ function AdminEmployees() {
                                   `/admin/barbershop/${id}/employees/${emp.id}/edit`,
                                 )
                               }
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors text-xs"
+                              className="flex items-center justify-center w-8 h-8 bg-amber-300 hover:bg-amber-400 text-white rounded-lg transition-colors"
                             >
                               <span className="material-icons-round text-[14px]">
                                 edit
                               </span>
-                              Editar
                             </button>
                             <button
                               onClick={() => setEmployeeToDelete(emp)}
                               disabled={deletingId === emp.id}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg transition-colors text-xs disabled:opacity-50"
+                              className="flex items-center justify-center w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors disabled:opacity-50"
                             >
                               <span className="material-icons-round text-[14px]">
                                 delete
                               </span>
-                              {deletingId === emp.id
-                                ? "Eliminando..."
-                                : "Eliminar"}
+                              {deletingId === emp.id ? "Eliminando..." : ""}
                             </button>
                           </div>
                         </td>

@@ -56,6 +56,13 @@ export function useQueueLive(id) {
   const [clientError, setClientError]                 = useState("");
   const [clientSuccess, setClientSuccess]             = useState("");
 
+  // Auto-limpiar clientSuccess después de 7s
+  useEffect(() => {
+    if (!clientSuccess) return;
+    const timer = setTimeout(() => setClientSuccess(""), 7000);
+    return () => clearTimeout(timer);
+  }, [clientSuccess]);
+
   // ─── Estado turno propio ──────────────────────────────────────────────────────
   const [myTurn, setMyTurn]                       = useState(null);
   const [loadingMyTurn, setLoadingMyTurn]         = useState(false);

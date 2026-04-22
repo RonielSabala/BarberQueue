@@ -7,7 +7,10 @@ function BarbershopCard({ shop }) {
   const isOpen = shop.isActive ?? shop.open ?? false;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+    <div
+      onClick={() => navigate(`/barbershops/${shop.id}`)}
+      className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer"
+    >
       {/* Imagen */}
       <img
         src={shop.image || fallbackImage}
@@ -38,10 +41,16 @@ function BarbershopCard({ shop }) {
         </p>
 
         <button
-          onClick={() => navigate(`/barbershops/${shop.id}`)}
-          className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/barbershops/${shop.id}/queue`);
+          }}
+          className="mt-auto w-full flex items-center justify-center gap-2 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl transition-colors text-sm shadow-sm"
         >
-          Ver barbería
+          <span className="material-icons-round text-red-500 text-[16px]">
+            sensors
+          </span>
+          Ver cola en vivo
         </button>
       </div>
     </div>

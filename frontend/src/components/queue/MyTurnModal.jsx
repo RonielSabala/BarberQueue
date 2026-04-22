@@ -129,9 +129,8 @@ function MyTurnModal({
               <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div>
-                    <p className="text-sm font-bold text-slate-800">
-                      Grupo #{myTurn.group.groupId}
-                    </p>
+                    {/* ← Quitado el #id del grupo */}
+                    <p className="text-sm font-bold text-slate-800">Grupo</p>
                     <p className="text-xs text-slate-500">
                       Estás registrado como líder de grupo.
                     </p>

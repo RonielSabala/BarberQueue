@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
-import ProtectedRoute from "../components/routes/ProtectedRoute";
+import ProtectedRoute from "../components/ProtectedRoute";
 
-import PublicRoute from "../components/routes/PublicRoute";
+import PublicRoute from "../components/PublicRoute";
 
 // Auth
 import Login from "../pages/auth/Login";
@@ -72,6 +72,7 @@ function AppRoutes() {
         {/*Barbershop (Public/Shared inside App)*/}
         <Route path="/barbershops/:id" element={<BarbershopProfile />} />
         <Route path="/barbershops/:id/queue" element={<QueueLive />} />
+        <Route path="/barbers/:barberId" element={<BarberProfile />} />
 
         {/*Admin*/}
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

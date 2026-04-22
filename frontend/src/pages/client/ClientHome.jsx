@@ -5,9 +5,29 @@ import BarbershopCard from "../../components/barbershop/BarbershopCard";
 function ClientHome() {
   const [shops, setShops] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Debounce: espera 400ms tras dejar de escribir
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Mostrar "Cargando..." solo si tarda más de 1s
+  useEffect(() => {
+    if (!loading) {
+      setShowLoading(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (loading) setShowLoading(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -16,7 +36,7 @@ function ClientHome() {
         setError("");
 
         const filters = {};
-        if (search.trim()) filters.search = search.trim();
+        if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
         if (filter === "open") filters.isOpen = true;
         else if (filter === "closed") filters.isOpen = false;
 
@@ -30,7 +50,7 @@ function ClientHome() {
     };
 
     fetchShops();
-  }, [search, filter]);
+  }, [debouncedSearch, filter]);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -77,7 +97,7 @@ function ClientHome() {
       </div>
 
       {/* Estados */}
-      {loading && (
+      {showLoading && (
         <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
           <span className="material-icons-round animate-pulse text-3xl">
             storefront
