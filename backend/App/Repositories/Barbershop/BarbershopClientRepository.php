@@ -66,10 +66,10 @@ final readonly class BarbershopClientRepository extends BaseRepository
                         SELECT
                             COUNT(*)
                         FROM
-                            turns
+                            turns t
                         WHERE
-                            barbershop_id = b.id
-                            AND attended_at IS NULL
+                            t.barbershop_id = b.id
+                            AND t.finished_at IS NULL
                     )
                 ) >= b.capacity AS is_full
             FROM

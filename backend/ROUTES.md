@@ -112,7 +112,7 @@ Authenticate with email and password.
 
 ### `POST /api/auth/register` <!-- omit from toc -->
 
-Register a new client account.
+Register a new client account. The only optional field is `photoUrl`, defaults to **null**.
 
 - Body
 
@@ -121,6 +121,7 @@ Register a new client account.
   "username": "client_example",
   "email": "client_example@gmail.com",
   "phone": "8091234567",
+  "photoUrl": "https://example.com/photo.jpg",
   "password": "12345678"
 }
 ```
@@ -246,6 +247,7 @@ List all users. Supports optional filters.
     "username": "user_example",
     "email": "user_example@gmail.com",
     "phone": "8091234567",
+    "photoUrl": "https://example.com/photo.jpg",
     "role": "client"
   }
 ]
@@ -265,6 +267,7 @@ Get a user's profile.
   "username": "user_example",
   "email": "user_example@gmail.com",
   "phone": "8091234567",
+  "photoUrl": "https://example.com/photo.jpg",
   "role": "admin"
 }
 ```
@@ -281,7 +284,8 @@ Update a user's profile fields. All fields are optional, but at least one must b
 {
   "username": "new_username",
   "email": "new_email@gmail.com",
-  "phone": "8091234567"
+  "phone": "8091234567",
+  "photoUrl": "https://example.com/new_photo.jpg"
 }
 ```
 
@@ -350,7 +354,7 @@ List all active barbershops. Supports optional filters.
 
 ### `POST /api/barbershops` <!-- omit from toc -->
 
-Create a new barbershop. The only optional field is `capacity`, defaults to 1.
+Create a new barbershop. The only optional field is `capacity`, defaults to **1**.
 
 - Body
 
@@ -494,7 +498,7 @@ Replace the barbershop's main photo.
 
 ```json
 {
-  "photoUrl": "https://example.com/photo.jpg"
+  "photoUrl": "https://example.com/new_photo.jpg"
 }
 ```
 
@@ -1293,9 +1297,9 @@ If they re-enter at position 1 and no one is currently `in_service` for their ba
 
 ### `PATCH /api/turns/{id}/attend` <!-- omit from toc -->
 
-Mark a turn as attended. Only turns whose owner has status `in_service` can be attended. Afterwards, the owner's status becomes `attended` and `turns.attended_at` is set.
+Mark a turn as attended. Only turns whose owner has status `in_service` can be attended. Afterwards, the owner's status becomes `attended` and `turns.finished_at` is set.
 
-After marking the turn as attended, the server promotes the next eligible turn in that barber's queue to `in_service`.
+After marking the turn as attended, the server promotes the next eligible turn in that barber's queue to `in_service` and its `turns.attended_at` is set.
 
 - Response: `200`
 
@@ -1314,8 +1318,8 @@ After marking the turn as attended, the server promotes the next eligible turn i
   "estimatedTime": null,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
-  "attendedAt": "2026-03-18 10:25:00",
-  "finishedAt": null
+  "attendedAt": "2026-03-18 10:02:00",
+  "finishedAt": "2026-03-18 10:25:00"
 }
 ```
 
@@ -1323,11 +1327,11 @@ After marking the turn as attended, the server promotes the next eligible turn i
 
 ### `PATCH /api/turns/{id}/pay` <!-- omit from toc -->
 
-Mark a turn as paid and close it. Only client turns can trigger this, member turns cannot pay independently.
+Mark a turn as paid and close it. Only client turns can trigger this; member turns cannot pay independently.
 
-**Solo client:** Must have status `attended`. Afterwards, the client's status becomes `paid` and `turns.finished_at` is set.
+**Solo client:** Must have status `attended`. Afterwards, the client's status becomes `paid`.
 
-**Group leader:** Can only pay if **all** group member turns also have status `attended`. Afterwards, the leader's and all members' statuses become `paid`, and `turns.finished_at` is set on all turns in the group.
+**Group leader:** Can only pay if **all** group member turns also have status `attended`. Afterwards, the leader's and all members' statuses become `paid`.
 
 - Response: `200`
 
@@ -1346,7 +1350,7 @@ Mark a turn as paid and close it. Only client turns can trigger this, member tur
   "estimatedTime": null,
   "groupSize": null,
   "createdAt": "2026-03-18 10:00:00",
-  "attendedAt": "2026-03-18 10:25:00",
-  "finishedAt": "2026-03-18 10:30:00"
+  "attendedAt": "2026-03-18 10:02:00",
+  "finishedAt": "2026-03-18 10:25:00"
 }
 ```

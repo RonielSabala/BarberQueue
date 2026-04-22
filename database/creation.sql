@@ -13,6 +13,7 @@ CREATE TABLE
         username VARCHAR(30) NOT NULL,
         email VARCHAR(254) NOT NULL UNIQUE,
         phone VARCHAR(20) NOT NULL,
+        photo_url TEXT NULL,
         password_hash VARCHAR(60) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (role_id) REFERENCES roles (id)
@@ -192,18 +193,10 @@ CREATE TABLE
 -- users
 CREATE INDEX idx_users_role_id ON users (role_id);
 
-CREATE INDEX idx_users_email ON users (email);
-
--- password_resets
-CREATE INDEX idx_password_resets_code ON password_resets (reset_code);
-
 -- barbershops
 CREATE INDEX idx_barbershops_admin_id ON barbershops (admin_id);
 
 CREATE INDEX idx_barbershops_is_active ON barbershops (is_active);
-
--- barbershop_photos
-CREATE INDEX idx_barbershop_photos_barbershop_id ON barbershop_photos (barbershop_id);
 
 -- client_status
 CREATE INDEX idx_client_status_status ON client_status (current_status);
@@ -211,13 +204,26 @@ CREATE INDEX idx_client_status_status ON client_status (current_status);
 -- barber_status
 CREATE INDEX idx_barber_status_status ON barber_status (current_status);
 
+-- barber_reviews
+CREATE INDEX idx_barber_reviews_client_id ON barber_reviews (client_id);
+
+CREATE INDEX idx_barber_reviews_barber_rating ON barber_reviews (barber_id, rating, created_at);
+
+-- barbershop_photos
+CREATE INDEX idx_barbershop_photos_barbershop_id ON barbershop_photos (barbershop_id);
+
+-- barbershop_reviews
+CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (client_id);
+
+CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
+
 -- staff_assignments
 CREATE INDEX idx_staff_assignments_barbershop_id ON staff_assignments (barbershop_id);
 
 -- working_days
-CREATE INDEX idx_working_days_day_of_week ON working_days (day_of_week);
-
 CREATE INDEX idx_working_days_employee_day ON working_days (staff_id, day_of_week);
+
+CREATE INDEX idx_working_days_staff_barbershop ON working_days (staff_id, barbershop_id);
 
 -- client_groups
 CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
@@ -226,8 +232,6 @@ CREATE INDEX idx_client_groups_leader_id ON client_groups (leader_id);
 CREATE INDEX idx_group_members_group_id ON group_members (group_id);
 
 -- turns
-CREATE INDEX idx_turns_barbershop_id ON turns (barbershop_id);
-
 CREATE INDEX idx_turns_client_id ON turns (client_id);
 
 CREATE INDEX idx_turns_member_id ON turns (member_id);
@@ -236,20 +240,10 @@ CREATE INDEX idx_turns_group_id ON turns (group_id);
 
 CREATE INDEX idx_turns_barber_id ON turns (barber_id);
 
-CREATE INDEX idx_turns_created_at ON turns (created_at);
-
 CREATE INDEX idx_turns_client_created ON turns (client_id, created_at);
 
 CREATE INDEX idx_turns_barbershop_barber ON turns (barbershop_id, barber_id);
 
 CREATE INDEX idx_turns_barbershop_created ON turns (barbershop_id, created_at);
 
--- barbershop_reviews
-CREATE INDEX idx_barbershop_reviews_user_id ON barbershop_reviews (client_id);
-
-CREATE INDEX idx_barbershop_reviews_shop_rating ON barbershop_reviews (barbershop_id, rating, created_at);
-
--- barber_reviews
-CREATE INDEX idx_barber_reviews_client_id ON barber_reviews (client_id);
-
-CREATE INDEX idx_barber_reviews_barber_rating ON barber_reviews (barber_id, rating, created_at);
+CREATE INDEX idx_turns_barbershop_attended ON turns (barbershop_id, attended_at);

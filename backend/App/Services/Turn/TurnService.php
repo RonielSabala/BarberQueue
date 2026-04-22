@@ -75,11 +75,13 @@ final readonly class TurnService extends BaseTurnService
             return false;
         }
 
+        $turnId = $turn->id->value;
+        $this->turnRepository->setAttendedAt($turnId);
         $this->setOwnerStatus($turn, ClientStatusEnum::InService->value);
 
-        // Assign barber to this turn
+        // Assign barber if it didn't have a barber preference
         if ($turn->barberId === null) {
-            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
+            $this->turnRepository->updateBarberId($turnId, $barberId);
         }
 
         return true;
@@ -315,7 +317,7 @@ final readonly class TurnService extends BaseTurnService
     {
         $turn = $this->validateTurnExists($turnId);
 
-        if ($turn->attendedAt !== null) {
+        if ($turn->finishedAt !== null) {
             throw new TurnException(
                 'Cannot delete a turn that has been completed',
                 HttpStatus::UnprocessableEntity
@@ -346,21 +348,6 @@ final readonly class TurnService extends BaseTurnService
         );
     }
 
-    private function orchestrateTurnUnwait(TurnEntity $turn): void
-    {
-        $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
-
-        $turnId = $turn->id->value;
-        $scheduled = $this->scheduledQueue($turn->barbershopId->value);
-        [$position, $barberId] = $scheduled->findTurnLocation($turnId);
-
-        // Promote this turn if now is at position 1
-        if ($position === 1) {
-            $updatedTurn = $this->turnRepository->getById($turnId);
-            $this->promoteToInService($updatedTurn, $barberId);
-        }
-    }
-
     public function unwaitTurn(int $turnId): TurnDetailResponse
     {
         $turn = $this->validateTurnExists($turnId);
@@ -372,26 +359,26 @@ final readonly class TurnService extends BaseTurnService
             );
         }
 
+        // Orchestrate turn unwait
+        $barbershopId = $turn->barbershopId->value;
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnUnwait($turn)
+            function () use ($turn, $turnId, $barbershopId): void {
+                $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
+
+                $scheduled = $this->scheduledQueue($barbershopId);
+                [$position, $barberId] = $scheduled->findTurnLocation($turnId);
+
+                // Promote this turn if it is at position 1
+                if ($position === 1) {
+                    $updatedTurn = $this->turnRepository->getById($turnId);
+                    $this->promoteToInService($updatedTurn, $barberId);
+                }
+            }
         );
 
         return $this->buildTurnResponse(
             turn: $this->turnRepository->getById($turnId),
-            scheduled: $this->scheduledQueue($turn->barbershopId->value)
-        );
-    }
-
-    private function orchestrateTurnAttendance(TurnEntity $turn): void
-    {
-        $this->setOwnerStatus($turn, ClientStatusEnum::Attended->value);
-        $this->turnRepository->setAttendedAt($turn->id->value);
-
-        // Promote the next eligible turn
-        $scheduled = $this->scheduledQueue($turn->barbershopId->value);
-        $this->promoteNextEligibleInQueue(
-            scheduled: $scheduled,
-            barberId: $turn->barberId->value
+            scheduled: $this->scheduledQueue($barbershopId)
         );
     }
 
@@ -406,35 +393,25 @@ final readonly class TurnService extends BaseTurnService
             );
         }
 
+        // Orchestrate turn attendance
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnAttendance($turn)
+            function () use ($turn): void {
+                $this->setOwnerStatus($turn, ClientStatusEnum::Attended->value);
+                $this->turnRepository->setFinishedAt($turn->id->value);
+
+                // Promote next turn
+                $scheduled = $this->scheduledQueue($turn->barbershopId->value);
+                $this->promoteNextEligibleInQueue(
+                    scheduled: $scheduled,
+                    barberId: $turn->barberId->value
+                );
+            }
         );
 
         return $this->buildTurnResponse(
             turn: $this->turnRepository->getById($turnId),
             scheduled: $this->scheduledQueue($turn->barbershopId->value)
         );
-    }
-
-    private function orchestrateTurnPayment(TurnEntity $turn, ?int $groupId): void
-    {
-        // Set client to paid
-        $this->groupMemberRepository->updateClientStatus(
-            $turn->ownerId->value,
-            ClientStatusEnum::Paid->value
-        );
-
-        // Set solo client finished_at field
-        if ($groupId === null) {
-            $this->turnRepository->setFinishedAt($turn->id->value);
-            return;
-        }
-
-        // Set all group members to paid
-        $this->groupMemberRepository->updateAllMemberStatus($groupId, ClientStatusEnum::Paid->value);
-
-        // Set whole group and leader finished_at field
-        $this->turnRepository->setGroupFinishedAt($groupId);
     }
 
     public function payTurn(int $turnId): TurnDetailResponse
@@ -469,8 +446,26 @@ final readonly class TurnService extends BaseTurnService
             }
         }
 
+        // Orchestrate turn payment
+        $ownerId = $turn->ownerId->value;
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnPayment($turn, $groupId)
+            function () use ($ownerId, $groupId): void {
+                // Set client to paid
+                $this->groupMemberRepository->updateClientStatus(
+                    $ownerId,
+                    ClientStatusEnum::Paid->value
+                );
+
+                if ($groupId === null) {
+                    return;
+                }
+
+                // Set all group members to paid
+                $this->groupMemberRepository->updateAllMemberStatus(
+                    $groupId,
+                    ClientStatusEnum::Paid->value
+                );
+            }
         );
 
         return $this->buildTurnResponse(

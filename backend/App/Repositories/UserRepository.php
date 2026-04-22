@@ -14,6 +14,7 @@ final readonly class UserRepository extends BaseRepository
         'username',
         'email',
         'phone',
+        'photo_url',
         'password_hash',
     ];
 
@@ -83,6 +84,7 @@ final readonly class UserRepository extends BaseRepository
         string $username,
         string $email,
         string $phone,
+        ?string $photoUrl,
         string $passwordHash,
     ): int {
         return $this->insert([
@@ -90,6 +92,7 @@ final readonly class UserRepository extends BaseRepository
             'username' => $username,
             'email' => $email,
             'phone' => $phone,
+            'photo_url' => $photoUrl,
             'password_hash' => $passwordHash,
         ]);
     }

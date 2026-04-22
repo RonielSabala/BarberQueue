@@ -76,6 +76,7 @@ final readonly class AuthService extends BaseService
             username: $request->username->value,
             email: $email,
             phone: $request->phone->value,
+            photoUrl: $request->photoUrl?->value,
             passwordHash: $this->passwordService->hash($request->password->value),
         );
 

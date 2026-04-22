@@ -17,7 +17,7 @@ final readonly class QueueRepository extends TurnRepository
                 turns t
             WHERE
                 t.barber_id = ?
-                AND t.attended_at is NULL
+                AND t.finished_at is NULL
             LIMIT
                 1
         SQL;
@@ -35,7 +35,7 @@ final readonly class QueueRepository extends TurnRepository
                 turns t
             WHERE
                 t.barber_id = ?
-                AND t.attended_at IS NULL
+                AND t.finished_at IS NULL
             LIMIT
                 1
         SQL;
@@ -70,12 +70,13 @@ final readonly class QueueRepository extends TurnRepository
                 u.username AS barber_name,
                 bs.current_status AS barber_status,
                 bs.is_accepting,
-                bst.avg_service_minutes
+                COALESCE(bst.avg_service_minutes, shop_bst.avg_service_minutes) AS avg_service_minutes
             FROM
                 users u
                 JOIN roles r ON r.id = u.role_id
                 JOIN barber_status bs ON bs.barber_id = u.id
-                JOIN barber_stats bst ON bst.barber_id = u.id
+                LEFT JOIN barber_stats bst ON bst.barber_id = u.id
+                LEFT JOIN barbershop_stats shop_bst ON shop_bst.barbershop_id = ?
             WHERE
                 u.id = ?
                 AND r.role_name = 'barber'
@@ -84,7 +85,7 @@ final readonly class QueueRepository extends TurnRepository
                 1
         SQL;
 
-        $row = $this->query($barberSql, [$barberId])->fetch();
+        $row = $this->query($barberSql, [$barbershopId, $barberId])->fetch();
         if (!$row) {
             return null;
         }

@@ -18,7 +18,7 @@ final readonly class BarberSlotData
         public string $barberName,
         public string $barberStatus,
         public bool $isAccepting,
-        public ?float $avgServiceMinutes,
+        public float $avgServiceMinutes,
         public array $assignedTurns,
     ) {}
 
@@ -27,24 +27,14 @@ final readonly class BarberSlotData
      */
     public static function fromDbRow(array $row, array $assignedTurns): self
     {
+        $avgServiceMinutes = $row['avg_service_minutes'];
         return new self(
             barberId: (int) $row['barber_id'],
             barberName: $row['barber_name'],
             barberStatus: $row['barber_status'],
             isAccepting: (bool) $row['is_accepting'],
-            avgServiceMinutes: (float) $row['avg_service_minutes'],
+            avgServiceMinutes: $avgServiceMinutes ? (float) $avgServiceMinutes : self::DEFAULT_AVG_MINUTES,
             assignedTurns: $assignedTurns,
         );
-    }
-
-    public function getAvgServiceMinutes(): float
-    {
-        return $this->avgServiceMinutes ?? self::DEFAULT_AVG_MINUTES;
-    }
-
-    /** Estimated minutes until the barber finishes their current queue. */
-    public function estimatedBaseFinishMinutes(): float
-    {
-        return \count($this->assignedTurns) * $this->getAvgServiceMinutes();
     }
 }

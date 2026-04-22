@@ -93,6 +93,6 @@ final readonly class ScheduledQueue
         }
 
         [$position, $barberId] = $location;
-        return ($position - 1) * $this->slotsById[$barberId]?->getAvgServiceMinutes();
+        return ($position - 1) * $this->slotsById[$barberId]?->avgServiceMinutes;
     }
 }
