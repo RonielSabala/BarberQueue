@@ -344,7 +344,7 @@ function AdminEmployees() {
                                   `/admin/barbershop/${id}/employees/${emp.id}/edit`,
                                 )
                               }
-                              className="flex items-center justify-center w-8 h-8 bg-amber-300 hover:bg-amber-400 text-white rounded-lg transition-colors"
+                              className="flex items-center justify-center w-8 h-8 bg-amber-200 hover:bg-amber-300 text-white rounded-lg transition-colors"
                             >
                               <span className="material-icons-round text-[14px]">
                                 edit
