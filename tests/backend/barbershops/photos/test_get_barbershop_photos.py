@@ -9,13 +9,13 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.barbershops import (
+    BarbershopPhotoResponse,
     CreateBarbershopPhotosRequest,
-    GetBarbershopPhotosResponse,
 )
 from helpers.assertions import (
     assert_body,
-    assert_body_shape,
     assert_content_type,
+    assert_list_body_shape,
     assert_status,
 )
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
@@ -49,7 +49,7 @@ def test_body_shape(response: requests.Response) -> None:
     Response contains expected fields.
     """
 
-    assert_body_shape(response, GetBarbershopPhotosResponse)
+    assert_list_body_shape(response, BarbershopPhotoResponse)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

@@ -7,12 +7,13 @@ from domain.value_objects.barber_status import BarberStatus
 from domain.value_objects.barbershop_name import BarbershopName
 from domain.value_objects.capacity import Capacity
 from domain.value_objects.day_of_week import DayOfWeek, IntWorkingDays, WorkingDays
+from domain.value_objects.description import Description
 from domain.value_objects.email import Email
 from domain.value_objects.employee_role import EmployeeRole
 from domain.value_objects.id import Id
 from domain.value_objects.password import Password
 from domain.value_objects.phone import Phone
-from domain.value_objects.photo_url import PhotoUrl, PhotoUrls
+from domain.value_objects.photo_url import PhotoUrl
 from domain.value_objects.rating import Rating
 from domain.value_objects.reset_code import ResetCode
 from domain.value_objects.review_content import ReviewContent
@@ -27,13 +28,13 @@ __all__ = [
     "DayOfWeek",
     "IntWorkingDays",
     "WorkingDays",
+    "Description",
     "Email",
     "EmployeeRole",
     "Id",
     "Password",
     "Phone",
     "PhotoUrl",
-    "PhotoUrls",
     "Rating",
     "ResetCode",
     "ReviewContent",

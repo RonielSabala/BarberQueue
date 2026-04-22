@@ -9,13 +9,13 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos.barbershops import (
+    BarbershopPhotoResponse,
     CreateBarbershopPhotosRequest,
-    CreateBarbershopPhotosResponse,
 )
 from helpers.assertions import (
     assert_body,
-    assert_body_shape,
     assert_content_type,
+    assert_list_body_shape,
     assert_status,
 )
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
@@ -49,7 +49,7 @@ def test_body_shape(response: requests.Response) -> None:
     Response contains expected fields.
     """
 
-    assert_body_shape(response, CreateBarbershopPhotosResponse)
+    assert_list_body_shape(response, BarbershopPhotoResponse)
 
 
 def test_uploaded_count_matches_input(
@@ -61,8 +61,8 @@ def test_uploaded_count_matches_input(
 
     request = CreateBarbershopPhotosRequest.random()
     response = client.barbershops.add_photos(open_barbershop_id, request)
-    photos = CreateBarbershopPhotosResponse.from_response(response).uploaded
-    assert len(photos) == len(request.photo_urls)
+    photos = tuple(BarbershopPhotoResponse.from_array_response(response))
+    assert len(photos) == len(request.photos)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

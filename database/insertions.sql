@@ -311,16 +311,16 @@ VALUES
 
 -- BARBERSHOP PHOTOS
 INSERT INTO
-    barbershop_photos (barbershop_id, photo_url)
+    barbershop_photos (barbershop_id, photo_url, photo_description)
 VALUES
-    (1, 'https://placehold.co/800x600?text=BarberKing+Interior'),
-    (1, 'https://placehold.co/800x600?text=BarberKing+Sillas'),
-    (1, 'https://placehold.co/800x600?text=BarberKing+Fachada'),
-    (2, 'https://placehold.co/800x600?text=GentlemanCut+Interior'),
-    (2, 'https://placehold.co/800x600?text=GentlemanCut+Sillas'),
-    (3, 'https://placehold.co/800x600?text=EliteBarbers+Interior'),
-    (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge'),
-    (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos');
+    (1, 'https://placehold.co/800x600?text=BarberKing+Interior', 'Fade clásico'),
+    (1, 'https://placehold.co/800x600?text=BarberKing+Sillas', 'Corte moderno'),
+    (1, 'https://placehold.co/800x600?text=BarberKing+Fachada', 'Barba y perfilado'),
+    (2, 'https://placehold.co/800x600?text=GentlemanCut+Interior', 'Fade clásico'),
+    (2, 'https://placehold.co/800x600?text=GentlemanCut+Sillas', 'Corte moderno'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Interior', 'Fade clásico'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Lounge', 'Corte moderno'),
+    (3, 'https://placehold.co/800x600?text=EliteBarbers+Productos', 'Barba y perfilado');
 
 -- STAFF ASSIGNMENTS
 INSERT INTO

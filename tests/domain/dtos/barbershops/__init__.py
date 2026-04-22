@@ -21,9 +21,7 @@ from domain.dtos.barbershops.responses import (
     BarbershopResponse,
     BarbershopReviewResponse,
     CreateBarbershopEmployeeResponse,
-    CreateBarbershopPhotosResponse,
     CreateBarbershopResponse,
-    GetBarbershopPhotosResponse,
 )
 
 __all__ = [
@@ -43,7 +41,5 @@ __all__ = [
     "BarbershopResponse",
     "BarbershopReviewResponse",
     "CreateBarbershopEmployeeResponse",
-    "CreateBarbershopPhotosResponse",
     "CreateBarbershopResponse",
-    "GetBarbershopPhotosResponse",
 ]

@@ -521,14 +521,13 @@ Get all photos of a barbershop.
 - Response: `200`
 
 ```json
-{
-  "photos": [
-    {
-      "id": 1,
-      "photoUrl": "https://example.com/photo_1.jpg"
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "photoUrl": "https://example.com/photo_1.jpg",
+    "photoDescription": "description_example"
+  }
+]
 ```
 
 ---
@@ -541,9 +540,11 @@ Add one or more photos to the barbershop gallery.
 
 ```json
 {
-  "photoUrls": [
-    "https://example.com/photo_1.jpg",
-    "https://example.com/photo_2.jpg"
+  "photos": [
+    {
+      "photoUrl": "https://example.com/photo_1.jpg",
+      "photoDescription": "description_example"
+    }
   ]
 }
 ```
@@ -551,18 +552,13 @@ Add one or more photos to the barbershop gallery.
 - Response: `201`
 
 ```json
-{
-  "uploaded": [
-    {
-      "id": 1,
-      "photoUrl": "https://example.com/photo_1.jpg"
-    },
-    {
-      "id": 2,
-      "photoUrl": "https://example.com/photo_2.jpg"
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "photoUrl": "https://example.com/photo_1.jpg",
+    "photoDescription": "description_example"
+  }
+]
 ```
 
 ---
