@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Self
+from typing import Annotated, Any, Self
 
 from domain.dtos import BaseRequest
 from domain.utils import DEFAULT_OPTIONAL_CHANCE
@@ -7,19 +7,20 @@ from domain.value_objects import (
     Address,
     BarbershopName,
     Capacity,
+    Description,
     Email,
     EmployeeRole,
     Id,
     Password,
     Phone,
     PhotoUrl,
-    PhotoUrls,
     Rating,
     ReviewContent,
     TimeOfDay,
     Username,
     WorkingDays,
 )
+from domain.value_objects.base import ListOf
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -54,8 +55,17 @@ class CreateBarbershopEmployeeRequest(BaseRequest):
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
+class CreateBarbershopPhotoRequest(BaseRequest):
+    photo_url: PhotoUrl
+    photo_description: Description
+
+
+@dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopPhotosRequest(BaseRequest):
-    photo_urls: PhotoUrls
+    photos: Annotated[
+        list[CreateBarbershopPhotoRequest],
+        ListOf(base_type=CreateBarbershopPhotoRequest, min_items=1),
+    ]
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

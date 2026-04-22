@@ -100,6 +100,7 @@ CREATE TABLE
         id INT PRIMARY KEY AUTO_INCREMENT,
         barbershop_id INT NOT NULL,
         photo_url TEXT NOT NULL,
+        photo_description TEXT NOT NULL,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
 

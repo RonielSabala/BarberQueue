@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-from typing import Annotated
 
 from domain.dtos import BaseResponse
 from domain.value_objects import IntWorkingDays
-from domain.value_objects.base import ListOf
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -57,6 +55,7 @@ class BarbershopEmployeeResponse(BaseResponse):
 class BarbershopPhotoResponse(BaseResponse):
     _id: int
     photo_url: str
+    photo_description: str
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -88,14 +87,6 @@ class CreateBarbershopEmployeeResponse(BaseResponse):
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class CreateBarbershopPhotosResponse(BaseResponse):
-    uploaded: Annotated[
-        list[BarbershopPhotoResponse],
-        ListOf(base_type=BarbershopPhotoResponse, min_items=1),
-    ]
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopResponse(BaseResponse):
     _id: int
     barbershop_name: str
@@ -107,11 +98,3 @@ class CreateBarbershopResponse(BaseResponse):
     closes_at: str
     capacity: int
     is_active: bool
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
-class GetBarbershopPhotosResponse(BaseResponse):
-    photos: Annotated[
-        list[BarbershopPhotoResponse],
-        ListOf(base_type=BarbershopPhotoResponse, min_items=0),
-    ]
