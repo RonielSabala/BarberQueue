@@ -264,16 +264,20 @@ function BarbershopProfile() {
                     />
                     {isOpen ? "Abierta" : "Cerrada"}
                   </span>
+
+                  {/* ── Dirección: blanca, más grande, sin borde ── */}
                   {barbershop.address && (
-                    <span className="text-white/70 text-xs flex items-center gap-1">
-                      <span className="material-icons-round text-[14px]">
+                    <span className="text-white/90 text-sm font-semibold flex items-center gap-1">
+                      <span className="material-icons-round text-[16px]">
                         location_on
                       </span>
                       {barbershop.address}
                     </span>
                   )}
+
+                  {/* ── Rating: amber, un poco más grande ── */}
                   {avgRating && (
-                    <span className="text-amber-400 text-sm font-bold flex items-center gap-1">
+                    <span className="text-amber-400 text-base font-bold flex items-center gap-1">
                       ★ {avgRating}
                     </span>
                   )}
