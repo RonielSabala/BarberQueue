@@ -1,0 +1,1011 @@
+{
+  "info": {
+    "_postman_id": "c359fbb4-21b9-4590-8e5c-75e4dab06d67",
+    "name": "BarberQueue",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41636160"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "/api/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"user_example@gmail.com\",\r\n  \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"client_example\",\r\n  \"email\": \"client_example@gmail.com\",\r\n  \"phone\": \"8091234567\",\r\n  \"photoUrl\": \"https://example.com/photo.jpg\",\r\n  \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/auth/google/url",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/auth/google/url",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "google", "url"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/auth/forgot-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"user_example@gmail.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/forgot-password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "forgot-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/auth/reset-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"resetCode\": 123456,\r\n  \"newPassword\": \"new_password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/auth/reset-password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "auth", "reset-password"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "/api/users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "users"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "user_example",
+                  "disabled": true
+                },
+                {
+                  "key": "email",
+                  "value": "user_example@gmail.com",
+                  "disabled": true
+                },
+                {
+                  "key": "role",
+                  "value": "client",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/users/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/users/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "users", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/users/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"new_username\",\r\n  \"email\": \"new_email@gmail.com\",\r\n  \"phone\": \"8091234567\",\r\n  \"photoUrl\": \"https://example.com/new_photo.jpg\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/users/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "users", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/users/{id}/password",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"currentPassword\": \"current_password\",\r\n  \"newPassword\": \"new_password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/users/1/password",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "users", "1", "password"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Barbershops",
+      "item": [
+        {
+          "name": "Barbershop Photos",
+          "item": [
+            {
+              "name": "/api/barbershops/{id}/photos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/photos",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "photos"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/photos",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"photos\": [\r\n    {\r\n      \"photoUrl\": \"https://example.com/photo_1.jpg\",\r\n      \"photoDescription\": \"description_example\"\r\n    }\r\n  ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/photos",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "photos"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/photos/{photoId}",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/photos/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "photos", "1"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Barbershop Reviews",
+          "item": [
+            {
+              "name": "/api/barbershops/{id}/reviews",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/reviews",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "reviews"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/reviews",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"clientId\": 1,\r\n  \"rating\": 5,\r\n  \"content\": \"Great service, highly recommended.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/reviews",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "reviews"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/reviews/{reviewId}",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/reviews/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "reviews", "1"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Barbershop Employees",
+          "item": [
+            {
+              "name": "/api/barbershops/{id}/employees",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/employees",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "employees"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/employees",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"username\": \"new_employee\",\r\n  \"email\": \"new_employee@gmail.com\",\r\n  \"phone\": \"8091234567\",\r\n  \"password\": \"12345678\",\r\n  \"role\": \"barber\",\r\n  \"startTime\": \"08:00:00\",\r\n  \"endTime\": \"16:00:00\",\r\n  \"workingDays\": [1, 2, 3, 4, 5]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/employees",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "employees"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/employees/{employeeId}",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"startTime\": \"08:00:00\",\r\n  \"endTime\": \"16:00:00\",\r\n  \"workingDays\": [1, 2, 3, 4, 5]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/employees/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "employees", "1"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/employees/{employeeId}",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/employees/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "employees", "1"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Barbershop Clients",
+          "item": [
+            {
+              "name": "/api/barbershops/{id}/clients",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/clients",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "clients"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/clients/{clientId}",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/clients/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "clients", "1"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbershops/{id}/clients/{clientId}",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbershops/1/clients/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbershops", "1", "clients", "1"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "/api/barbershops",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Alpha",
+                  "disabled": true
+                },
+                {
+                  "key": "isOpen",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "adminId",
+                  "value": "1",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"adminId\": 1,\r\n  \"barbershopName\": \"barbershop_name_example\",\r\n  \"email\": \"barbershop_example@gmail.com\",\r\n  \"phone\": \"8091234567\",\r\n  \"barbershopAddress\": \"123 Main Street\",\r\n  \"photoUrl\": \"https://example.com/photo.jpg\",\r\n  \"opensAt\": \"08:00:00\",\r\n  \"closesAt\": \"20:00:00\",\r\n  \"capacity\": 3\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops/{id}/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops/1/dashboard",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops", "1", "dashboard"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops/{id}",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"barbershopName\": \"new_barbershop_name\",\r\n  \"email\": \"new_email@gmail.com\",\r\n  \"phone\": \"8097654321\",\r\n  \"barbershopAddress\": \"456 New Street\",\r\n  \"opensAt\": \"09:00:00\",\r\n  \"closesAt\": \"18:00:00\",\r\n  \"capacity\": 5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops/{id}/status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"isActive\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops/1/status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops", "1", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbershops/{id}/photo",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"photoUrl\": \"https://example.com/new_photo.jpg\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/barbershops/1/photo",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbershops", "1", "photo"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "/api/employees/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/employees/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "employees", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/employees/{id}/barbershop/{barbershopId}",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"role\": \"barber\",\r\n  \"startTime\": \"09:00:00\",\r\n  \"endTime\": \"17:00:00\",\r\n  \"workingDays\": [1, 2, 3]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/employees/1/barbershop/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "employees", "1", "barbershop", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/employees/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/employees/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "employees", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Barbers",
+      "item": [
+        {
+          "name": "Barber Reviews",
+          "item": [
+            {
+              "name": "/api/barbers/{id}/reviews",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbers/1/reviews",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbers", "1", "reviews"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbers/{id}/reviews",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"clientId\": 1,\r\n  \"rating\": 5,\r\n  \"content\": \"Great haircut, very precise.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/api/barbers/1/reviews",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbers", "1", "reviews"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/api/barbers/{id}/reviews/{reviewId}",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:3000/api/barbers/1/reviews/1",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "3000",
+                  "path": ["api", "barbers", "1", "reviews", "1"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "/api/barbers/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/barbers/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbers", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbers/{id}/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/barbers/1/dashboard",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbers", "1", "dashboard"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/barbers/{id}/status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"currentStatus\": \"resting\",\r\n  \"isAccepting\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/barbers/1/status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "barbers", "1", "status"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "/api/clients/{id}/turn",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/clients/1/turn",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "clients", "1", "turn"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "GroupMembers",
+      "item": [
+        {
+          "name": "/api/group-members/{id}/turn",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/group-members/1/turn",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "group-members", "1", "turn"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Queues",
+      "item": [
+        {
+          "name": "/api/queues/barber/{barberId}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/queues/barber/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "queues", "barber", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/queues/barbershop/{barbershopId}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/queues/barbershop/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "queues", "barbershop", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Turns",
+      "item": [
+        {
+          "name": "/api/turns/{id}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"clientId\": 1,\r\n  \"barbershopId\": 1,\r\n  \"barberId\": 1,\r\n  \"groupMembers\": [\r\n    {\r\n      \"barberId\": 2,\r\n      \"memberName\": \"member_example\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/turns",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns/{id}",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns/{id}/wait",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1/wait",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1", "wait"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns/{id}/unwait",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1/unwait",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1", "unwait"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns/{id}/attend",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1/attend",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1", "attend"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/api/turns/{id}/pay",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/turns/1/pay",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "turns", "1", "pay"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

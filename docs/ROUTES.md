@@ -67,15 +67,7 @@ All error responses follow this shape:
 }
 ```
 
-| Status | Meaning                                      |
-| ------ | -------------------------------------------- |
-| `400`  | **Bad request**: missing or invalid fields   |
-| `401`  | **Unauthorized**: missing or invalid token   |
-| `403`  | **Forbidden**: authenticated but not allowed |
-| `404`  | Resource not found                           |
-| `409`  | Conflict error                               |
-| `422`  | Validation failed                            |
-| `500`  | Internal server error                        |
+Error codes are documented in [`docs/ERRORS.md`](ERRORS.md). Each route lists which errors it can return by their identifier.
 
 ---
 
@@ -416,6 +408,30 @@ Get full detail of a barbershop.
 
 ---
 
+### `GET /api/barbershops/{id}/dashboard` <!-- omit from toc -->
+
+Get KPI summary for a specific barbershop.
+
+- Response: `200`
+
+```json
+{
+  "id": 1,
+  "clientsToday": 8,
+  "clientsThisWeek": 42,
+  "clientsThisMonth": 163,
+  "averageServiceMinutes": 28.5,
+  "averageRating": 4.7,
+  "totalReviews": 31,
+  "activeBarbers": 2,
+  "queueCount": 4
+}
+```
+
+> `averageServiceMinutes` and `averageRating` are `null` when no data is available yet.
+
+---
+
 ### `PATCH /api/barbershops/{id}` <!-- omit from toc -->
 
 Update a barbershop's profile fields. All fields are optional, but at least one must be provided.
@@ -441,30 +457,6 @@ Update a barbershop's profile fields. All fields are optional, but at least one 
   "message": "Barbershop updated"
 }
 ```
-
----
-
-### `GET /api/barbershops/{id}/dashboard` <!-- omit from toc -->
-
-Get KPI summary for a specific barbershop.
-
-- Response: `200`
-
-```json
-{
-  "id": 1,
-  "clientsToday": 8,
-  "clientsThisWeek": 42,
-  "clientsThisMonth": 163,
-  "averageServiceMinutes": 28.5,
-  "averageRating": 4.7,
-  "totalReviews": 31,
-  "activeBarbers": 2,
-  "queueCount": 4
-}
-```
-
-> `averageServiceMinutes` and `averageRating` are `null` when no data is available yet.
 
 ---
 
@@ -1218,6 +1210,16 @@ Creates a turn for a client. The client must have status `at_barbershop`. Afterw
   }
 ]
 ```
+
+- Possible errors
+
+| Identifier             | Trigger                                                            |
+| ---------------------- | ------------------------------------------------------------------ |
+| `VALIDATION`           | any required field is missing or has an invalid type               |
+| `CLIENT_NOT_FOUND`     | `clientId` does not exist                                          |
+| `BARBERSHOP_NOT_FOUND` | `barbershopId` does not exist                                      |
+| `BARBER_NOT_ACTIVE`    | `barberId` is provided but the barber is inactive or not accepting |
+| `CLIENT_NOT_ON_QUEUE`  | client does not have status **at_barbershop**                      |
 
 ---
 

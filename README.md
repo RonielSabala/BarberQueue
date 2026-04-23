@@ -16,6 +16,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
+- [API Documentation](#api-documentation)
 - [Roles \& Permissions](#roles--permissions)
 - [Test Accounts](#test-accounts)
 - [Contributing](#contributing)
@@ -291,6 +292,14 @@ uv run pytest -m "frontend or not frontend"  # everything
 Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
 
 > **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
+
+---
+
+## API Documentation
+
+The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, optional fields and possible errors.
+
+A [Postman collection](docs/BarberQueue.postman_collection.json) is also included. Import it directly into Postman via **File > Import** to get every route pre-configured against `BACKEND_URL`.
 
 ---
 
