@@ -14,6 +14,7 @@ final readonly class BarbershopEmployeeResponse extends BaseResponse
         public string $username,
         public string $email,
         public string $phone,
+        public ?string $photoUrl,
         public string $role,
         public string $startTime,
         public string $endTime,

@@ -14,6 +14,7 @@ class TurnResponse(BaseResponse):
     owner_name: str
     owner_type: str
     owner_status: str
+    owner_photo_url: str | None
     position: int | None
     absolute_position: int | None
     estimated_time: float | None
@@ -25,5 +26,6 @@ class QueueResponse(BaseResponse):
     barber_id: int
     barber_name: str
     barber_status: str
+    barber_photo_url: str | None
     is_accepting: bool
     turns: Annotated[list[TurnResponse], ListOf(base_type=TurnResponse)]

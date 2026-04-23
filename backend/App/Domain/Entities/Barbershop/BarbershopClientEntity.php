@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Entities\Barbershop;
 
 use App\Domain\Entities\BaseEntity;
-use App\Domain\ValueObjects\{ClientStatus, Id, Username};
+use App\Domain\ValueObjects\{ClientStatus, Id, PhotoUrl, Username};
 
 final readonly class BarbershopClientEntity extends BaseEntity
 {
@@ -14,5 +14,6 @@ final readonly class BarbershopClientEntity extends BaseEntity
         public ?Id $barbershopId,
         public ClientStatus $currentStatus,
         public Username $username,
+        public ?PhotoUrl $photoUrl,
     ) {}
 }

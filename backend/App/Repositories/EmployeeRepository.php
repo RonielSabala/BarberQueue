@@ -15,14 +15,11 @@ final readonly class EmployeeRepository extends BaseRepository
     {
         $sql = <<<'SQL'
             SELECT
-                u.id,
-                sa.barbershop_id,
-                u.username,
-                u.email,
-                u.phone,
+                u.*,
                 r.role_name AS role,
-                sa.start_time AS start_time,
-                sa.end_time AS end_time,
+                sa.barbershop_id,
+                sa.start_time,
+                sa.end_time,
                 GROUP_CONCAT(
                     wd.day_of_week
                     ORDER BY

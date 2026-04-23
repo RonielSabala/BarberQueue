@@ -69,6 +69,7 @@ final readonly class QueueRepository extends TurnRepository
                 u.id AS barber_id,
                 u.username AS barber_name,
                 bs.current_status AS barber_status,
+                u.photo_url AS barber_photo_url,
                 bs.is_accepting,
                 COALESCE(bst.avg_service_minutes, shop_bst.avg_service_minutes) AS avg_service_minutes
             FROM

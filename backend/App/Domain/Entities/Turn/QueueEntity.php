@@ -6,7 +6,7 @@ namespace App\Domain\Entities\Turn;
 
 use App\Attributes\ArrayOf;
 use App\Domain\Entities\BaseEntity;
-use App\Domain\ValueObjects\{BarberStatus, Id, Username};
+use App\Domain\ValueObjects\{BarberStatus, Id, PhotoUrl, Username};
 
 readonly class QueueEntity extends BaseEntity
 {
@@ -14,6 +14,7 @@ readonly class QueueEntity extends BaseEntity
         public Id $barberId,
         public Username $barberName,
         public BarberStatus $barberStatus,
+        public ?PhotoUrl $barberPhotoUrl,
         public bool $isAccepting,
         #[ArrayOf(TurnEntity::class)]
         public array $turns,

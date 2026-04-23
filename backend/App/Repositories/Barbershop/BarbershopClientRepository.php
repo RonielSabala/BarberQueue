@@ -20,7 +20,8 @@ final readonly class BarbershopClientRepository extends BaseRepository
         return <<<'SQL'
             SELECT
                 cs.*,
-                u.username
+                u.username,
+                u.photo_url
             FROM
                 client_status cs
                 JOIN users u ON cs.client_id = u.id
