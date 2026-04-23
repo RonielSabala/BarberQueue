@@ -17,7 +17,7 @@ VALUES
         'Rafael Almonte',
         'rafael.almonte@gmail.com',
         '8091234501',
-        NULL,
+        'https://i.pinimg.com/736x/01/37/5d/01375d3a1103366d75c8e9b4944982a0.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -26,7 +26,7 @@ VALUES
         'Argenis Guerrero',
         'argenis.guerrero@gmail.com',
         '8092234502',
-        NULL,
+        'https://i.pinimg.com/1200x/0a/c5/1d/0ac51d9484ff543c702af8111272db35.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -35,7 +35,7 @@ VALUES
         'Erickson Lebron',
         'erickson.lebron@gmail.com',
         '8293234503',
-        NULL,
+        'https://i.pinimg.com/736x/e2/c4/3f/e2c43fa1308f92a0df0393bc267c0318.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -44,7 +44,7 @@ VALUES
         'Frankie Jimenez',
         'frankie.jimenez@gmail.com',
         '8094234504',
-        NULL,
+        'https://i.pinimg.com/1200x/4f/16/e2/4f16e269ae22842500142dbc3814fcc2.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -53,7 +53,7 @@ VALUES
         'Camilo Castillo',
         'camilo.castillo@gmail.com',
         '8095234505',
-        NULL,
+        'https://i.pinimg.com/736x/b0/ab/c8/b0abc806edaf558f6b5c0b73ec0dc646.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -62,7 +62,7 @@ VALUES
         'Ricardo Feliz',
         'ricardo.feliz@gmail.com',
         '8096234506',
-        NULL,
+        'https://i.pinimg.com/736x/c0/51/39/c05139e371b3d146c11b7fe3e1d38b73.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -71,7 +71,7 @@ VALUES
         'Omar Castillo',
         'omar.castillo@gmail.com',
         '8097234507',
-        NULL,
+        'https://i.pinimg.com/1200x/d2/42/f3/d242f3f19a98aad0384812cf4bbdc956.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -80,7 +80,7 @@ VALUES
         'Gabriel Duarte',
         'gabriel.duarte@gmail.com',
         '8098234508',
-        NULL,
+        'https://i.pinimg.com/736x/61/84/f8/6184f814c0e45527e449f9a5ba8ad6d4.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -89,7 +89,7 @@ VALUES
         'Tony Reyes',
         'tony.reyes@gmail.com',
         '8099234509',
-        NULL,
+        'https://i.pinimg.com/1200x/d2/79/71/d27971256e16cd92caabcea3f21afb67.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -98,7 +98,7 @@ VALUES
         'Albert Jimenez',
         'albert.jimenez@gmail.com',
         '8091334510',
-        NULL,
+        'https://i.pinimg.com/736x/24/81/26/2481265691a2a57a8bf86204a09da318.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -107,7 +107,7 @@ VALUES
         'Manuel Rodriguez',
         'manuel.rodriguez@gmail.com',
         '8091434511',
-        NULL,
+        'https://i.pinimg.com/736x/6f/4b/c5/6f4bc567ad70479f58c36bf0ef14b48e.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -116,7 +116,7 @@ VALUES
         'Fidel Reyes',
         'fidel.reyes@gmail.com',
         '8091534512',
-        NULL,
+        'https://i.pinimg.com/736x/f5/76/59/f576592811fac428673e69eda18635ad.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -125,7 +125,7 @@ VALUES
         'Angel Hernandez',
         'angel.hernandez@gmail.com',
         '8091634513',
-        NULL,
+        'https://i.pinimg.com/736x/68/a2/b2/68a2b296cdf623ea80954a73c81cd1c3.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -134,7 +134,7 @@ VALUES
         'Rainier Garcia',
         'rainier.garcia@gmail.com',
         '8091734514',
-        NULL,
+        'https://i.pinimg.com/1200x/6a/1c/c8/6a1cc8ee91414957ce34d64fe194b2e5.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -143,7 +143,7 @@ VALUES
         'Justin Mercedes',
         'justin.mercedes@gmail.com',
         '8091834515',
-        NULL,
+        'https://i.pinimg.com/736x/3d/dc/17/3ddc17b5a020236593d57e70ba4635c5.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -152,7 +152,7 @@ VALUES
         'Francisco Garcia',
         'francisco.garcia@gmail.com',
         '8091914516',
-        NULL,
+        'https://i.pinimg.com/736x/ad/eb/af/adebaf4609ffc0b15be7ab59ba1c1120.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -161,7 +161,7 @@ VALUES
         'Felix Mercedes',
         'felix.mercedes@gmail.com',
         '8092014517',
-        NULL,
+        'https://i.pinimg.com/736x/f9/96/4b/f9964b39e8e58170d71b073cb592f975.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -170,7 +170,7 @@ VALUES
         'Anderson Ozoria',
         'anderson.ozoria@gmail.com',
         '8092114518',
-        NULL,
+        'https://i.pinimg.com/736x/01/2d/7b/012d7bf956d0bb15636825753aaf2c05.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -179,7 +179,7 @@ VALUES
         'Elido Rosario',
         'elido.rosario@gmail.com',
         '8092214519',
-        NULL,
+        'https://i.pinimg.com/736x/79/b0/dd/79b0dd700ff2fbfd4d98379a5e0c6705.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -188,7 +188,7 @@ VALUES
         'Jairo Moreno',
         'jairo.moreno@gmail.com',
         '8092314520',
-        NULL,
+        'https://i.pinimg.com/736x/ba/fc/c8/bafcc8bab754978e1da209ad1985dc60.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -197,7 +197,7 @@ VALUES
         'Rafi Castillo',
         'rafi.castillo@gmail.com',
         '8092414521',
-        NULL,
+        'https://i.pinimg.com/1200x/8e/25/7d/8e257d07f06e917a4cab1a9e72e45a8f.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -206,7 +206,7 @@ VALUES
         'Jeffry Diaz',
         'jeffry.diaz@gmail.com',
         '8092514522',
-        NULL,
+        'https://i.pinimg.com/736x/ef/31/58/ef31587a53c062561212727e46188111.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -215,7 +215,7 @@ VALUES
         'Jose Duarte',
         'jose.duarte@gmail.com',
         '8092614523',
-        NULL,
+        'https://i.pinimg.com/736x/21/b7/a8/21b7a876bfd570576b2b746e619daef8.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -224,7 +224,7 @@ VALUES
         'Arturo Rodriguez',
         'arturo.rodriguez@gmail.com',
         '8092714524',
-        NULL,
+        'https://i.pinimg.com/736x/87/7a/c1/877ac1f16cf54b855edf7934a3e6b7aa.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -233,7 +233,7 @@ VALUES
         'Angelo Ozorio',
         'angelo.ozorio@gmail.com',
         '8092814525',
-        NULL,
+        'https://i.pinimg.com/736x/f8/e2/59/f8e259eed5d6de8f196126a812163b9b.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -287,7 +287,7 @@ VALUES
         'Wilbert Rosario',
         'wilbert.rosario@gmail.com',
         '8094000031',
-        NULL,
+        'https://i.pinimg.com/1200x/af/5f/19/af5f19383f39698a787bb55181769a77.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -296,7 +296,7 @@ VALUES
         'Junior Hernandez',
         'junior.hernandez@gmail.com',
         '8094000032',
-        NULL,
+        'https://i.pinimg.com/736x/48/e3/29/48e3298284d7b1d7a5e0277260a833e6.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -314,7 +314,7 @@ VALUES
         'Darwin Soto',
         'darwin.soto@gmail.com',
         '8094000034',
-        NULL,
+        'https://i.pinimg.com/736x/e9/98/d9/e998d9bcfe0de3eb0da1cc7bceee5913.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -323,7 +323,7 @@ VALUES
         'Willy Perez',
         'willy.perez@gmail.com',
         '8094000035',
-        NULL,
+        'https://i.pinimg.com/736x/6f/da/21/6fda216e5305b4d43b148a4a77248403.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -332,7 +332,7 @@ VALUES
         'Ezequiel Marte',
         'ezequiel.marte@gmail.com',
         '8094000036',
-        NULL,
+        'https://i.pinimg.com/736x/db/f3/74/dbf374684a87aa7f9c6ceae85aae6db3.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -341,7 +341,7 @@ VALUES
         'Isaias Reyes',
         'isaias.reyes@gmail.com',
         '8094000037',
-        NULL,
+        'https://i.pinimg.com/736x/2e/e6/9d/2ee69ddab2c74d1adae6d0164f7de0e0.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -350,7 +350,7 @@ VALUES
         'Brayan Santos',
         'brayan.santos@gmail.com',
         '8094000038',
-        NULL,
+        'https://i.pinimg.com/1200x/1e/7e/32/1e7e32a2053ea487e961138af9867002.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -359,7 +359,7 @@ VALUES
         'Leonel Diaz',
         'leonel.diaz@gmail.com',
         '8094000039',
-        NULL,
+        'https://i.pinimg.com/736x/34/9d/25/349d25c948a7a4ea5dd63c2f16fb18fa.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -368,7 +368,7 @@ VALUES
         'Cristian Feliz',
         'cristian.feliz@gmail.com',
         '8094000040',
-        NULL,
+        'https://i.pinimg.com/1200x/f7/49/d4/f749d466119fbc14602034e2a575dffb.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -377,7 +377,7 @@ VALUES
         'Hector Rodriguez',
         'hector.rodriguez@gmail.com',
         '8094000041',
-        NULL,
+        'https://i.pinimg.com/736x/c7/ff/d0/c7ffd011699fb0151af938ca5d6f564a.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -605,7 +605,7 @@ VALUES
         NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     );
-
+    
 -- BARBERSHOPS
 INSERT INTO
     barbershops (
@@ -1083,12 +1083,24 @@ VALUES
 INSERT INTO
     barbershop_photos (barbershop_id, photo_url, photo_description)
 VALUES
-    (1, 'https://placehold.co/800x600?text=BarberKing+Interior', 'Fade clásico'),
-    (2, 'https://placehold.co/800x600?text=BarberKing+Sillas', 'Corte moderno'),
-    (3, 'https://placehold.co/800x600?text=BarberKing+Fachada', 'Barba y perfilado'),
-    (4, 'https://placehold.co/800x600?text=GentlemanCut+Interior', 'Fade clásico'),
-    (5, 'https://placehold.co/800x600?text=GentlemanCut+Sillas', 'Corte moderno'),
-    (6, 'https://placehold.co/800x600?text=EliteBarbers+Interior', 'Fade clásico');
+    (1, 'https://i.pinimg.com/736x/2e/dd/19/2edd1927f0cdbb9c540e0a0548d11c29.jpg', 'Drop Fade'),
+    (1, 'https://i.pinimg.com/736x/d6/6b/d3/d66bd3bfb8d61559aa373494e8152e89.jpg', 'Taper Fade'),
+    (1, 'https://llongueras.com/cdn/shop/articles/Diseno_sin_titulo_4_e9434ced-bb37-4c99-abd6-4b0b3587c208.jpg?v=1758277197', 'Buzz Cut'),
+    (2, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo37-300x300.png', 'Burst Fade'),
+    (2, 'https://cambiatulook.cl/wp-content/uploads/2020/10/393ac2abed907eb7a7476b7fc9064fc0.jpg', 'Skin Fade'),
+    (2, 'https://i.pinimg.com/736x/24/16/9b/24169b92c7afe5fee4cd99ee9fd0a1a0.jpg', 'Corte Militar'),
+    (3, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo31-300x300.png', 'Mid Fade'),
+    (3, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo32-300x300.png', 'High Fade'),
+    (3, 'https://cdn.shopify.com/s/files/1/0029/0868/4397/files/Fade-Pompadour.webp?v=1754905431', 'Pompadour'),
+    (4, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo39-300x300.png', 'French Crop'),
+    (4, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY15-300x300.png', 'Buzz Cut'),
+    (4, 'https://agendapro.com/blog/wp-content/uploads/sites/2/2024/08/images-7.webp', 'Mohicano'),
+    (5, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY18-300x300.png', 'Mullet'),
+    (5, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY16-300x300.png', 'Skin Fade'),
+    (5, 'https://i.pinimg.com/474x/ce/6f/ee/ce6feec7d2329c71b3d438f883bc26ab.jpg', 'Hongo'),
+    (6, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo30-300x300.png', 'Drop Fade'),
+    (6, 'https://i.pinimg.com/736x/55/09/47/550947f0e70e42fad98b8b7d39c7d295.jpg', 'Francesa'),
+    (6, 'https://i.pinimg.com/236x/43/f4/b1/43f4b1d6d538d03f7271ed10ea01f863.jpg', 'Undercut');
 
 -- STAFF ASSIGNMENTS
 INSERT INTO
