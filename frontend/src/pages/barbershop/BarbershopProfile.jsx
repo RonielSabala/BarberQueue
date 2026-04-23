@@ -5,31 +5,11 @@ import {
   getBarbershopReviews,
   createBarbershopReview,
   deleteBarbershopReview,
+  getBarbershopPhotos,
 } from "../../services/barbershopService";
 import { Avatar } from "../../components/UserProfileCard";
 
 const fallbackHero = "https://via.placeholder.com/1200x300?text=Barberia";
-
-const mockCuts = [
-  {
-    id: 1,
-    name: "Fade clásico",
-    image:
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    name: "Corte moderno",
-    image:
-      "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    name: "Barba y perfilado",
-    image:
-      "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=800&q=80",
-  },
-];
 
 // ── Modal de confirmación para eliminar reseña ─────────────────────────────
 function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
@@ -87,6 +67,7 @@ function BarbershopProfile() {
   const navigate = useNavigate();
 
   const [barbershop, setBarbershop] = useState(null);
+  const [photos, setPhotos] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
@@ -131,6 +112,9 @@ function BarbershopProfile() {
     if (id) {
       fetchBarbershop();
       fetchReviews();
+      getBarbershopPhotos(id)
+        .then(setPhotos)
+        .catch(() => setPhotos([]));
     }
   }, [id]);
 
@@ -346,31 +330,35 @@ function BarbershopProfile() {
             ))}
           </div>
 
-          {/* Tipos de cortes */}
-          <section>
-            <h2 className="text-xl font-black text-slate-800 mb-4">
-              Tipos de cortes
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {mockCuts.map((cut) => (
-                <div
-                  key={cut.id}
-                  className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <img
-                    src={cut.image}
-                    alt={cut.name}
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="p-3">
-                    <p className="font-bold text-slate-800 text-sm">
-                      {cut.name}
-                    </p>
+          {/* Fotos de servicios */}
+          {photos.length > 0 && (
+            <section>
+              <h2 className="text-xl font-black text-slate-800 mb-4">
+                Fotos de servicios
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {photos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <img
+                      src={photo.photoUrl}
+                      alt={photo.photoDescription || "Foto"}
+                      className="w-full h-40 object-cover"
+                    />
+                    {photo.photoDescription && (
+                      <div className="p-3">
+                        <p className="font-bold text-slate-800 text-sm">
+                          {photo.photoDescription}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Reseñas */}
           <section>
