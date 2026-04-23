@@ -275,7 +275,7 @@ function Landing() {
             favorita hoy mismo.
           </p>
           <Link to="/login" className="lp-cta-btn">
-            Comenzar ahora →
+            Comenzar ahora
           </Link>
         </div>
       </section>

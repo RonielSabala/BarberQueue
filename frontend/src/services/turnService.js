@@ -109,7 +109,7 @@ export async function deleteTurn(turnId) {
 
 // PATCH /api/turns/{id}/attend
 // Solo funciona si el turno está en in_service
-// Pasa a attended → siguiente en cola pasa a in_service
+// Pasa a attended, el siguiente en cola pasa a in_service
 export async function attendTurn(turnId) {
   const response = await fetch(`${API_URL}/turns/${turnId}/attend`, {
     method: "PATCH",
@@ -127,7 +127,7 @@ export async function attendTurn(turnId) {
 
 // PATCH /api/turns/{id}/wait
 // Solo funciona si el turno está en on_queue
-// Pasa a waiting → mantiene posición pero se salta cuando le toque
+// Pasa a waiting, mantiene posición pero se salta cuando le toque
 export async function waitTurn(turnId) {
   const response = await fetch(`${API_URL}/turns/${turnId}/wait`, {
     method: "PATCH",
@@ -145,7 +145,7 @@ export async function waitTurn(turnId) {
 
 // PATCH /api/turns/{id}/unwait
 // Solo funciona si el turno está en waiting
-// Vuelve a on_queue → si posición 1 y no hay in_service → pasa a in_service
+// Vuelve a on_queue, si posición 1 y no hay in_service pasa a in_service
 export async function unwaitTurn(turnId) {
   const response = await fetch(`${API_URL}/turns/${turnId}/unwait`, {
     method: "PATCH",
@@ -164,8 +164,8 @@ export async function unwaitTurn(turnId) {
 // PATCH /api/turns/{id}/pay
 // Solo el cliente puede llamarlo
 // El turno debe estar en attended
-// Individual → pasa a paid
-// Grupo → TODOS deben estar en attended para que pasen a paid
+// Individual pasa a paid
+// Grupo -> TODOS deben estar en attended para que pasen a paid
 export async function payTurn(turnId) {
   const response = await fetch(`${API_URL}/turns/${turnId}/pay`, {
     method: "PATCH",

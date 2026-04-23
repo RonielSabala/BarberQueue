@@ -92,7 +92,7 @@ function ForgotPassword() {
             disabled={loading}
             style={{ marginTop: "8px" }}
           >
-            {loading ? "Enviando..." : "Enviar código →"}
+            {loading ? "Enviando..." : "Enviar código"}
           </button>
         </form>
 

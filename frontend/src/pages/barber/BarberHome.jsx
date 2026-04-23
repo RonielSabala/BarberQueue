@@ -27,7 +27,7 @@ function BarberHome() {
         ]);
 
         // Si el barbero NO puede trabajar en NINGUNA barbería ahora
-        // y no está ya inactivo → forzar inactive para que no aparezca en colas
+        // y no está ya inactivo forzar inactive para que no aparezca en colas
         const canWorkAnywhere = shops.some((s) => s.canWork);
         const currentStatus = barberData?.currentStatus;
 

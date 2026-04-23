@@ -12,7 +12,7 @@ const DAY_LABELS = {
 
 function formatTime(time) {
   if (!time) return "";
-  return time.slice(0, 5); // "08:00:00" → "08:00"
+  return time.slice(0, 5); // "08:00:00" -> "08:00"
 }
 
 /**
