@@ -9,7 +9,6 @@ const STATUS_LABELS = {
   attended: "Atendido",
   paid: "Pagado",
 };
-
 /**
  * QueueColumn
  *
@@ -144,7 +143,7 @@ function QueueColumn({
         </div>
 
         {/* Cliente en servicio + cola — mismo contenedor, mismo padding */}
-        <div className="p-4 space-y-2 flex-grow min-h-[120px]">
+        <div className="p-4 space-y-2 flex-grow min-h-[120px] overflow-y-auto max-h-[260px]">
           {/* Turno 1 - en servicio */}
           {barber.current ? (
             <div
