@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
+import { Avatar } from "../components/UserProfileCard";
 
 function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -11,11 +12,7 @@ function MainLayout() {
   const user = userString
     ? JSON.parse(userString)
     : { username: "Usuario", role: "client" };
-  const userInitial = user.username
-    ? user.username.charAt(0).toUpperCase()
-    : "U";
 
-  // Efecto dinámico para notificación (falso por ahora como pide la tarea)
   const hasNotifications = false;
 
   const handleLogout = () => {
@@ -24,7 +21,6 @@ function MainLayout() {
     navigate("/login");
   };
 
-  // Rutas dinámicas para la cabecera
   const getPageTitle = (pathname) => {
     if (pathname.includes("dashboard")) return "Dashboard";
     if (pathname.includes("profile")) return "Perfil";
@@ -35,23 +31,16 @@ function MainLayout() {
     return "Panel Central";
   };
 
-  // Menú dinámico basado en el rol del usuario conectado
   const getNavItems = () => {
     const items = [];
-
     if (user.role === "admin") {
       items.push({ name: "Inicio", path: "/admin/home", icon: "home" });
       items.push({ name: "Perfil", path: "/admin/profile", icon: "person" });
-      // Petición: Admin "quitar el apartado de dashboard y configuracion" en el sidebar
     } else if (user.role === "client") {
       items.push({ name: "Inicio", path: "/client/home", icon: "home" });
       items.push({ name: "Perfil", path: "/client/profile", icon: "person" });
     } else if (user.role === "barber") {
-      items.push({
-        name: "Inicio",
-        path: "/barber/home",
-        icon: "home",
-      });
+      items.push({ name: "Inicio", path: "/barber/home", icon: "home" });
       items.push({ name: "Perfil", path: "/barber/profile", icon: "person" });
     } else if (user.role === "assistant") {
       items.push({ name: "Inicio", path: "/assistant/home", icon: "home" });
@@ -68,7 +57,6 @@ function MainLayout() {
 
   return (
     <div className="flex min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
-      {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
@@ -84,7 +72,6 @@ function MainLayout() {
       >
         <div className="p-6">
           <h2 className="text-2xl font-display font-bold mb-2 flex items-center gap-2 text-white">
-            {/* Se removió la palabra BarberQueue y se dejó un ícono llamativo */}
             <span className="material-icons-round text-primary shadow-sm bg-white/10 p-2 rounded-xl">
               content_cut
             </span>
@@ -118,7 +105,6 @@ function MainLayout() {
           </nav>
         </div>
 
-        {/* Footer info in sidebar */}
         <div className="mt-auto p-6 border-t border-slate-800">
           <button
             onClick={handleLogout}
@@ -167,9 +153,13 @@ function MainLayout() {
                 className="flex items-center gap-3 cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  {userInitial}
-                </div>
+                {/* Avatar con foto si existe */}
+                <Avatar
+                  photoUrl={user.photoUrl}
+                  username={user.username}
+                  size="sm"
+                  className="shadow-md"
+                />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block group-hover:text-primary transition-colors">
                   {user.username || "Usuario"}
                 </span>
@@ -198,7 +188,6 @@ function MainLayout() {
                         {user.role}
                       </p>
                     </div>
-
                     <button
                       onClick={() => {
                         setIsDropdownOpen(false);
@@ -218,7 +207,6 @@ function MainLayout() {
           </div>
         </header>
 
-        {/* CONTENIDO DINÁMICO */}
         <main className="flex-1 w-full relative">
           <Outlet />
         </main>

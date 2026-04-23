@@ -6,6 +6,7 @@ import {
   createBarbershopReview,
   deleteBarbershopReview,
 } from "../../services/barbershopService";
+import { Avatar } from "../../components/UserProfileCard";
 
 const fallbackHero = "https://via.placeholder.com/1200x300?text=Barberia";
 
@@ -492,11 +493,11 @@ function BarbershopProfile() {
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                          <span className="material-icons-round text-slate-400 text-[18px]">
-                            person
-                          </span>
-                        </div>
+                        <Avatar
+                          photoUrl={review.photoUrl}
+                          username={review.username}
+                          size="sm"
+                        />
                         <div>
                           <p className="font-bold text-slate-800 text-sm leading-none mb-0.5">
                             {review.username}

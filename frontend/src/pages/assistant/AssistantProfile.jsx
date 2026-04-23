@@ -1,26 +1,30 @@
-import { useNavigate } from "react-router-dom";
 import UserProfileCard from "../../components/UserProfileCard";
 import { useUserProfile } from "../../hooks/useUserProfile";
 
 function AssistantProfile() {
-  const navigate = useNavigate();
   const {
     user,
     error,
     successMessage,
     loading,
     saving,
+    savingPhoto,
     isEditing,
     isChangingPassword,
+    isEditingPhoto,
     formData,
     passwordData,
-    handleFieldChange,
-    handlePasswordFieldChange,
+    photoUrlInput,
+    setPhotoUrlInput,
+    handleChange,
+    handlePasswordChange,
     handleEditClick,
     handlePasswordClick,
+    handlePhotoClick,
     handleCancel,
     handleSubmitProfile,
     handleSubmitPassword,
+    handleSubmitPhoto,
   } = useUserProfile();
 
   return (
@@ -32,17 +36,23 @@ function AssistantProfile() {
       successMessage={successMessage}
       loading={loading}
       saving={saving}
+      savingPhoto={savingPhoto}
       isEditing={isEditing}
       isChangingPassword={isChangingPassword}
+      isEditingPhoto={isEditingPhoto}
       formData={formData}
       passwordData={passwordData}
-      onFieldChange={handleFieldChange}
-      onPasswordFieldChange={handlePasswordFieldChange}
+      photoUrlInput={photoUrlInput}
+      setPhotoUrlInput={setPhotoUrlInput}
+      onFieldChange={handleChange}
+      onPasswordFieldChange={handlePasswordChange}
       onEditClick={handleEditClick}
       onPasswordClick={handlePasswordClick}
+      onPhotoClick={handlePhotoClick}
       onCancel={handleCancel}
       onSubmitProfile={handleSubmitProfile}
       onSubmitPassword={handleSubmitPassword}
+      onSubmitPhoto={handleSubmitPhoto}
     />
   );
 }

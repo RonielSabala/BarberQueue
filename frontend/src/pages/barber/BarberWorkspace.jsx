@@ -8,6 +8,7 @@ import {
 import { getEmployeeById } from "../../services/employeeService";
 import { getBarberQueue } from "../../services/queueService";
 import { attendTurn } from "../../services/turnService";
+import { Avatar } from "../../components/UserProfileCard";
 
 // ── Verifica si el barbero está dentro de su horario laboral ──────────────
 function isWithinSchedule(assignment) {
@@ -335,11 +336,12 @@ function BarberWorkspace() {
 
             {currentClient ? (
               <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
-                <div className="w-20 h-20 bg-primary/10 border-4 border-white dark:border-slate-800 rounded-full flex items-center justify-center text-primary shadow-sm">
-                  <span className="material-icons-round text-4xl">
-                    {currentClient.ownerType === "member" ? "groups" : "person"}
-                  </span>
-                </div>
+                <Avatar
+                  photoUrl={currentClient.photoUrl}
+                  username={currentClient.ownerName}
+                  size="lg"
+                  className="border-4 border-white shadow-sm"
+                />
                 <div className="flex-1 text-center sm:text-left">
                   <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
                     {currentClient.ownerName}
@@ -400,7 +402,7 @@ function BarberWorkspace() {
                   }`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                       turn.ownerStatus === "waiting"
                         ? "bg-amber-200 text-amber-800"
                         : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
@@ -408,6 +410,12 @@ function BarberWorkspace() {
                   >
                     {turn.position}
                   </div>
+                  <Avatar
+                    photoUrl={turn.photoUrl}
+                    username={turn.ownerName}
+                    size="sm"
+                    className="shrink-0"
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-slate-800 dark:text-slate-200 truncate">
                       {turn.ownerName}

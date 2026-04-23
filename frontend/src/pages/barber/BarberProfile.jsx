@@ -7,6 +7,8 @@ import {
   createBarberReview,
   deleteBarberReview,
 } from "../../services/barberService";
+import { getUserById } from "../../services/userService";
+import { Avatar } from "../../components/UserProfileCard";
 
 // ── Modal eliminar reseña ──────────────────────────────────────────────────
 function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
@@ -71,6 +73,7 @@ function BarberProfile() {
   const isSelf = !paramBarberId; // el barbero viendo su propio perfil
 
   const [barber, setBarber] = useState(null);
+  const [barberPhotoUrl, setBarberPhotoUrl] = useState(null);
   const [dashboard, setDashboard] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,12 +107,14 @@ function BarberProfile() {
           setError("No se encontró el barbero.");
           return;
         }
-        const [barberData, dashboardData] = await Promise.all([
+        const [barberData, dashboardData, userData] = await Promise.all([
           getBarberById(barberId),
           getBarberDashboard(barberId),
+          getUserById(barberId).catch(() => null),
         ]);
         setBarber(barberData);
         setDashboard(dashboardData);
+        setBarberPhotoUrl(userData?.photoUrl || null);
       } catch (err) {
         setError(err.message || "Error al cargar el perfil del barbero");
       } finally {
@@ -288,14 +293,12 @@ function BarberProfile() {
           <div className="relative max-w-5xl mx-auto px-6 py-14">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-8">
               <div className="relative shrink-0">
-                <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-200 flex items-center justify-center shadow-2xl">
-                  <span
-                    className="material-icons-round text-slate-400"
-                    style={{ fontSize: 58 }}
-                  >
-                    face
-                  </span>
-                </div>
+                <Avatar
+                  photoUrl={barberPhotoUrl}
+                  username={barber.username}
+                  size="lg"
+                  className="shadow-2xl border border-slate-200"
+                />
                 <div
                   className={`absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full border-[3px] border-white ${statusCfg.dot} shadow-md`}
                 />
@@ -471,11 +474,11 @@ function BarberProfile() {
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
-                        <span className="material-icons-round text-slate-400 text-[18px]">
-                          person
-                        </span>
-                      </div>
+                      <Avatar
+                        photoUrl={review.photoUrl}
+                        username={review.username}
+                        size="sm"
+                      />
                       <div>
                         <p className="font-bold text-slate-800 text-sm leading-none mb-0.5">
                           {review.username}

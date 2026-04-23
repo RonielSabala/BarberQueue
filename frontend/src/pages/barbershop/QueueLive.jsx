@@ -5,6 +5,7 @@ import AssistantRegisterPanel from "../../components/assistant/AssistantRegister
 import JoinQueueModal from "../../components/queue/JoinQueueModal";
 import MyTurnModal from "../../components/queue/MyTurnModal";
 import CheckoutModal from "../../components/queue/CheckoutModal";
+import { Avatar } from "../../components/UserProfileCard";
 
 const STATUS_LABELS = {
   at_barbershop: "En barbería",
@@ -179,11 +180,11 @@ function QueueLive() {
                       key={client.clientId}
                       className="flex flex-col items-center gap-2"
                     >
-                      <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                        <span className="material-icons-round text-slate-400">
-                          person
-                        </span>
-                      </div>
+                      <Avatar
+                        photoUrl={client.photoUrl}
+                        username={client.username}
+                        size="md"
+                      />
                       <span className="text-xs font-medium text-slate-500 text-center max-w-[80px] break-words">
                         {client.username}
                       </span>

@@ -1,20 +1,54 @@
+// ── Helper: Avatar con foto o inicial ────────────────────────────────────
+function Avatar({ photoUrl, username, size = "lg", className = "" }) {
+  const initial = username?.charAt(0)?.toUpperCase() || "U";
+  const sizeMap = {
+    sm: "w-9 h-9 text-sm rounded-xl",
+    md: "w-12 h-12 text-base rounded-xl",
+    lg: "w-28 h-28 text-5xl rounded-3xl",
+  };
+  const cls = `${sizeMap[size]} flex items-center justify-center shrink-0 overflow-hidden ${className}`;
+
+  if (photoUrl) {
+    return (
+      <div className={cls}>
+        <img
+          src={photoUrl}
+          alt={username}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    );
+  }
+  return (
+    <div className={`${cls} bg-gradient-to-br from-blue-500 to-blue-600`}>
+      <span className="text-white font-black leading-none">{initial}</span>
+    </div>
+  );
+}
+
 function UserProfileCard({
   user,
   error,
   successMessage,
   loading,
   saving,
+  savingPhoto,
   isEditing,
   isChangingPassword,
+  isEditingPhoto,
   formData,
   passwordData,
+  photoUrlInput,
+  setPhotoUrlInput,
   onFieldChange,
   onPasswordFieldChange,
   onEditClick,
   onPasswordClick,
+  onPhotoClick,
   onCancel,
   onSubmitProfile,
   onSubmitPassword,
+  onSubmitPhoto,
   extraActions = null,
 }) {
   if (loading) {
@@ -58,7 +92,6 @@ function UserProfileCard({
     <div className="min-h-screen bg-slate-50">
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <div className="relative bg-gradient-to-br from-slate-50 via-white to-blue-50/60 overflow-hidden border-b border-slate-100">
-        {/* Dot grid texture */}
         <div
           className="absolute inset-0 opacity-[0.3]"
           style={{
@@ -67,7 +100,6 @@ function UserProfileCard({
             backgroundSize: "24px 24px",
           }}
         />
-        {/* Watermark initial */}
         <div className="absolute inset-0 flex items-center justify-end pr-16 opacity-[0.04] pointer-events-none select-none">
           <span
             className="font-black text-slate-900 leading-none"
@@ -79,14 +111,26 @@ function UserProfileCard({
 
         <div className="relative max-w-5xl mx-auto px-6 py-14">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-8">
-            {/* Avatar */}
-            <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl shrink-0">
-              <span className="text-white font-black text-5xl leading-none">
-                {initial}
-              </span>
+            {/* Avatar con botón de editar foto */}
+            <div className="relative shrink-0 group">
+              <Avatar
+                photoUrl={user.photoUrl}
+                username={user.username}
+                size="lg"
+                className="shadow-xl"
+              />
+              {onPhotoClick && (
+                <button
+                  onClick={onPhotoClick}
+                  className="absolute inset-0 rounded-3xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                >
+                  <span className="material-icons-round text-white text-2xl">
+                    photo_camera
+                  </span>
+                </button>
+              )}
             </div>
 
-            {/* Info */}
             <div className="text-center sm:text-left">
               <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none mb-3">
                 {user.username}
@@ -99,7 +143,6 @@ function UserProfileCard({
 
       {/* ── CONTENT ───────────────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {/* Alerts */}
         {error && (
           <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
             {error}
@@ -111,10 +154,9 @@ function UserProfileCard({
           </div>
         )}
 
-        {/* Main card */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {/* ── VIEW MODE ─────────────────────────────────────────────────── */}
-          {!isEditing && !isChangingPassword && (
+          {!isEditing && !isChangingPassword && !isEditingPhoto && (
             <>
               <div className="p-6 border-b border-slate-50">
                 <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-5">
@@ -145,7 +187,6 @@ function UserProfileCard({
                   </div>
                 </div>
               </div>
-
               <div className="px-6 py-4 flex flex-wrap gap-3">
                 <button
                   onClick={onEditClick}
@@ -154,6 +195,17 @@ function UserProfileCard({
                   <span className="material-icons-round text-[16px]">edit</span>
                   Editar perfil
                 </button>
+                {onPhotoClick && (
+                  <button
+                    onClick={onPhotoClick}
+                    className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm"
+                  >
+                    <span className="material-icons-round text-[16px]">
+                      photo_camera
+                    </span>
+                    Cambiar foto
+                  </button>
+                )}
                 <button
                   onClick={onPasswordClick}
                   className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm"
@@ -164,6 +216,72 @@ function UserProfileCard({
                 {extraActions}
               </div>
             </>
+          )}
+
+          {/* ── PHOTO MODE ────────────────────────────────────────────────── */}
+          {isEditingPhoto && (
+            <form onSubmit={onSubmitPhoto}>
+              <div className="p-6 border-b border-slate-50">
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-5">
+                  Cambiar foto de perfil
+                </h3>
+                <div className="flex flex-col sm:flex-row gap-6 items-start">
+                  {/* Preview */}
+                  <div className="shrink-0">
+                    <Avatar
+                      photoUrl={photoUrlInput || user.photoUrl}
+                      username={user.username}
+                      size="lg"
+                      className="shadow-md"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                        URL de la foto
+                      </label>
+                      <input
+                        type="url"
+                        value={photoUrlInput}
+                        onChange={(e) => setPhotoUrlInput(e.target.value)}
+                        placeholder="https://ejemplo.com/mi-foto.jpg"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+                      />
+                      <p className="text-xs text-slate-400 mt-1.5">
+                        Ingresa la URL de una imagen pública. La vista previa se
+                        actualiza al escribir.
+                      </p>
+                    </div>
+                    {photoUrlInput && (
+                      <button
+                        type="button"
+                        onClick={() => setPhotoUrlInput("")}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                      >
+                        Quitar foto
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-4 flex flex-wrap gap-3">
+                <button
+                  type="submit"
+                  disabled={savingPhoto}
+                  className="flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm disabled:opacity-50"
+                >
+                  <span className="material-icons-round text-[16px]">save</span>
+                  {savingPhoto ? "Guardando..." : "Guardar foto"}
+                </button>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl transition-colors text-sm"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           )}
 
           {/* ── EDIT MODE ─────────────────────────────────────────────────── */}
@@ -240,42 +358,26 @@ function UserProfileCard({
                   Cambiar contraseña
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                      Contraseña actual
-                    </label>
-                    <input
-                      type="password"
-                      name="currentPassword"
-                      value={passwordData.currentPassword}
-                      onChange={onPasswordFieldChange}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                      Nueva contraseña
-                    </label>
-                    <input
-                      type="password"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={onPasswordFieldChange}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
-                      Confirmar nueva contraseña
-                    </label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={passwordData.confirmPassword}
-                      onChange={onPasswordFieldChange}
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
-                    />
-                  </div>
+                  {["currentPassword", "newPassword", "confirmPassword"].map(
+                    (field) => (
+                      <div key={field}>
+                        <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+                          {field === "currentPassword"
+                            ? "Contraseña actual"
+                            : field === "newPassword"
+                              ? "Nueva contraseña"
+                              : "Confirmar nueva contraseña"}
+                        </label>
+                        <input
+                          type="password"
+                          name={field}
+                          value={passwordData[field]}
+                          onChange={onPasswordFieldChange}
+                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+                        />
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
               <div className="px-6 py-4 flex flex-wrap gap-3">
@@ -305,4 +407,5 @@ function UserProfileCard({
   );
 }
 
+export { Avatar };
 export default UserProfileCard;

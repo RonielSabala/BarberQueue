@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Avatar } from "../UserProfileCard";
 
 const STATUS_LABELS = {
   at_barbershop: "En barbería",
@@ -153,11 +154,12 @@ function QueueColumn({
               >
                 {barber.current.position ?? 1}
               </div>
-              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center flex-shrink-0">
-                <span className="material-icons-round text-[16px] text-slate-400">
-                  {barber.current.ownerType === "member" ? "groups" : "person"}
-                </span>
-              </div>
+              <Avatar
+                photoUrl={barber.current.photoUrl}
+                username={barber.current.ownerName}
+                size="sm"
+                className="flex-shrink-0"
+              />
               <div className="flex flex-col min-w-0 flex-grow">
                 <span className="font-medium text-sm truncate">
                   {barber.current.ownerName}
@@ -188,11 +190,12 @@ function QueueColumn({
                   <div className={numberCls(client)}>
                     {client.position ?? idx + 2}
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex flex-shrink-0 items-center justify-center">
-                    <span className="material-icons-round text-[16px] text-slate-400">
-                      {client.ownerType === "member" ? "groups" : "person"}
-                    </span>
-                  </div>
+                  <Avatar
+                    photoUrl={client.photoUrl}
+                    username={client.ownerName}
+                    size="sm"
+                    className="flex-shrink-0"
+                  />
                   <div className="flex flex-col min-w-0 flex-grow">
                     <span className="text-sm font-medium truncate">
                       {client.ownerName}

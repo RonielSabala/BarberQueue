@@ -8,17 +8,23 @@ function ClientProfile() {
     successMessage,
     loading,
     saving,
+    savingPhoto,
     isEditing,
     isChangingPassword,
+    isEditingPhoto,
     formData,
     passwordData,
+    photoUrlInput,
+    setPhotoUrlInput,
     handleChange,
     handlePasswordChange,
     handleEditClick,
     handlePasswordClick,
+    handlePhotoClick,
     handleCancel,
     handleSubmitProfile,
     handleSubmitPassword,
+    handleSubmitPhoto,
   } = useUserProfile();
 
   return (
@@ -30,17 +36,23 @@ function ClientProfile() {
       successMessage={successMessage}
       loading={loading}
       saving={saving}
+      savingPhoto={savingPhoto}
       isEditing={isEditing}
       isChangingPassword={isChangingPassword}
+      isEditingPhoto={isEditingPhoto}
       formData={formData}
       passwordData={passwordData}
+      photoUrlInput={photoUrlInput}
+      setPhotoUrlInput={setPhotoUrlInput}
       onFieldChange={handleChange}
       onPasswordFieldChange={handlePasswordChange}
       onEditClick={handleEditClick}
       onPasswordClick={handlePasswordClick}
+      onPhotoClick={handlePhotoClick}
       onCancel={handleCancel}
       onSubmitProfile={handleSubmitProfile}
       onSubmitPassword={handleSubmitPassword}
+      onSubmitPhoto={handleSubmitPhoto}
     />
   );
 }
