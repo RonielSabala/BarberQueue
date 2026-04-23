@@ -18,9 +18,9 @@ from domain.dtos.employees import EmployeeResponse, UpdateEmployeeAssignmentRequ
 from domain.value_objects import TimeOfDay
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import (
-    ASSIGNMENT_NOT_FOUND,
     AT_LEAST_ONE_FIELD,
     BARBERSHOP_NOT_FOUND,
+    EMPLOYEE_ASSIGNMENT_NOT_FOUND,
     EMPLOYEE_NOT_FOUND,
 )
 
@@ -165,4 +165,4 @@ def test_status_on_unknown_assignment(
     )
 
     assert_status(assignment_response, HttpStatus.NOT_FOUND)
-    assert_body(assignment_response, ASSIGNMENT_NOT_FOUND)
+    assert_body(assignment_response, EMPLOYEE_ASSIGNMENT_NOT_FOUND)

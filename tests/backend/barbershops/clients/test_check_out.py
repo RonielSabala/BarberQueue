@@ -20,11 +20,11 @@ from helpers.common_responses import (
 )
 
 _SEEDED_ON_QUEUE_CLIENT_ID = 18
-_DIFFERENT_BARBERSHOP = ErrorResponse(
+_CLIENT_ALREADY_CHECKED_IN = ErrorResponse(
     error="The client is registered at a different barbershop location"
 )
-_INVALID_STATUS = ErrorResponse(
-    error="Client must have status 'at_barbershop' or 'paid' to check out"
+_CLIENT_CANNOT_CHECK_OUT = ErrorResponse(
+    error="Only 'at_barbershop' or 'paid' clients can check out"
 )
 
 
@@ -105,7 +105,7 @@ def test_client_at_different_barbershop_cannot_check_out(
     response = client.barbershops.check_out(other_barbershop_id, client_id)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, _DIFFERENT_BARBERSHOP)
+    assert_body(response, _CLIENT_ALREADY_CHECKED_IN)
 
 
 def test_wrong_role_cannot_check_out(
@@ -119,5 +119,5 @@ def test_wrong_role_cannot_check_out(
         open_barbershop_id, _SEEDED_ON_QUEUE_CLIENT_ID
     )
 
-    assert_body(response, _INVALID_STATUS)
+    assert_body(response, _CLIENT_CANNOT_CHECK_OUT)
     assert_status(response, HttpStatus.FORBIDDEN)

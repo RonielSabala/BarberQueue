@@ -1211,16 +1211,6 @@ Creates a turn for a client. The client must have status `at_barbershop`. Afterw
 ]
 ```
 
-- Possible errors
-
-| Identifier             | Trigger                                                            |
-| ---------------------- | ------------------------------------------------------------------ |
-| `VALIDATION`           | any required field is missing or has an invalid type               |
-| `CLIENT_NOT_FOUND`     | `clientId` does not exist                                          |
-| `BARBERSHOP_NOT_FOUND` | `barbershopId` does not exist                                      |
-| `BARBER_NOT_ACTIVE`    | `barberId` is provided but the barber is inactive or not accepting |
-| `CLIENT_NOT_ON_QUEUE`  | client does not have status **at_barbershop**                      |
-
 ---
 
 ### `DELETE /api/turns/{id}` <!-- omit from toc -->

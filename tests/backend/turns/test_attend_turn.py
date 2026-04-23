@@ -26,7 +26,9 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_IN_SERVICE = ErrorResponse(error="Only 'in_service' turns can be attended")
+_CLIENT_CANNOT_BE_ATTENDED = ErrorResponse(
+    error="Only 'in_service' clients can be attended"
+)
 
 
 def _get_in_service_turn_id(
@@ -174,8 +176,8 @@ def test_on_queue_turn_cannot_be_attended(client: ApiClient) -> None:
 
     response = client.turns.attend_turn(turn_b_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_IN_SERVICE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_ATTENDED)
 
 
 def test_member_turn_can_be_attended(client: ApiClient) -> None:

@@ -25,7 +25,9 @@ from helpers.assertions import (
 from helpers.common_responses import BARBER_NOT_FOUND, USER_NOT_FOUND
 
 _TEST_RATING = Rating.random_value()
-_ONLY_CLIENTS_CAN_REVIEW = ErrorResponse(error="Only clients can leave barber reviews")
+_ONLY_CLIENTS_CAN_REVIEW_BARBERS = ErrorResponse(
+    error="Only clients can leave reviews to barbers"
+)
 
 
 @pytest.fixture(scope="module")
@@ -85,7 +87,7 @@ def test_non_client_cannot_review(client: ApiClient, open_barbershop_id: int) ->
     response = client.barbers.create_review(barber_id, request)
 
     assert_status(response, HttpStatus.FORBIDDEN)
-    assert_body(response, _ONLY_CLIENTS_CAN_REVIEW)
+    assert_body(response, _ONLY_CLIENTS_CAN_REVIEW_BARBERS)
 
 
 def test_status_on_unknown_user(client: ApiClient) -> None:

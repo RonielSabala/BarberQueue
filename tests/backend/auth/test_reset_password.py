@@ -13,7 +13,7 @@ _INVALID_OR_EXPIRED_CODE = ErrorResponse(error="Invalid or expired code")
 
 def test_invalid_code(client: ApiClient) -> None:
     """
-    An invalid or expired code returns 400.
+    An invalid code returns 400.
     """
 
     request = ResetPasswordRequest.random()

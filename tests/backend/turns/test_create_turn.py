@@ -26,8 +26,8 @@ from helpers.assertions import (
 )
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, CLIENT_NOT_FOUND
 
-_NOT_AT_BARBERSHOP = ErrorResponse(
-    error="Client must have status 'at_barbershop' to join the queue"
+_CLIENT_CANNOT_JOIN_QUEUE = ErrorResponse(
+    error="Only 'at_barbershop' clients can join to a queue"
 )
 
 
@@ -172,8 +172,8 @@ def test_not_at_barbershop_returns_unprocessable(
     )
     response = client.turns.create_turn(turn_request)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_AT_BARBERSHOP)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_JOIN_QUEUE)
 
 
 def test_unknown_client_returns_not_found(

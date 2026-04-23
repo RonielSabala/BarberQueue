@@ -16,7 +16,7 @@ from helpers.assertions import (
     assert_content_type,
     assert_status,
 )
-from helpers.common_responses import BARBERSHOP_NOT_FOUND, EMAIL_ALREADY_IN_USE
+from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_EMAIL_IN_USE
 
 _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
     error="EmployeeRole must be one of: 'barber', 'assistant'"
@@ -89,7 +89,7 @@ def test_duplicate_email(client: ApiClient, open_barbershop_id: int) -> None:
     response = client.barbershops.create_employee(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, EMAIL_ALREADY_IN_USE)
+    assert_body(response, USER_EMAIL_IN_USE)
 
 
 def test_incorrect_employee_role(client: ApiClient, open_barbershop_id: int) -> None:

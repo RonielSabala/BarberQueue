@@ -9,7 +9,7 @@ from api.core import HttpStatus
 from backend.conftest import NON_EXISTENT_ID, get_employee_id
 from domain.dtos.barbershops import BarbershopEmployeeResponse
 from helpers.assertions import assert_body, assert_status
-from helpers.common_responses import ASSIGNMENT_NOT_FOUND, BARBERSHOP_NOT_FOUND
+from helpers.common_responses import BARBERSHOP_NOT_FOUND, EMPLOYEE_ASSIGNMENT_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
@@ -41,7 +41,7 @@ def test_status_on_unknown_assignment(
     )
 
     assert_status(response, HttpStatus.NOT_FOUND)
-    assert_body(response, ASSIGNMENT_NOT_FOUND)
+    assert_body(response, EMPLOYEE_ASSIGNMENT_NOT_FOUND)
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

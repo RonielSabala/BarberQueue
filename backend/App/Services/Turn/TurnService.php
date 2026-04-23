@@ -210,8 +210,8 @@ final readonly class TurnService extends BaseTurnService
 
         if ($client->currentStatus->value !== ClientStatusEnum::AtBarbershop->value) {
             throw new TurnException(
-                'Client must have status \'at_barbershop\' to join the queue',
-                HttpStatus::UnprocessableEntity
+                'Only \'at_barbershop\' clients can join to a queue',
+                HttpStatus::Forbidden
             );
         }
 
@@ -335,8 +335,8 @@ final readonly class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
             throw new TurnException(
-                'Only \'on_queue\' turns can be set to \'waiting\'',
-                HttpStatus::UnprocessableEntity
+                'Only \'on_queue\' clients can be set to \'waiting\'',
+                HttpStatus::Forbidden
             );
         }
 
@@ -354,8 +354,8 @@ final readonly class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::Waiting->value) {
             throw new TurnException(
-                'Only \'waiting\' turns can be set back to \'on_queue\'',
-                HttpStatus::UnprocessableEntity
+                'Only \'waiting\' clients can be set back to \'on_queue\'',
+                HttpStatus::Forbidden
             );
         }
 
@@ -388,8 +388,8 @@ final readonly class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::InService->value) {
             throw new TurnException(
-                'Only \'in_service\' turns can be attended',
-                HttpStatus::UnprocessableEntity
+                'Only \'in_service\' clients can be attended',
+                HttpStatus::Forbidden
             );
         }
 
@@ -421,14 +421,14 @@ final readonly class TurnService extends BaseTurnService
         if ($turn->ownerType->value === OwnerTypeEnum::Member->value) {
             throw new TurnException(
                 'Member turns cannot be paid independently. The group leader must pay',
-                HttpStatus::UnprocessableEntity
+                HttpStatus::Forbidden
             );
         }
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::Attended->value) {
             throw new TurnException(
-                'Client must have status \'attended\' to pay',
-                HttpStatus::UnprocessableEntity
+                'Only \'attended\' clients can pay',
+                HttpStatus::Forbidden
             );
         }
 
@@ -440,7 +440,7 @@ final readonly class TurnService extends BaseTurnService
                 if ($memberTurn->status->value !== ClientStatusEnum::Attended->value) {
                     throw new TurnException(
                         'All group members must have status \'attended\' before the group can pay',
-                        HttpStatus::UnprocessableEntity
+                        HttpStatus::Forbidden
                     );
                 }
             }

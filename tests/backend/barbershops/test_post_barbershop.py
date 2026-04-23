@@ -17,7 +17,7 @@ from helpers.assertions import (
     assert_status,
 )
 
-_EMAIL_ALREADY_IN_USE = ErrorResponse(error="Barbershop email already in use")
+_BARBERSHOP_EMAIL_IN_USE = ErrorResponse(error="Barbershop email already in use")
 
 
 @pytest.fixture(scope="module")
@@ -86,4 +86,4 @@ def test_duplicate_email(
     response = client.barbershops.create(barbershop_request)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, _EMAIL_ALREADY_IN_USE)
+    assert_body(response, _BARBERSHOP_EMAIL_IN_USE)

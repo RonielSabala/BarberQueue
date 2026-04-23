@@ -23,21 +23,21 @@ final readonly class BarberReviewService extends BaseService
     /** @return BarberReviewResponse[] */
     public function getReviews(int $barberId): array
     {
-        $this->barberService->validateBarberUserExists($barberId);
+        $this->barberService->validateBarberExists($barberId);
         $reviews = $this->barberReviewRepository->getAllByBarberId($barberId);
         return BarberReviewResponse::fromEntities($reviews);
     }
 
     public function createReview(int $barberId, CreateBarberReviewRequest $request): BarberReviewResponse
     {
-        $this->barberService->validateBarberUserExists($barberId);
+        $this->barberService->validateBarberExists($barberId);
 
         // Validate client
         $clientId = $request->clientId->value;
         $client = $this->userService->validateUserExists($clientId);
         if ($client->role->value !== RoleEnum::Client->value) {
             throw new BarberReviewException(
-                'Only clients can leave barber reviews',
+                'Only clients can leave reviews to barbers',
                 HttpStatus::Forbidden
             );
         }
@@ -58,7 +58,7 @@ final readonly class BarberReviewService extends BaseService
 
     public function deleteReview(int $barberId, int $reviewId): bool
     {
-        $this->barberService->validateBarberUserExists($barberId);
+        $this->barberService->validateBarberExists($barberId);
         return $this->barberReviewRepository->deleteReview($reviewId, $barberId);
     }
 }

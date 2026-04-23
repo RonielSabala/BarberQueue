@@ -166,7 +166,7 @@ abstract readonly class BaseController
 
                 if (!\is_array($item)) {
                     throw new ValidationException(
-                        "Field '{$fieldPath}[]' must be an object",
+                        "Field '{$fieldPath}' must be an array",
                         HttpStatus::BadRequest
                     );
                 }

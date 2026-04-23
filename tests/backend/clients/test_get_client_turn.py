@@ -28,7 +28,7 @@ from helpers.common_responses import CLIENT_NOT_AT_BARBERSHOP, CLIENT_NOT_FOUND
 SEEDED_CLIENT_WITH_TURN_ID = 17
 SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID = 18
 
-_NO_ACTIVE_TURN = ErrorResponse(
+_NO_TURN_FOR_CLIENT_AT_BARBERSHOP = ErrorResponse(
     error="The client currently has no turn despite being in a barbershop"
 )
 
@@ -167,4 +167,4 @@ def test_client_with_no_turn(client: ApiClient, open_barbershop_id: int) -> None
     response = client.clients.get_turn(client_id)
 
     assert_status(response, HttpStatus.NOT_FOUND)
-    assert_body(response, _NO_ACTIVE_TURN)
+    assert_body(response, _NO_TURN_FOR_CLIENT_AT_BARBERSHOP)

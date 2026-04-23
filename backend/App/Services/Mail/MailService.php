@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Mail;
 
+use App\Config\LoggerProvider;
 use App\Core\HttpStatus;
 use App\Domain\Entities\UserEntity;
 use App\Domain\ValueObjects\ResetCode;
@@ -11,6 +12,7 @@ use App\Exceptions\MailException;
 use App\Repositories\PasswordResetRepository;
 use App\Services\BaseService;
 use App\Utils\EnvUtils;
+use Monolog\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 
 final readonly class MailService extends BaseService implements MailerInterface
@@ -18,6 +20,7 @@ final readonly class MailService extends BaseService implements MailerInterface
     private const PORT = 587;
     private const HOST = 'smtp.gmail.com';
     private const RESET_EXPIRY_MINUTES = 30;
+    private readonly Logger $logger;
 
     private readonly string $appName;
     private readonly string $username;
@@ -29,6 +32,7 @@ final readonly class MailService extends BaseService implements MailerInterface
         $this->appName = EnvUtils::get('APP_NAME');
         $this->username = EnvUtils::get('MAIL_USERNAME');
         $this->password = EnvUtils::get('MAIL_PASSWORD');
+        $this->logger = LoggerProvider::get();
     }
 
     private function sendEmail(PHPMailer $mail, string $to, string $subject, string $body): void
@@ -71,8 +75,9 @@ final readonly class MailService extends BaseService implements MailerInterface
 
         try {
             $this->sendEmail($mail, $userEmail, $subject, $body);
-        } catch (\Exception $e) {
-            throw new MailException("Message could not be sent. Mailer Error: {$mail->ErrorInfo}", HttpStatus::InternalServerError);
+        } catch (\Exception) {
+            $this->logger->error("Mailer Error: {$mail->ErrorInfo}");
+            throw new MailException('Mail could not be sent', HttpStatus::InternalServerError);
         }
     }
 }

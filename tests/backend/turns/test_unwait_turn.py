@@ -25,7 +25,9 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_WAITING = ErrorResponse(error="Only 'waiting' turns can be set back to 'on_queue'")
+_CLIENT_CANNOT_BE_ON_QUEUE = ErrorResponse(
+    error="Only 'waiting' clients can be set back to 'on_queue'"
+)
 
 
 def _get_waiting_turn_id(client: ApiClient, barbershop_id: int, barber_id: int) -> int:
@@ -128,8 +130,8 @@ def test_on_queue_turn_cannot_unwait(client: ApiClient) -> None:
 
     response = client.turns.unwait_turn(second_turn_id)
 
-    assert_body(response, _NOT_WAITING)
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_ON_QUEUE)
 
 
 def test_unwait_at_position_1_promotes_to_in_service(client: ApiClient) -> None:

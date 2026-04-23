@@ -7,6 +7,15 @@ from typing import ClassVar, Self
 from domain.dtos import BaseRequest
 from domain.utils import DEFAULT_OPTIONAL_CHANCE, to_camel_case
 from domain.value_objects.base import NameField
+from helpers.common_responses import (
+    FIELD_MAX_ITEMS,
+    FIELD_MIN_ITEMS,
+    FIELD_MUST_BE_ARRAY,
+    FIELD_MUST_BE_OBJECT,
+    FIELD_NON_NULLABLE,
+    FIELD_REQUIRED,
+    UNEXPECTED_FIELDS,
+)
 from helpers.unwrap_type import unwrap_list_of
 
 # Internal helpers
@@ -102,7 +111,7 @@ def _get_unexpected_field_case(path: str | None, payload: dict) -> BadFieldCase:
     return BadFieldCase(
         _case_id("unexpected_key", unexpected_key),
         case_payload,
-        f"Unexpected field(s): '{key_path}'",
+        UNEXPECTED_FIELDS.format(fields=f"'{key_path}'"),
     )
 
 
@@ -112,7 +121,7 @@ def _get_required_field_case(field: _FieldMetadata, payload: dict) -> BadFieldCa
     return BadFieldCase(
         _case_id("required", field.name),
         case_payload,
-        f"Field '{field.full_path}' is required",
+        FIELD_REQUIRED.format(field=field.full_path),
     )
 
 
@@ -124,7 +133,7 @@ def _get_cannot_be_null_field_case(
     return BadFieldCase(
         _case_id("cannot_be_null", field.name),
         case_payload,
-        f"Field '{field.full_path}' cannot be null",
+        FIELD_NON_NULLABLE.format(field=field.full_path),
     )
 
 
@@ -135,7 +144,7 @@ def _get_required_object_field_case(
     return BadFieldCase(
         _case_id("required_object", field.name),
         case_payload,
-        f"Field '{field.full_path}' must be an object",
+        FIELD_MUST_BE_OBJECT.format(field=field.full_path),
     )
 
 
@@ -146,7 +155,7 @@ def _get_required_array_field_case(
     return BadFieldCase(
         _case_id("required_array", field.name),
         case_payload,
-        f"Field '{field.full_path}' must be an array",
+        FIELD_MUST_BE_ARRAY.format(field=field.full_path),
     )
 
 
@@ -157,7 +166,7 @@ def _get_very_few_items_field_case(
     return BadFieldCase(
         _case_id("very_few", field.name),
         case_payload,
-        f"Field '{field.full_path}[]' must have at least {min_items} item(s)",
+        FIELD_MIN_ITEMS.format(field=field.full_path, min_items=min_items),
     )
 
 
@@ -168,7 +177,7 @@ def _get_too_many_items_field_case(
     return BadFieldCase(
         _case_id("too_many", field.name),
         case_payload,
-        f"Field '{field.full_path}[]' must have at most {max_items} item(s)",
+        FIELD_MAX_ITEMS.format(field=field.full_path, max_items=max_items),
     )
 
 

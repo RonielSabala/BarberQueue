@@ -18,7 +18,7 @@ from helpers.assertions import (
 )
 from helpers.common_responses import BARBER_NOT_FOUND
 
-_USER_NOT_A_BARBER = ErrorResponse(error="This user is not a barber")
+_NOT_A_BARBER = ErrorResponse(error="This user is not a barber")
 
 
 @pytest.fixture(scope="module")
@@ -70,8 +70,8 @@ def test_status_on_non_barber_user(client: ApiClient) -> None:
     client_id = get_fresh_client_id(client)
     response = client.barbers.get_dashboard(client_id)
 
-    assert_status(response, HttpStatus.NOT_FOUND)
-    assert_body(response, _USER_NOT_A_BARBER)
+    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
+    assert_body(response, _NOT_A_BARBER)
 
 
 def test_total_attended_clients_is_non_negative(response: requests.Response) -> None:

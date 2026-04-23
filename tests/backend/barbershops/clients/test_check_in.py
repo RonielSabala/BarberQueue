@@ -19,7 +19,9 @@ _BARBERSHOP_NOT_OPEN = ErrorResponse(error="Barbershop is not open")
 _ONLY_CLIENTS_CAN_CHECK_IN = ErrorResponse(
     error="Only clients can check in to a barbershop"
 )
-_ALREADY_ACTIVE = ErrorResponse(error="Client is already active in a barbershop")
+_CLIENT_ALREADY_IN_BARBERSHOP = ErrorResponse(
+    error="Client is already active in a barbershop"
+)
 
 
 def test_status(client: ApiClient, open_barbershop_id: int) -> None:
@@ -80,7 +82,7 @@ def test_closed_barbershop_returns_bad_request(client: ApiClient) -> None:
     barbershop_id = get_closed_barbershop_id(client)
     response = client.barbershops.check_in(barbershop_id, client_id)
 
-    assert_status(response, HttpStatus.BAD_REQUEST)
+    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
     assert_body(response, _BARBERSHOP_NOT_OPEN)
 
 
@@ -110,4 +112,4 @@ def test_already_checked_in_client_returns_conflict(
     response = client.barbershops.check_in(open_barbershop_id, client_id)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, _ALREADY_ACTIVE)
+    assert_body(response, _CLIENT_ALREADY_IN_BARBERSHOP)

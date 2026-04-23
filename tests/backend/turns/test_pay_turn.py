@@ -27,11 +27,11 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_ATTENDED = ErrorResponse(error="Client must have status 'attended' to pay")
+_CLIENT_CANNOT_PAY = ErrorResponse(error="Only 'attended' clients can pay")
 _MEMBER_CANNOT_PAY = ErrorResponse(
     error="Member turns cannot be paid independently. The group leader must pay"
 )
-_GROUP_NOT_ALL_ATTENDED = ErrorResponse(
+_MEMBERS_MUST_BE_ATTENDED = ErrorResponse(
     error="All group members must have status 'attended' before the group can pay"
 )
 
@@ -118,8 +118,8 @@ def test_on_queue_client_cannot_pay(client: ApiClient) -> None:
 
     response = client.turns.pay_turn(turn_b_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_ATTENDED)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_PAY)
 
 
 def test_member_turn_cannot_pay(client: ApiClient) -> None:
@@ -137,8 +137,8 @@ def test_member_turn_cannot_pay(client: ApiClient) -> None:
     )
     response = client.turns.pay_turn(member_turn._id)
 
+    assert_status(response, HttpStatus.FORBIDDEN)
     assert_body(response, _MEMBER_CANNOT_PAY)
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
 
 
 def test_group_pay_succeeds_when_all_attended(client: ApiClient) -> None:
@@ -199,5 +199,5 @@ def test_group_pay_fails_if_member_not_attended(client: ApiClient) -> None:
     _attend_turn(client, turn_id)
     response = client.turns.pay_turn(turn_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _GROUP_NOT_ALL_ATTENDED)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _MEMBERS_MUST_BE_ATTENDED)

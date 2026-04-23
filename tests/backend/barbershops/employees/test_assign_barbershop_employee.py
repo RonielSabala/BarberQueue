@@ -46,15 +46,15 @@ _ALL_DAY_NAMES = [
 _EMPLOYEE_ASSIGNED = MessageResponse(message="Employee assigned to barbershop")
 
 # Error responses
-_NOT_VALID_ROLE = ErrorResponse(error="Only barbers and assistants can be employees")
-_START_DIFFERENT_FROM_END = ErrorResponse(
-    error="Start time must be different from end time"
+_ONLY_BARBERS_AND_ASSISTANTS = ErrorResponse(
+    error="Only barbers and assistants can be employees"
 )
-_START_BEFORE_END = ErrorResponse(error="Start time must be earlier than end time")
-_START_AFTER_BARBERSHOP_OPENING = ErrorResponse(
+_START_EQUALS_END = ErrorResponse(error="Start time must be different from end time")
+_START_AFTER_END = ErrorResponse(error="Start time must be earlier than end time")
+_START_BEFORE_OPENING = ErrorResponse(
     error="Start time cannot be earlier than the barbershop opening time"
 )
-_END_BEFORE_BARBERSHOP_CLOSING = ErrorResponse(
+_END_AFTER_CLOSING = ErrorResponse(
     error="End time cannot be later than the barbershop closing time"
 )
 _ALREADY_ASSIGNED = ErrorResponse(
@@ -212,7 +212,7 @@ def test_client_user_cannot_be_assigned(client: ApiClient) -> None:
     )
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_VALID_ROLE)
+    assert_body(response, _ONLY_BARBERS_AND_ASSISTANTS)
 
 
 def test_equal_start_and_end_time(client: ApiClient) -> None:
@@ -231,7 +231,7 @@ def test_equal_start_and_end_time(client: ApiClient) -> None:
     )
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _START_DIFFERENT_FROM_END)
+    assert_body(response, _START_EQUALS_END)
 
 
 def test_start_time_must_be_before_end_time(client: ApiClient) -> None:
@@ -249,7 +249,7 @@ def test_start_time_must_be_before_end_time(client: ApiClient) -> None:
         _valid_request(start_time=end_time, end_time=start_time),
     )
 
-    assert_body(response, _START_BEFORE_END)
+    assert_body(response, _START_AFTER_END)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
 
 
@@ -270,7 +270,7 @@ def test_start_time_before_barbershop_opens(client: ApiClient) -> None:
     )
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _START_AFTER_BARBERSHOP_OPENING)
+    assert_body(response, _START_BEFORE_OPENING)
 
 
 def test_end_time_after_barbershop_closes(client: ApiClient) -> None:
@@ -290,7 +290,7 @@ def test_end_time_after_barbershop_closes(client: ApiClient) -> None:
     )
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _END_BEFORE_BARBERSHOP_CLOSING)
+    assert_body(response, _END_AFTER_CLOSING)
 
 
 def test_schedule_conflict_same_days_overlapping_hours(client: ApiClient) -> None:

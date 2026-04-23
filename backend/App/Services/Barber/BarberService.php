@@ -22,7 +22,7 @@ final readonly class BarberService extends BaseService
         private readonly TurnService $turnService,
     ) {}
 
-    public function validateBarberExists(int $barberId): BarberEntity
+    private function validateBarberUserExists(int $barberId): BarberEntity
     {
         $barber = $this->barberRepository->getById($barberId);
         if ($barber === null) {
@@ -32,7 +32,7 @@ final readonly class BarberService extends BaseService
         return $barber;
     }
 
-    public function validateBarberUserExists(int $barberId): void
+    public function validateBarberExists(int $barberId): void
     {
         $barber = $this->userRepository->getById($barberId);
         if ($barber === null) {
@@ -40,19 +40,19 @@ final readonly class BarberService extends BaseService
         }
 
         if ($barber->role->value !== RoleEnum::Barber->value) {
-            throw new BarberException('This user is not a barber', HttpStatus::NotFound);
+            throw new BarberException('This user is not a barber', HttpStatus::UnprocessableEntity);
         }
     }
 
     public function get(int $barberId): BarberResponse
     {
-        $barber = $this->validateBarberExists($barberId);
+        $barber = $this->validateBarberUserExists($barberId);
         return BarberResponse::fromEntity($barber);
     }
 
     public function getDashboard(int $barberId): BarberDashboardResponse
     {
-        $this->validateBarberUserExists($barberId);
+        $this->validateBarberExists($barberId);
 
         $dashboard = $this->barberRepository->getDashboard($barberId);
         if ($dashboard === null) {
@@ -64,7 +64,7 @@ final readonly class BarberService extends BaseService
 
     public function updateStatus(int $barberId, UpdateBarberStatusRequest $request): void
     {
-        $barber = $this->validateBarberExists($barberId);
+        $barber = $this->validateBarberUserExists($barberId);
         $fields = $this->validateFieldsToUpdate($request);
 
         $willBeActive = (
@@ -75,7 +75,7 @@ final readonly class BarberService extends BaseService
 
         if (!$willBeActive && $this->queueRepository->barberHasActiveTurns($barberId)) {
             throw new BarberException(
-                'Cannot change status while there are active turns in your queue.',
+                'Cannot change status while there are active turns in your queue',
                 HttpStatus::UnprocessableEntity
             );
         }

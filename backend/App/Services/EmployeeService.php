@@ -87,7 +87,7 @@ final readonly class EmployeeService extends BaseService
         }
 
         if ($employeeAssignment === null) {
-            throw new EmployeeException('Assignment not found', HttpStatus::NotFound);
+            throw new EmployeeException('Employee assignment not found', HttpStatus::NotFound);
         }
 
         $fields = $this->validateFieldsToUpdate($request);
@@ -142,9 +142,9 @@ final readonly class EmployeeService extends BaseService
         );
     }
 
-    public function deleteEmployee(int $employeeId): bool
+    public function deleteEmployee(int $employeeId): void
     {
         $this->validateEmployee($employeeId);
-        return $this->employeeRepository->delete($employeeId);
+        $this->employeeRepository->delete($employeeId);
     }
 }

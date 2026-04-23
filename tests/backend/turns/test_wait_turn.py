@@ -25,7 +25,9 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_ON_QUEUE = ErrorResponse(error="Only 'on_queue' turns can be set to 'waiting'")
+_CLIENT_CANNOT_BE_WAITING = ErrorResponse(
+    error="Only 'on_queue' clients can be set to 'waiting'"
+)
 
 
 @pytest.fixture(scope="module")
@@ -111,8 +113,8 @@ def test_already_waiting_returns_unprocessable(
 
     response = client.turns.wait_turn(on_queue_turn_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_ON_QUEUE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_WAITING)
 
 
 def test_in_service_turn_cannot_wait(client: ApiClient) -> None:
@@ -128,8 +130,8 @@ def test_in_service_turn_cannot_wait(client: ApiClient) -> None:
 
     response = client.turns.wait_turn(turn_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_ON_QUEUE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_WAITING)
 
 
 def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(

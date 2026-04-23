@@ -20,8 +20,8 @@ from helpers.assertions import (
 )
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_NOT_FOUND
 
-_ONLY_CLIENTS_CAN_REVIEW = ErrorResponse(
-    error="Only clients can leave barbershop reviews"
+_ONLY_CLIENTS_CAN_REVIEW_BARBERSHOPS = ErrorResponse(
+    error="Only clients can leave reviews to barbershops"
 )
 
 
@@ -59,7 +59,7 @@ def test_non_client_cannot_review(client: ApiClient, open_barbershop_id: int) ->
     response = client.barbershops.add_review(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.FORBIDDEN)
-    assert_body(response, _ONLY_CLIENTS_CAN_REVIEW)
+    assert_body(response, _ONLY_CLIENTS_CAN_REVIEW_BARBERSHOPS)
 
 
 def test_status_on_unknown_user(client: ApiClient, open_barbershop_id: int) -> None:

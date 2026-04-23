@@ -171,7 +171,7 @@ final readonly class BarbershopController extends BaseController
     {
         $success = $this->barbershopEmployeeService->deleteEmployeeAssignment($id, $employeeId);
         if (!$success) {
-            HttpResponse::error('Assignment not found', HttpStatus::NotFound);
+            HttpResponse::error('Employee assignment not found', HttpStatus::NotFound);
             return;
         }
 

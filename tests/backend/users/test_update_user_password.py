@@ -18,8 +18,8 @@ from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import USER_NOT_FOUND
 
 _PASSWORD_UPDATED = MessageResponse(message="Password updated")
-_CURRENT_PASSWORD_IS_INCORRECT = ErrorResponse(error="Current password is incorrect")
-_NEW_PASSWORD_MUST_BE_DIFFERENT = ErrorResponse(
+_CURRENT_PASSWORD_INCORRECT = ErrorResponse(error="Current password is incorrect")
+_NEW_PASSWORD_MUST_DIFFER = ErrorResponse(
     error="New password must differ from the current one"
 )
 
@@ -110,7 +110,7 @@ def test_wrong_current_password(client: ApiClient, registered: Registered) -> No
     response = client.users.update_user_password(registered.user_id, request)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _CURRENT_PASSWORD_IS_INCORRECT)
+    assert_body(response, _CURRENT_PASSWORD_INCORRECT)
 
 
 def test_same_password(client: ApiClient, registered: Registered) -> None:
@@ -125,7 +125,7 @@ def test_same_password(client: ApiClient, registered: Registered) -> None:
     response = client.users.update_user_password(registered.user_id, request)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NEW_PASSWORD_MUST_BE_DIFFERENT)
+    assert_body(response, _NEW_PASSWORD_MUST_DIFFER)
 
 
 def test_old_password(client: ApiClient, password_update: PasswordUpdate) -> None:
