@@ -43,20 +43,9 @@ final readonly class QueueService extends BaseTurnService
             barberId: $barberId,
             barberName: $slot->barberName,
             barberStatus: $slot->barberStatus,
+            barberPhotoUrl: $slot->barberPhotoUrl,
             isAccepting: $slot->isAccepting,
             turns: $turnResponses,
-        );
-    }
-
-    /** @return QueueResponse[] */
-    public function getBarbershopQueues(int $barbershopId): array
-    {
-        $this->barbershopService->validateBarbershopExists($barbershopId);
-
-        $scheduled = $this->getScheduledQueue($this->turnRepository, $barbershopId);
-        return array_map(
-            fn (BarberSlotData $slot) => $this->buildQueueResponse($slot, $scheduled),
-            $scheduled->barberSlots
         );
     }
 
@@ -73,5 +62,17 @@ final readonly class QueueService extends BaseTurnService
 
         $scheduled = $this->getScheduledQueue($this->turnRepository, $barbershopId);
         return $this->buildQueueResponse($slot, $scheduled);
+    }
+
+    /** @return QueueResponse[] */
+    public function getBarbershopQueues(int $barbershopId): array
+    {
+        $this->barbershopService->validateBarbershopExists($barbershopId);
+
+        $scheduled = $this->getScheduledQueue($this->turnRepository, $barbershopId);
+        return array_map(
+            fn (BarberSlotData $slot) => $this->buildQueueResponse($slot, $scheduled),
+            $scheduled->barberSlots
+        );
     }
 }

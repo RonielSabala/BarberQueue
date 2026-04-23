@@ -39,6 +39,7 @@ readonly class TurnRepository extends BaseRepository
                     WHEN t.client_id IS NOT NULL THEN cs.current_status
                     ELSE gm.current_status
                 END AS owner_status,
+                u.photo_url as owner_photo_url,
                 CASE
                     WHEN t.group_id IS NOT NULL THEN (
                         SELECT
@@ -94,6 +95,7 @@ readonly class TurnRepository extends BaseRepository
                 u.id AS barber_id,
                 u.username AS barber_name,
                 bs.current_status AS barber_status,
+                u.photo_url AS barber_photo_url,
                 bs.is_accepting,
                 COALESCE(bst.avg_service_minutes, shop_bst.avg_service_minutes) AS avg_service_minutes
             FROM

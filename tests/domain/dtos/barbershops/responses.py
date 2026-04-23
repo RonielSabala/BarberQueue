@@ -9,6 +9,7 @@ class BarbershopClientResponse(BaseResponse):
     client_id: int
     current_status: str
     username: str
+    photo_url: str | None
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -45,6 +46,7 @@ class BarbershopEmployeeResponse(BaseResponse):
     username: str
     email: str
     phone: str
+    photo_url: str | None
     role: str
     start_time: str
     end_time: str
@@ -73,6 +75,7 @@ class BarbershopReviewResponse(BaseResponse):
     _id: int
     client_id: int
     username: str
+    photo_url: str | None
     rating: int
     content: str
     created_at: str

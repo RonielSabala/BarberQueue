@@ -16,6 +16,7 @@ final readonly class TurnResponse extends BaseResponse
         public string $ownerName,
         public string $ownerType,
         public string $ownerStatus,
+        public ?string $ownerPhotoUrl,
         public ?int $position,
         public ?int $absolutePosition,
         public ?float $estimatedTime,

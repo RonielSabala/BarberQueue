@@ -575,7 +575,7 @@ Remove a photo from the gallery.
 
 ### `GET /api/barbershops/{id}/reviews` <!-- omit from toc -->
 
-List all reviews of a barbershop.
+List all reviews for a barbershop.
 
 - Response: `200`
 
@@ -585,6 +585,7 @@ List all reviews of a barbershop.
     "id": 1,
     "clientId": 1,
     "username": "user_example",
+    "photoUrl": "https://example.com/photo.jpg",
     "rating": 5,
     "content": "Great service, highly recommended.",
     "createdAt": "2026-03-05 09:00:00"
@@ -615,6 +616,7 @@ Submit a review for a barbershop.
   "id": 1,
   "clientId": 1,
   "username": "user_example",
+  "photoUrl": "https://example.com/photo.jpg",
   "rating": 5,
   "content": "Great service, highly recommended.",
   "createdAt": "2026-03-05 09:00:00"
@@ -646,6 +648,7 @@ Retrieve all employees currently assigned to a specific barbershop.
     "username": "barber_example",
     "email": "barber_example@gmail.com",
     "phone": "8091234567",
+    "photoUrl": "https://example.com/photo.jpg",
     "role": "barber",
     "startTime": "08:00:00",
     "endTime": "16:00:00",
@@ -737,7 +740,8 @@ List all clients currently checked in at a barbershop.
   {
     "clientId": 1,
     "currentStatus": "at_barbershop",
-    "username": "client_example"
+    "username": "client_example",
+    "photoUrl": "https://example.com/photo.jpg"
   }
 ]
 ```
@@ -906,6 +910,7 @@ List all reviews for a barber.
     "id": 1,
     "clientId": 1,
     "username": "client_example",
+    "photoUrl": "https://example.com/photo.jpg",
     "rating": 5,
     "content": "Great haircut, very precise.",
     "createdAt": "2026-03-05 09:00:00"
@@ -936,6 +941,7 @@ Submit a review for a barber.
   "id": 1,
   "clientId": 1,
   "username": "client_example",
+  "photoUrl": "https://example.com/photo.jpg",
   "rating": 5,
   "content": "Great haircut, very precise.",
   "createdAt": "2026-03-05 09:00:00"
@@ -1044,45 +1050,9 @@ Fetch the active turn for a specific group member.
 
 ## Queues
 
-### `GET /api/queues/barbershop/{barbershopId}` <!-- omit from toc -->
-
-Shows all active barbers at a barbershop and their queues. Turns with no assigned barber are scheduled to the barber with the shortest estimated finish time on each request.
-
-- Response: `200`
-
-```json
-[
-  {
-    "barberId": 1,
-    "barberName": "barber_example",
-    "barberStatus": "active",
-    "isAccepting": true,
-    "turns": [
-      {
-        "id": 1,
-        "ownerId": 1,
-        "groupId": null,
-        "barberId": 1,
-        "ownerName": "client_example",
-        "ownerType": "client",
-        "ownerStatus": "in_service",
-        "position": 1,
-        "absolutePosition": 1,
-        "estimatedTime": 0.0,
-        "groupSize": null
-      }
-    ]
-  }
-]
-```
-
-> `ownerType` is guaranteed to be one of the following: `client`, `member`.
-
----
-
 ### `GET /api/queues/barber/{barberId}` <!-- omit from toc -->
 
-The barber's personal queue view. Shows the same turn data as the barbershop queue but filtered to a single barber.
+The barber's personal queue view.
 
 - Response: `200`
 
@@ -1091,6 +1061,7 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
   "barberId": 1,
   "barberName": "barber_example",
   "barberStatus": "active",
+  "barberPhotoUrl": "https://example.com/barber_photo.jpg",
   "isAccepting": true,
   "turns": [
     {
@@ -1101,6 +1072,7 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
       "ownerName": "client_example",
       "ownerType": "client",
       "ownerStatus": "in_service",
+      "ownerPhotoUrl": "https://example.com/owner_photo.jpg",
       "position": 1,
       "absolutePosition": 1,
       "estimatedTime": 0.0,
@@ -1108,6 +1080,44 @@ The barber's personal queue view. Shows the same turn data as the barbershop que
     }
   ]
 }
+```
+
+> `ownerType` is guaranteed to be one of the following: `client`, `member`.
+
+---
+
+### `GET /api/queues/barbershop/{barbershopId}` <!-- omit from toc -->
+
+Shows all active barbers at a barbershop and their queues.
+
+- Response: `200`
+
+```json
+[
+  {
+    "barberId": 1,
+    "barberName": "barber_example",
+    "barberStatus": "active",
+    "barberPhotoUrl": "https://example.com/barber_photo.jpg",
+    "isAccepting": true,
+    "turns": [
+      {
+        "id": 1,
+        "ownerId": 1,
+        "groupId": null,
+        "barberId": 1,
+        "ownerName": "client_example",
+        "ownerType": "client",
+        "ownerStatus": "in_service",
+        "ownerPhotoUrl": "https://example.com/owner_photo.jpg",
+        "position": 1,
+        "absolutePosition": 1,
+        "estimatedTime": 0.0,
+        "groupSize": null
+      }
+    ]
+  }
+]
 ```
 
 ---

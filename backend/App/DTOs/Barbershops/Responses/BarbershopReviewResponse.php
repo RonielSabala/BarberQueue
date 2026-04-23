@@ -12,6 +12,7 @@ final readonly class BarbershopReviewResponse extends BaseResponse
         public int $id,
         public int $clientId,
         public string $username,
+        public ?string $photoUrl,
         public int $rating,
         public string $content,
         public string $createdAt,
