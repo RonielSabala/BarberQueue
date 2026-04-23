@@ -185,7 +185,7 @@ VALUES
         'https://www.shutterstock.com/image-vector/barbershop-logo-vector-design-cut-600nw-2494643347.jpg',
         '08:00:00',
         '20:00:00',
-        3
+        15
     ),
     (
         2,
@@ -197,7 +197,7 @@ VALUES
         'https://i.etsystatic.com/43327242/r/il/4670aa/6564473260/il_fullxfull.6564473260_oj68.jpg',
         '09:00:00',
         '19:00:00',
-        2
+        12
     ),
     (
         3,
@@ -209,17 +209,10 @@ VALUES
         'https://static.vecteezy.com/system/resources/previews/026/961/220/non_2x/barbershop-logo-design-barbershop-illustration-logo-simple-vector.jpg',
         '07:00:00',
         '21:00:00',
-        4
+        7
     );
 
 -- CLIENT STATUS OVERRIDES
-UPDATE client_status
-SET
-    barbershop_id = 2,
-    current_status = 'at_barbershop'
-WHERE
-    client_id = 16;
-
 UPDATE client_status
 SET
     barbershop_id = 1,
@@ -239,7 +232,7 @@ SET
     barbershop_id = 1,
     current_status = 'in_service'
 WHERE
-    client_id = 17;
+    client_id IN (16, 17);
 
 UPDATE client_status
 SET
