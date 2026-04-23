@@ -7,7 +7,10 @@ function AdminBarbershopCard({ shop }) {
   const isOpen = shop.isActive ?? shop.open ?? false;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+    <div
+      onClick={() => navigate(`/barbershops/${shop.id}`)}
+      className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer"
+    >
       {/* Imagen */}
       <img
         src={shop.image || fallbackImage}
@@ -38,7 +41,10 @@ function AdminBarbershopCard({ shop }) {
         </p>
 
         <button
-          onClick={() => navigate(`/admin/barbershop/${shop.id}`)}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/admin/barbershop/${shop.id}`);
+          }}
           className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
         >
           Administrar

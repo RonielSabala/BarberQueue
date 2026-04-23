@@ -280,15 +280,32 @@ function BarbershopProfile() {
                 </div>
               </div>
 
-              <button
-                onClick={() => navigate(`/barbershops/${barbershop.id}/queue`)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-100 transition shadow-lg text-sm shrink-0"
-              >
-                <span className="material-icons-round text-[18px] text-red-500">
-                  sensors
-                </span>
-                Ver cola en vivo
-              </button>
+              <div className="flex items-center gap-2 flex-wrap shrink-0">
+                {currentUserRole === "admin" && (
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/barbershop/${barbershop.id}`)
+                    }
+                    className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-700 transition shadow-lg text-sm"
+                  >
+                    <span className="material-icons-round text-[18px]">
+                      settings
+                    </span>
+                    Administrar
+                  </button>
+                )}
+                <button
+                  onClick={() =>
+                    navigate(`/barbershops/${barbershop.id}/queue`)
+                  }
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-100 transition shadow-lg text-sm"
+                >
+                  <span className="material-icons-round text-[18px] text-red-500">
+                    sensors
+                  </span>
+                  Ver cola en vivo
+                </button>
+              </div>
             </div>
           </div>
         </div>
