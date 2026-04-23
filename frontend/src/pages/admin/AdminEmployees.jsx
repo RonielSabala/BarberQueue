@@ -226,9 +226,9 @@ function AdminEmployees() {
           )}
 
           {/* Filtros */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 gap-4 border border-slate-100">
             <div className="relative w-full sm:max-w-md">
-              <span className="material-icons-round absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
+              <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">
                 search
               </span>
               <input
@@ -236,17 +236,17 @@ function AdminEmployees() {
                 placeholder="Buscar empleado..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-9 pl-10 pr-4 bg-slate-100 rounded-full outline-none focus:ring-2 focus:ring-blue-200 hover:ring-2 hover:ring-blue-100 text-sm text-slate-700 placeholder:text-slate-400"
+                className="w-full h-12 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm text-slate-700"
               />
             </div>
-            <div className="w-full sm:w-auto relative shrink-0">
-              <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[16px] pointer-events-none">
+            <div className="w-full sm:w-auto relative">
+              <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[18px] pointer-events-none">
                 filter_alt
               </span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="h-9 pl-9 pr-4 bg-slate-100 border-0 rounded-full appearance-none focus:outline-none text-sm text-slate-600 cursor-pointer font-medium"
+                className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 border border-slate-200 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-slate-700 cursor-pointer"
               >
                 <option value="all">Todos</option>
                 <option value="barber">Barbero</option>
@@ -345,20 +345,21 @@ function AdminEmployees() {
                                   `/admin/barbershop/${id}/employees/${emp.id}/edit`,
                                 )
                               }
-                              className="flex items-center justify-center w-9 h-9 bg-amber-400 hover:bg-amber-500 text-white rounded-lg transition-colors"
+                              className="flex items-center justify-center w-8 h-8 bg-amber-300 hover:bg-amber-400 text-white rounded-lg transition-colors"
                             >
-                              <span className="material-icons-round text-[18px]">
-                                edit_square
+                              <span className="material-icons-round text-[14px]">
+                                edit
                               </span>
                             </button>
                             <button
                               onClick={() => setEmployeeToDelete(emp)}
                               disabled={deletingId === emp.id}
-                              className="flex items-center justify-center w-9 h-9 bg-white hover:bg-red-600 hover:text-white text-slate-400 border border-slate-200 rounded-lg transition-colors disabled:opacity-50"
+                              className="flex items-center justify-center w-8 h-8 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors disabled:opacity-50"
                             >
-                              <span className="material-icons-round text-[18px]">
+                              <span className="material-icons-round text-[14px]">
                                 delete
                               </span>
+                              {deletingId === emp.id ? "Eliminando..." : ""}
                             </button>
                           </div>
                         </td>

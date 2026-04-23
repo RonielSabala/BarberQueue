@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
 import { Avatar } from "../components/UserProfileCard";
 
@@ -8,10 +8,24 @@ function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const userString = localStorage.getItem("user");
-  const user = userString
-    ? JSON.parse(userString)
-    : { username: "Usuario", role: "client" };
+  const getUser = () =>
+    JSON.parse(localStorage.getItem("user") || "null") || {
+      username: "Usuario",
+      role: "client",
+    };
+  const [user, setUser] = useState(getUser);
+
+  // Re-leer el usuario cuando cambia el localStorage (ej: al actualizar foto)
+  useEffect(() => {
+    const handleStorage = () => setUser(getUser());
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  // También re-leer al cambiar de ruta (cubre actualizaciones en la misma pestaña)
+  useEffect(() => {
+    setUser(getUser());
+  }, [location.pathname]);
 
   const hasNotifications = false;
 

@@ -84,10 +84,20 @@ function QueueColumn({
         onClick={isClient ? () => navigate(`/barbers/${barber.id}`) : undefined}
         className={`bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center ${isClient ? "cursor-pointer hover:shadow-md hover:border-slate-300 transition-all active:scale-[0.98]" : ""}`}
       >
-        <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-2 border-2 border-primary/20 overflow-hidden flex items-center justify-center">
-          <span className="material-icons-round text-3xl text-slate-400">
-            face
-          </span>
+        <div className="mb-2 w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 shrink-0">
+          {barber.photoUrl ? (
+            <img
+              src={barber.photoUrl}
+              alt={barber.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+              <span className="text-white font-black text-xl leading-none">
+                {barber.name?.charAt(0)?.toUpperCase() || "B"}
+              </span>
+            </div>
+          )}
         </div>
 
         <h3 className="font-bold text-lg">{barber.name}</h3>

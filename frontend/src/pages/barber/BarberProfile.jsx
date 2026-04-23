@@ -7,10 +7,79 @@ import {
   createBarberReview,
   deleteBarberReview,
 } from "../../services/barberService";
-import { getUserById } from "../../services/userService";
+import { getUserById, updateUserPhoto } from "../../services/userService";
 import { Avatar } from "../../components/UserProfileCard";
 
-// ── Modal eliminar reseña ──────────────────────────────────────────────────
+// ── Modal cambiar foto ─────────────────────────────────────────────────────
+function EditPhotoModal({ currentUrl, onConfirm, onCancel, saving }) {
+  const [photoUrl, setPhotoUrl] = useState(currentUrl || "");
+  const inputCls =
+    "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition placeholder:text-slate-300";
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        backgroundColor: "rgba(15,23,42,0.5)",
+        backdropFilter: "blur(4px)",
+      }}
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-6 pt-6 pb-4 border-b border-slate-50">
+          <h2 className="text-lg font-black text-slate-800">
+            Cambiar foto de perfil
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Ingresa la URL de tu nueva foto.
+          </p>
+        </div>
+        <div className="p-6 space-y-4">
+          {photoUrl && (
+            <img
+              src={photoUrl}
+              alt="preview"
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+              className="w-28 h-28 rounded-3xl object-cover border border-slate-200 mx-auto block"
+            />
+          )}
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              URL de la foto
+            </label>
+            <input
+              type="url"
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+              placeholder="https://..."
+              className={inputCls}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 px-6 pb-6">
+          <button
+            onClick={() => onConfirm(photoUrl)}
+            disabled={saving || !photoUrl.trim()}
+            className="w-full py-3 bg-slate-900 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 text-sm"
+          >
+            {saving ? "Guardando..." : "Guardar foto"}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={saving}
+            className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
@@ -85,6 +154,32 @@ function BarberProfile() {
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, content: "" });
+
+  // ── Edición de foto (solo isSelf) ──────────────────────────────────────
+  const [isEditingPhoto, setIsEditingPhoto] = useState(false);
+  const [savingPhoto, setSavingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+
+  const handleSavePhoto = async (newUrl) => {
+    try {
+      setSavingPhoto(true);
+      setPhotoError("");
+      await updateUserPhoto(currentId, newUrl);
+      setBarberPhotoUrl(newUrl);
+      setIsEditingPhoto(false);
+      // Actualizar localStorage
+      const stored = JSON.parse(localStorage.getItem("user") || "null");
+      if (stored)
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...stored, photoUrl: newUrl }),
+        );
+    } catch (err) {
+      setPhotoError(err.message || "Error al actualizar la foto");
+    } finally {
+      setSavingPhoto(false);
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -269,6 +364,14 @@ function BarberProfile() {
           deleting={deletingId !== null}
         />
       )}
+      {isEditingPhoto && (
+        <EditPhotoModal
+          currentUrl={barberPhotoUrl}
+          onConfirm={handleSavePhoto}
+          onCancel={() => setIsEditingPhoto(false)}
+          saving={savingPhoto}
+        />
+      )}
 
       <div className="min-h-screen bg-slate-50">
         {/* ── HERO ────────────────────────────────────────────────────────── */}
@@ -292,7 +395,7 @@ function BarberProfile() {
 
           <div className="relative max-w-5xl mx-auto px-6 py-14">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-8">
-              <div className="relative shrink-0">
+              <div className="relative shrink-0 group">
                 <Avatar
                   photoUrl={barberPhotoUrl}
                   username={barber.username}
@@ -302,6 +405,16 @@ function BarberProfile() {
                 <div
                   className={`absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full border-[3px] border-white ${statusCfg.dot} shadow-md`}
                 />
+                {isSelf && (
+                  <button
+                    onClick={() => setIsEditingPhoto(true)}
+                    className="absolute inset-0 rounded-3xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >
+                    <span className="material-icons-round text-white text-2xl">
+                      photo_camera
+                    </span>
+                  </button>
+                )}
               </div>
               <div className="flex-1 text-center sm:text-left">
                 <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none mb-5">
@@ -331,6 +444,20 @@ function BarberProfile() {
                     </span>
                     {barber.isAccepting ? "Aceptando clientes" : "Cola cerrada"}
                   </span>
+                  {isSelf && (
+                    <button
+                      onClick={() => setIsEditingPhoto(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ring-1 bg-slate-100 text-slate-600 ring-slate-200 hover:bg-slate-200 transition-colors"
+                    >
+                      <span
+                        className="material-icons-round"
+                        style={{ fontSize: 12 }}
+                      >
+                        photo_camera
+                      </span>
+                      Cambiar foto
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

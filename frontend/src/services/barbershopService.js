@@ -199,7 +199,13 @@ export async function deleteBarbershopReview(id, reviewId) {
 // ── Employees ─────────────────────────────────────────────────────────────────
 
 export async function getBarbershopEmployees(id) {
-  const response = await fetch(`${API_URL}/barbershops/${id}/employees`, { method: "GET", headers: { "Content-Type": "application/json" } });
+  const response = await fetch(`${API_URL}/barbershops/${id}/employees`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
   const data = await response.json();
   if (!response.ok) throw new Error(data?.message || data?.error || "Error al obtener los empleados");
   return Array.isArray(data) ? data : [];
