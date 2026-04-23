@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../layouts/AuthLayout";
 import { login, getGoogleAuthUrl } from "../../services/authService";
+import { getUserById } from "../../services/userService";
 import logo from "../../assets/logo.png";
 
 function Login() {
@@ -22,12 +23,22 @@ function Login() {
       const data = await login(email, password);
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (data.user.role === "client") navigate("/client/home");
-      else if (data.user.role === "barber") navigate("/barber/home");
-      else if (data.user.role === "assistant") navigate("/assistant/home");
-      else if (data.user.role === "admin") navigate("/admin/home");
+      // Fetch full profile to include photoUrl
+      let userToSave = data.user;
+      try {
+        const fullUser = await getUserById(data.user.id);
+        userToSave = { ...data.user, photoUrl: fullUser.photoUrl ?? null };
+      } catch {
+        // fallback to login response if getUserById fails
+      }
+
+      localStorage.setItem("user", JSON.stringify(userToSave));
+
+      if (userToSave.role === "client") navigate("/client/home");
+      else if (userToSave.role === "barber") navigate("/barber/home");
+      else if (userToSave.role === "assistant") navigate("/assistant/home");
+      else if (userToSave.role === "admin") navigate("/admin/home");
       else navigate("/");
     } catch (err) {
       console.error("Error en login:", err);
@@ -42,7 +53,6 @@ function Login() {
       setGoogleLoading(true);
       setError("");
       const url = await getGoogleAuthUrl();
-      // Redirigir al navegador a la URL de Google
       window.location.href = url;
     } catch (err) {
       console.error("Error al obtener URL de Google:", err);
@@ -114,7 +124,6 @@ function Login() {
           <div className="auth-divider-line"></div>
         </div>
 
-        {/* Botón Google — obtiene la URL del backend dinámicamente */}
         <button
           type="button"
           onClick={handleGoogleLogin}
@@ -158,7 +167,6 @@ function Login() {
           <p className="auth-link-row">
             ¿No tienes cuenta? <Link to="/register">Crear cuenta gratis</Link>
           </p>
-          {/* Removed Actualizar contraseña */}
         </div>
       </div>
     </AuthLayout>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getUserById } from "../../services/userService";
 
 function AuthCallback() {
   const navigate = useNavigate();
@@ -18,24 +19,29 @@ function AuthCallback() {
       return;
     }
 
-    // Guardar en localStorage igual que el login normal
-    localStorage.setItem("token", token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: Number(id),
-        username,
-        role,
-      }),
-    );
+    const finalize = async () => {
+      localStorage.setItem("token", token);
 
-    // Redirigir según rol
-    if (role === "client") navigate("/client/home", { replace: true });
-    else if (role === "barber") navigate("/barber/home", { replace: true });
-    else if (role === "assistant")
-      navigate("/assistant/home", { replace: true });
-    else if (role === "admin") navigate("/admin/home", { replace: true });
-    else navigate("/", { replace: true });
+      let userToSave = { id: Number(id), username, role };
+
+      try {
+        const fullUser = await getUserById(Number(id));
+        userToSave = { ...userToSave, photoUrl: fullUser.photoUrl ?? null };
+      } catch {
+        // fallback sin foto si falla
+      }
+
+      localStorage.setItem("user", JSON.stringify(userToSave));
+
+      if (role === "client") navigate("/client/home", { replace: true });
+      else if (role === "barber") navigate("/barber/home", { replace: true });
+      else if (role === "assistant")
+        navigate("/assistant/home", { replace: true });
+      else if (role === "admin") navigate("/admin/home", { replace: true });
+      else navigate("/", { replace: true });
+    };
+
+    finalize();
   }, [navigate]);
 
   if (error) {
