@@ -13,7 +13,7 @@ abstract readonly class EnumField extends BaseField
     {
         $enumClass = static::ENUM_CLASS;
         if ($enumClass === '') {
-            throw new \LogicException(static::class . ' must define ENUM_CLASS');
+            throw $this->undefinedFieldException('ENUM_CLASS');
         }
 
         if ($enumClass::tryFrom($value) !== null) {

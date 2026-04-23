@@ -21,7 +21,7 @@ final readonly class DateTimeString extends StringField
         parent::__construct($value);
 
         if (!$this->isValidDateTime($value)) {
-            throw $this->validationException('must be a valid datetime');
+            throw $this->validationException(self::PATTERN_ERROR_MSG);
         }
     }
 

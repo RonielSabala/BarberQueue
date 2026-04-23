@@ -1,6 +1,6 @@
 # BarberQueue API Error Reference
 
-Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROUTES.md`](ROUTES.md)., the HTTP status, and the exact message string the API returns.
+Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROUTES.md`](ROUTES.md), the HTTP status, and the exact message string the API returns.
 
 ---
 
@@ -14,18 +14,52 @@ Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROU
 
 ---
 
-## Validation
+## Field Validation
 
-| Identifier             | Status | Message                                                 |
-| ---------------------- | ------ | ------------------------------------------------------- |
-| `UNEXPECTED_FIELDS`    | 400    | Unexpected field(s): {fields}                           |
-| `AT_LEAST_ONE_FIELD`   | 400    | At least one field must be provided for update          |
-| `FIELD_REQUIRED`       | 400    | Field '{field}' is required                             |
-| `FIELD_NON_NULLABLE`   | 400    | Field '{field}' cannot be null                          |
-| `FIELD_MUST_BE_OBJECT` | 400    | Field '{field}' must be an object                       |
-| `FIELD_MUST_BE_ARRAY`  | 400    | Field '{field}' must be an array                        |
-| `FIELD_MIN_ITEMS`      | 400    | Field '{field}[]' must have at least {minItems} item(s) |
-| `FIELD_MAX_ITEMS`      | 400    | Field '{field}[]' must have at most {maxItems} item(s)  |
+- HTTP status: `400`
+
+| Identifier             | Message                                                 |
+| ---------------------- | ------------------------------------------------------- |
+| `UNEXPECTED_FIELDS`    | Unexpected field(s): {fields}                           |
+| `AT_LEAST_ONE_FIELD`   | At least one field must be provided for update          |
+| `FIELD_REQUIRED`       | Field '{field}' is required                             |
+| `FIELD_NON_NULLABLE`   | Field '{field}' cannot be null                          |
+| `FIELD_MUST_BE_OBJECT` | Field '{field}' must be an object                       |
+| `FIELD_MUST_BE_ARRAY`  | Field '{field}' must be an array                        |
+| `FIELD_MIN_ITEMS`      | Field '{field}[]' must have at least {minItems} item(s) |
+| `FIELD_MAX_ITEMS`      | Field '{field}[]' must have at most {maxItems} item(s)  |
+
+---
+
+## Value Object Validation
+
+- HTTP status: `422`
+
+### String Length
+
+| Identifier        | Message                                             |
+| ----------------- | --------------------------------------------------- |
+| `FIELD_TOO_SHORT` | '{field}' length must be >= {minLen} (got {length}) |
+| `FIELD_TOO_LONG`  | '{field}' length must be <= {maxLen} (got {length}) |
+
+### Numeric Range
+
+| Identifier        | Message                                       |
+| ----------------- | --------------------------------------------- |
+| `FIELD_TOO_SMALL` | '{field}' must be >= {minValue} (got {value}) |
+| `FIELD_TOO_LARGE` | '{field}' must be <= {maxValue} (got {value}) |
+
+### Format
+
+| Identifier               | Message                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `FIELD_INVALID_NAME`     | '{field}' must start with a letter or underscore and contain only letters, numbers, underscores or spaces |
+| `FIELD_INVALID_ENUM`     | '{field}' must be one of: {allowed}                                                                       |
+| `FIELD_INVALID_EMAIL`    | '{field}' must be a valid email in format user@domain                                                     |
+| `FIELD_INVALID_URL`      | '{field}' must be a valid http or https url                                                               |
+| `FIELD_INVALID_TIME`     | '{field}' must be a valid time in format HH:MM:SS                                                         |
+| `FIELD_INVALID_DATETIME` | '{field}' must be a valid datetime in format YYYY-MM-DD HH:MM:SS                                          |
+| `FIELD_NOT_EMPTY`        | '{field}' must not be empty                                                                               |
 
 ---
 

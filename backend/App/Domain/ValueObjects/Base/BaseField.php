@@ -19,4 +19,9 @@ abstract readonly class BaseField
             HttpStatus::UnprocessableEntity
         );
     }
+
+    protected function undefinedFieldException(string $field): \RuntimeException
+    {
+        return new \RuntimeException(static::class . "::{$field} must be defined");
+    }
 }
