@@ -55,7 +55,6 @@ CREATE TABLE
         client_id INT PRIMARY KEY,
         barbershop_id INT NULL,
         current_status ENUM('default', 'at_barbershop', 'on_queue', 'waiting', 'in_service', 'attended', 'paid') NOT NULL,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (client_id) REFERENCES users (id) ON DELETE CASCADE,
         FOREIGN KEY (barbershop_id) REFERENCES barbershops (id) ON DELETE CASCADE
     );
@@ -66,7 +65,6 @@ CREATE TABLE
         barber_id INT PRIMARY KEY,
         current_status ENUM('active', 'inactive', 'resting') NOT NULL,
         is_accepting BOOLEAN DEFAULT FALSE,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (barber_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
