@@ -85,6 +85,10 @@ final readonly class BarbershopEmployeeService extends BaseService
             );
         }
 
+        if ($barbershopOpensAt === $barbershopClosesAt) {
+            return;
+        }
+
         if ($startTime < $barbershopOpensAt) {
             throw new BarbershopEmployeeException(
                 'Start time cannot be earlier than the barbershop opening time',
