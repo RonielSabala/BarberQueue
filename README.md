@@ -344,10 +344,10 @@ Full management of one or more barbershops they administer:
 
 Four sample users are included for testing. Password for all sample accounts: `app12345`
 
-- [andres@gmail.com](mailto:andres@gmail.com) (`client`)
-- [carlos@barbershop.com](mailto:carlos@barbershop.com) (`barber`)
-- [maria@barbershop.com](mailto:maria@barbershop.com) (`assistant`)
-- [admin@barbershop.com](mailto:admin@barbershop.com) (`admin`)
+- [francisco.garcia@gmail.com](mailto:francisco.garcia@gmail.com) (`client`)
+- [gabriel.duarte@gmail.com](mailto:gabriel.duarte@gmail.com) (`barber`)
+- [frankie.jimenez@gmail.com](mailto:frankie.jimenez@gmail.com) (`assistant`)
+- [rafael.almonte@gmail.com](mailto:rafael.almonte@gmail.com) (`admin`)
 
 ---
 
