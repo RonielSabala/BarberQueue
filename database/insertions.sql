@@ -152,7 +152,7 @@ VALUES
         'Francisco Garcia',
         'francisco.garcia@gmail.com',
         '8091914516',
-        'https://i.pinimg.com/736x/ad/eb/af/adebaf4609ffc0b15be7ab59ba1c1120.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -161,7 +161,7 @@ VALUES
         'Felix Mercedes',
         'felix.mercedes@gmail.com',
         '8092014517',
-        'https://i.pinimg.com/736x/f9/96/4b/f9964b39e8e58170d71b073cb592f975.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -170,7 +170,7 @@ VALUES
         'Anderson Ozoria',
         'anderson.ozoria@gmail.com',
         '8092114518',
-        'https://i.pinimg.com/736x/01/2d/7b/012d7bf956d0bb15636825753aaf2c05.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -179,7 +179,7 @@ VALUES
         'Elido Rosario',
         'elido.rosario@gmail.com',
         '8092214519',
-        'https://i.pinimg.com/736x/79/b0/dd/79b0dd700ff2fbfd4d98379a5e0c6705.jpg',
+        'https://i.pinimg.com/736x/6f/da/21/6fda216e5305b4d43b148a4a77248403.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -188,7 +188,7 @@ VALUES
         'Jairo Moreno',
         'jairo.moreno@gmail.com',
         '8092314520',
-        'https://i.pinimg.com/736x/ba/fc/c8/bafcc8bab754978e1da209ad1985dc60.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -197,7 +197,7 @@ VALUES
         'Rafi Castillo',
         'rafi.castillo@gmail.com',
         '8092414521',
-        'https://i.pinimg.com/1200x/8e/25/7d/8e257d07f06e917a4cab1a9e72e45a8f.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -206,7 +206,7 @@ VALUES
         'Jeffry Diaz',
         'jeffry.diaz@gmail.com',
         '8092514522',
-        'https://i.pinimg.com/736x/ef/31/58/ef31587a53c062561212727e46188111.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -224,7 +224,7 @@ VALUES
         'Arturo Rodriguez',
         'arturo.rodriguez@gmail.com',
         '8092714524',
-        'https://i.pinimg.com/736x/87/7a/c1/877ac1f16cf54b855edf7934a3e6b7aa.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -233,7 +233,7 @@ VALUES
         'Angelo Ozorio',
         'angelo.ozorio@gmail.com',
         '8092814525',
-        'https://i.pinimg.com/736x/f8/e2/59/f8e259eed5d6de8f196126a812163b9b.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -278,7 +278,7 @@ VALUES
         'Alvaro Castillo',
         'alvaro.castillo@gmail.com',
         '8093314530',
-        NULL,
+        'https://i.pinimg.com/736x/ad/eb/af/adebaf4609ffc0b15be7ab59ba1c1120.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -314,7 +314,7 @@ VALUES
         'Darwin Soto',
         'darwin.soto@gmail.com',
         '8094000034',
-        'https://i.pinimg.com/736x/e9/98/d9/e998d9bcfe0de3eb0da1cc7bceee5913.jpg',
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -323,7 +323,7 @@ VALUES
         'Willy Perez',
         'willy.perez@gmail.com',
         '8094000035',
-        'https://i.pinimg.com/736x/6f/da/21/6fda216e5305b4d43b148a4a77248403.jpg',
+        NUll,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -395,7 +395,7 @@ VALUES
         'Deivis Almonte',
         'deivis.almonte@gmail.com',
         '8094000043',
-        NULL,
+        'https://i.pinimg.com/736x/21/b7/a8/21b7a876bfd570576b2b746e619daef8.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -440,7 +440,7 @@ VALUES
         'Kelvin Pichardo',
         'kelvin.pichardo@gmail.com',
         '8094000048',
-        NULL,
+        'https://i.pinimg.com/736x/ba/fc/c8/bafcc8bab754978e1da209ad1985dc60.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -449,7 +449,7 @@ VALUES
         'Edinson Vargas',
         'edinson.vargas@gmail.com',
         '8094000049',
-        NULL,
+        'https://i.pinimg.com/1200x/8e/25/7d/8e257d07f06e917a4cab1a9e72e45a8f.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -485,7 +485,7 @@ VALUES
         'Wilkin Aquino',
         'wilkin.aquino@gmail.com',
         '8094000053',
-        NULL,
+        'https://i.pinimg.com/736x/01/2d/7b/012d7bf956d0bb15636825753aaf2c05.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -503,7 +503,7 @@ VALUES
         'Jeisson Corporan',
         'jeisson.corporan@gmail.com',
         '8094000055',
-        NULL,
+        'https://i.pinimg.com/736x/e9/98/d9/e998d9bcfe0de3eb0da1cc7bceee5913.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -530,7 +530,7 @@ VALUES
         'Wascar Disla',
         'wascar.disla@gmail.com',
         '8094000058',
-        NULL,
+        'https://i.pinimg.com/736x/f8/e2/59/f8e259eed5d6de8f196126a812163b9b.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -566,7 +566,7 @@ VALUES
         'Daneury Mateo',
         'daneury.mateo@gmail.com',
         '8094000062',
-        NULL,
+        'https://i.pinimg.com/736x/f9/96/4b/f9964b39e8e58170d71b073cb592f975.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -575,7 +575,7 @@ VALUES
         'Kelvis Santana',
         'kelvis.santana@gmail.com',
         '8094000063',
-        NULL,
+        'https://i.pinimg.com/736x/79/b0/dd/79b0dd700ff2fbfd4d98379a5e0c6705.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -584,7 +584,7 @@ VALUES
         'Yoneiris Valdez',
         'yoneiris.valdez@gmail.com',
         '8094000064',
-        NULL,
+        'https://i.pinimg.com/736x/ef/31/58/ef31587a53c062561212727e46188111.jpg',
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
