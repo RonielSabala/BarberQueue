@@ -120,7 +120,7 @@ export async function resetPassword(data) {
     },
     body: JSON.stringify({
       resetCode: data.resetCode,
-      password: data.password,
+      newPassword: data.password,
     }),
   });
 

@@ -51,6 +51,20 @@ final readonly class TurnService extends BaseTurnService
         return $turn;
     }
 
+    private function groupMembersHaveValidStatus(int $groupId, ClientStatusEnum $status, bool $shouldMatch): bool
+    {
+        $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
+
+        foreach ($memberTurns as $memberTurn) {
+            $isMatch = $memberTurn->status->value === $status->value;
+            if ($isMatch !== $shouldMatch) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private function setOwnerStatus(TurnEntity $turn, string $newStatus): void
     {
         $ownerId = $turn->ownerId->value;
@@ -324,6 +338,19 @@ final readonly class TurnService extends BaseTurnService
             );
         }
 
+        // Verify no member is attended
+        $groupId = $turn->groupId?->value;
+        if ($groupId && !$this->groupMembersHaveValidStatus(
+            groupId: $groupId,
+            status: ClientStatusEnum::Attended,
+            shouldMatch: false
+        )) {
+            throw new TurnException(
+                'Cannot cancel group because service has already started for some members',
+                HttpStatus::Forbidden
+            );
+        }
+
         $this->turnRepository->transaction(
             fn () => $this->orchestrateTurnDeletion($turn)
         );
@@ -434,16 +461,15 @@ final readonly class TurnService extends BaseTurnService
 
         // Verify every member is attended
         $groupId = $turn->groupId?->value;
-        if ($groupId !== null) {
-            $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
-            foreach ($memberTurns as $memberTurn) {
-                if ($memberTurn->status->value !== ClientStatusEnum::Attended->value) {
-                    throw new TurnException(
-                        'All group members must have status \'attended\' before the group can pay',
-                        HttpStatus::Forbidden
-                    );
-                }
-            }
+        if ($groupId && !$this->groupMembersHaveValidStatus(
+            groupId: $groupId,
+            status: ClientStatusEnum::Attended,
+            shouldMatch: true
+        )) {
+            throw new TurnException(
+                'All group members must have status \'attended\' before the group can pay',
+                HttpStatus::Forbidden
+            );
         }
 
         // Orchestrate turn payment

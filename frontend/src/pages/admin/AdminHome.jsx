@@ -58,7 +58,8 @@ function AdminHome() {
         setLoading(true);
         setError("");
 
-        const filters = { adminId: 1 };
+        const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+        const filters = { adminId: storedUser?.id };
         if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
         if (statusFilter === "open") filters.isOpen = true;
         else if (statusFilter === "closed") filters.isOpen = false;
