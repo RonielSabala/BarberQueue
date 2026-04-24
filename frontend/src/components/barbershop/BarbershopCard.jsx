@@ -24,7 +24,6 @@ function BarbershopCard({ shop }) {
       onClick={() => navigate(`/barbershops/${shop.id}`)}
       className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow cursor-pointer"
     >
-      {/* Imagen */}
       <img
         src={shop.image || fallbackImage}
         alt={shop.name}
@@ -33,8 +32,6 @@ function BarbershopCard({ shop }) {
         }}
         className="w-full h-[150px] object-cover bg-slate-100"
       />
-
-      {/* Info */}
       <div className="p-4 flex flex-col flex-1">
         <h3
           className="font-bold text-lg text-slate-900 leading-snug mb-2 line-clamp-2"
@@ -42,7 +39,6 @@ function BarbershopCard({ shop }) {
         >
           {shop.name}
         </h3>
-
         <div className="flex items-center gap-1 mb-1">
           {shop.rating != null ? (
             <>
@@ -55,21 +51,22 @@ function BarbershopCard({ shop }) {
             <span className="text-sm text-slate-400">Sin rating</span>
           )}
         </div>
-
         <p
           className={`text-sm font-bold mb-4 ${isOpen ? "text-green-600" : "text-red-500"}`}
         >
           {isOpen ? "Abierta" : "Cerrada"}
         </p>
-
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/barbershops/${shop.id}`);
+            navigate(`/barbershops/${shop.id}/queue`);
           }}
-          className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-sm"
+          className="mt-auto w-full py-2.5 flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-900 font-bold rounded-xl transition-colors text-sm shadow-sm"
         >
-          Ver barbería
+          <span className="material-icons-round text-[18px] text-red-500">
+            sensors
+          </span>
+          Ver cola en vivo
         </button>
       </div>
     </div>
