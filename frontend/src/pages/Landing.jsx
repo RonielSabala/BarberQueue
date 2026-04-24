@@ -1052,7 +1052,12 @@ export default function Landing() {
             Así se ve BarberQueue en acción. Cola por barbero, estado en vivo, y
             tus acciones al instante.
           </p>
-          <DesktopPreview />
+          <div className="hidden lg:block">
+            <DesktopPreview />
+          </div>
+          <div className="lg:hidden flex justify-center">
+            <PhoneMockup />
+          </div>
         </div>
       </section>
 
