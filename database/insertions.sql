@@ -706,8 +706,8 @@ UPDATE client_status cs
 JOIN (
     SELECT
         16 AS client_id,
-        1 AS barbershop_id,
-        'paid' AS current_status
+        NULL AS barbershop_id,
+        'default' AS current_status
     UNION ALL
     SELECT
         17,
