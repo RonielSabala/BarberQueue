@@ -49,15 +49,12 @@ final class Router
         try {
             $match->dispatch();
         } catch (BaseException $e) {
-            self::$logger->error($e->getMessage(), [
-                'exception' => $e,
-            ]);
+            $errorMsg = $e->getMessage();
+            self::$logger->error($errorMsg, ['exception' => $e]);
 
-            HttpResponse::error($e->getMessage(), $e->getStatus());
+            HttpResponse::error($errorMsg, $e->getStatus());
         } catch (\Throwable $e) {
-            self::$logger->critical($e->getMessage(), [
-                'exception' => $e,
-            ]);
+            self::$logger->critical($e->getMessage(), ['exception' => $e]);
 
             HttpResponse::error('An unexpected error occurred', HttpStatus::InternalServerError);
         }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects\Base;
 
+use App\Exceptions\Base\ValueObjectException;
+
 abstract readonly class StringField extends BaseField
 {
     protected const ?int MIN_LEN = null;
@@ -24,15 +26,15 @@ abstract readonly class StringField extends BaseField
                 throw $this->undefinedFieldException('PATTERN_ERROR_MSG');
             }
 
-            throw $this->validationException($patternErrorMsg);
+            throw new ValueObjectException($patternErrorMsg);
         }
 
         if ($minLen !== null && $length < $minLen) {
-            throw $this->validationException("length must be >= {$minLen} (got {$length})");
+            throw new ValueObjectException("length must be >= {$minLen} (got {$length})");
         }
 
         if ($maxLen !== null && $length > $maxLen) {
-            throw $this->validationException("length must be <= {$maxLen} (got {$length})");
+            throw new ValueObjectException("length must be <= {$maxLen} (got {$length})");
         }
 
         $this->value = $value;

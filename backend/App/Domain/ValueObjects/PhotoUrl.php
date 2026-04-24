@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
+use App\Exceptions\Base\ValueObjectException;
 
 final readonly class PhotoUrl extends StringField
 {
@@ -16,7 +17,7 @@ final readonly class PhotoUrl extends StringField
 
         $url = filter_var($this->value, FILTER_VALIDATE_URL);
         if (!$url || !\in_array(parse_url($url, PHP_URL_SCHEME), ['http', 'https'], true)) {
-            throw $this->validationException('must be a valid http or https url');
+            throw new ValueObjectException('must be a valid http or https url');
         }
     }
 }

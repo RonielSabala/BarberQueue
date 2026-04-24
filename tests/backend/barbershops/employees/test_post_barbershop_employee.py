@@ -19,7 +19,7 @@ from helpers.assertions import (
 from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_EMAIL_IN_USE
 
 _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
-    error="EmployeeRole must be one of: 'barber', 'assistant'"
+    error="'role' must be one of: 'barber', 'assistant'"
 )
 
 

@@ -17,7 +17,7 @@ from helpers.common_responses import AT_LEAST_ONE_FIELD, BARBER_NOT_FOUND
 
 _STATUS_UPDATED = MessageResponse(message="Barber status updated")
 _INVALID_STATUS = ErrorResponse(
-    error="BarberStatus must be one of: 'active', 'inactive', 'resting'"
+    error="'currentStatus' must be one of: 'active', 'inactive', 'resting'"
 )
 
 

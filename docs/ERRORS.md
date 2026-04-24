@@ -53,9 +53,10 @@ Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROU
 
 | Identifier               | Message                                                                                                   |
 | ------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `FIELD_INVALID_NAME`     | '{field}' must start with a letter or underscore and contain only letters, numbers, underscores or spaces |
 | `FIELD_INVALID_ENUM`     | '{field}' must be one of: {allowed}                                                                       |
+| `FIELD_INVALID_NAME`     | '{field}' must start with a letter or underscore and contain only letters, numbers, underscores or spaces |
 | `FIELD_INVALID_EMAIL`    | '{field}' must be a valid email in format user@domain                                                     |
+| `FIELD_INVALID_PHONE`    | '{field}' must contain exactly 10 digits                                                                  |
 | `FIELD_INVALID_URL`      | '{field}' must be a valid http or https url                                                               |
 | `FIELD_INVALID_TIME`     | '{field}' must be a valid time in format HH:MM:SS                                                         |
 | `FIELD_INVALID_DATETIME` | '{field}' must be a valid datetime in format YYYY-MM-DD HH:MM:SS                                          |
