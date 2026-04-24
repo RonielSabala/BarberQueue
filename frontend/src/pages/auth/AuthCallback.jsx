@@ -13,6 +13,8 @@ function AuthCallback() {
     const id = params.get("id");
     const username = params.get("username");
     const role = params.get("role");
+    // Si el backend devuelve la foto en la URL la usamos como fallback inmediato
+    const photoFromUrl = params.get("photoUrl") ?? params.get("photo") ?? null;
 
     if (!token || !id || !role) {
       setError("No se pudo completar el inicio de sesión con Google.");
@@ -20,15 +22,30 @@ function AuthCallback() {
     }
 
     const finalize = async () => {
+      // Guardar token ANTES de cualquier fetch para que getAuthHeaders() lo lea
       localStorage.setItem("token", token);
 
-      let userToSave = { id: Number(id), username, role };
+      // Base del usuario con la foto de la URL si viene
+      let userToSave = {
+        id: Number(id),
+        username,
+        role,
+        photoUrl: photoFromUrl,
+      };
 
+      // Intentar enriquecer con el perfil completo del backend
       try {
         const fullUser = await getUserById(Number(id));
-        userToSave = { ...userToSave, photoUrl: fullUser.photoUrl ?? null };
+        // Usar la foto del backend si existe; si no, mantener la de la URL
+        userToSave = {
+          ...userToSave,
+          ...fullUser,
+          id: Number(id),
+          role,
+          photoUrl: fullUser.photoUrl || photoFromUrl || null,
+        };
       } catch {
-        // fallback sin foto si falla
+        // Fallback: conservar lo que tenemos sin bloquear el flujo
       }
 
       localStorage.setItem("user", JSON.stringify(userToSave));
