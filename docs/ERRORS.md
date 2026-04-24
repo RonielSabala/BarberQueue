@@ -1,6 +1,6 @@
 # BarberQueue API Error Reference
 
-Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROUTES.md`](ROUTES.md), the HTTP status, and the exact message string the API returns.
+Errors are grouped by domain. Each entry shows the identifier, the HTTP status, and the exact message string the API returns.
 
 ---
 

@@ -67,7 +67,7 @@ All error responses follow this shape:
 }
 ```
 
-Error codes are documented in [`docs/ERRORS.md`](ERRORS.md). Each route lists which errors it can return by their identifier.
+All errors are documented in [`docs/ERRORS.md`](ERRORS.md).
 
 ---
 
