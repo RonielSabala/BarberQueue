@@ -7,6 +7,26 @@ function ClientHome() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const filterOptions = [
+    { value: "all", label: "Todas", icon: "storefront" },
+    {
+      value: "open",
+      label: "Abiertas",
+      icon: "check_circle",
+      iconColor: "text-green-500",
+    },
+    {
+      value: "closed",
+      label: "Cerradas",
+      icon: "cancel",
+      iconColor: "text-red-500",
+    },
+  ];
+
+  const selectedFilter =
+    filterOptions.find((o) => o.value === filter) || filterOptions[0];
   const [loading, setLoading] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
   const [error, setError] = useState("");
@@ -66,33 +86,114 @@ function ClientHome() {
         </div>
       </div>
 
-      {/* Filtros */}
-      <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm mb-8 gap-4 border border-slate-100 dark:border-slate-700">
-        <div className="relative w-full sm:max-w-md">
-          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-            search
-          </span>
-          <input
-            type="text"
-            placeholder="Buscar barbería a visitar..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-slate-700 dark:text-slate-200"
-          />
-        </div>
-        <div className="w-full sm:w-auto relative">
-          <span className="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-            filter_alt
-          </span>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="w-full sm:w-48 h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-700 dark:text-slate-200 cursor-pointer"
-          >
-            <option value="all">Todas</option>
-            <option value="open">Abiertas</option>
-            <option value="closed">Cerradas</option>
-          </select>
+      {/* Premium Unified Search Bar (Airbnb / SaaS Style) */}
+      <div className="mb-14 w-full max-w-4xl mx-auto mt-4">
+        <div className="flex flex-col sm:flex-row items-center bg-white dark:bg-slate-900 sm:rounded-full rounded-[2rem] shadow-[0_12px_40px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_16px_50px_-10px_rgba(0,0,0,0.12)] border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 p-2">
+          {/* Search Section */}
+          <div className="relative flex-1 w-full flex items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 sm:rounded-full rounded-3xl transition-colors group px-2">
+            <div className="absolute left-6 flex items-center justify-center pointer-events-none">
+              <span className="material-icons-round text-slate-400 group-focus-within:text-primary transition-colors text-[24px]">
+                search
+              </span>
+            </div>
+            <input
+              type="text"
+              placeholder="¿A qué barbería quieres ir hoy?"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-16 pl-14 pr-4 bg-transparent border-transparent focus:border-transparent focus:ring-0 text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium text-[16px] outline-none"
+            />
+          </div>
+
+          {/* Vertical Divider */}
+          <div className="hidden sm:block h-10 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1"></div>
+
+          {/* Filter Section */}
+          <div className="relative w-full sm:w-auto flex items-center border-t sm:border-t-0 border-slate-100 dark:border-slate-700 mt-2 sm:mt-0 pt-2 sm:pt-0">
+            <button
+              type="button"
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="w-full sm:w-auto h-16 px-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 sm:rounded-full rounded-3xl transition-colors flex items-center justify-between sm:justify-start gap-4 text-slate-700 dark:text-slate-200 cursor-pointer focus:outline-none"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 shadow-sm ${selectedFilter.iconColor || "text-slate-500"}`}
+                >
+                  <span className="material-icons-round text-[20px]">
+                    {selectedFilter.icon}
+                  </span>
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-[2px]">
+                    Mostrar
+                  </span>
+                  <span className="font-semibold text-[15px] truncate max-w-[120px]">
+                    {selectedFilter.label}
+                  </span>
+                </div>
+              </div>
+              <span
+                className={`material-icons-round text-slate-400 text-[22px] transition-transform duration-300 ${isFilterOpen ? "rotate-180" : ""}`}
+              >
+                expand_more
+              </span>
+            </button>
+
+            {/* Custom Dropdown Menu */}
+            {isFilterOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsFilterOpen(false)}
+                ></div>
+                <div className="absolute top-[105%] right-0 sm:-right-2 w-full sm:w-80 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700/60 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] z-50 overflow-hidden py-3 animate-in fade-in slide-in-from-top-4 duration-200">
+                  <div className="px-6 pb-3 pt-2 border-b border-slate-100 dark:border-slate-700/50 mb-2">
+                    <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest">
+                      Filtrar resultados
+                    </p>
+                  </div>
+                  {filterOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        setFilter(opt.value);
+                        setIsFilterOpen(false);
+                      }}
+                      className="w-full text-left px-6 py-4 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+                    >
+                      <div
+                        className={`flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700/50 group-hover:scale-110 transition-transform shadow-sm ${opt.iconColor || "text-slate-500"}`}
+                      >
+                        <span className="material-icons-round text-[24px]">
+                          {opt.icon}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <span
+                          className={`block text-[16px] font-bold ${filter === opt.value ? "text-primary" : "text-slate-700 dark:text-slate-200"}`}
+                        >
+                          {opt.label}
+                        </span>
+                        <span className="block text-[13px] text-slate-500 mt-1 font-medium">
+                          {opt.value === "all"
+                            ? "Ver todas las opciones"
+                            : opt.value === "open"
+                              ? "Solo locales disponibles"
+                              : "Locales fuera de servicio"}
+                        </span>
+                      </div>
+                      {filter === opt.value && (
+                        <span className="material-icons-round text-primary text-[24px]">
+                          check_circle
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

@@ -5,6 +5,8 @@ import { Avatar } from "../components/UserProfileCard";
 function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,8 +28,6 @@ function MainLayout() {
   useEffect(() => {
     setUser(getUser());
   }, [location.pathname]);
-
-  const hasNotifications = false;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -153,12 +153,57 @@ function MainLayout() {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-400 hover:text-primary transition-colors">
-              <span className="material-icons-round">notifications</span>
-              {hasNotifications && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
+            <div className="relative">
+              <button
+                className="relative p-2 text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                onClick={() => {
+                  setIsNotificationsOpen(!isNotificationsOpen);
+                  setHasNotifications(false);
+                }}
+              >
+                <span className="material-icons-round">notifications</span>
+                {hasNotifications && (
+                  <span className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsNotificationsOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 transform origin-top-right transition-all animate-in fade-in slide-in-from-top-4">
+                    <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700 mb-2">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
+                        Notificaciones
+                      </p>
+                    </div>
+                    <div className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer border-l-4 border-primary bg-slate-50/50 dark:bg-slate-800">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <span className="material-icons-round text-primary text-[20px]">
+                            celebration
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800 dark:text-white mb-1">
+                            ¡Bienvenido a BarberQueue! 🎉
+                          </p>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            Estamos felices de tenerte aquí. Explora las mejores
+                            barberías y pide tu turno en línea.
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-2 font-medium">
+                            Hace un momento
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
-            </button>
+            </div>
 
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
 

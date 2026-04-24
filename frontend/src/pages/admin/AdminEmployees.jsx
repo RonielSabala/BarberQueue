@@ -145,7 +145,7 @@ function AdminEmployees() {
         deleting={deletingId !== null}
       />
 
-      <div className="bg-slate-50 min-h-screen">
+      <div className="bg-slate-50">
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <div
           className="relative overflow-hidden border-b border-slate-100"
