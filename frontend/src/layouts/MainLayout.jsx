@@ -142,7 +142,12 @@ function MainLayout() {
               <span className="material-icons-round">menu_open</span>
             </button>
             <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-500">
-              <span className="material-icons-round text-sm">home</span>
+              <Link
+                to="/"
+                className="flex items-center hover:text-primary transition-colors"
+              >
+                <span className="material-icons-round text-sm">home</span>
+              </Link>
               <span className="material-icons-round text-xs">
                 chevron_right
               </span>
