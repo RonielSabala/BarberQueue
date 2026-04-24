@@ -9,45 +9,17 @@ import {
   addBarbershopPhotos,
   deleteBarbershopPhoto,
 } from "../../services/barbershopService";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
-function mapBarbershopError(message) {
-  const msg = message?.toLowerCase() || "";
-  if (
-    msg.includes("email") &&
-    (msg.includes("already") ||
-      msg.includes("exists") ||
-      msg.includes("duplicate"))
-  )
-    return "El correo electrónico ya está registrado en otra barbería.";
-  if (
-    msg.includes("phone") &&
-    (msg.includes("already") ||
-      msg.includes("exists") ||
-      msg.includes("duplicate"))
-  )
-    return "El teléfono ya está registrado en otra barbería.";
-  if (
-    msg.includes("name") &&
-    (msg.includes("already") || msg.includes("exists"))
-  )
-    return "Ya existe una barbería con ese nombre.";
-  if (msg.includes("capacity"))
-    return "La capacidad debe ser un número válido mayor a 0.";
-  if (msg.includes("time") || msg.includes("opens") || msg.includes("closes"))
-    return "El formato de hora no es válido.";
-  return message || "Error al actualizar la barbería.";
-}
-
-// ── Modal editar foto (delete + add) ─────────────────────────────────────
+// ── Modal editar foto ─────────────────────────────────────────────────────
 function EditPhotoModal({ photo, onConfirm, onCancel, saving }) {
   const [photoUrl, setPhotoUrl] = useState(photo.photoUrl);
   const [photoDescription, setPhotoDescription] = useState(
     photo.photoDescription || "",
   );
-
   const inputCls =
     "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition placeholder:text-slate-300";
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -67,9 +39,7 @@ function EditPhotoModal({ photo, onConfirm, onCancel, saving }) {
             Actualiza la URL o la descripción de la foto.
           </p>
         </div>
-
         <div className="p-6 space-y-4">
-          {/* Preview */}
           {photoUrl && (
             <img
               src={photoUrl}
@@ -80,7 +50,6 @@ function EditPhotoModal({ photo, onConfirm, onCancel, saving }) {
               className="w-full h-40 object-cover rounded-2xl border border-slate-100"
             />
           )}
-
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
               URL de la foto
@@ -107,7 +76,6 @@ function EditPhotoModal({ photo, onConfirm, onCancel, saving }) {
             />
           </div>
         </div>
-
         <div className="flex flex-col gap-2 px-6 pb-6">
           <button
             onClick={() => onConfirm({ photoUrl, photoDescription })}
@@ -128,6 +96,8 @@ function EditPhotoModal({ photo, onConfirm, onCancel, saving }) {
     </div>
   );
 }
+
+// ── Modal eliminar foto ───────────────────────────────────────────────────
 function DeletePhotoModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
@@ -179,7 +149,6 @@ function DeletePhotoModal({ onConfirm, onCancel, deleting }) {
 }
 
 const fallbackImage = "https://via.placeholder.com/500x400?text=Barberia";
-
 const inputCls =
   "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition placeholder:text-slate-300";
 const labelCls =
@@ -188,6 +157,7 @@ const labelCls =
 function AdminBarbershop() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [barbershop, setBarbershop] = useState(null);
   const [formData, setFormData] = useState({
@@ -205,10 +175,6 @@ function AdminBarbershop() {
   const [saving, setSaving] = useState(false);
   const [savingPhoto, setSavingPhoto] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
-  // ── Galería ────────────────────────────────────────────────────────────
   const [photos, setPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState(null);
@@ -224,7 +190,6 @@ function AdminBarbershop() {
   const fetchBarbershop = async () => {
     try {
       setLoading(true);
-      setError("");
       const data = await getBarbershopById(id);
       setBarbershop(data);
       const loaded = {
@@ -240,7 +205,7 @@ function AdminBarbershop() {
       setOriginalData(loaded);
       setPhotoUrl(data.photoUrl || "");
     } catch (err) {
-      setError(err.message || "Error al cargar la barbería");
+      toast.error(mapApiError(err.message, "Error al cargar la barbería"));
     } finally {
       setLoading(false);
     }
@@ -274,8 +239,6 @@ function AdminBarbershop() {
     e.preventDefault();
     try {
       setSaving(true);
-      setError("");
-      setSuccessMessage("");
       const changedFields = {};
       Object.keys(formData).forEach((key) => {
         if (
@@ -285,16 +248,14 @@ function AdminBarbershop() {
           changedFields[key] = formData[key];
       });
       if (Object.keys(changedFields).length === 0) {
-        setSuccessMessage("No hay cambios para guardar.");
+        toast.info("No hay cambios para guardar.");
         return;
       }
-      const response = await updateBarbershop(id, changedFields);
-      setSuccessMessage(
-        response.message || "Barbería actualizada correctamente.",
-      );
+      await updateBarbershop(id, changedFields);
+      toast.success("Barbería actualizada correctamente.");
       await fetchBarbershop();
     } catch (err) {
-      setError(mapBarbershopError(err.message));
+      toast.error(mapApiError(err.message, "Error al actualizar la barbería"));
     } finally {
       setSaving(false);
     }
@@ -304,13 +265,11 @@ function AdminBarbershop() {
     e.preventDefault();
     try {
       setSavingPhoto(true);
-      setError("");
-      setSuccessMessage("");
-      const response = await updateBarbershopPhoto(id, photoUrl);
-      setSuccessMessage(response.message || "Foto actualizada correctamente.");
+      await updateBarbershopPhoto(id, photoUrl);
+      toast.success("Foto actualizada correctamente.");
       await fetchBarbershop();
     } catch (err) {
-      setError(err.message || "Error al actualizar la foto");
+      toast.error(mapApiError(err.message, "Error al actualizar la foto"));
     } finally {
       setSavingPhoto(false);
     }
@@ -319,13 +278,11 @@ function AdminBarbershop() {
   const handleStatusChange = async (newStatus) => {
     try {
       setStatusLoading(true);
-      setError("");
-      setSuccessMessage("");
-      const response = await updateBarbershopStatus(id, newStatus);
-      setSuccessMessage(response.message || "Estado actualizado.");
+      await updateBarbershopStatus(id, newStatus);
+      toast.success("Estado actualizado correctamente.");
       await fetchBarbershop();
     } catch (err) {
-      setError(err.message || "Error al cambiar el estado");
+      toast.error(mapApiError(err.message, "Error al cambiar el estado"));
     } finally {
       setStatusLoading(false);
     }
@@ -335,14 +292,13 @@ function AdminBarbershop() {
     if (!photoToEdit) return;
     try {
       setEditingPhoto(true);
-      // Delete old + add new (no PATCH endpoint available)
       await deleteBarbershopPhoto(id, photoToEdit.id);
       await addBarbershopPhotos(id, [{ photoUrl, photoDescription }]);
-      setSuccessMessage("Foto actualizada correctamente.");
+      toast.success("Foto actualizada correctamente.");
       setPhotoToEdit(null);
       await fetchPhotos();
     } catch (err) {
-      setError(err.message || "Error al editar la foto");
+      toast.error(mapApiError(err.message, "Error al editar la foto"));
       setPhotoToEdit(null);
     } finally {
       setEditingPhoto(false);
@@ -354,19 +310,17 @@ function AdminBarbershop() {
     if (!newPhoto.photoUrl.trim()) return;
     try {
       setAddingPhoto(true);
-      setError("");
-      setSuccessMessage("");
       await addBarbershopPhotos(id, [
         {
           photoUrl: newPhoto.photoUrl.trim(),
           photoDescription: newPhoto.photoDescription.trim(),
         },
       ]);
-      setSuccessMessage("Foto agregada correctamente.");
+      toast.success("Foto agregada correctamente.");
       setNewPhoto({ photoUrl: "", photoDescription: "" });
       await fetchPhotos();
     } catch (err) {
-      setError(err.message || "Error al agregar la foto");
+      toast.error(mapApiError(err.message, "Error al agregar la foto"));
     } finally {
       setAddingPhoto(false);
     }
@@ -377,11 +331,11 @@ function AdminBarbershop() {
     try {
       setDeletingPhotoId(photoToDelete);
       await deleteBarbershopPhoto(id, photoToDelete);
-      setSuccessMessage("Foto eliminada correctamente.");
+      toast.success("Foto eliminada correctamente.");
       setPhotoToDelete(null);
       await fetchPhotos();
     } catch (err) {
-      setError(err.message || "Error al eliminar la foto");
+      toast.error(mapApiError(err.message, "Error al eliminar la foto"));
       setPhotoToDelete(null);
     } finally {
       setDeletingPhotoId(null);
@@ -430,7 +384,7 @@ function AdminBarbershop() {
       )}
 
       <div className="bg-slate-50">
-        {/* ── HERO ──────────────────────────────────────────────────────────── */}
+        {/* ── HERO ── */}
         <div
           className="relative overflow-hidden border-b border-slate-100"
           style={{
@@ -525,28 +479,11 @@ function AdminBarbershop() {
           </div>
         </div>
 
-        {/* ── ALERTS ────────────────────────────────────────────────────────── */}
-        {(error || successMessage) && (
-          <div className="max-w-6xl mx-auto px-6 pt-5">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
-                {error}
-              </div>
-            )}
-            {successMessage && (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm">
-                {successMessage}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── MAIN CONTENT ──────────────────────────────────────────────────── */}
+        {/* ── MAIN CONTENT ── */}
         <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* ── LEFT COLUMN ─────────────────────────────────────────────── */}
+            {/* LEFT */}
             <div className="flex flex-col gap-5">
-              {/* Foto principal */}
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 <img
                   src={barbershop.image || fallbackImage}
@@ -583,7 +520,6 @@ function AdminBarbershop() {
                 </div>
               </div>
 
-              {/* Estado */}
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                 <p className={labelCls}>Estado de la barbería</p>
                 <div className="grid grid-cols-2 gap-2 mb-4">
@@ -610,7 +546,7 @@ function AdminBarbershop() {
               </div>
             </div>
 
-            {/* ── RIGHT COLUMN ────────────────────────────────────────────── */}
+            {/* RIGHT */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 <div className="px-6 pt-6 pb-2 border-b border-slate-50">
@@ -714,7 +650,7 @@ function AdminBarbershop() {
             </div>
           </div>
 
-          {/* ── GALERÍA DE FOTOS ──────────────────────────────────────────── */}
+          {/* ── GALERÍA ── */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="px-6 pt-6 pb-4 border-b border-slate-50 flex items-center justify-between">
               <div>
@@ -729,9 +665,7 @@ function AdminBarbershop() {
                 {photos.length}
               </span>
             </div>
-
             <div className="p-6 space-y-6">
-              {/* Formulario agregar foto */}
               <form
                 onSubmit={handleAddPhoto}
                 className="bg-slate-50 rounded-2xl p-4 border border-slate-100"
@@ -778,7 +712,6 @@ function AdminBarbershop() {
                     {addingPhoto ? "Agregando..." : "Agregar"}
                   </button>
                 </div>
-                {/* Preview */}
                 {newPhoto.photoUrl && (
                   <div className="mt-3">
                     <img
@@ -793,7 +726,6 @@ function AdminBarbershop() {
                 )}
               </form>
 
-              {/* Grid de fotos */}
               {photosLoading ? (
                 <div className="flex items-center gap-3 text-slate-400 py-4">
                   <span className="material-icons-round animate-spin">
@@ -825,7 +757,6 @@ function AdminBarbershop() {
                         }}
                         className="w-full h-36 object-cover"
                       />
-                      {/* Overlay con descripción y botón eliminar */}
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                         {photo.photoDescription && (
                           <p className="text-white text-xs font-medium leading-tight mb-2 line-clamp-2">

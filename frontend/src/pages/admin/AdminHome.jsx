@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getBarbershops } from "../../services/barbershopService";
 import AdminBarbershopCard from "../../components/barbershop/AdminBarbershopCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 function AdminHome() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [shops, setShops] = useState([]);
   const [search, setSearch] = useState("");
@@ -32,15 +35,12 @@ function AdminHome() {
     filterOptions.find((o) => o.value === statusFilter) || filterOptions[0];
   const [loading, setLoading] = useState(true);
   const [showLoading, setShowLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  // Debounce: espera 400ms tras dejar de escribir
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 100);
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Mostrar "Cargando..." solo si tarda más de 1s
   useEffect(() => {
     if (!loading) {
       setShowLoading(false);
@@ -56,23 +56,19 @@ function AdminHome() {
     const fetchAdminBarbershops = async () => {
       try {
         setLoading(true);
-        setError("");
-
         const storedUser = JSON.parse(localStorage.getItem("user") || "null");
         const filters = { adminId: storedUser?.id };
         if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
         if (statusFilter === "open") filters.isOpen = true;
         else if (statusFilter === "closed") filters.isOpen = false;
-
         const data = await getBarbershops(filters);
         setShops(data);
       } catch (err) {
-        setError(err.message || "Error al cargar las barberías");
+        toast.error(mapApiError(err.message, "Error al cargar las barberías"));
       } finally {
         setLoading(false);
       }
     };
-
     fetchAdminBarbershops();
   }, [debouncedSearch, statusFilter]);
 
@@ -97,10 +93,9 @@ function AdminHome() {
         </button>
       </div>
 
-      {/* Premium Unified Search Bar (Airbnb / SaaS Style) */}
+      {/* Premium Unified Search Bar */}
       <div className="mb-14 w-full max-w-4xl mx-auto mt-4">
         <div className="flex flex-col sm:flex-row items-center bg-white dark:bg-slate-900 sm:rounded-full rounded-[2rem] shadow-[0_12px_40px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_16px_50px_-10px_rgba(0,0,0,0.12)] border border-slate-200/60 dark:border-slate-700/60 transition-all duration-300 p-1.5">
-          {/* Search Section */}
           <div className="relative flex-1 w-full flex items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 sm:rounded-full rounded-3xl transition-colors group px-2">
             <div className="absolute left-4 flex items-center justify-center pointer-events-none">
               <span className="material-icons-round text-slate-400 group-focus-within:text-primary transition-colors text-[22px]">
@@ -116,10 +111,8 @@ function AdminHome() {
             />
           </div>
 
-          {/* Vertical Divider */}
           <div className="hidden sm:block h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-          {/* Filter Section */}
           <div className="relative w-full sm:w-auto flex items-center border-t sm:border-t-0 border-slate-100 dark:border-slate-700 mt-1 sm:mt-0 pt-1 sm:pt-0">
             <button
               type="button"
@@ -150,7 +143,6 @@ function AdminHome() {
               </span>
             </button>
 
-            {/* Custom Dropdown Menu */}
             {isFilterOpen && (
               <>
                 <div
@@ -218,13 +210,7 @@ function AdminHome() {
         </div>
       )}
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && shops.length === 0 && (
+      {!loading && shops.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-400">
           <span className="material-icons-round text-5xl mb-3 opacity-30">
             search_off
@@ -233,7 +219,7 @@ function AdminHome() {
         </div>
       )}
 
-      {!loading && !error && shops.length > 0 && (
+      {!loading && shops.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {shops.map((shop) => (
             <AdminBarbershopCard key={shop.id} shop={shop} />

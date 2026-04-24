@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQueueLive } from "../../hooks/useQueueLive";
+import { useToast } from "../../context/ToastContext";
 import QueueColumn from "../../components/queue/QueueColumn";
 import AssistantRegisterPanel from "../../components/assistant/AssistantRegisterPanel";
 import JoinQueueModal from "../../components/queue/JoinQueueModal";
@@ -76,6 +78,37 @@ function QueueLive() {
   const resolvedId = id ?? barbershopId;
 
   const q = useQueueLive(resolvedId);
+  const { success, error } = useToast();
+
+  useEffect(() => {
+    if (q.turnSuccess) {
+      success(q.turnSuccess);
+    }
+  }, [q.turnSuccess, success]);
+
+  useEffect(() => {
+    if (q.turnError) {
+      error(q.turnError);
+    }
+  }, [q.turnError, error]);
+
+  useEffect(() => {
+    if (q.queueError) {
+      error(q.queueError);
+    }
+  }, [q.queueError, error]);
+
+  useEffect(() => {
+    if (q.clientSuccess) {
+      success(q.clientSuccess);
+    }
+  }, [q.clientSuccess, success]);
+
+  useEffect(() => {
+    if (q.clientError) {
+      error(q.clientError);
+    }
+  }, [q.clientError, error]);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
@@ -109,27 +142,9 @@ function QueueLive() {
           </div>
         </div>
 
-        {/* ─── Alertas globales ─── */}
-        {q.turnSuccess && (
-          <div className="mb-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            {q.turnSuccess}
-          </div>
-        )}
-        {q.turnError && (
-          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            {q.turnError}
-          </div>
-        )}
-
         <div className="flex flex-col xl:flex-row gap-8">
           {/* ─── Cola principal ─── */}
           <div className="flex-grow">
-            {q.queueError && (
-              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-                {q.queueError}
-              </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {q.loadingQueue ? (
                 <p className="text-slate-500">Cargando cola...</p>
@@ -282,15 +297,6 @@ function QueueLive() {
                   </span>
                   Clientes en barbería
                 </h3>
-
-                {q.clientError && (
-                  <p className="text-sm text-red-500 mb-3">{q.clientError}</p>
-                )}
-                {q.clientSuccess && (
-                  <p className="text-sm text-green-600 mb-3">
-                    {q.clientSuccess}
-                  </p>
-                )}
 
                 {q.isClient && (
                   <div className="space-y-3">

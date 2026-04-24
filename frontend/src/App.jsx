@@ -1,11 +1,14 @@
 import AppRoutes from "./routes/AppRoutes.jsx";
 import { QueueProvider } from "./context/QueueContext";
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   return (
-    <QueueProvider>
-      <AppRoutes />
-    </QueueProvider>
+    <ToastProvider>
+      <QueueProvider>
+        <AppRoutes />
+      </QueueProvider>
+    </ToastProvider>
   );
 }
 

@@ -7,6 +7,8 @@ import {
   getBarbershopClients,
 } from "../../services/barbershopService";
 import ReviewsModal from "../../components/barbershop/ReviewsModal";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 const DAY_LABELS = {
   1: "Lun",
@@ -116,13 +118,13 @@ function EmployeesModal({ title, employees, color, onClose }) {
 function AdminDashboard() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [shop, setShop] = useState(null);
   const [employees, setEmployees] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const [showReviews, setShowReviews] = useState(false);
   const [showBarbers, setShowBarbers] = useState(false);
@@ -132,7 +134,6 @@ function AdminDashboard() {
     const fetchAll = async () => {
       try {
         setLoading(true);
-        setError("");
         const [shopData, empData, revData, cliData] = await Promise.all([
           getBarbershopById(id),
           getBarbershopEmployees(id),
@@ -144,7 +145,7 @@ function AdminDashboard() {
         setReviews(Array.isArray(revData) ? revData : []);
         setClients(Array.isArray(cliData) ? cliData : []);
       } catch (err) {
-        setError(err.message || "Error al cargar el dashboard");
+        toast.error(mapApiError(err.message, "Error al cargar el dashboard"));
       } finally {
         setLoading(false);
       }
@@ -160,16 +161,6 @@ function AdminDashboard() {
             bar_chart
           </span>
           <p className="text-sm font-medium">Cargando dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-2xl p-6 max-w-md text-center text-sm">
-          {error}
         </div>
       </div>
     );

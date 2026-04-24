@@ -4,12 +4,17 @@ import {
   createBarbershop,
   addBarbershopPhotos,
 } from "../../services/barbershopService";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 function AdminCreateBarbershop() {
   const navigate = useNavigate();
+  const toast = useToast();
+
+  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
   const [formData, setFormData] = useState({
-    adminId: 1,
+    adminId: storedUser?.id ?? 1,
     barbershopName: "",
     email: "",
     phone: "",
@@ -20,16 +25,12 @@ function AdminCreateBarbershop() {
     capacity: 1,
   });
 
-  // Fotos de galería a agregar al crear
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [newGalleryPhoto, setNewGalleryPhoto] = useState({
     photoUrl: "",
     photoDescription: "",
   });
-
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,12 +54,7 @@ function AdminCreateBarbershop() {
     e.preventDefault();
     try {
       setSaving(true);
-      setError("");
-      setSuccessMessage("");
-
       const created = await createBarbershop(formData);
-
-      // Si hay fotos de galería, las agregamos después de crear
       if (galleryPhotos.length > 0) {
         await addBarbershopPhotos(
           created.id,
@@ -68,13 +64,12 @@ function AdminCreateBarbershop() {
           })),
         );
       }
-
-      setSuccessMessage("Barbería creada correctamente.");
+      toast.success("Barbería creada correctamente.");
       setTimeout(() => {
         navigate(`/admin/barbershop/${created.id}`);
       }, 1200);
     } catch (err) {
-      setError(err.message || "Error al crear la barbería");
+      toast.error(mapApiError(err.message, "Error al crear la barbería"));
     } finally {
       setSaving(false);
     }
@@ -109,21 +104,7 @@ function AdminCreateBarbershop() {
           </p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-xl text-sm font-bold flex items-center gap-2">
-            <span className="material-icons-round">error</span>
-            {error}
-          </div>
-        )}
-        {successMessage && (
-          <div className="bg-green-50 border border-green-100 text-green-600 p-4 rounded-xl text-sm font-bold flex items-center gap-2">
-            <span className="material-icons-round">check_circle</span>
-            {successMessage}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Información básica */}
           <div>
             <label className={labelCls}>Nombre de la barbería</label>
             <input
@@ -228,7 +209,7 @@ function AdminCreateBarbershop() {
             </div>
           </div>
 
-          {/* ── Galería de fotos ────────────────────────────────────────── */}
+          {/* Galería */}
           <div className="pt-4 border-t border-slate-100">
             <h2 className="text-sm font-bold text-slate-700 mb-1">
               Fotos de servicios (galería)
@@ -238,7 +219,6 @@ function AdminCreateBarbershop() {
               clientes.
             </p>
 
-            {/* Agregar foto */}
             <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3 mb-4">
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
@@ -293,7 +273,6 @@ function AdminCreateBarbershop() {
               )}
             </div>
 
-            {/* Lista de fotos agregadas */}
             {galleryPhotos.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {galleryPhotos.map((photo) => (

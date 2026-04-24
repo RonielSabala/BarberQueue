@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyBarbershops } from "../../utils/getMyBarbershops";
 import EmployeeBarbershopCard from "../../components/barbershop/EmployeeBarbershopCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 function AssistantHome() {
   const navigate = useNavigate();
+  const toast = useToast();
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 
   const [barbershops, setBarbershops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -18,8 +20,12 @@ function AssistantHome() {
         const shops = await getMyBarbershops(storedUser?.id);
         setBarbershops(shops);
       } catch (err) {
-        console.error("Error al cargar barberías:", err);
-        setError("No se pudieron cargar tus barberías asignadas.");
+        toast.error(
+          mapApiError(
+            err.message,
+            "No se pudieron cargar tus barberías asignadas.",
+          ),
+        );
       } finally {
         setLoading(false);
       }
@@ -29,13 +35,11 @@ function AssistantHome() {
   }, [storedUser?.id]);
 
   const handleEnter = (shop) => {
-    // Al entrar a la barbería, el asistente va directo a la cola en vivo
     navigate(`/assistant/barbershop/${shop.barbershopId}/queue`);
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-display font-bold tracking-tight text-slate-900">
@@ -47,7 +51,6 @@ function AssistantHome() {
         </div>
       </div>
 
-      {/* Estados */}
       {loading && (
         <div className="flex items-center justify-center gap-3 py-16 text-slate-400">
           <span className="material-icons-round animate-pulse text-3xl">
@@ -57,13 +60,7 @@ function AssistantHome() {
         </div>
       )}
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && barbershops.length === 0 && (
+      {!loading && barbershops.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-slate-400">
           <span className="material-icons-round text-5xl mb-3 opacity-30">
             search_off
@@ -74,7 +71,7 @@ function AssistantHome() {
         </div>
       )}
 
-      {!loading && !error && barbershops.length > 0 && (
+      {!loading && barbershops.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {barbershops.map((shop) => (
             <EmployeeBarbershopCard

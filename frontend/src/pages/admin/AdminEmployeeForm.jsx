@@ -10,6 +10,8 @@ import {
   getEmployeeById,
   updateEmployeeAssignment,
 } from "../../services/employeeService";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 const DAYS = [
   { value: 1, label: "Lunes" },
@@ -23,46 +25,6 @@ const DAYS = [
 
 const ROLE_LABELS = { barber: "Barbero", assistant: "Asistente" };
 
-const ERROR_MAP = {
-  "End time cannot be later than the barbershop closing time":
-    "La hora de salida no puede ser posterior a la hora de cierre de la barbería.",
-  "Start time cannot be earlier than the barbershop opening time":
-    "La hora de entrada no puede ser anterior a la hora de apertura de la barbería.",
-  "Employee already assigned to this barbershop":
-    "Este empleado ya está asignado a esta barbería.",
-  "Employee not found": "No se encontró el empleado en el sistema.",
-  "Barbershop not found": "No se encontró la barbería.",
-  "TimeOfDay must be a valid time in format HH:MM:SS":
-    "El horario debe tener un formato de hora válido.",
-  "Invalid working days": "Los días de trabajo seleccionados no son válidos.",
-};
-
-const DAY_TRANSLATIONS = {
-  Monday: "lunes",
-  Tuesday: "martes",
-  Wednesday: "miércoles",
-  Thursday: "jueves",
-  Friday: "viernes",
-  Saturday: "sábado",
-  Sunday: "domingo",
-};
-
-function mapBackendError(message) {
-  if (!message) return null;
-  const overlapMatch = message.match(
-    /^The employee already has an overlapping schedule on (.+)$/,
-  );
-  if (overlapMatch) {
-    const days = overlapMatch[1]
-      .split(",")
-      .map((d) => DAY_TRANSLATIONS[d.trim()] || d.trim())
-      .join(", ");
-    return `El empleado ya tiene un horario que se superpone los días: ${days}.`;
-  }
-  return ERROR_MAP[message] ?? message;
-}
-
-// ── Shared input/label styles ──────────────────────────────────────────────
 const inputCls =
   "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition placeholder:text-slate-300 disabled:text-slate-400 disabled:cursor-not-allowed";
 const labelCls =
@@ -71,10 +33,10 @@ const labelCls =
 function AdminEmployeeForm() {
   const { id, employeeId } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const isEditMode = useMemo(() => Boolean(employeeId), [employeeId]);
 
   const [mode, setMode] = useState("new");
-
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -85,7 +47,6 @@ function AdminEmployeeForm() {
     endTime: "",
     workingDays: [],
   });
-
   const [allEmployees, setAllEmployees] = useState([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
   const [employeeSearch, setEmployeeSearch] = useState("");
@@ -95,14 +56,10 @@ function AdminEmployeeForm() {
     endTime: "",
     workingDays: [],
   });
-
   const [barbershopName, setBarbershopName] = useState("");
   const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
-  // Cargar nombre de barbería
   useEffect(() => {
     if (!id) return;
     getBarbershopById(id)
@@ -114,19 +71,17 @@ function AdminEmployeeForm() {
       .catch(() => setBarbershopName(`Barbería #${id}`));
   }, [id]);
 
-  // Cargar empleado en edición
   useEffect(() => {
     if (!isEditMode || !employeeId || !id) return;
     const fetch = async () => {
       try {
         setLoading(true);
-        setError("");
         const employee = await getEmployeeById(employeeId);
         const assignment = employee.assignments?.find(
           (a) => Number(a.barbershopId) === Number(id),
         );
         if (!assignment) {
-          setError(
+          toast.error(
             "No se encontró la asignación de este empleado en esta barbería.",
           );
           return;
@@ -142,7 +97,7 @@ function AdminEmployeeForm() {
           workingDays: assignment.workingDays || [],
         });
       } catch (err) {
-        setError(err.message || "Error al cargar el empleado");
+        toast.error(mapApiError(err.message, "Error al cargar el empleado"));
       } finally {
         setLoading(false);
       }
@@ -150,17 +105,17 @@ function AdminEmployeeForm() {
     fetch();
   }, [isEditMode, employeeId, id]);
 
-  // Cargar lista al cambiar a modo existente
   useEffect(() => {
     if (mode !== "existing" || isEditMode) return;
     const fetch = async () => {
       try {
         setLoadingEmployees(true);
-        setError("");
         const emps = await getAllEmployees();
         setAllEmployees(emps);
       } catch (err) {
-        setError(err.message || "Error al cargar la lista de empleados");
+        toast.error(
+          mapApiError(err.message, "Error al cargar la lista de empleados"),
+        );
       } finally {
         setLoadingEmployees(false);
       }
@@ -188,8 +143,6 @@ function AdminEmployeeForm() {
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
-    setError("");
-    setSuccessMessage("");
     setSelectedEmployee(null);
     setEmployeeSearch("");
     setExistingSchedule({ startTime: "", endTime: "", workingDays: [] });
@@ -207,58 +160,50 @@ function AdminEmployeeForm() {
     e.preventDefault();
     try {
       setSaving(true);
-      setError("");
-      setSuccessMessage("");
 
       if (isEditMode) {
         if (!formData.role) {
-          setError("Debes seleccionar un rol.");
+          toast.error("Debes seleccionar un rol.");
           return;
         }
         if (!formData.workingDays.length) {
-          setError("Debes seleccionar al menos un día de trabajo.");
+          toast.error("Debes seleccionar al menos un día de trabajo.");
           return;
         }
-        const res = await updateEmployeeAssignment(employeeId, id, {
+        await updateEmployeeAssignment(employeeId, id, {
           role: formData.role,
           startTime: formData.startTime,
           endTime: formData.endTime,
           workingDays: formData.workingDays,
         });
-        setSuccessMessage(res.message || "Empleado actualizado correctamente.");
+        toast.success("Empleado actualizado correctamente.");
       } else if (mode === "new") {
         if (!formData.role) {
-          setError("Debes seleccionar un rol.");
+          toast.error("Debes seleccionar un rol.");
           return;
         }
         if (!formData.workingDays.length) {
-          setError("Debes seleccionar al menos un día de trabajo.");
+          toast.error("Debes seleccionar al menos un día de trabajo.");
           return;
         }
         await createBarbershopEmployee(id, formData);
-        setSuccessMessage("Empleado creado correctamente.");
+        toast.success("Empleado creado correctamente.");
       } else {
         if (!selectedEmployee) {
-          setError("Debes seleccionar un empleado de la lista.");
+          toast.error("Debes seleccionar un empleado de la lista.");
           return;
         }
         if (!existingSchedule.workingDays.length) {
-          setError("Debes seleccionar al menos un día de trabajo.");
+          toast.error("Debes seleccionar al menos un día de trabajo.");
           return;
         }
-        const res = await assignExistingEmployee(
-          id,
-          selectedEmployee.id,
-          existingSchedule,
-        );
-        setSuccessMessage(
-          res.message || "Empleado asignado correctamente a la barbería.",
-        );
+        await assignExistingEmployee(id, selectedEmployee.id, existingSchedule);
+        toast.success("Empleado asignado correctamente a la barbería.");
       }
 
       setTimeout(() => navigate(`/admin/barbershop/${id}/employees`), 1200);
     } catch (err) {
-      setError(mapBackendError(err.message) || "Error al guardar el empleado");
+      toast.error(mapApiError(err.message, "Error al guardar el empleado"));
     } finally {
       setSaving(false);
     }
@@ -291,7 +236,7 @@ function AdminEmployeeForm() {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      {/* ── HERO ── */}
       <div
         className="relative overflow-hidden border-b border-slate-100"
         style={{
@@ -326,7 +271,6 @@ function AdminEmployeeForm() {
             </span>
             Volver
           </button>
-
           <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none mb-2">
             {isEditMode ? "Editar empleado" : "Agregar empleado"}
           </h1>
@@ -338,21 +282,8 @@ function AdminEmployeeForm() {
         </div>
       </div>
 
-      {/* ── CONTENT ───────────────────────────────────────────────────────── */}
+      {/* ── CONTENT ── */}
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Alerts */}
-        {error && (
-          <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm font-medium">
-            {error}
-          </div>
-        )}
-        {successMessage && (
-          <div className="mb-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm font-medium">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Toggle modo */}
         {!isEditMode && (
           <div className="flex mb-6 bg-slate-100 rounded-2xl p-1 w-fit gap-1">
             {["new", "existing"].map((m) => (
@@ -360,11 +291,7 @@ function AdminEmployeeForm() {
                 key={m}
                 type="button"
                 onClick={() => handleModeChange(m)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  mode === m
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
-                }`}
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${mode === m ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
               >
                 {m === "new" ? "Empleado nuevo" : "Empleado existente"}
               </button>
@@ -374,13 +301,12 @@ function AdminEmployeeForm() {
 
         <form onSubmit={handleSubmit}>
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {/* ── MODO NUEVO / EDICIÓN ────────────────────────────────────── */}
+            {/* ── MODO NUEVO / EDICIÓN ── */}
             {(isEditMode || mode === "new") && (
               <div className="p-6 space-y-5">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50 pb-4">
                   Información del empleado
                 </p>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className={labelCls}>Nombre completo</label>
@@ -485,7 +411,6 @@ function AdminEmployeeForm() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label className={labelCls}>Días de trabajo</label>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -494,11 +419,7 @@ function AdminEmployeeForm() {
                         type="button"
                         key={day.value}
                         onClick={() => handleDayToggle(day.value, false)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${
-                          formData.workingDays.includes(day.value)
-                            ? "bg-slate-900 text-white border-slate-900"
-                            : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${formData.workingDays.includes(day.value) ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"}`}
                       >
                         {day.label}
                       </button>
@@ -508,10 +429,9 @@ function AdminEmployeeForm() {
               </div>
             )}
 
-            {/* ── MODO EXISTENTE ──────────────────────────────────────────── */}
+            {/* ── MODO EXISTENTE ── */}
             {!isEditMode && mode === "existing" && (
               <div className="p-6 space-y-5">
-                {/* Buscador */}
                 <div>
                   <label className={labelCls}>Buscar empleado</label>
                   <div className="relative">
@@ -531,7 +451,6 @@ function AdminEmployeeForm() {
                   </div>
                 </div>
 
-                {/* Lista */}
                 {loadingEmployees ? (
                   <div className="flex items-center gap-2 text-slate-400 py-4">
                     <span className="material-icons-round animate-spin text-lg">
@@ -616,7 +535,6 @@ function AdminEmployeeForm() {
                   </div>
                 )}
 
-                {/* Resumen seleccionado */}
                 {selectedEmployee && (
                   <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
                     <span className="material-icons-round text-emerald-500 text-[18px]">
@@ -635,7 +553,6 @@ function AdminEmployeeForm() {
                   </div>
                 )}
 
-                {/* Horario */}
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest border-t border-slate-50 pt-5">
                   Horario en esta barbería
                 </p>
@@ -679,11 +596,7 @@ function AdminEmployeeForm() {
                         type="button"
                         key={day.value}
                         onClick={() => handleDayToggle(day.value, true)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${
-                          existingSchedule.workingDays.includes(day.value)
-                            ? "bg-slate-900 text-white border-slate-900"
-                            : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"
-                        }`}
+                        className={`px-4 py-2 rounded-full text-sm font-bold transition-all border ${existingSchedule.workingDays.includes(day.value) ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-500 border-slate-200 hover:border-slate-400"}`}
                       >
                         {day.label}
                       </button>

@@ -4,8 +4,6 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 function ClientProfile() {
   const {
     user,
-    error,
-    successMessage,
     loading,
     saving,
     savingPhoto,
@@ -29,11 +27,7 @@ function ClientProfile() {
 
   return (
     <UserProfileCard
-      title="Mi Perfil"
-      subtitle="Consulta y actualiza tu información personal registrada en BarberQueue."
       user={user}
-      error={error}
-      successMessage={successMessage}
       loading={loading}
       saving={saving}
       savingPhoto={savingPhoto}

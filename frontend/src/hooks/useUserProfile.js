@@ -5,18 +5,20 @@ import {
   updateUserPhoto,
   changeUserPassword,
 } from "../services/userService";
+import { useToast } from "../context/ToastContext";
+import { mapApiError } from "../utils/mapApiError";
 
 export function useUserProfile() {
-  const [user, setUser]                       = useState(null);
-  const [error, setError]                     = useState("");
-  const [successMessage, setSuccessMessage]   = useState("");
-  const [loading, setLoading]                 = useState(true);
-  const [saving, setSaving]                   = useState(false);
-  const [savingPhoto, setSavingPhoto]         = useState(false);
-  const [isEditing, setIsEditing]             = useState(false);
+  const toast = useToast();
+
+  const [user, setUser]                             = useState(null);
+  const [loading, setLoading]                       = useState(true);
+  const [saving, setSaving]                         = useState(false);
+  const [savingPhoto, setSavingPhoto]               = useState(false);
+  const [isEditing, setIsEditing]                   = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [isEditingPhoto, setIsEditingPhoto]   = useState(false);
-  const [photoUrlInput, setPhotoUrlInput]     = useState("");
+  const [isEditingPhoto, setIsEditingPhoto]         = useState(false);
+  const [photoUrlInput, setPhotoUrlInput]           = useState("");
 
   const [formData, setFormData] = useState({ username: "", email: "", phone: "" });
   const [passwordData, setPasswordData] = useState({
@@ -28,14 +30,13 @@ export function useUserProfile() {
 
   const fetchUserProfile = async () => {
     try {
-      setError("");
       setLoading(true);
-      if (!userId) { setError("No se encontró el usuario autenticado."); return; }
+      if (!userId) { toast.error("No se encontró el usuario autenticado."); return; }
       const userData = await getUserById(userId);
       setUser(userData);
       setFormData({ username: userData.username || "", email: userData.email || "", phone: userData.phone || "" });
     } catch (err) {
-      setError(err.message || "Error al cargar el perfil");
+      toast.error(mapApiError(err.message, "Error al cargar el perfil"));
     } finally {
       setLoading(false);
     }
@@ -54,19 +55,16 @@ export function useUserProfile() {
   };
 
   const handleEditClick = () => {
-    setSuccessMessage(""); setError("");
     setIsChangingPassword(false); setIsEditingPhoto(false);
     setIsEditing(true);
   };
 
   const handlePasswordClick = () => {
-    setSuccessMessage(""); setError("");
     setIsEditing(false); setIsEditingPhoto(false);
     setIsChangingPassword(true);
   };
 
   const handlePhotoClick = () => {
-    setSuccessMessage(""); setError("");
     setIsEditing(false); setIsChangingPassword(false);
     setPhotoUrlInput(user?.photoUrl || "");
     setIsEditingPhoto(true);
@@ -74,24 +72,23 @@ export function useUserProfile() {
 
   const handleCancel = () => {
     setIsEditing(false); setIsChangingPassword(false); setIsEditingPhoto(false);
-    setSuccessMessage(""); setError("");
+    setPhotoUrlInput("");
     if (user) setFormData({ username: user.username || "", email: user.email || "", phone: user.phone || "" });
     setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    setPhotoUrlInput("");
   };
 
   const handleSubmitProfile = async (e) => {
     e.preventDefault();
     try {
-      setSaving(true); setError(""); setSuccessMessage("");
+      setSaving(true);
       const response = await updateUserProfile(userId, formData);
-      setSuccessMessage(response.message || "Perfil actualizado correctamente.");
+      toast.success("Perfil actualizado correctamente.");
       setIsEditing(false);
       await fetchUserProfile();
       const updatedUser = { ...storedUser, username: formData.username, email: formData.email };
       localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (err) {
-      setError(err.message || "Error al actualizar el perfil");
+      toast.error(mapApiError(err.message, "Error al actualizar el perfil"));
     } finally {
       setSaving(false);
     }
@@ -99,16 +96,25 @@ export function useUserProfile() {
 
   const handleSubmitPassword = async (e) => {
     e.preventDefault();
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      toast.error("Debes completar todos los campos.");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("La nueva contraseña y su confirmación no coinciden.");
+      return;
+    }
     try {
-      setSaving(true); setError(""); setSuccessMessage("");
-      if (!passwordData.currentPassword || !passwordData.newPassword) { setError("Debes completar todos los campos."); return; }
-      if (passwordData.newPassword !== passwordData.confirmPassword) { setError("La nueva contraseña y su confirmación no coinciden."); return; }
-      const response = await changeUserPassword(userId, { currentPassword: passwordData.currentPassword, newPassword: passwordData.newPassword });
-      setSuccessMessage(response.message || "Contraseña actualizada correctamente.");
+      setSaving(true);
+      const response = await changeUserPassword(userId, {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      toast.success(response.message || "Contraseña actualizada correctamente.");
       setIsChangingPassword(false);
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      setError(err.message || "Error al cambiar la contraseña");
+      toast.error(mapApiError(err.message, "Error al cambiar la contraseña"));
     } finally {
       setSaving(false);
     }
@@ -116,31 +122,33 @@ export function useUserProfile() {
 
   const handleSubmitPhoto = async (e) => {
     e.preventDefault();
+    if (!photoUrlInput.trim()) {
+      toast.error("Ingresa una URL de imagen válida.");
+      return;
+    }
     try {
-      setSavingPhoto(true); setError(""); setSuccessMessage("");
-      if (!photoUrlInput.trim()) { setError("Ingresa una URL de imagen válida."); return; }
+      setSavingPhoto(true);
       await updateUserPhoto(userId, photoUrlInput.trim());
-      setSuccessMessage("Foto de perfil actualizada correctamente.");
+      toast.success("Foto de perfil actualizada correctamente.");
       setIsEditingPhoto(false);
       await fetchUserProfile();
       const updatedUser = { ...storedUser, photoUrl: photoUrlInput.trim() };
       localStorage.setItem("user", JSON.stringify(updatedUser));
     } catch (err) {
-      setError(err.message || "Error al actualizar la foto");
+      toast.error(mapApiError(err.message, "Error al actualizar la foto"));
     } finally {
       setSavingPhoto(false);
     }
   };
 
   return {
-    user, error, successMessage, loading, saving, savingPhoto,
+    user, loading, saving, savingPhoto,
     isEditing, isChangingPassword, isEditingPhoto,
     formData, passwordData, photoUrlInput, setPhotoUrlInput,
     handleChange, handlePasswordChange,
     handleEditClick, handlePasswordClick, handlePhotoClick,
     handleCancel,
     handleSubmitProfile, handleSubmitPassword, handleSubmitPhoto,
-    // aliases para compatibilidad con AssistantProfile
     handleFieldChange: handleChange,
     handlePasswordFieldChange: handlePasswordChange,
   };

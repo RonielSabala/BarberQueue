@@ -9,58 +9,47 @@ import { getEmployeeById } from "../../services/employeeService";
 import { getBarberQueue } from "../../services/queueService";
 import { attendTurn } from "../../services/turnService";
 import { Avatar } from "../../components/UserProfileCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
-// ── Verifica si el barbero está dentro de su horario laboral ──────────────
 function isWithinSchedule(assignment) {
-  if (!assignment) return true; // sin asignación, no bloqueamos
-
+  if (!assignment) return true;
   const now = new Date();
-  const todayDow = now.getDay(); // 0=Dom,1=Lun,...,6=Sáb
-  // Backend usa 1=Lun...7=Dom — convertimos
+  const todayDow = now.getDay();
   const backendDow = todayDow === 0 ? 7 : todayDow;
-
   const workingDays = assignment.workingDays || [];
   if (!workingDays.includes(backendDow)) return false;
-
   const [startH, startM] = (assignment.startTime || "00:00:00")
     .split(":")
     .map(Number);
   const [endH, endM] = (assignment.endTime || "23:59:00")
     .split(":")
     .map(Number);
-
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const startMinutes = startH * 60 + startM;
-  const endMinutes = endH * 60 + endM;
-
-  return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+  return nowMinutes >= startH * 60 + startM && nowMinutes < endH * 60 + endM;
 }
 
 function BarberWorkspace() {
   const navigate = useNavigate();
   const { barbershopId } = useParams();
+  const toast = useToast();
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const barberId = storedUser?.id;
 
   const [barber, setBarber] = useState(null);
   const [queueData, setQueueData] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingAccepting, setSavingAccepting] = useState(false);
   const [attendLoading, setAttendLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   const fetchAll = async () => {
     try {
       setLoading(true);
-      setError("");
-
       if (!barberId) {
-        setError("No se encontró el barbero autenticado.");
+        toast.error("No se encontró el barbero autenticado.");
         return;
       }
 
@@ -70,13 +59,11 @@ function BarberWorkspace() {
         getEmployeeById(barberId),
       ]);
 
-      // Verificar si está dentro de su horario para esta barbería
       const assignment = employeeData?.assignments?.find(
         (a) => Number(a.barbershopId) === Number(barbershopId),
       );
       const withinSchedule = isWithinSchedule(assignment);
 
-      // Si está fuera de horario y no está ya inactivo, forzar inactivo
       if (!withinSchedule && barberData.currentStatus !== "inactive") {
         try {
           await updateBarberStatus(barberId, {
@@ -94,8 +81,9 @@ function BarberWorkspace() {
       setQueueData(queue);
       setSelectedStatus(barberData?.currentStatus || "");
     } catch (err) {
-      console.error("Error al cargar workspace del barbero:", err);
-      setError(err.message || "Error al cargar el workspace del barbero");
+      toast.error(
+        mapApiError(err.message, "Error al cargar el workspace del barbero"),
+      );
     } finally {
       setLoading(false);
     }
@@ -106,31 +94,22 @@ function BarberWorkspace() {
   }, []);
 
   const currentClient = useMemo(() => queueData?.current || null, [queueData]);
-
-  const waitingQueue = useMemo(() => {
-    return Array.isArray(queueData?.queue) ? queueData.queue : [];
-  }, [queueData]);
-
-  const getAcceptingValueByStatus = (status) => status === "active";
+  const waitingQueue = useMemo(
+    () => (Array.isArray(queueData?.queue) ? queueData.queue : []),
+    [queueData],
+  );
 
   const handleStatusUpdate = async () => {
     try {
       setSavingStatus(true);
-      setError("");
-      setSuccessMessage("");
-
-      const response = await updateBarberStatus(barberId, {
+      await updateBarberStatus(barberId, {
         currentStatus: selectedStatus,
-        isAccepting: getAcceptingValueByStatus(selectedStatus),
+        isAccepting: selectedStatus === "active",
       });
-
-      setSuccessMessage(
-        response.message || "Estado actualizado correctamente.",
-      );
+      toast.success("Estado actualizado correctamente.");
       await fetchAll();
     } catch (err) {
-      console.error("Error al actualizar estado del barbero:", err);
-      setError(err.message || "Error al actualizar el estado");
+      toast.error(mapApiError(err.message, "Error al actualizar el estado"));
     } finally {
       setSavingStatus(false);
     }
@@ -138,23 +117,19 @@ function BarberWorkspace() {
 
   const handleToggleAccepting = async () => {
     const newValue = !barber?.isAccepting;
-
     try {
       setSavingAccepting(true);
-      setError("");
-      setSuccessMessage("");
-
       await updateBarberStatus(barberId, { isAccepting: newValue });
-
-      setSuccessMessage(
+      toast.success(
         newValue
           ? "Ahora estás aceptando clientes en tu cola."
-          : "Tu cola está cerrada. No se registrarán nuevos clientes.",
+          : "Tu cola está cerrada.",
       );
       await fetchAll();
     } catch (err) {
-      console.error("Error al cambiar disponibilidad:", err);
-      setError(err.message || "Error al cambiar la disponibilidad");
+      toast.error(
+        mapApiError(err.message, "Error al cambiar la disponibilidad"),
+      );
     } finally {
       setSavingAccepting(false);
     }
@@ -163,21 +138,14 @@ function BarberWorkspace() {
   const handleEndShift = async () => {
     try {
       setSavingStatus(true);
-      setError("");
-      setSuccessMessage("");
-
-      const response = await updateBarberStatus(barberId, {
+      await updateBarberStatus(barberId, {
         currentStatus: "inactive",
         isAccepting: false,
       });
-
-      setSuccessMessage(
-        response.message || "Jornada finalizada correctamente.",
-      );
+      toast.success("Jornada finalizada correctamente.");
       await fetchAll();
     } catch (err) {
-      console.error("Error al terminar jornada:", err);
-      setError(err.message || "Error al terminar la jornada");
+      toast.error(mapApiError(err.message, "Error al terminar la jornada"));
     } finally {
       setSavingStatus(false);
     }
@@ -185,24 +153,16 @@ function BarberWorkspace() {
 
   const handleAttendTurn = async () => {
     if (!currentClient?.id) {
-      setError("No hay cliente en servicio para finalizar.");
+      toast.error("No hay cliente en servicio para finalizar.");
       return;
     }
-
     try {
       setAttendLoading(true);
-      setError("");
-      setSuccessMessage("");
-
       await attendTurn(currentClient.id);
-
-      setSuccessMessage(
-        "Servicio finalizado correctamente. El siguiente cliente pasó a in_service.",
-      );
+      toast.success("Servicio finalizado correctamente.");
       await fetchAll();
     } catch (err) {
-      console.error("Error al finalizar servicio:", err);
-      setError(err.message || "Error al finalizar el servicio");
+      toast.error(mapApiError(err.message, "Error al finalizar el servicio"));
     } finally {
       setAttendLoading(false);
     }
@@ -210,16 +170,23 @@ function BarberWorkspace() {
 
   if (loading) {
     return (
-      <div className="barber-dashboard-page">
-        <p>Cargando workspace...</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3 text-slate-400">
+          <span className="material-icons-round text-5xl animate-pulse">
+            content_cut
+          </span>
+          <p className="text-sm font-medium">Cargando workspace...</p>
+        </div>
       </div>
     );
   }
 
-  if (error && !barber) {
+  if (!barber) {
     return (
-      <div className="barber-dashboard-page">
-        <div className="barber-dashboard-alert error">{error}</div>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+        <div className="bg-red-50 border border-red-200 text-red-600 rounded-2xl p-6 max-w-md text-center text-sm">
+          No se encontró el workspace del barbero.
+        </div>
       </div>
     );
   }
@@ -247,17 +214,6 @@ function BarberWorkspace() {
           Terminar jornada
         </button>
       </div>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl font-medium">
-          {error}
-        </div>
-      )}
-      {successMessage && (
-        <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl font-medium">
-          {successMessage}
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 flex flex-col gap-6">
@@ -333,7 +289,6 @@ function BarberWorkspace() {
               </span>
               Cliente actual en servicio
             </h2>
-
             {currentClient ? (
               <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <Avatar

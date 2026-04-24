@@ -4,8 +4,6 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 function AssistantProfile() {
   const {
     user,
-    error,
-    successMessage,
     loading,
     saving,
     savingPhoto,
@@ -29,11 +27,7 @@ function AssistantProfile() {
 
   return (
     <UserProfileCard
-      title="Perfil del Asistente"
-      subtitle="Consulta y actualiza tu información personal registrada en BarberQueue."
       user={user}
-      error={error}
-      successMessage={successMessage}
       loading={loading}
       saving={saving}
       savingPhoto={savingPhoto}

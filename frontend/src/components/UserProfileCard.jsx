@@ -28,8 +28,6 @@ function Avatar({ photoUrl, username, size = "lg", className = "" }) {
 
 function UserProfileCard({
   user,
-  error,
-  successMessage,
   loading,
   saving,
   savingPhoto,
@@ -61,16 +59,6 @@ function UserProfileCard({
           <p className="text-sm font-medium tracking-wide">
             Cargando perfil...
           </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-        <div className="bg-red-50 border border-red-200 text-red-600 rounded-2xl p-6 max-w-md text-center text-sm">
-          {error}
         </div>
       </div>
     );
@@ -111,7 +99,6 @@ function UserProfileCard({
 
         <div className="relative max-w-5xl mx-auto px-6 py-14">
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-8">
-            {/* Avatar con botón de editar foto */}
             <div className="relative shrink-0 group">
               <Avatar
                 photoUrl={user.photoUrl}
@@ -130,7 +117,6 @@ function UserProfileCard({
                 </button>
               )}
             </div>
-
             <div className="text-center sm:text-left">
               <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none mb-3">
                 {user.username}
@@ -143,17 +129,6 @@ function UserProfileCard({
 
       {/* ── CONTENT ───────────────────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-6 py-10">
-        {error && (
-          <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm">
-            {error}
-          </div>
-        )}
-        {successMessage && (
-          <div className="mb-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm">
-            {successMessage}
-          </div>
-        )}
-
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           {/* ── VIEW MODE ─────────────────────────────────────────────────── */}
           {!isEditing && !isChangingPassword && !isEditingPhoto && (
@@ -226,7 +201,6 @@ function UserProfileCard({
                   Cambiar foto de perfil
                 </h3>
                 <div className="flex flex-col sm:flex-row gap-6 items-start">
-                  {/* Preview */}
                   <div className="shrink-0">
                     <Avatar
                       photoUrl={photoUrlInput || user.photoUrl}

@@ -8,6 +8,8 @@ import {
   getBarbershopPhotos,
 } from "../../services/barbershopService";
 import { Avatar } from "../../components/UserProfileCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 const fallbackHero = "https://via.placeholder.com/1200x300?text=Barberia";
 
@@ -65,6 +67,7 @@ function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
 function BarbershopProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: toastError } = useToast();
 
   const [barbershop, setBarbershop] = useState(null);
   const [photos, setPhotos] = useState([]);
@@ -72,8 +75,6 @@ function BarbershopProfile() {
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [reviewError, setReviewError] = useState("");
-  const [reviewSuccess, setReviewSuccess] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [deletingReviewId, setDeletingReviewId] = useState(null);
   const [reviewToDelete, setReviewToDelete] = useState(null);
@@ -90,7 +91,9 @@ function BarbershopProfile() {
       const data = await getBarbershopById(id);
       setBarbershop(data);
     } catch (err) {
-      setError(err.message || "Error al cargar la barbería");
+      const message = mapApiError(err, "Error al cargar la barbería.");
+      setError(message);
+      toastError(message);
     } finally {
       setLoading(false);
     }
@@ -102,7 +105,7 @@ function BarbershopProfile() {
       const data = await getBarbershopReviews(id);
       setReviews(data);
     } catch (err) {
-      setReviewError(err.message || "Error al cargar las reseñas");
+      toastError(mapApiError(err, "Error al cargar las reseñas."));
     } finally {
       setReviewsLoading(false);
     }
@@ -120,24 +123,26 @@ function BarbershopProfile() {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
+
+    if (!currentUserId) {
+      toastError("Debes iniciar sesión para dejar una reseña.");
+      return;
+    }
+
     try {
       setSubmittingReview(true);
-      setReviewError("");
-      setReviewSuccess("");
-      if (!currentUserId) {
-        setReviewError("Debes iniciar sesión para dejar una reseña.");
-        return;
-      }
+
       await createBarbershopReview(id, {
         clientId: currentUserId,
         rating: reviewForm.rating,
         content: reviewForm.content,
       });
-      setReviewSuccess("Reseña publicada correctamente.");
+
+      success("Reseña publicada correctamente.");
       setReviewForm({ rating: 5, content: "" });
       await fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Error al enviar la reseña");
+      toastError(mapApiError(err, "Error al enviar la reseña."));
     } finally {
       setSubmittingReview(false);
     }
@@ -145,14 +150,17 @@ function BarbershopProfile() {
 
   const handleDeleteConfirm = async () => {
     if (!reviewToDelete) return;
+
     try {
       setDeletingReviewId(reviewToDelete);
+
       await deleteBarbershopReview(id, reviewToDelete);
-      setReviewSuccess("Reseña eliminada correctamente.");
+
+      success("Reseña eliminada correctamente.");
       setReviewToDelete(null);
       await fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Error al eliminar la reseña");
+      toastError(mapApiError(err, "Error al eliminar la reseña."));
       setReviewToDelete(null);
     } finally {
       setDeletingReviewId(null);
@@ -401,17 +409,6 @@ function BarbershopProfile() {
                   </p>
                 </div>
                 <form onSubmit={handleSubmitReview} className="p-6 space-y-5">
-                  {reviewError && (
-                    <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm">
-                      {reviewError}
-                    </div>
-                  )}
-                  {reviewSuccess && (
-                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-3 text-sm">
-                      {reviewSuccess}
-                    </div>
-                  )}
-
                   {/* Estrellas */}
                   <div>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">

@@ -9,6 +9,8 @@ import {
 } from "../../services/barberService";
 import { getUserById, updateUserPhoto } from "../../services/userService";
 import { Avatar } from "../../components/UserProfileCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 // ── Modal cambiar foto ─────────────────────────────────────────────────────
 function EditPhotoModal({ currentUrl, onConfirm, onCancel, saving }) {
@@ -80,6 +82,7 @@ function EditPhotoModal({ currentUrl, onConfirm, onCancel, saving }) {
     </div>
   );
 }
+
 function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
   return (
     <div
@@ -131,15 +134,15 @@ function DeleteReviewModal({ onConfirm, onCancel, deleting }) {
 }
 
 function BarberProfile() {
-  const { barberId: paramBarberId } = useParams(); // presente solo en ruta de cliente
+  const { barberId: paramBarberId } = useParams();
+  const toast = useToast();
   const storedUser = JSON.parse(localStorage.getItem("user") || "null");
   const currentRole = storedUser?.role;
   const currentId = storedUser?.id;
 
-  // Si hay param en la URL usamos ese; si no, usamos el id del usuario logueado
   const barberId = paramBarberId ?? currentId;
   const isClient = currentRole === "client";
-  const isSelf = !paramBarberId; // el barbero viendo su propio perfil
+  const isSelf = !paramBarberId;
 
   const [barber, setBarber] = useState(null);
   const [barberPhotoUrl, setBarberPhotoUrl] = useState(null);
@@ -147,27 +150,20 @@ function BarberProfile() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [reviewError, setReviewError] = useState("");
-  const [reviewSuccess, setReviewSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, content: "" });
-
-  // ── Edición de foto (solo isSelf) ──────────────────────────────────────
   const [isEditingPhoto, setIsEditingPhoto] = useState(false);
   const [savingPhoto, setSavingPhoto] = useState(false);
-  const [photoError, setPhotoError] = useState("");
 
   const handleSavePhoto = async (newUrl) => {
     try {
       setSavingPhoto(true);
-      setPhotoError("");
       await updateUserPhoto(currentId, newUrl);
       setBarberPhotoUrl(newUrl);
       setIsEditingPhoto(false);
-      // Actualizar localStorage
+      toast.success("Foto de perfil actualizada correctamente.");
       const stored = JSON.parse(localStorage.getItem("user") || "null");
       if (stored)
         localStorage.setItem(
@@ -175,7 +171,7 @@ function BarberProfile() {
           JSON.stringify({ ...stored, photoUrl: newUrl }),
         );
     } catch (err) {
-      setPhotoError(err.message || "Error al actualizar la foto");
+      toast.error(mapApiError(err.message, "Error al actualizar la foto"));
     } finally {
       setSavingPhoto(false);
     }
@@ -187,7 +183,7 @@ function BarberProfile() {
       const data = await getBarberReviews(barberId);
       setReviews(data);
     } catch (err) {
-      setReviewError(err.message || "Error al cargar las reseñas");
+      toast.error(mapApiError(err.message, "Error al cargar las reseñas"));
     } finally {
       setReviewsLoading(false);
     }
@@ -197,9 +193,8 @@ function BarberProfile() {
     const fetchAll = async () => {
       try {
         setLoading(true);
-        setError("");
         if (!barberId) {
-          setError("No se encontró el barbero.");
+          toast.error("No se encontró el barbero.");
           return;
         }
         const [barberData, dashboardData, userData] = await Promise.all([
@@ -211,7 +206,9 @@ function BarberProfile() {
         setDashboard(dashboardData);
         setBarberPhotoUrl(userData?.photoUrl || null);
       } catch (err) {
-        setError(err.message || "Error al cargar el perfil del barbero");
+        toast.error(
+          mapApiError(err.message, "Error al cargar el perfil del barbero"),
+        );
       } finally {
         setLoading(false);
       }
@@ -224,18 +221,16 @@ function BarberProfile() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      setReviewError("");
-      setReviewSuccess("");
       await createBarberReview(barberId, {
         clientId: currentId,
         rating: reviewForm.rating,
         content: reviewForm.content,
       });
-      setReviewSuccess("Reseña publicada correctamente.");
+      toast.success("Reseña publicada correctamente.");
       setReviewForm({ rating: 5, content: "" });
       await fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Error al enviar la reseña");
+      toast.error(mapApiError(err.message, "Error al enviar la reseña"));
     } finally {
       setSubmitting(false);
     }
@@ -246,11 +241,11 @@ function BarberProfile() {
     try {
       setDeletingId(reviewToDelete);
       await deleteBarberReview(barberId, reviewToDelete);
-      setReviewSuccess("Reseña eliminada correctamente.");
+      toast.success("Reseña eliminada correctamente.");
       setReviewToDelete(null);
       await fetchReviews();
     } catch (err) {
-      setReviewError(err.message || "Error al eliminar la reseña");
+      toast.error(mapApiError(err.message, "Error al eliminar la reseña"));
       setReviewToDelete(null);
     } finally {
       setDeletingId(null);
@@ -314,17 +309,16 @@ function BarberProfile() {
       </div>
     );
 
-  if (error || !barber)
+  if (!barber)
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
         <div className="bg-red-50 border border-red-200 text-red-600 rounded-2xl p-6 max-w-md text-center text-sm">
-          {error || "No se encontró el perfil del barbero."}
+          No se encontró el perfil del barbero.
         </div>
       </div>
     );
 
   const statusCfg = getStatusConfig(barber.currentStatus);
-
   const kpis = [
     {
       label: "Clientes atendidos",
@@ -374,7 +368,7 @@ function BarberProfile() {
       )}
 
       <div className="min-h-screen bg-slate-50">
-        {/* ── HERO ────────────────────────────────────────────────────────── */}
+        {/* ── HERO ── */}
         <div className="relative bg-gradient-to-br from-slate-50 via-white to-blue-50/60 overflow-hidden border-b border-slate-100">
           <div className="absolute inset-0 flex items-center justify-end pr-12 opacity-[0.04] pointer-events-none select-none">
             <span
@@ -430,11 +424,7 @@ function BarberProfile() {
                     {statusCfg.label}
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ring-1 ${
-                      barber.isAccepting
-                        ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                        : "bg-rose-50 text-rose-700 ring-rose-200"
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ring-1 ${barber.isAccepting ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-rose-50 text-rose-700 ring-rose-200"}`}
                   >
                     <span
                       className="material-icons-round"
@@ -464,7 +454,7 @@ function BarberProfile() {
           </div>
         </div>
 
-        {/* ── KPI STRIP ───────────────────────────────────────────────────── */}
+        {/* ── KPI STRIP ── */}
         <div className="max-w-5xl mx-auto px-6 -mt-5 relative z-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {kpis.map((kpi, i) => (
@@ -490,7 +480,7 @@ function BarberProfile() {
           </div>
         </div>
 
-        {/* ── REVIEWS ─────────────────────────────────────────────────────── */}
+        {/* ── REVIEWS ── */}
         <div className="max-w-5xl mx-auto px-6 pt-10 pb-12 space-y-6">
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-black text-slate-800">Reseñas</h2>
@@ -501,7 +491,6 @@ function BarberProfile() {
             )}
           </div>
 
-          {/* Formulario — solo para clientes */}
           {isClient && (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="px-6 pt-5 pb-2 border-b border-slate-50">
@@ -510,16 +499,6 @@ function BarberProfile() {
                 </p>
               </div>
               <form onSubmit={handleSubmitReview} className="p-6 space-y-5">
-                {reviewError && (
-                  <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm">
-                    {reviewError}
-                  </div>
-                )}
-                {reviewSuccess && (
-                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-3 text-sm">
-                    {reviewSuccess}
-                  </div>
-                )}
                 <div>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
                     Calificación
@@ -574,7 +553,6 @@ function BarberProfile() {
             </div>
           )}
 
-          {/* Lista reseñas */}
           {reviewsLoading ? (
             <div className="flex items-center gap-3 text-slate-400 py-8">
               <span className="material-icons-round animate-spin">

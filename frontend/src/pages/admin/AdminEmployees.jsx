@@ -6,6 +6,8 @@ import {
 } from "../../services/barbershopService";
 import { deleteEmployeePermanently } from "../../services/employeeService";
 import { Avatar } from "../../components/UserProfileCard";
+import { useToast } from "../../context/ToastContext";
+import { mapApiError } from "../../utils/mapApiError";
 
 // ── Modal de confirmación ──────────────────────────────────────────────────
 function DeleteConfirmModal({ employee, onConfirm, onCancel, deleting }) {
@@ -68,13 +70,12 @@ function DeleteConfirmModal({ employee, onConfirm, onCancel, deleting }) {
 function AdminEmployees() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [employees, setEmployees] = useState([]);
   const [barbershopName, setBarbershopName] = useState("");
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
@@ -82,11 +83,10 @@ function AdminEmployees() {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
-      setError("");
       const data = await getBarbershopEmployees(id);
       setEmployees(data);
     } catch (err) {
-      setError(err.message || "Error al cargar los empleados");
+      toast.error(mapApiError(err.message, "Error al cargar los empleados"));
     } finally {
       setLoading(false);
     }
@@ -122,14 +122,12 @@ function AdminEmployees() {
     if (!employeeToDelete) return;
     try {
       setDeletingId(employeeToDelete.id);
-      setError("");
-      setSuccessMessage("");
       await deleteEmployeePermanently(employeeToDelete.id);
-      setSuccessMessage("Empleado eliminado correctamente.");
+      toast.success("Empleado eliminado correctamente.");
       setEmployeeToDelete(null);
       await fetchEmployees();
     } catch (err) {
-      setError(err.message || "Error al eliminar el empleado");
+      toast.error(mapApiError(err.message, "Error al eliminar el empleado"));
       setEmployeeToDelete(null);
     } finally {
       setDeletingId(null);
@@ -146,7 +144,7 @@ function AdminEmployees() {
       />
 
       <div className="bg-slate-50">
-        {/* ── HERO ──────────────────────────────────────────────────────── */}
+        {/* ── HERO ── */}
         <div
           className="relative overflow-hidden border-b border-slate-100"
           style={{
@@ -195,7 +193,6 @@ function AdminEmployees() {
                   </p>
                 )}
               </div>
-
               <button
                 onClick={() =>
                   navigate(`/admin/barbershop/${id}/employees/new`)
@@ -211,20 +208,8 @@ function AdminEmployees() {
           </div>
         </div>
 
-        {/* ── CONTENT ───────────────────────────────────────────────────── */}
+        {/* ── CONTENT ── */}
         <div className="max-w-6xl mx-auto px-6 py-8">
-          {/* Alerts */}
-          {error && (
-            <div className="mb-5 bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 text-sm font-medium">
-              {error}
-            </div>
-          )}
-          {successMessage && (
-            <div className="mb-5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl p-4 text-sm font-medium">
-              {successMessage}
-            </div>
-          )}
-
           {/* Filtros */}
           <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-2xl shadow-sm mb-6 gap-4 border border-slate-100">
             <div className="relative w-full sm:max-w-md">
@@ -318,11 +303,7 @@ function AdminEmployees() {
                         </td>
                         <td className="px-5 py-4">
                           <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                              emp.role === "barber"
-                                ? "bg-blue-50 text-blue-700"
-                                : "bg-indigo-50 text-indigo-700"
-                            }`}
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${emp.role === "barber" ? "bg-blue-50 text-blue-700" : "bg-indigo-50 text-indigo-700"}`}
                           >
                             {formatRole(emp.role)}
                           </span>
