@@ -2,6 +2,19 @@ import { useNavigate } from "react-router-dom";
 
 const fallbackImage = "https://via.placeholder.com/400x200?text=Barberia";
 
+const renderStars = (rating) => {
+  const n = Math.max(0, Math.min(5, Math.round(rating || 0)));
+  return Array.from({ length: 5 }, (_, i) => (
+    <span
+      key={i}
+      className={i < n ? "text-amber-400" : "text-slate-200"}
+      style={{ fontSize: "16px" }}
+    >
+      ★
+    </span>
+  ));
+};
+
 function AdminBarbershopCard({ shop }) {
   const navigate = useNavigate();
   const isOpen = shop.isActive ?? shop.open ?? false;
@@ -30,9 +43,18 @@ function AdminBarbershopCard({ shop }) {
           {shop.name}
         </h3>
 
-        <p className="text-sm text-slate-500 mb-1">
-          ⭐ {shop.rating ?? "Sin rating"}
-        </p>
+        <div className="flex items-center gap-1 mb-1">
+          {shop.rating != null ? (
+            <>
+              {renderStars(shop.rating)}
+              <span className="text-xs text-slate-500 ml-1">
+                {Number(shop.rating).toFixed(1)}
+              </span>
+            </>
+          ) : (
+            <span className="text-sm text-slate-400">Sin rating</span>
+          )}
+        </div>
 
         <p
           className={`text-sm font-bold mb-4 ${isOpen ? "text-green-600" : "text-red-500"}`}
