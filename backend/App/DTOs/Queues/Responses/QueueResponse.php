@@ -13,6 +13,7 @@ final readonly class QueueResponse extends BaseResponse
         public int $barberId,
         public string $barberName,
         public string $barberStatus,
+        public ?string $barberPhotoUrl,
         public bool $isAccepting,
         public array $turns,
     ) {}

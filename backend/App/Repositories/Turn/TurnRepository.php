@@ -39,6 +39,7 @@ readonly class TurnRepository extends BaseRepository
                     WHEN t.client_id IS NOT NULL THEN cs.current_status
                     ELSE gm.current_status
                 END AS owner_status,
+                u.photo_url as owner_photo_url,
                 CASE
                     WHEN t.group_id IS NOT NULL THEN (
                         SELECT
@@ -74,7 +75,7 @@ readonly class TurnRepository extends BaseRepository
         $sql = $this->turnQuery() . <<<'SQL'
             WHERE
                 t.barbershop_id = ?
-                AND t.attended_at IS NULL
+                AND t.finished_at IS NULL
         SQL;
 
         $params = [$barbershopId];
@@ -94,14 +95,16 @@ readonly class TurnRepository extends BaseRepository
                 u.id AS barber_id,
                 u.username AS barber_name,
                 bs.current_status AS barber_status,
+                u.photo_url AS barber_photo_url,
                 bs.is_accepting,
-                bst.avg_service_minutes
+                COALESCE(bst.avg_service_minutes, shop_bst.avg_service_minutes) AS avg_service_minutes
             FROM
                 staff_assignments sa
                 JOIN users u ON u.id = sa.staff_id
                 JOIN roles r ON r.id = u.role_id
                 JOIN barber_status bs ON bs.barber_id = u.id
-                JOIN barber_stats bst ON bst.barber_id = u.id
+                LEFT JOIN barber_stats bst ON bst.barber_id = u.id
+                LEFT JOIN barbershop_stats shop_bst ON shop_bst.barbershop_id = sa.barbershop_id
             WHERE
                 sa.barbershop_id = ?
                 AND r.role_name = 'barber'
@@ -179,14 +182,5 @@ readonly class TurnRepository extends BaseRepository
     public function setFinishedAt(int $turnId): void
     {
         $this->update($turnId, ['finished_at' => date(DateTimeString::DATETIME_FORMAT)]);
-    }
-
-    public function setGroupFinishedAt(int $groupId): void
-    {
-        $this->updateFrom(
-            self::TABLE_NAME,
-            ['finished_at' => date(DateTimeString::DATETIME_FORMAT)],
-            ['group_id' => $groupId]
-        );
     }
 }

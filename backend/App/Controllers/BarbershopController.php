@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Attributes\{DELETE, GET, PATCH, POST, RoutePrefix};
 use App\Core\{HttpResponse, HttpStatus};
 use App\DTOs\Barbershops\Requests\{
+    AssignBarbershopEmployeeRequest,
     CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
     CreateBarbershopRequest,
@@ -158,12 +159,19 @@ final readonly class BarbershopController extends BaseController
         HttpResponse::json($response, HttpStatus::Created);
     }
 
+    #[POST('/{id}/employees/{employeeId}')]
+    public function assignEmployee(int $id, int $employeeId, AssignBarbershopEmployeeRequest $request): void
+    {
+        $this->barbershopEmployeeService->assignEmployee($id, $employeeId, $request);
+        HttpResponse::success('Employee assigned to barbershop');
+    }
+
     #[DELETE('/{id}/employees/{employeeId}')]
     public function deleteEmployeeAssignment(int $id, int $employeeId): void
     {
         $success = $this->barbershopEmployeeService->deleteEmployeeAssignment($id, $employeeId);
         if (!$success) {
-            HttpResponse::error('Assignment not found', HttpStatus::NotFound);
+            HttpResponse::error('Employee assignment not found', HttpStatus::NotFound);
             return;
         }
 

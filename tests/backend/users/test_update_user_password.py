@@ -11,15 +11,15 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import ErrorResponse, MessageResponse
-from domain.dtos.auth import LoginRequest, RegisterRequest
+from domain.dtos.auth import LoginRequest, RegisterRequest, UserResponse
 from domain.dtos.users import UpdateUserPasswordRequest
 from domain.value_objects import Password
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import USER_NOT_FOUND
 
 _PASSWORD_UPDATED = MessageResponse(message="Password updated")
-_CURRENT_PASSWORD_IS_INCORRECT = ErrorResponse(error="Current password is incorrect")
-_NEW_PASSWORD_MUST_BE_DIFFERENT = ErrorResponse(
+_CURRENT_PASSWORD_INCORRECT = ErrorResponse(error="Current password is incorrect")
+_NEW_PASSWORD_MUST_DIFFER = ErrorResponse(
     error="New password must differ from the current one"
 )
 
@@ -41,7 +41,8 @@ class PasswordUpdate:
 def registered(client: ApiClient) -> Registered:
     register_request = RegisterRequest.random()
     response = client.auth.register(register_request)
-    return Registered(user_id=response.json()["id"], request=register_request)
+    user = UserResponse.from_response(response)
+    return Registered(user_id=user._id, request=register_request)
 
 
 @pytest.fixture(scope="module")
@@ -52,10 +53,9 @@ def password_update(client: ApiClient) -> PasswordUpdate:
     )
 
     register_response = client.auth.register(register_request)
-    response = client.users.update_user_password(
-        register_response.json()["id"], request
-    )
+    user = UserResponse.from_response(register_response)
 
+    response = client.users.update_user_password(user._id, request)
     return PasswordUpdate(
         request=request, register_request=register_request, api_response=response
     )
@@ -95,8 +95,8 @@ def test_nonexistent_user(client: ApiClient) -> None:
     )
     response = client.users.update_user_password(NON_EXISTENT_ID, request)
 
-    assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, USER_NOT_FOUND)
 
 
 def test_wrong_current_password(client: ApiClient, registered: Registered) -> None:
@@ -109,8 +109,8 @@ def test_wrong_current_password(client: ApiClient, registered: Registered) -> No
     )
     response = client.users.update_user_password(registered.user_id, request)
 
-    assert_body(response, _CURRENT_PASSWORD_IS_INCORRECT)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
+    assert_body(response, _CURRENT_PASSWORD_INCORRECT)
 
 
 def test_same_password(client: ApiClient, registered: Registered) -> None:
@@ -124,8 +124,8 @@ def test_same_password(client: ApiClient, registered: Registered) -> None:
     )
     response = client.users.update_user_password(registered.user_id, request)
 
-    assert_body(response, _NEW_PASSWORD_MUST_BE_DIFFERENT)
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
+    assert_body(response, _NEW_PASSWORD_MUST_DIFFER)
 
 
 def test_old_password(client: ApiClient, password_update: PasswordUpdate) -> None:

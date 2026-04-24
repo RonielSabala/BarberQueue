@@ -9,6 +9,7 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import (
     NON_EXISTENT_ID,
+    LiveTurnData,
     checked_in,
     create_group_turn,
     get_fresh_client_id,
@@ -27,7 +28,7 @@ from helpers.common_responses import CLIENT_NOT_AT_BARBERSHOP, CLIENT_NOT_FOUND
 SEEDED_CLIENT_WITH_TURN_ID = 17
 SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID = 18
 
-_NO_ACTIVE_TURN = ErrorResponse(
+_NO_TURN_FOR_CLIENT_AT_BARBERSHOP = ErrorResponse(
     error="The client currently has no turn despite being in a barbershop"
 )
 
@@ -66,7 +67,8 @@ def test_position_is_positive(response: requests.Response) -> None:
     Position is a positive integer.
     """
 
-    assert response.json()["position"] >= 1
+    turn = ClientTurnResponse.from_response(response)
+    assert turn.position is not None and turn.position >= 1
 
 
 def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
@@ -75,32 +77,33 @@ def test_unassigned_client_has_scheduler_position(client: ApiClient) -> None:
     """
 
     response = client.clients.get_turn(SEEDED_CLIENT_WITH_UNASSIGNED_TURN_ID)
-    body = response.json()
+    turn = ClientTurnResponse.from_response(response)
 
     assert_status(response, HttpStatus.OK)
-    assert body["position"] >= 1
-    assert body["barberId"] is None
+    assert turn.position is not None and turn.position >= 1
+    assert turn.barber_id is None
 
 
-def test_turn_id_matches_created_turn(client: ApiClient, live_turn: dict) -> None:
+def test_turn_id_matches_created_turn(
+    client: ApiClient, live_turn: LiveTurnData
+) -> None:
     """
     Response turnId matches the turn that was created.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
-    assert response.json()["id"] == live_turn["turn_id"]
+    response = client.clients.get_turn(live_turn.client_id)
+    turn = ClientTurnResponse.from_response(response)
+    assert turn._id == live_turn.turn_id
 
 
-def test_live_turn_has_valid_status(client: ApiClient, live_turn: dict) -> None:
+def test_live_turn_has_valid_status(client: ApiClient, live_turn: LiveTurnData) -> None:
     """
     A live turn has status on_queue or in_service.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
-    assert response.json()["status"] in (
-        ClientStatusEnum.ON_QUEUE,
-        ClientStatusEnum.IN_SERVICE,
-    )
+    response = client.clients.get_turn(live_turn.client_id)
+    turn = ClientTurnResponse.from_response(response)
+    assert turn.status in (ClientStatusEnum.ON_QUEUE, ClientStatusEnum.IN_SERVICE)
 
 
 def test_group_turn_includes_group_key(
@@ -114,20 +117,22 @@ def test_group_turn_includes_group_key(
     create_group_turn(client, open_barbershop_id, leader_id, ["member1", "member2"])
 
     response = client.clients.get_turn(leader_id)
-    body = response.json()
+    group = ClientTurnResponse.from_response(response).group
 
-    assert body["group"] is not None
-    assert "groupId" in body["group"]
-    assert len(body["group"]["members"]) == 2
+    assert group is not None
+    assert len(group.members) == 2
 
 
-def test_non_group_turn_has_null_group(client: ApiClient, live_turn: dict) -> None:
+def test_non_group_turn_has_null_group(
+    client: ApiClient, live_turn: LiveTurnData
+) -> None:
     """
     A solo turn has group=null.
     """
 
-    response = client.clients.get_turn(live_turn["client_id"])
-    assert response.json()["group"] is None
+    response = client.clients.get_turn(live_turn.client_id)
+    group = ClientTurnResponse.from_response(response).group
+    assert group is None
 
 
 def test_status_on_unknown_client(client: ApiClient) -> None:
@@ -162,4 +167,4 @@ def test_client_with_no_turn(client: ApiClient, open_barbershop_id: int) -> None
     response = client.clients.get_turn(client_id)
 
     assert_status(response, HttpStatus.NOT_FOUND)
-    assert_body(response, _NO_ACTIVE_TURN)
+    assert_body(response, _NO_TURN_FOR_CLIENT_AT_BARBERSHOP)

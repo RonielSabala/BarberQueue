@@ -2,19 +2,9 @@ import API_URL from "./api";
 
 function buildQueryParams(filters = {}) {
   const params = new URLSearchParams();
-
-  if (filters.search?.trim()) {
-    params.append("search", filters.search.trim());
-  }
-
-  if (typeof filters.isOpen === "boolean") {
-    params.append("isOpen", String(filters.isOpen));
-  }
-
-  if (filters.adminId) {
-    params.append("adminId", String(filters.adminId));
-  }
-
+  if (filters.search?.trim()) params.append("search", filters.search.trim());
+  if (typeof filters.isOpen === "boolean") params.append("isOpen", String(filters.isOpen));
+  if (filters.adminId) params.append("adminId", String(filters.adminId));
   return params.toString();
 }
 
@@ -23,27 +13,13 @@ function getErrorMessage(data, defaultMessage) {
 }
 
 function mapBarbershopToCard(shop) {
-  // isActive = el admin lo controla manualmente (abierta/cerrada)
-  // isOpen   = calculado por backend según horario + isActive
-  // Los cards deben reflejar isActive como estado real controlado por el admin.
-  // Si el backend devuelve isOpen como false por horario pero isActive es true,
-  // el admin sigue considerando la barbería "abierta".
   const isActive = shop.isActive ?? shop.isOpen ?? false;
-
   return {
-    id: shop.id,
-    adminId: shop.adminId,
-    name: shop.barbershopName,
-    address: shop.barbershopAddress,
-    image: shop.photoUrl,
-    photoUrl: shop.photoUrl,
+    id: shop.id, adminId: shop.adminId,
+    name: shop.barbershopName, address: shop.barbershopAddress,
+    image: shop.photoUrl, photoUrl: shop.photoUrl,
     rating: shop.averageRating,
-
-    // open es el campo que usan los cards para mostrar el estado
-    open: isActive,
-    isOpen: shop.isOpen,
-    isActive: isActive,
-
+    open: isActive, isOpen: shop.isOpen, isActive,
     barbershopName: shop.barbershopName,
     barbershopAddress: shop.barbershopAddress,
     averageRating: shop.averageRating,
@@ -52,21 +28,15 @@ function mapBarbershopToCard(shop) {
 
 function mapBarbershopDetail(shop) {
   return {
-    id: shop.id,
-    name: shop.barbershopName,
-    email: shop.email,
-    phone: shop.phone,
+    id: shop.id, name: shop.barbershopName,
+    email: shop.email, phone: shop.phone,
     address: shop.barbershopAddress,
-    image: shop.photoUrl,
-    photoUrl: shop.photoUrl,
-    opensAt: shop.opensAt,
-    closesAt: shop.closesAt,
+    image: shop.photoUrl, photoUrl: shop.photoUrl,
+    opensAt: shop.opensAt, closesAt: shop.closesAt,
     capacity: shop.capacity,
-    isActive: shop.isActive,
-    isOpen: shop.isOpen,
+    isActive: shop.isActive, isOpen: shop.isOpen,
     open: shop.isActive ?? shop.isOpen ?? false,
     rating: shop.averageRating,
-
     barbershopName: shop.barbershopName,
     barbershopAddress: shop.barbershopAddress,
     averageRating: shop.averageRating,
@@ -75,47 +45,23 @@ function mapBarbershopDetail(shop) {
 
 export async function getBarbershops(filters = {}) {
   const queryString = buildQueryParams(filters);
-  const url = queryString
-    ? `${API_URL}/barbershops?${queryString}`
-    : `${API_URL}/barbershops`;
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
+  const url = queryString ? `${API_URL}/barbershops?${queryString}` : `${API_URL}/barbershops`;
+  const response = await fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } });
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "Error al obtener las barberías"));
-  }
-
+  if (!response.ok) throw new Error(getErrorMessage(data, "Error al obtener las barberías"));
   return Array.isArray(data) ? data.map(mapBarbershopToCard) : [];
 }
 
 export async function getBarbershopById(id) {
-  const response = await fetch(`${API_URL}/barbershops/${id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
+  const response = await fetch(`${API_URL}/barbershops/${id}`, { method: "GET", headers: { "Content-Type": "application/json" } });
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "Error al obtener la barbería"));
-  }
-
+  if (!response.ok) throw new Error(getErrorMessage(data, "Error al obtener la barbería"));
   return mapBarbershopDetail(data);
 }
 
 export async function updateBarbershop(id, barbershopData) {
-  const formatTime = (time) => {
-    if (!time) return time;
-    return time.length === 5 ? `${time}:00` : time;
-  };
-
+  const formatTime = (t) => (!t ? t : t.length === 5 ? `${t}:00` : t);
   const response = await fetch(`${API_URL}/barbershops/${id}`, {
-
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -128,13 +74,8 @@ export async function updateBarbershop(id, barbershopData) {
       capacity: Number(barbershopData.capacity),
     }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "Error al actualizar la barbería"));
-  }
-
+  if (!response.ok) throw new Error(getErrorMessage(data, "Error al actualizar la barbería"));
   return data;
 }
 
@@ -144,39 +85,20 @@ export async function updateBarbershopStatus(id, isActive) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ isActive }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      getErrorMessage(data, "Error al actualizar el estado de la barbería")
-    );
-  }
-
+  if (!response.ok) throw new Error(getErrorMessage(data, "Error al actualizar el estado"));
   return data;
 }
 
 export async function getBarbershopDashboard(id) {
-  const response = await fetch(`${API_URL}/barbershops/${id}/dashboard`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
+  const response = await fetch(`${API_URL}/barbershops/${id}/dashboard`, { method: "GET", headers: { "Content-Type": "application/json" } });
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(getErrorMessage(data, "Error al obtener el dashboard"));
-  }
-
+  if (!response.ok) throw new Error(getErrorMessage(data, "Error al obtener el dashboard"));
   return data;
 }
 
 export async function createBarbershop(barbershopData) {
-  const formatTime = (time) => {
-    if (!time) return time;
-    return time.length === 5 ? `${time}:00` : time;
-  };
-
+  const formatTime = (t) => (!t ? t : t.length === 5 ? `${t}:00` : t);
   const response = await fetch(`${API_URL}/barbershops`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -192,13 +114,8 @@ export async function createBarbershop(barbershopData) {
       capacity: Number(barbershopData.capacity || 1),
     }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Error al crear la barbería");
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al crear la barbería");
   return data;
 }
 
@@ -208,30 +125,53 @@ export async function updateBarbershopPhoto(id, photoUrl) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ photoUrl }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data?.message || data?.error || "Error al actualizar la foto principal"
-    );
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al actualizar la foto principal");
   return data;
 }
 
-export async function getBarbershopReviews(id) {
-  const response = await fetch(`${API_URL}/barbershops/${id}/reviews`, {
+// ── Barbershop Photos (galería) ───────────────────────────────────────────────
+
+export async function getBarbershopPhotos(id) {
+  const response = await fetch(`${API_URL}/barbershops/${id}/photos`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
-
   const data = await response.json();
+  if (!response.ok) throw new Error(data?.message || "Error al obtener las fotos");
+  return Array.isArray(data) ? data : [];
+}
 
+export async function addBarbershopPhotos(id, photos) {
+  const response = await fetch(`${API_URL}/barbershops/${id}/photos`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ photos }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.message || "Error al agregar fotos");
+  return Array.isArray(data) ? data : [];
+}
+
+export async function deleteBarbershopPhoto(id, photoId) {
+  const response = await fetch(`${API_URL}/barbershops/${id}/photos/${photoId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
   if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Error al obtener las reseñas");
+    let data = {};
+    try { data = await response.json(); } catch { data = {}; }
+    throw new Error(data?.message || "Error al eliminar la foto");
   }
+  return true;
+}
 
+// ── Reviews ───────────────────────────────────────────────────────────────────
+
+export async function getBarbershopReviews(id) {
+  const response = await fetch(`${API_URL}/barbershops/${id}/reviews`, { method: "GET", headers: { "Content-Type": "application/json" } });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al obtener las reseñas");
   return Array.isArray(data) ? data : [];
 }
 
@@ -239,156 +179,92 @@ export async function createBarbershopReview(id, reviewData) {
   const response = await fetch(`${API_URL}/barbershops/${id}/reviews`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      clientId: Number(reviewData.clientId),
-      rating: Number(reviewData.rating),
-      content: reviewData.content,
-    }),
+    body: JSON.stringify({ clientId: Number(reviewData.clientId), rating: Number(reviewData.rating), content: reviewData.content }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Error al crear la reseña");
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al crear la reseña");
   return data;
 }
 
 export async function deleteBarbershopReview(id, reviewId) {
-  const response = await fetch(
-    `${API_URL}/barbershops/${id}/reviews/${reviewId}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-
+  const response = await fetch(`${API_URL}/barbershops/${id}/reviews/${reviewId}`, { method: "DELETE", headers: { "Content-Type": "application/json" } });
   if (!response.ok) {
     let data = {};
     try { data = await response.json(); } catch { data = {}; }
     throw new Error(data?.message || data?.error || "Error al eliminar la reseña");
   }
-
   return true;
 }
+
+// ── Employees ─────────────────────────────────────────────────────────────────
 
 export async function getBarbershopEmployees(id) {
   const response = await fetch(`${API_URL}/barbershops/${id}/employees`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Error al obtener los empleados");
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al obtener los empleados");
   return Array.isArray(data) ? data : [];
 }
 
 export async function createBarbershopEmployee(id, employeeData) {
-  const formatTime = (time) => {
-    if (!time) return time;
-    return time.length === 5 ? `${time}:00` : time;
-  };
-
+  const formatTime = (t) => (!t ? t : t.length === 5 ? `${t}:00` : t);
   const response = await fetch(`${API_URL}/barbershops/${id}/employees`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: employeeData.username,
-      email: employeeData.email,
-      phone: employeeData.phone,
-      password: employeeData.password,
+      username: employeeData.username, email: employeeData.email,
+      phone: employeeData.phone, password: employeeData.password,
       role: employeeData.role,
       startTime: formatTime(employeeData.startTime),
       endTime: formatTime(employeeData.endTime),
       workingDays: employeeData.workingDays.map(Number),
     }),
   });
-
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.message || data?.error || "Error al crear el empleado");
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al crear el empleado");
   return data;
 }
 
 export async function deleteBarbershopEmployee(id, employeeId) {
-  const response = await fetch(
-    `${API_URL}/barbershops/${id}/employees/${employeeId}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-
+  const response = await fetch(`${API_URL}/barbershops/${id}/employees/${employeeId}`, { method: "DELETE", headers: { "Content-Type": "application/json" } });
   if (!response.ok) {
     let data = {};
     try { data = await response.json(); } catch { data = {}; }
     throw new Error(data?.message || data?.error || "Error al eliminar el empleado");
   }
-
   return true;
 }
 
+// ── Clients ───────────────────────────────────────────────────────────────────
+
 export async function getBarbershopClients(id) {
-  const response = await fetch(`${API_URL}/barbershops/${id}/clients`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
+  const response = await fetch(`${API_URL}/barbershops/${id}/clients`, { method: "GET", headers: { "Content-Type": "application/json" } });
   const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data?.message || data?.error || "Error al obtener los clientes en barbería"
-    );
-  }
-
+  if (!response.ok) throw new Error(data?.message || data?.error || "Error al obtener los clientes");
   return Array.isArray(data) ? data : [];
 }
 
 export async function checkInBarbershopClient(barbershopId, clientId) {
-  const response = await fetch(
-    `${API_URL}/barbershops/${barbershopId}/clients/${clientId}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-
+  const response = await fetch(`${API_URL}/barbershops/${barbershopId}/clients/${clientId}`, { method: "POST", headers: { "Content-Type": "application/json" } });
   if (!response.ok) {
     let data = {};
     try { data = await response.json(); } catch { data = {}; }
-    throw new Error(
-      data?.message || data?.error || "Error al hacer check-in del cliente"
-    );
+    throw new Error(data?.message || data?.error || "Error al hacer check-in del cliente");
   }
-
   return true;
 }
 
 export async function checkOutBarbershopClient(barbershopId, clientId) {
-  const response = await fetch(
-    `${API_URL}/barbershops/${barbershopId}/clients/${clientId}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-
+  const response = await fetch(`${API_URL}/barbershops/${barbershopId}/clients/${clientId}`, { method: "DELETE", headers: { "Content-Type": "application/json" } });
   if (!response.ok) {
     let data = {};
     try { data = await response.json(); } catch { data = {}; }
-    throw new Error(
-      data?.message || data?.error || "Error al hacer check-out del cliente"
-    );
+    throw new Error(data?.message || data?.error || "Error al hacer check-out del cliente");
   }
-
   return true;
 }

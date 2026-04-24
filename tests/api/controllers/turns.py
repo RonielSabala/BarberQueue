@@ -2,7 +2,7 @@ import requests
 
 from api.base_controller import BaseController
 from api.decorators import DELETE, GET, PATCH, POST, route_prefix
-from domain.dtos.turns.requests import CreateTurnRequest
+from domain.dtos.turns import CreateTurnRequest
 
 
 @route_prefix("/api/turns")

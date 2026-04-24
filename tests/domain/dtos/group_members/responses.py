@@ -13,4 +13,6 @@ class GroupMemberTurnResponse(BaseResponse):
     member_name: str
     status: str
     position: int | None
+    absolute_position: int | None
+    estimated_time: float | None
     created_at: str

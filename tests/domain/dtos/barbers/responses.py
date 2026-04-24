@@ -24,6 +24,7 @@ class BarberReviewResponse(BaseResponse):
     _id: int
     client_id: int
     username: str
+    photo_url: str | None
     rating: int
     content: str
     created_at: str

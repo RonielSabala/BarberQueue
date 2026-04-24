@@ -9,7 +9,7 @@
   "markdown.extension.toc.levels": "2..3",
   "markdown.extension.toc.omittedFromToc": {
     "README.md": ["## Table of Contents"],
-    "backend/ROUTES.md": ["## Table of Contents"]
+    "docs/ROUTES.md": ["## Table of Contents"]
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/tests/.venv/Scripts/python.exe",
   "[python]": {

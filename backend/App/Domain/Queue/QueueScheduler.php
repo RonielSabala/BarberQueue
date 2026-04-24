@@ -39,27 +39,18 @@ final class QueueScheduler
         return [$bestId, $bestSlot];
     }
 
-    private static function isOwnerWaiting(TurnEntity $turn): bool
-    {
-        return $turn->ownerStatus->value === ClientStatusEnum::Waiting->value;
-    }
-
     /**
-     * If the first turn in the queue is waiting, finds the first non-waiting turn
-     * and moves it to position 0. All other turns keep their relative order.
+     * Finds the first non-waiting turn and moves it to position 0. All other
+     * turns keep their relative order.
      *
      * @param TurnEntity[] $queue
      *
      * @return TurnEntity[]
      */
-    private static function promoteFirstEligible(array $queue): array
+    private static function promoteFirstNonWaiting(array $queue): array
     {
-        if (empty($queue) || !self::isOwnerWaiting($queue[0])) {
-            return $queue;
-        }
-
         foreach ($queue as $i => $turn) {
-            if (self::isOwnerWaiting($turn)) {
+            if ($turn->ownerStatus->value === ClientStatusEnum::Waiting->value) {
                 continue;
             }
 
@@ -91,7 +82,7 @@ final class QueueScheduler
             $barberId = $slot->barberId;
             $queues[$barberId] = [];
             $slotsById[$barberId] = $slot;
-            $finishMinutes[$barberId] = $slot->estimatedBaseFinishMinutes();
+            $finishMinutes[$barberId] = 0;
         }
 
         // Sort the entire pool by creation date
@@ -107,7 +98,7 @@ final class QueueScheduler
             // If the turn specifies a barber, we MUST assign it to them
             if ($barberId !== null && isset($queues[$barberId])) {
                 $queues[$barberId][] = $turn;
-                $finishMinutes[$barberId] += $slotsById[$barberId]->getAvgServiceMinutes();
+                $finishMinutes[$barberId] += $slotsById[$barberId]->avgServiceMinutes;
                 continue;
             }
 
@@ -115,15 +106,21 @@ final class QueueScheduler
             [$bestId, $barberSlot] = self::pickBestBarber($barberSlots, $finishMinutes);
             if ($bestId !== null && $barberSlot !== null) {
                 $queues[$bestId][] = $turn;
-                $finishMinutes[$bestId] += $barberSlot->getAvgServiceMinutes();
+                $finishMinutes[$bestId] += $barberSlot->avgServiceMinutes;
             }
         }
 
-        // If position 1 is waiting, promote the first eligible turn to the front
+        // Promote position-1 turns if applicable
         foreach ($queues as $barberId => $queue) {
-            $queues[$barberId] = self::promoteFirstEligible($queue);
+            if (empty($queue)) {
+                continue;
+            }
+
+            if ($queue[0]->ownerStatus->value === ClientStatusEnum::Waiting->value) {
+                $queues[$barberId] = self::promoteFirstNonWaiting($queue);
+            }
         }
 
-        return new ScheduledQueue($barberSlots, $slotsById, $queues);
+        return new ScheduledQueue($barberSlots, $slotsById, $queues, $allTurns);
     }
 }

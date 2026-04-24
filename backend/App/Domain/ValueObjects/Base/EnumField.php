@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects\Base;
 
+use App\Exceptions\Base\ValueObjectException;
+
 abstract readonly class EnumField extends BaseField
 {
     /** @var class-string<\BackedEnum> ENUM_CLASS */
@@ -13,7 +15,7 @@ abstract readonly class EnumField extends BaseField
     {
         $enumClass = static::ENUM_CLASS;
         if ($enumClass === '') {
-            throw new \LogicException(static::class . ' must define ENUM_CLASS');
+            throw $this->undefinedFieldException('ENUM_CLASS');
         }
 
         if ($enumClass::tryFrom($value) !== null) {
@@ -27,6 +29,6 @@ abstract readonly class EnumField extends BaseField
         );
 
         $allowed = implode(', ', $allowedValues);
-        throw $this->validationException("must be one of: {$allowed}");
+        throw new ValueObjectException("must be one of: {$allowed}");
     }
 }

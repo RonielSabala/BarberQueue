@@ -26,7 +26,9 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_IN_SERVICE = ErrorResponse(error="Only 'in_service' turns can be attended")
+_CLIENT_CANNOT_BE_ATTENDED = ErrorResponse(
+    error="Only 'in_service' clients can be attended"
+)
 
 
 def _get_in_service_turn_id(
@@ -72,20 +74,14 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, TurnDetailResponse)
 
 
-def test_status_becomes_attended(response: requests.Response) -> None:
+def test_turn_state_is_valid(response: requests.Response) -> None:
     """
-    Turn status becomes attended.
-    """
-
-    assert response.json()["ownerStatus"] == ClientStatusEnum.ATTENDED
-
-
-def test_position_is_null_after_attend(response: requests.Response) -> None:
-    """
-    Attended turns have no queue position.
+    Turn state is valid after being attended.
     """
 
-    assert response.json()["position"] is None
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.position is None
+    assert turn.owner_status == ClientStatusEnum.ATTENDED
 
 
 def test_status_on_unknown_turn(client: ApiClient) -> None:
@@ -115,11 +111,13 @@ def test_next_on_queue_turn_promoted(client: ApiClient) -> None:
     turn_b_id = create_solo_turn(client, barbershop_id, barber_id, client_b)
 
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.ON_QUEUE
 
     client.turns.attend_turn(turn_a_id)
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.IN_SERVICE
 
 
 def test_waiting_turn_skipped_on_promotion(client: ApiClient) -> None:
@@ -142,7 +140,8 @@ def test_waiting_turn_skipped_on_promotion(client: ApiClient) -> None:
     # B goes waiting
     client.turns.wait_turn(turn_b_id)
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.WAITING
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.WAITING
 
     # Attend A, B is waiting so C should be promoted
     client.turns.attend_turn(turn_a_id)
@@ -150,8 +149,11 @@ def test_waiting_turn_skipped_on_promotion(client: ApiClient) -> None:
     turn_b_response = client.turns.get_turn(turn_b_id)
     turn_c_response = client.turns.get_turn(turn_c_id)
 
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.WAITING
-    assert turn_c_response.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    turn_c = TurnDetailResponse.from_response(turn_c_response)
+
+    assert turn_b.owner_status == ClientStatusEnum.WAITING
+    assert turn_c.owner_status == ClientStatusEnum.IN_SERVICE
 
 
 def test_on_queue_turn_cannot_be_attended(client: ApiClient) -> None:
@@ -169,12 +171,13 @@ def test_on_queue_turn_cannot_be_attended(client: ApiClient) -> None:
     turn_b_id = create_solo_turn(client, barbershop_id, barber_id, client_b)
 
     turn_b_response = client.turns.get_turn(turn_b_id)
-    assert turn_b_response.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.ON_QUEUE
 
     response = client.turns.attend_turn(turn_b_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_IN_SERVICE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_ATTENDED)
 
 
 def test_member_turn_can_be_attended(client: ApiClient) -> None:
@@ -188,14 +191,15 @@ def test_member_turn_can_be_attended(client: ApiClient) -> None:
     leader_id = checked_in(client, barbershop_id)
     turns = create_group_turn(client, barbershop_id, leader_id, ["member1"])
 
-    leader_turn_id = next(
-        turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.CLIENT
-    )["id"]
-    member_turn_id = next(
-        turn for turn in turns if turn["ownerType"] == OwnerTypeEnum.MEMBER
-    )["id"]
+    leader_turn = next(
+        turn for turn in turns if turn.owner_type == OwnerTypeEnum.CLIENT
+    )
+    member_turn = next(
+        turn for turn in turns if turn.owner_type == OwnerTypeEnum.MEMBER
+    )
 
-    client.turns.attend_turn(leader_turn_id)
-    response = client.turns.attend_turn(member_turn_id)
+    client.turns.attend_turn(leader_turn._id)
+    response = client.turns.attend_turn(member_turn._id)
+    turn = TurnDetailResponse.from_response(response)
 
-    assert response.json()["ownerStatus"] == ClientStatusEnum.ATTENDED
+    assert turn.owner_status == ClientStatusEnum.ATTENDED

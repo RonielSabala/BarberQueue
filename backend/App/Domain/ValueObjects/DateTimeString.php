@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
+use App\Exceptions\Base\ValueObjectException;
 
 final readonly class DateTimeString extends StringField
 {
@@ -21,7 +22,7 @@ final readonly class DateTimeString extends StringField
         parent::__construct($value);
 
         if (!$this->isValidDateTime($value)) {
-            throw $this->validationException('must be a valid datetime');
+            throw new ValueObjectException(self::PATTERN_ERROR_MSG);
         }
     }
 

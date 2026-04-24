@@ -14,29 +14,29 @@ _OK = MessageResponse(message="OK")
 
 
 @pytest.fixture(scope="module")
-def client_response(client: ApiClient) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
     return client.request(HttpMethod.GET, "/api/health")
 
 
-def test_status(client: ApiClient, client_response: requests.Response) -> None:
+def test_status(response: requests.Response) -> None:
     """
     Health endpoint returns 200.
     """
 
-    assert_status(client_response, HttpStatus.OK)
+    assert_status(response, HttpStatus.OK)
 
 
-def test_content_type(client: ApiClient, client_response: requests.Response) -> None:
+def test_content_type(response: requests.Response) -> None:
     """
     Health endpoint returns plain text content type.
     """
 
-    assert_content_type(client_response, HttpHeader.PLAIN_TEXT)
+    assert_content_type(response, HttpHeader.PLAIN_TEXT)
 
 
-def test_body(client: ApiClient, client_response: requests.Response) -> None:
+def test_body(response: requests.Response) -> None:
     """
     Response contains an OK message.
     """
 
-    assert_body(client_response, _OK)
+    assert_body(response, _OK)

@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
+from backend.conftest import NON_EXISTENT_ID, checked_in
 from domain.dtos.barbershops import BarbershopClientResponse
 from domain.enums import ClientStatusEnum
 from helpers.assertions import (
@@ -21,9 +21,7 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 @pytest.fixture(scope="module")
 def checked_in_client_id(client: ApiClient, open_barbershop_id: int) -> int:
-    client_id = get_fresh_client_id(client)
-    client.barbershops.check_in(open_barbershop_id, client_id)
-    return client_id
+    return checked_in(client, open_barbershop_id)
 
 
 @pytest.fixture(scope="module")
@@ -75,7 +73,8 @@ def test_checked_in_client_appears(
     A checked-in client appears in the list.
     """
 
-    assert any(checked_in_client_id == client["clientId"] for client in response.json())
+    clients = BarbershopClientResponse.from_array_response(response)
+    assert any(checked_in_client_id == client.client_id for client in clients)
 
 
 def test_all_clients_have_at_barbershop_status(response: requests.Response) -> None:
@@ -83,7 +82,7 @@ def test_all_clients_have_at_barbershop_status(response: requests.Response) -> N
     All returned clients have currentStatus='at_barbershop'.
     """
 
+    clients = BarbershopClientResponse.from_array_response(response)
     assert all(
-        client["currentStatus"] == ClientStatusEnum.AT_BARBERSHOP
-        for client in response.json()
+        client.current_status == ClientStatusEnum.AT_BARBERSHOP for client in clients
     )

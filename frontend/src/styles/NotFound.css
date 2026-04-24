@@ -1,0 +1,278 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+.nf-page {
+  min-height: 100vh;
+  background: #f4f6fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+/* ─── Blobs decorativos ─── */
+.nf-blob-1 {
+  position: absolute;
+  top: -160px;
+  left: -160px;
+  width: 560px;
+  height: 560px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.09) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.nf-blob-2 {
+  position: absolute;
+  bottom: -120px;
+  right: -120px;
+  width: 480px;
+  height: 480px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(240, 124, 12, 0.09) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ─── Elementos flotantes decorativos ─── */
+.nf-deco {
+  position: absolute;
+  font-size: 28px;
+  opacity: 0.45;
+  animation: nf-float 6s ease-in-out infinite;
+  user-select: none;
+  pointer-events: none;
+}
+
+.nf-deco-1 {
+  top: 12%;
+  left: 8%;
+  animation-delay: 0s;
+  font-size: 40px;
+}
+.nf-deco-2 {
+  top: 20%;
+  right: 10%;
+  animation-delay: 1.2s;
+  font-size: 34px;
+}
+.nf-deco-3 {
+  bottom: 25%;
+  left: 12%;
+  animation-delay: 2.4s;
+  font-size: 36px;
+}
+.nf-deco-4 {
+  bottom: 18%;
+  right: 8%;
+  animation-delay: 0.8s;
+  font-size: 38px;
+}
+.nf-deco-5 {
+  top: 55%;
+  left: 5%;
+  animation-delay: 3.2s;
+  font-size: 32px;
+}
+.nf-deco-6 {
+  top: 40%;
+  right: 5%;
+  animation-delay: 1.8s;
+  font-size: 36px;
+}
+
+@keyframes nf-float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-14px) rotate(5deg);
+  }
+  66% {
+    transform: translateY(8px) rotate(-4deg);
+  }
+}
+
+/* ─── Card principal ─── */
+.nf-card {
+  background: #ffffff;
+  border: 1px solid #e4e9f4;
+  border-radius: 32px;
+  padding: 56px 52px 48px;
+  text-align: center;
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 12px 48px rgba(26, 34, 54, 0.09);
+  position: relative;
+  z-index: 1;
+  animation: nf-fade-in 0.5s ease both;
+}
+
+@keyframes nf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Badge error ─── */
+.nf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #f07c0c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+/* ─── Número 404 con silla ─── */
+.nf-number-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 28px;
+  line-height: 1;
+}
+
+.nf-digit {
+  font-family: "Playfair Display", serif;
+  font-size: 130px;
+  font-weight: 800;
+  color: #1a2236;
+  letter-spacing: -6px;
+  line-height: 1;
+}
+
+.nf-chair-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: nf-bob 3s ease-in-out infinite;
+  margin: 0 2px;
+}
+
+.nf-chair-svg {
+  width: 96px;
+  height: 96px;
+}
+
+@keyframes nf-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ─── Textos ─── */
+.nf-title {
+  font-family: "Playfair Display", serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #1a2236;
+  margin: 0 0 12px;
+}
+
+.nf-desc {
+  font-size: 16px;
+  color: #6b7694;
+  line-height: 1.75;
+  margin: 0 0 36px;
+}
+
+.nf-desc span {
+  color: #f07c0c;
+  font-weight: 700;
+}
+
+/* ─── Botones ─── */
+.nf-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nf-btn-primary {
+  background: #1a2236;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+  box-shadow: 0 4px 16px rgba(26, 34, 54, 0.18);
+}
+
+.nf-btn-primary:hover {
+  background: #253047;
+  transform: translateY(-2px);
+}
+
+.nf-btn-secondary {
+  background: transparent;
+  color: #1a2236;
+  border: 1.5px solid #e4e9f4;
+  border-radius: 14px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    transform 0.15s;
+}
+
+.nf-btn-secondary:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 540px) {
+  .nf-card {
+    padding: 40px 28px 36px;
+  }
+  .nf-digit {
+    font-size: 90px;
+    letter-spacing: -4px;
+  }
+  .nf-chair-svg {
+    width: 68px;
+    height: 68px;
+  }
+  .nf-title {
+    font-size: 24px;
+  }
+}

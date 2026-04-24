@@ -1,24 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useQueueLive } from "../../hooks/useQueueLive";
+import { useToast } from "../../context/ToastContext";
 import QueueColumn from "../../components/queue/QueueColumn";
 import AssistantRegisterPanel from "../../components/assistant/AssistantRegisterPanel";
-import {
-  getBarbershopClients,
-  checkInBarbershopClient,
-  checkOutBarbershopClient,
-} from "../../services/barbershopService";
-import {
-  getBarbershopQueue,
-  getRestingBarbers,
-} from "../../services/queueService";
-import {
-  createTurn,
-  deleteTurn,
-  getClientActiveTurn,
-  waitTurn,
-  unwaitTurn,
-  payTurn,
-} from "../../services/turnService";
+import JoinQueueModal from "../../components/queue/JoinQueueModal";
+import MyTurnModal from "../../components/queue/MyTurnModal";
+import CheckoutModal from "../../components/queue/CheckoutModal";
+import { Avatar } from "../../components/UserProfileCard";
 
 const STATUS_LABELS = {
   at_barbershop: "En barbería",
@@ -29,331 +18,121 @@ const STATUS_LABELS = {
   paid: "Pagado",
 };
 
-function QueueLive() {
-  const { id } = useParams();
+// ── Modal de capacidad excedida ────────────────────────────────────────────
+function CapacityModal({ capacity, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        backgroundColor: "rgba(15,23,42,0.5)",
+        backdropFilter: "blur(4px)",
+      }}
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Icon */}
+        <div className="flex justify-center pt-8 pb-4">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center">
+            <span className="material-icons-round text-amber-500 text-3xl">
+              person_off
+            </span>
+          </div>
+        </div>
 
-  const [barbers, setBarbers] = useState([]);
-  const [restingBarbers, setRestingBarbers] = useState([]);
-  const [loadingQueue, setLoadingQueue] = useState(true);
-  const [queueError, setQueueError] = useState("");
+        {/* Content */}
+        <div className="px-6 pb-6 text-center">
+          <h2 className="text-lg font-black text-slate-800 mb-2">
+            Barbería llena
+          </h2>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            Esta barbería tiene una capacidad máxima de{" "}
+            <span className="font-bold text-slate-700">
+              {capacity} personas
+            </span>{" "}
+            y actualmente está llena. Si vienes en grupo, tu grupo no puede
+            registrarse porque superaría el límite. Intenta de nuevo cuando haya
+            espacio disponible.
+          </p>
+        </div>
 
-  const [clientsAtBarbershop, setClientsAtBarbershop] = useState([]);
-  const [loadingClients, setLoadingClients] = useState(true);
-  const [clientActionLoading, setClientActionLoading] = useState(false);
-  const [clientError, setClientError] = useState("");
-  const [clientSuccess, setClientSuccess] = useState("");
-
-  const [myTurn, setMyTurn] = useState(null);
-  const [loadingMyTurn, setLoadingMyTurn] = useState(false);
-  const [turnActionLoading, setTurnActionLoading] = useState(false);
-  const [turnError, setTurnError] = useState("");
-  const [turnSuccess, setTurnSuccess] = useState("");
-  const [isTurnModalOpen, setIsTurnModalOpen] = useState(false);
-
-  const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  const currentUserId = storedUser?.id;
-  const currentUserRole = storedUser?.role;
-
-  const isClient = currentUserRole === "client";
-  const isAssistant = currentUserRole === "assistant";
-  const canManageClients =
-    currentUserRole === "admin" ||
-    currentUserRole === "assistant" ||
-    currentUserRole === "barber";
-
-  const activeBarbers = barbers.filter((b) => b.status === "active");
-
-  const totalActivos = activeBarbers.reduce(
-    (acc, b) => acc + (b.current ? 1 : 0) + (b.queue?.length || 0),
-    0,
+        {/* Action */}
+        <div className="px-6 pb-6">
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-slate-900 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors text-sm"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
   );
+}
 
-  // ─── Fetches ───────────────────────────────────────────────────────────────
+function QueueLive() {
+  // ── FIX: la ruta pública usa ":id" y la del asistente usa ":barbershopId"
+  const { id, barbershopId } = useParams();
+  const resolvedId = id ?? barbershopId;
 
-  const fetchQueue = async () => {
-    try {
-      setLoadingQueue(true);
-      setQueueError("");
-
-      const queueData = await getBarbershopQueue(id);
-      setBarbers(queueData);
-
-      // IDs de barberos que ya aparecen como activos en la cola
-      const activeIds = new Set(queueData.map((b) => Number(b.id)));
-
-      // Barberos que NO están en la cola → consultamos su estado individual
-      // getRestingBarbers filtra solo los que tienen currentStatus === "resting"
-      const resting = await getRestingBarbers(id, activeIds);
-      setRestingBarbers(resting);
-    } catch (err) {
-      console.error("Error al obtener cola de barbería:", err);
-      setQueueError(err.message || "Error al cargar la cola");
-    } finally {
-      setLoadingQueue(false);
-    }
-  };
-
-  const fetchClientsAtBarbershop = async () => {
-    try {
-      setLoadingClients(true);
-      setClientError("");
-      const data = await getBarbershopClients(id);
-      setClientsAtBarbershop(data);
-    } catch (err) {
-      console.error("Error al obtener clientes en barbería:", err);
-      setClientError(err.message || "Error al cargar los clientes en barbería");
-    } finally {
-      setLoadingClients(false);
-    }
-  };
-
-  const fetchMyTurn = async () => {
-    if (!isClient || !currentUserId) return;
-    try {
-      setLoadingMyTurn(true);
-      setTurnError("");
-      const data = await getClientActiveTurn(currentUserId);
-      setMyTurn(data);
-    } catch (err) {
-      console.error("Error al obtener mi turno:", err);
-      setTurnError(err.message || "Error al obtener tu turno");
-    } finally {
-      setLoadingMyTurn(false);
-    }
-  };
+  const q = useQueueLive(resolvedId);
+  const { success, error } = useToast();
 
   useEffect(() => {
-    if (id) {
-      fetchQueue();
-      fetchClientsAtBarbershop();
-      if (isClient && currentUserId) fetchMyTurn();
+    if (q.turnSuccess) {
+      success(q.turnSuccess);
     }
-  }, [id, currentUserId, isClient]);
+  }, [q.turnSuccess, success]);
 
-  // ─── Computed ──────────────────────────────────────────────────────────────
-
-  const currentUserCheckedIn = useMemo(() => {
-    if (!currentUserId) return false;
-    return clientsAtBarbershop.some(
-      (client) => Number(client.clientId) === Number(currentUserId),
-    );
-  }, [clientsAtBarbershop, currentUserId]);
-
-  const currentBarberName = useMemo(() => {
-    if (!myTurn) return "Sin asignar";
-    if (myTurn.barberId === null || myTurn.barberId === undefined)
-      return "Sin asignar";
-    const barber = barbers.find(
-      (item) => Number(item.id) === Number(myTurn.barberId),
-    );
-    return barber?.name || `Barbero #${myTurn.barberId}`;
-  }, [myTurn, barbers]);
-
-  const estimatedTurnTime = useMemo(() => {
-    if (!myTurn) return "Sin turno";
-    const status = myTurn.ownerStatus || myTurn.status;
-    if (status === "in_service") return "Te están atendiendo ahora";
-    if (status === "attended") return "Servicio finalizado — pendiente de pago";
-    if (status === "waiting") return "Turno pausado — no perderás tu posición";
-    if (!myTurn.position || myTurn.position <= 1) return "Próximo en atención";
-    const minutes = (myTurn.position - 1) * 25;
-    return `~${minutes} minutos`;
-  }, [myTurn]);
-
-  const isGroupLeader = useMemo(() => {
-    return Boolean(myTurn?.group && Array.isArray(myTurn.group.members));
-  }, [myTurn]);
-
-  const myTurnStatus = myTurn?.ownerStatus || myTurn?.status || null;
-
-  // ─── Acciones ──────────────────────────────────────────────────────────────
-
-  const handleCheckIn = async () => {
-    try {
-      setClientActionLoading(true);
-      setClientError("");
-      setClientSuccess("");
-      if (!currentUserId) {
-        setClientError("Debes iniciar sesión para registrar tu llegada.");
-        return;
-      }
-      await checkInBarbershopClient(id, currentUserId);
-      setClientSuccess("Tu llegada fue registrada correctamente.");
-      await fetchClientsAtBarbershop();
-    } catch (err) {
-      setClientError(err.message || "Error al registrar tu llegada");
-    } finally {
-      setClientActionLoading(false);
+  useEffect(() => {
+    if (q.turnError) {
+      error(q.turnError);
     }
-  };
+  }, [q.turnError, error]);
 
-  const handleCheckOut = async (clientId) => {
-    try {
-      setClientActionLoading(true);
-      setClientError("");
-      setClientSuccess("");
-      await checkOutBarbershopClient(id, clientId);
-      setClientSuccess("Cliente retirado correctamente.");
-      await fetchClientsAtBarbershop();
-    } catch (err) {
-      setClientError(err.message || "Error al retirar el cliente");
-    } finally {
-      setClientActionLoading(false);
+  useEffect(() => {
+    if (q.queueError) {
+      error(q.queueError);
     }
-  };
+  }, [q.queueError, error]);
 
-  const handleJoinBarberQueue = async (barberId) => {
-    try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
-      if (!currentUserId) {
-        setTurnError("Debes iniciar sesión para tomar un turno.");
-        return;
-      }
-      if (!currentUserCheckedIn) {
-        setTurnError("Primero debes registrar tu llegada a la barbería.");
-        return;
-      }
-      if (myTurn) {
-        setTurnError("Ya tienes un turno activo.");
-        return;
-      }
-      const createdTurns = await createTurn({
-        clientId: currentUserId,
-        barbershopId: Number(id),
-        barberId: Number(barberId),
-      });
-      const mainTurn = Array.isArray(createdTurns)
-        ? createdTurns.find(
-            (turn) =>
-              Number(turn.ownerId) === Number(currentUserId) &&
-              turn.ownerType === "client",
-          )
-        : createdTurns;
-      if (mainTurn) setMyTurn(mainTurn);
-      setTurnSuccess("Te registraste correctamente en la cola del barbero.");
-      await Promise.all([
-        fetchQueue(),
-        fetchClientsAtBarbershop(),
-        fetchMyTurn(),
-      ]);
-      setIsTurnModalOpen(true);
-    } catch (err) {
-      setTurnError(err.message || "Error al registrarte en la cola");
-    } finally {
-      setTurnActionLoading(false);
+  useEffect(() => {
+    if (q.clientSuccess) {
+      success(q.clientSuccess);
     }
-  };
+  }, [q.clientSuccess, success]);
 
-  const handleCancelMyTurn = async () => {
-    try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
-      if (!myTurn?.id) {
-        setTurnError("No se encontró un turno activo para cancelar.");
-        return;
-      }
-      await deleteTurn(myTurn.id);
-      setTurnSuccess("Tu turno fue cancelado correctamente.");
-      setMyTurn(null);
-      await Promise.all([
-        fetchQueue(),
-        fetchClientsAtBarbershop(),
-        fetchMyTurn(),
-      ]);
-    } catch (err) {
-      setTurnError(err.message || "Error al cancelar el turno");
-    } finally {
-      setTurnActionLoading(false);
+  useEffect(() => {
+    if (q.clientError) {
+      error(q.clientError);
     }
-  };
-
-  const handleWaitMyTurn = async () => {
-    try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
-      if (!myTurn?.id) {
-        setTurnError("No se encontró un turno activo.");
-        return;
-      }
-      await waitTurn(myTurn.id);
-      setTurnSuccess("Tu turno está pausado. No perderás tu posición.");
-      await fetchMyTurn();
-      await fetchQueue();
-    } catch (err) {
-      setTurnError(err.message || "Error al pausar el turno");
-    } finally {
-      setTurnActionLoading(false);
-    }
-  };
-
-  const handleUnwaitMyTurn = async () => {
-    try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
-      if (!myTurn?.id) {
-        setTurnError("No se encontró un turno activo.");
-        return;
-      }
-      await unwaitTurn(myTurn.id);
-      setTurnSuccess("¡De vuelta en cola! Tu posición fue restaurada.");
-      await fetchMyTurn();
-      await fetchQueue();
-    } catch (err) {
-      setTurnError(err.message || "Error al reactivar el turno");
-    } finally {
-      setTurnActionLoading(false);
-    }
-  };
-
-  const handlePayMyTurn = async () => {
-    try {
-      setTurnActionLoading(true);
-      setTurnError("");
-      setTurnSuccess("");
-      if (!myTurn?.id) {
-        setTurnError("No se encontró un turno para pagar.");
-        return;
-      }
-      await payTurn(myTurn.id);
-      setTurnSuccess("¡Pago registrado! Gracias por tu visita.");
-      setMyTurn(null);
-      setIsTurnModalOpen(false);
-      await Promise.all([fetchQueue(), fetchClientsAtBarbershop()]);
-    } catch (err) {
-      setTurnError(err.message || "Error al registrar el pago");
-    } finally {
-      setTurnActionLoading(false);
-    }
-  };
-
-  // ─── Render ────────────────────────────────────────────────────────────────
+  }, [q.clientError, error]);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        {/* ─── Header ─── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-display font-bold tracking-tight mb-1">
               Cola en tiempo real
             </h1>
             <p className="text-slate-500 dark:text-slate-400">
-              Sucursal BarberQueue · ID: {id}
+              {q.barbershopName || "Sucursal BarberQueue"}
             </p>
           </div>
-
           <div className="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <div className="text-right">
               <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
                 Clientes Activos
               </p>
               <p className="text-2xl font-display font-bold text-primary">
-                {totalActivos}{" "}
-                <span className="text-slate-300 dark:text-slate-700">/ 20</span>
+                {q.totalActivos}{" "}
+                <span className="text-slate-300 dark:text-slate-700">
+                  / {q.barbershopCapacity ?? "—"}
+                </span>
               </p>
             </div>
             <div className="h-10 w-px bg-slate-200 dark:bg-slate-800"></div>
@@ -363,44 +142,46 @@ function QueueLive() {
           </div>
         </div>
 
-        {turnSuccess && (
-          <div className="mb-4 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
-            {turnSuccess}
-          </div>
-        )}
-        {turnError && (
-          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-            {turnError}
-          </div>
-        )}
-
         <div className="flex flex-col xl:flex-row gap-8">
+          {/* ─── Cola principal ─── */}
           <div className="flex-grow">
-            {queueError && (
-              <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700">
-                {queueError}
-              </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {loadingQueue ? (
+              {q.loadingQueue ? (
                 <p className="text-slate-500">Cargando cola...</p>
-              ) : activeBarbers.length === 0 ? (
-                <p className="text-slate-500">No hay barberos activos.</p>
+              ) : q.activeBarbers.filter((b) => b.isAccepting).length === 0 ? (
+                <p className="text-slate-500">
+                  No hay barberos disponibles en este momento.
+                </p>
               ) : (
-                activeBarbers.map((barber) => (
-                  <QueueColumn
-                    key={barber.id}
-                    barber={barber}
-                    showJoinAction={isClient}
-                    canJoin={currentUserCheckedIn && !myTurn}
-                    joining={turnActionLoading}
-                    onJoinQueue={handleJoinBarberQueue}
-                  />
-                ))
+                q.activeBarbers
+                  .filter((b) => b.isAccepting)
+                  .map((barber) => (
+                    <QueueColumn
+                      key={barber.id}
+                      barber={barber}
+                      showJoinAction={q.isClient}
+                      canJoin={q.currentUserCheckedIn && !q.myTurn}
+                      joining={q.turnActionLoading || q.joiningGroup}
+                      onJoinQueue={q.handleOpenJoinModal}
+                      currentUserId={q.currentUserId}
+                      currentUserRole={
+                        q.isClient
+                          ? "client"
+                          : q.isAssistant
+                            ? "assistant"
+                            : "other"
+                      }
+                      myTurn={q.myTurn}
+                      onOpenMyTurn={() => {
+                        q.setIsTurnModalOpen(true);
+                        q.fetchMyTurn();
+                      }}
+                    />
+                  ))
               )}
             </div>
 
+            {/* Espera general */}
             <div className="mt-8 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <h2 className="font-display font-bold text-xl mb-6 flex items-center gap-2">
                 <span className="material-icons-round text-primary">
@@ -408,24 +189,24 @@ function QueueLive() {
                 </span>
                 Espera General
               </h2>
-              {loadingClients ? (
+              {q.loadingClients ? (
                 <p className="text-slate-400 text-sm">Cargando clientes...</p>
-              ) : clientsAtBarbershop.length === 0 ? (
+              ) : q.clientsAtBarbershop.length === 0 ? (
                 <p className="text-slate-400 text-sm italic">
                   No hay clientes registrados en espera general.
                 </p>
               ) : (
                 <div className="flex flex-wrap gap-4">
-                  {clientsAtBarbershop.map((client) => (
+                  {q.clientsAtBarbershop.map((client) => (
                     <div
                       key={client.clientId}
                       className="flex flex-col items-center gap-2"
                     >
-                      <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                        <span className="material-icons-round text-slate-400">
-                          person
-                        </span>
-                      </div>
+                      <Avatar
+                        photoUrl={client.photoUrl}
+                        username={client.username}
+                        size="md"
+                      />
                       <span className="text-xs font-medium text-slate-500 text-center max-w-[80px] break-words">
                         {client.username}
                       </span>
@@ -436,8 +217,9 @@ function QueueLive() {
             </div>
           </div>
 
+          {/* ─── Sidebar derecho ─── */}
           <div className="w-full xl:w-80 space-y-6">
-            {/* ─── Descansando — datos reales ─── */}
+            {/* Descansando */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
                 <span className="material-icons-round text-slate-400">
@@ -446,14 +228,14 @@ function QueueLive() {
                 Descansando
               </h3>
               <div className="space-y-4">
-                {loadingQueue ? (
+                {q.loadingQueue ? (
                   <p className="text-slate-400 text-sm">Cargando...</p>
-                ) : restingBarbers.length === 0 ? (
+                ) : q.restingBarbers.length === 0 ? (
                   <p className="text-slate-400 text-sm italic py-2">
                     Ningún barbero descansando
                   </p>
                 ) : (
-                  restingBarbers.map((barber) => (
+                  q.restingBarbers.map((barber) => (
                     <div key={barber.id} className="flex items-center gap-4">
                       <div className="relative">
                         <div className="w-12 h-12 rounded-full border-2 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 grayscale opacity-50 flex items-center justify-center overflow-hidden">
@@ -461,7 +243,6 @@ function QueueLive() {
                             face
                           </span>
                         </div>
-                        {/* Dot amarillo = descansando */}
                         <div className="absolute bottom-0 right-0 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white dark:border-slate-900"></div>
                       </div>
                       <div>
@@ -478,29 +259,37 @@ function QueueLive() {
               </div>
             </div>
 
-            <div className="bg-primary/10 dark:bg-primary/5 rounded-3xl p-6 border border-primary/20">
-              <span className="material-icons-round text-primary mb-2 text-2xl">
-                info
-              </span>
-              <h4 className="font-bold text-primary mb-2">
-                Estimación de espera
-              </h4>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                El tiempo promedio de servicio actual es de{" "}
-                <span className="font-bold text-primary">~25 minutos</span> por
-                turno.
-              </p>
-            </div>
-
-            {isAssistant ? (
-              <AssistantRegisterPanel
-                barbers={activeBarbers}
-                barbershopId={id}
-                onRegistered={async () => {
-                  await Promise.all([fetchQueue(), fetchClientsAtBarbershop()]);
-                }}
-              />
+            {/* Panel assistant */}
+            {q.isAssistant ? (
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => q.setIsRegisterModalOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl shadow-sm transition"
+                >
+                  <span className="material-icons-round text-base">
+                    person_add
+                  </span>
+                  Registrar cliente
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    q.setCheckoutError("");
+                    q.setCheckoutSuccess("");
+                    q.setIsCheckoutModalOpen(true);
+                    q.fetchClientsAtBarbershop();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl shadow-sm transition"
+                >
+                  <span className="material-icons-round text-slate-500">
+                    exit_to_app
+                  </span>
+                  Gestionar salidas
+                </button>
+              </div>
             ) : (
+              /* Panel cliente */
               <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
                 <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
                   <span className="material-icons-round text-slate-400">
@@ -509,60 +298,101 @@ function QueueLive() {
                   Clientes en barbería
                 </h3>
 
-                {clientError && (
-                  <p className="text-sm text-red-500 mb-3">{clientError}</p>
-                )}
-                {clientSuccess && (
-                  <p className="text-sm text-green-600 mb-3">{clientSuccess}</p>
-                )}
-
-                {isClient && (
+                {q.isClient && (
                   <div className="space-y-3">
                     <p className="text-sm text-slate-600">
                       Registra tu llegada para aparecer en la espera general de
                       la barbería.
                     </p>
-                    {currentUserCheckedIn ? (
-                      <div className="rounded-2xl bg-green-50 border border-green-200 px-4 py-3 text-green-700 text-sm font-medium">
-                        Ya estás registrado dentro de la barbería.
+
+                    {/* Pago pendiente */}
+                    {q.currentUserCheckedIn &&
+                      q.myTurnStatus === "attended" && (
+                        <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-amber-700 text-sm font-medium text-center">
+                          <span className="material-icons-round text-base align-middle mr-1">
+                            payments
+                          </span>
+                          Pago pendiente — recuerda pagar antes de salir.
+                        </div>
+                      )}
+
+                    {q.currentUserCheckedIn ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={q.handleSelfCheckOut}
+                          disabled={q.clientActionLoading}
+                          className="w-full flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                        >
+                          <span className="material-icons-round text-base">
+                            logout
+                          </span>
+                          {q.clientActionLoading
+                            ? "Saliendo..."
+                            : "Salir de la barbería"}
+                        </button>
+                      </>
+                    ) : q.atCapacity ? (
+                      <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-amber-700 text-sm font-medium text-center">
+                        <span className="material-icons-round text-base align-middle mr-1">
+                          groups_off
+                        </span>
+                        Barbería llena — capacidad máxima alcanzada.
                       </div>
                     ) : (
                       <button
-                        onClick={handleCheckIn}
-                        disabled={clientActionLoading}
+                        onClick={q.handleCheckIn}
+                        disabled={q.clientActionLoading}
                         className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60"
                       >
-                        {clientActionLoading
+                        {q.clientActionLoading
                           ? "Registrando..."
                           : "Registrar llegada"}
                       </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsTurnModalOpen(true);
-                        fetchMyTurn();
-                      }}
-                      disabled={loadingMyTurn}
-                      className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
-                    >
-                      {loadingMyTurn ? "Cargando..." : "Ver mi turno"}
-                    </button>
+                    {q.currentUserCheckedIn && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          q.setIsTurnModalOpen(true);
+                          q.fetchMyTurn();
+                        }}
+                        disabled={q.loadingMyTurn}
+                        className={`w-full font-bold py-3 rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2 ${
+                          q.myTurnStatus === "attended"
+                            ? "bg-emerald-500 hover:bg-emerald-600 text-white border border-emerald-500"
+                            : "border border-slate-200 hover:bg-slate-50 text-slate-700"
+                        }`}
+                      >
+                        {q.loadingMyTurn ? (
+                          "Cargando..."
+                        ) : q.myTurnStatus === "attended" ? (
+                          <>
+                            <span className="material-icons-round text-base">
+                              payments
+                            </span>
+                            Pagar
+                          </>
+                        ) : (
+                          "Ver mi turno"
+                        )}
+                      </button>
+                    )}
                   </div>
                 )}
 
-                {canManageClients && !isClient && (
+                {q.canManageClients && !q.isClient && !q.isAssistant && (
                   <div className="space-y-3">
-                    {loadingClients ? (
+                    {q.loadingClients ? (
                       <p className="text-slate-400 text-sm">
                         Cargando clientes...
                       </p>
-                    ) : clientsAtBarbershop.length === 0 ? (
+                    ) : q.clientsAtBarbershop.length === 0 ? (
                       <p className="text-slate-400 text-sm italic">
                         No hay clientes dentro de la barbería.
                       </p>
                     ) : (
-                      clientsAtBarbershop.map((client) => (
+                      q.clientsAtBarbershop.map((client) => (
                         <div
                           key={client.clientId}
                           className="flex items-center justify-between gap-3 border border-slate-100 rounded-2xl p-3"
@@ -572,15 +402,21 @@ function QueueLive() {
                               {client.username}
                             </p>
                             <p className="text-xs text-slate-500">
-                              Estado: {client.currentStatus}
+                              {STATUS_LABELS[client.currentStatus] ||
+                                client.currentStatus}
                             </p>
                           </div>
                           <button
-                            onClick={() => handleCheckOut(client.clientId)}
-                            disabled={clientActionLoading}
+                            onClick={() =>
+                              q.handleAssistantCheckOut(client.clientId)
+                            }
+                            disabled={
+                              q.checkoutActionLoading ===
+                              `checkout-${client.clientId}`
+                            }
                             className="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-2 rounded-xl transition disabled:opacity-60"
                           >
-                            Check-out
+                            Retirar
                           </button>
                         </div>
                       ))
@@ -593,203 +429,93 @@ function QueueLive() {
         </div>
       </main>
 
-      {/* ─── Modal Mi turno ─────────────────────────────────────────────────── */}
-      {isTurnModalOpen && (
+      {/* ─── Modales ─── */}
+      {q.isCapacityModalOpen && (
+        <CapacityModal
+          capacity={q.barbershopCapacity}
+          onClose={() => q.setIsCapacityModalOpen(false)}
+        />
+      )}
+
+      <JoinQueueModal
+        isOpen={q.isGroupModalOpen}
+        onClose={() => q.setIsGroupModalOpen(false)}
+        activeBarbers={q.activeBarbers}
+        groupMode={q.groupMode}
+        setGroupMode={q.setGroupMode}
+        selectedBarberId={q.selectedBarberId}
+        setSelectedBarberId={q.setSelectedBarberId}
+        groupMembers={q.groupMembers}
+        groupError={q.groupError}
+        joiningGroup={q.joiningGroup}
+        addGroupMember={q.addGroupMember}
+        removeGroupMember={q.removeGroupMember}
+        updateGroupMember={q.updateGroupMember}
+        onConfirm={q.handleJoinQueue}
+      />
+
+      <MyTurnModal
+        isOpen={q.isTurnModalOpen}
+        onClose={() => q.setIsTurnModalOpen(false)}
+        myTurn={q.myTurn}
+        myTurnStatus={q.myTurnStatus}
+        loadingMyTurn={q.loadingMyTurn}
+        turnActionLoading={q.turnActionLoading}
+        currentBarberName={q.currentBarberName}
+        estimatedTurnTime={q.estimatedTurnTime}
+        estimatedGroupTime={q.estimatedGroupTime}
+        isGroupLeader={q.isGroupLeader}
+        onWait={q.handleWaitMyTurn}
+        onUnwait={q.handleUnwaitMyTurn}
+        onPay={q.handlePayMyTurn}
+        onCancel={q.handleCancelMyTurn}
+      />
+
+      <CheckoutModal
+        isOpen={q.isCheckoutModalOpen}
+        onClose={() => q.setIsCheckoutModalOpen(false)}
+        clientsWithTurns={q.clientsWithTurns}
+        clientsAtBarbershop={q.clientsAtBarbershop}
+        loadingQueue={q.loadingQueue}
+        loadingClients={q.loadingClients}
+        checkoutError={q.checkoutError}
+        checkoutSuccess={q.checkoutSuccess}
+        checkoutActionLoading={q.checkoutActionLoading}
+        onCancelTurn={q.handleCancelClientTurn}
+        onCheckOut={q.handleAssistantCheckOut}
+      />
+
+      {q.isRegisterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-4 mb-5">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800">Mi turno</h2>
-                <p className="text-sm text-slate-500">
-                  Información actual de tu turno en la barbería.
+                <h2 className="text-xl font-bold text-slate-800">
+                  Registrar cliente
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Registra un cliente existente o nuevo en la cola.
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setIsTurnModalOpen(false)}
+                onClick={() => q.setIsRegisterModalOpen(false)}
                 className="text-slate-400 hover:text-slate-600"
               >
                 <span className="material-icons-round">close</span>
               </button>
             </div>
-
-            {loadingMyTurn ? (
-              <p className="text-slate-500">Cargando turno...</p>
-            ) : !myTurn ? (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-slate-600">
-                  No tienes un turno activo en este momento.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Cliente
-                    </p>
-                    <p className="font-bold text-slate-800">
-                      {myTurn.ownerName || myTurn.username}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Estado
-                    </p>
-                    <p className="font-bold text-slate-800">
-                      {STATUS_LABELS[myTurnStatus] || myTurnStatus}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Barbero
-                    </p>
-                    <p className="font-bold text-slate-800">
-                      {currentBarberName}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Posición
-                    </p>
-                    <p className="font-bold text-slate-800">
-                      {myTurn.position ?? "—"}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Tiempo estimado
-                    </p>
-                    <p className="font-bold text-slate-800">
-                      {estimatedTurnTime}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs uppercase font-bold text-slate-400 mb-1">
-                      Tipo de turno
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                        {isGroupLeader ? "Grupo" : "Individual"}
-                      </span>
-                      {isGroupLeader && (
-                        <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
-                          Líder de grupo
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {isGroupLeader && (
-                  <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex items-center justify-between gap-3 mb-4">
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">
-                          Grupo #{myTurn.group.groupId}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          Estás registrado como líder de grupo.
-                        </p>
-                      </div>
-                      <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
-                        {myTurn.group.members.length} miembro
-                        {myTurn.group.members.length !== 1 ? "s" : ""}
-                      </span>
-                    </div>
-                    <div className="space-y-3">
-                      {myTurn.group.members.map((member) => (
-                        <div
-                          key={member.turnId}
-                          className="rounded-2xl bg-white border border-slate-200 p-4"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div>
-                              <p className="font-bold text-slate-800">
-                                {member.memberName}
-                              </p>
-                              <p className="text-sm text-slate-500">
-                                Miembro del grupo
-                              </p>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
-                                Posición: {member.position ?? "—"}
-                              </span>
-                              <span className="inline-flex items-center px-3 py-2 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                                {STATUS_LABELS[member.status] || member.status}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Acciones contextuales según estado */}
-                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
-                  {myTurnStatus === "on_queue" && (
-                    <button
-                      type="button"
-                      onClick={handleWaitMyTurn}
-                      disabled={turnActionLoading}
-                      className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold py-3 rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2"
-                    >
-                      <span className="material-icons-round text-base">
-                        pause_circle
-                      </span>
-                      {turnActionLoading ? "Pausando..." : "Salir un momento"}
-                    </button>
-                  )}
-                  {myTurnStatus === "waiting" && (
-                    <button
-                      type="button"
-                      onClick={handleUnwaitMyTurn}
-                      disabled={turnActionLoading}
-                      className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 font-bold py-3 rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2"
-                    >
-                      <span className="material-icons-round text-base">
-                        play_circle
-                      </span>
-                      {turnActionLoading ? "Volviendo..." : "Volver a la cola"}
-                    </button>
-                  )}
-                  {myTurnStatus === "attended" && (
-                    <button
-                      type="button"
-                      onClick={handlePayMyTurn}
-                      disabled={turnActionLoading}
-                      className="flex-1 bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2"
-                    >
-                      <span className="material-icons-round text-base">
-                        payments
-                      </span>
-                      {turnActionLoading ? "Procesando..." : "Confirmar pago"}
-                    </button>
-                  )}
-                  {!["in_service", "attended", "paid"].includes(
-                    myTurnStatus,
-                  ) && (
-                    <button
-                      type="button"
-                      onClick={handleCancelMyTurn}
-                      disabled={turnActionLoading}
-                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 rounded-2xl transition disabled:opacity-60"
-                    >
-                      {turnActionLoading ? "Cancelando..." : "Cancelar turno"}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => setIsTurnModalOpen(false)}
-                    className="flex-1 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition"
-                  >
-                    Cerrar
-                  </button>
-                </div>
-              </>
-            )}
+            <AssistantRegisterPanel
+              barbers={q.activeBarbers}
+              barbershopId={resolvedId}
+              onClose={() => q.setIsRegisterModalOpen(false)}
+              onRegistered={async () => {
+                await Promise.all([
+                  q.fetchQueue(),
+                  q.fetchClientsAtBarbershop(),
+                ]);
+              }}
+            />
           </div>
         </div>
       )}

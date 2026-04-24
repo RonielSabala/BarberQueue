@@ -1,65 +1,52 @@
-import { useNavigate } from "react-router-dom";
 import UserProfileCard from "../../components/UserProfileCard";
 import { useUserProfile } from "../../hooks/useUserProfile";
 
 function AssistantProfile() {
-  const navigate = useNavigate();
   const {
     user,
-    error,
-    successMessage,
     loading,
     saving,
+    savingPhoto,
     isEditing,
     isChangingPassword,
+    isEditingPhoto,
     formData,
     passwordData,
-    handleFieldChange,
-    handlePasswordFieldChange,
+    photoUrlInput,
+    setPhotoUrlInput,
+    handleChange,
+    handlePasswordChange,
     handleEditClick,
     handlePasswordClick,
+    handlePhotoClick,
     handleCancel,
     handleSubmitProfile,
     handleSubmitPassword,
+    handleSubmitPhoto,
   } = useUserProfile();
 
   return (
     <UserProfileCard
-      title="Perfil del Asistente"
-      subtitle="Consulta y actualiza tu información personal registrada en BarberQueue."
       user={user}
-      error={error}
-      successMessage={successMessage}
       loading={loading}
       saving={saving}
+      savingPhoto={savingPhoto}
       isEditing={isEditing}
       isChangingPassword={isChangingPassword}
+      isEditingPhoto={isEditingPhoto}
       formData={formData}
       passwordData={passwordData}
-      onFieldChange={handleFieldChange}
-      onPasswordFieldChange={handlePasswordFieldChange}
+      photoUrlInput={photoUrlInput}
+      setPhotoUrlInput={setPhotoUrlInput}
+      onFieldChange={handleChange}
+      onPasswordFieldChange={handlePasswordChange}
       onEditClick={handleEditClick}
       onPasswordClick={handlePasswordClick}
+      onPhotoClick={handlePhotoClick}
       onCancel={handleCancel}
       onSubmitProfile={handleSubmitProfile}
       onSubmitPassword={handleSubmitPassword}
-      extraActions={
-        <>
-          <button
-            onClick={() => navigate("/assistant/home")}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-3 rounded-2xl transition"
-          >
-            Volver al home
-          </button>
-
-          <button
-            onClick={() => navigate("/assistant/register-client")}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-2xl transition"
-          >
-            Registrar clientes
-          </button>
-        </>
-      }
+      onSubmitPhoto={handleSubmitPhoto}
     />
   );
 }

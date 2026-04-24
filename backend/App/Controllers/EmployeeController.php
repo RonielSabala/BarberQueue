@@ -33,12 +33,7 @@ final readonly class EmployeeController extends BaseController
     #[DELETE('/{id}')]
     public function delete(int $id): void
     {
-        $success = $this->employeeService->deleteEmployee($id);
-        if (!$success) {
-            HttpResponse::error('Employee not found', HttpStatus::NotFound);
-            return;
-        }
-
+        $this->employeeService->deleteEmployee($id);
         HttpResponse::json(null, HttpStatus::NoContent);
     }
 }

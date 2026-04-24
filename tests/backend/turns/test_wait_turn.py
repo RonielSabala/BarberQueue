@@ -25,13 +25,15 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_ON_QUEUE = ErrorResponse(error="Only 'on_queue' turns can be set to 'waiting'")
+_CLIENT_CANNOT_BE_WAITING = ErrorResponse(
+    error="Only 'on_queue' clients can be set to 'waiting'"
+)
 
 
 @pytest.fixture(scope="module")
-def on_queue_turn(
+def on_queue_turn_id(
     client: ApiClient, open_barbershop_id: int, active_barber_id: int
-) -> dict:
+) -> int:
     first_client_id = checked_in(client, open_barbershop_id)
     second_client_id = checked_in(client, open_barbershop_id)
 
@@ -40,12 +42,12 @@ def on_queue_turn(
         client, open_barbershop_id, active_barber_id, second_client_id
     )
 
-    return {"client_id": second_client_id, "turn_id": second_turn_id}
+    return second_turn_id
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, on_queue_turn: dict) -> requests.Response:
-    return client.turns.wait_turn(on_queue_turn["turn_id"])
+def response(client: ApiClient, on_queue_turn_id: int) -> requests.Response:
+    return client.turns.wait_turn(on_queue_turn_id)
 
 
 def test_status(response: requests.Response) -> None:
@@ -77,16 +79,18 @@ def test_status_becomes_waiting(response: requests.Response) -> None:
     Turn status becomes waiting.
     """
 
-    assert response.json()["ownerStatus"] == ClientStatusEnum.WAITING
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.owner_status == ClientStatusEnum.WAITING
 
 
-def test_turn_preserves_position(client: ApiClient, on_queue_turn: dict) -> None:
+def test_turn_preserves_position(client: ApiClient, on_queue_turn_id: int) -> None:
     """
     Turn remains in the queue after waiting.
     """
 
-    response = client.turns.get_turn(on_queue_turn["turn_id"])
-    assert response.json()["position"] is not None
+    response = client.turns.get_turn(on_queue_turn_id)
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.position is not None
 
 
 def test_status_on_unknown_turn(client: ApiClient) -> None:
@@ -101,16 +105,16 @@ def test_status_on_unknown_turn(client: ApiClient) -> None:
 
 
 def test_already_waiting_returns_unprocessable(
-    client: ApiClient, on_queue_turn: dict
+    client: ApiClient, on_queue_turn_id: int
 ) -> None:
     """
     Calling wait on an already `waiting` turn returns 422.
     """
 
-    response = client.turns.wait_turn(on_queue_turn["turn_id"])
+    response = client.turns.wait_turn(on_queue_turn_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_ON_QUEUE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_WAITING)
 
 
 def test_in_service_turn_cannot_wait(client: ApiClient) -> None:
@@ -126,8 +130,8 @@ def test_in_service_turn_cannot_wait(client: ApiClient) -> None:
 
     response = client.turns.wait_turn(turn_id)
 
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
-    assert_body(response, _NOT_ON_QUEUE)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_WAITING)
 
 
 def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(
@@ -151,19 +155,22 @@ def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(
 
     # Delete A so B gets promoted
     client.turns.delete_turn(turn_a_id)
-    turn_b = client.turns.get_turn(turn_b_id)
-    assert turn_b.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_b_response = client.turns.get_turn(turn_b_id)
+    turn_b = TurnDetailResponse.from_response(turn_b_response)
+    assert turn_b.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Delete B so C gets promoted
     client.turns.delete_turn(turn_b_id)
-    turn_c = client.turns.get_turn(turn_c_id)
-    assert turn_c.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    turn_c_response = client.turns.get_turn(turn_c_id)
+    turn_c = TurnDetailResponse.from_response(turn_c_response)
+    assert turn_c.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Add client D
     client_d = checked_in(client, barbershop_id)
     turn_d_id = create_solo_turn(client, barbershop_id, barber_id, client_d)
-    turn_d = client.turns.get_turn(turn_d_id)
-    assert turn_d.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
+    turn_d_response = client.turns.get_turn(turn_d_id)
+    turn_d = TurnDetailResponse.from_response(turn_d_response)
+    assert turn_d.owner_status == ClientStatusEnum.ON_QUEUE
 
     # Clean setup
 
@@ -182,13 +189,15 @@ def test_next_on_queue_turn_promoted_when_waiting_reaches_position_1(
 
     # Wait fresh_b
     client.turns.wait_turn(turn_fresh_b_id)
-    turn_fresh_b = client.turns.get_turn(turn_fresh_b_id).json()
-    assert turn_fresh_b["ownerStatus"] == ClientStatusEnum.WAITING
+    fresh_turn_b_response = client.turns.get_turn(turn_fresh_b_id)
+    fresh_turn_b = TurnDetailResponse.from_response(fresh_turn_b_response)
+    assert fresh_turn_b.owner_status == ClientStatusEnum.WAITING
 
     # Delete fresh_a so fresh_c gets promoted
     client.turns.delete_turn(turn_fresh_a_id)
-    turn_fresh_c = client.turns.get_turn(turn_fresh_c_id)
-    assert turn_fresh_c.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    fresh_turn_c_response = client.turns.get_turn(turn_fresh_c_id)
+    fresh_turn_c = TurnDetailResponse.from_response(fresh_turn_c_response)
+    assert fresh_turn_c.owner_status == ClientStatusEnum.IN_SERVICE
 
     # Clean up
     client.turns.delete_turn(turn_fresh_b_id)

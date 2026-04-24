@@ -1,6 +1,8 @@
 /* ─── Landing Page ─────────────────────────────────────────────────────────── */
 
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap");
+html {
+  scroll-behavior: smooth;
+}
 
 * {
   box-sizing: border-box;
@@ -9,7 +11,7 @@
 }
 
 .lp {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1a2236;
   background: #f4f6fb;
 }
@@ -29,7 +31,7 @@
 }
 
 .lp-nav-logo {
-  height: 42px;
+  height: 60px;
   width: auto;
 }
 
@@ -88,9 +90,10 @@
 }
 
 .lp-hero-logo {
-  height: 80px;
+  height: 130px;
   width: auto;
-  margin-bottom: 36px;
+  display: block;
+  margin: 0 auto 36px;
 }
 
 .lp-hero-badge {
@@ -128,7 +131,7 @@
 }
 
 .lp-hero-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 62px;
   font-weight: 800;
   color: #1a2236;
@@ -142,7 +145,7 @@
 }
 
 .lp-hero-subtitle-line {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 48px;
   font-weight: 700;
   color: #3b82f6;
@@ -228,7 +231,7 @@
 }
 
 .lp-section-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 38px;
   font-weight: 800;
   color: #1a2236;
@@ -266,16 +269,16 @@
   position: relative;
 }
 
-/* Connector line between steps */
+/* Connector line between steps
 .lp-steps::before {
   content: "";
   position: absolute;
-  top: 32px;
+  top: 60px;
   left: calc(16.67% + 16px);
   right: calc(16.67% + 16px);
   height: 2px;
   background: linear-gradient(90deg, #e4e9f4, #3b82f6, #e4e9f4);
-}
+} */
 
 .lp-step {
   background: #f8faff;
@@ -510,7 +513,7 @@
 }
 
 .lp-cta-title {
-  font-family: "Playfair Display", serif;
+  font-family: "Outfit", sans-serif;
   font-size: 44px;
   font-weight: 800;
   color: #ffffff;

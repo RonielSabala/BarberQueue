@@ -16,7 +16,8 @@ final readonly class BarberReviewRepository extends BaseRepository
         return <<<'SQL'
             SELECT
                 br.*,
-                u.username
+                u.username,
+                u.photo_url
             FROM
                 barber_reviews br
                 JOIN users u ON u.id = br.client_id

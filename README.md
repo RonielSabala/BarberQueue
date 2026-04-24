@@ -16,6 +16,7 @@ BarberQueue is a web application designed to improve the waiting experience at b
   - [Database Setup](#database-setup)
 - [Run Locally](#run-locally)
 - [Run Tests](#run-tests)
+- [API Documentation](#api-documentation)
 - [Roles \& Permissions](#roles--permissions)
 - [Test Accounts](#test-accounts)
 - [Contributing](#contributing)
@@ -159,6 +160,8 @@ The application switches behavior based on the `APP_ENV` variable:
 
 > The test mode is also activated on a per-request basis when the backend receives the `X-App-Env: testing` HTTP header, regardless of `APP_ENV`. Backend tests send this header automatically, so you can run tests against a `development` server without changing your `.env`.
 
+---
+
 #### JWT Secret
 
 Generate a strong random value and set it as `JWT_SECRET`.
@@ -169,22 +172,57 @@ You can create one with:
 openssl rand -base64 32
 ```
 
+---
+
 #### Mail Service Setup
 
-1. Enable 2-Step Verification for `MAIL_USERNAME` at [myaccount.google.com/security](https://myaccount.google.com/security).
-2. Generate an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) and set it as `MAIL_PASSWORD`.
+`MAIL_USERNAME` must be a Gmail address. `MAIL_PASSWORD` is not your Gmail password, it is an **App Password** generated specifically for this application.
+
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security) and enable **2-Step Verification** on your Google account if you haven't already. App Passwords require this to be active.
+2. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords), create a new **App Password**, and copy the generated value into `MAIL_PASSWORD`.
+
+---
 
 #### Google OAuth Setup (Optional)
 
-1. Create or select a project in [Google Cloud Console](https://console.cloud.google.com/).
-2. Go to **APIs & Services** > **Credentials** and create an **OAuth client ID**.
-3. Choose **Web application** and add the following authorized redirect URI:
+##### Step 1. Create a Google Cloud project
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com/).
+2. Click the project dropdown at the top and select **New project**.
+3. Give it a name and click **Create**.
+
+##### Step 2. Configure the OAuth consent screen
+
+Before creating credentials, Google requires you to describe how your application will use user data.
+
+1. Go to **APIs & Services** > **OAuth consent screen**.
+2. Select **External** as the user type and click **Create**.
+3. Fill in the required fields:
+   - **App name**: the value of `APP_NAME`
+   - **User support email**: the value of `MAIL_USERNAME`
+   - **Developer contact email**: the value of `MAIL_USERNAME`
+4. Click **Save and continue** through the remaining steps.
+
+##### Step 3. Create OAuth credentials
+
+1. Go to **APIs & Services** > **Credentials**.
+2. Click **Create credentials** > **OAuth client ID**.
+3. Set the **Application type** to **Web application**.
+4. Under **Authorized redirect URIs**, click **Add URI** and enter:
 
    ```plain
-   http://localhost:3000/auth/GoogleController
+   {BACKEND_URL}/api/auth/google
    ```
 
-4. Copy **Client ID** and **Client secret** into `.env`.
+   Replace `{BACKEND_URL}` with the value from your `.env` (e.g. `http://localhost:3000/api/auth/google`).
+
+5. Click **Create**.
+
+**Step 4. Copy credentials to `.env`**
+
+A dialog will show your credentials. Copy them into your `.env`.
+
+You can also retrieve these at any time from the **Credentials** page by clicking on your OAuth client.
 
 ---
 
@@ -246,14 +284,20 @@ From the `tests/` folder:
 
 ```bash
 cd tests
-uv run pytest                                # backend only
-uv run pytest -m frontend                    # frontend only
-uv run pytest -m "frontend or not frontend"  # everything
+uv run pytest
 ```
 
-Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
+Results are saved to `tests/results/`, including an HTML report with pass/fail summaries.
 
-> **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
+> **Note:** Tests require the PHP server running at `BACKEND_URL`.
+
+---
+
+## API Documentation
+
+The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, optional fields and possible errors.
+
+A [Postman collection](docs/BarberQueue.postman_collection.json) is also included. Import it directly into Postman via **File > Import** to get every route pre-configured against `BACKEND_URL`.
 
 ---
 
@@ -298,10 +342,10 @@ Full management of one or more barbershops they administer:
 
 Four sample users are included for testing. Password for all sample accounts: `app12345`
 
-- [andres@gmail.com](mailto:andres@gmail.com) (`client`)
-- [carlos@barbershop.com](mailto:carlos@barbershop.com) (`barber`)
-- [maria@barbershop.com](mailto:maria@barbershop.com) (`assistant`)
-- [admin@barbershop.com](mailto:admin@barbershop.com) (`admin`)
+- [francisco.garcia@gmail.com](mailto:francisco.garcia@gmail.com) (`client`)
+- [gabriel.duarte@gmail.com](mailto:gabriel.duarte@gmail.com) (`barber`)
+- [frankie.jimenez@gmail.com](mailto:frankie.jimenez@gmail.com) (`assistant`)
+- [rafael.almonte@gmail.com](mailto:rafael.almonte@gmail.com) (`admin`)
 
 ---
 
@@ -317,7 +361,7 @@ Contributions are welcome. Suggested workflow:
 
 ### Pre-commit Hooks <!-- omit in toc -->
 
-This project uses [pre-commit](https://pre-commit.com/) to enforce code quality automatically before each commit. Run the following once from the **repo root** to set it up:
+This project uses [pre-commit](https://pre-commit.com/) to enforce code quality checks automatically before each commit. Run the following once from the **repo root** to set it up:
 
 ```bash
 pip install pre-commit

@@ -16,17 +16,17 @@ from helpers.assertions import (
     assert_content_type,
     assert_status,
 )
-from helpers.common_responses import BARBERSHOP_NOT_FOUND, EMAIL_ALREADY_IN_USE
+from helpers.common_responses import BARBERSHOP_NOT_FOUND, USER_EMAIL_IN_USE
 
 _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS = ErrorResponse(
-    error="EmployeeRole must be one of: 'barber', 'assistant'"
+    error="'role' must be one of: 'barber', 'assistant'"
 )
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
     request = CreateBarbershopEmployeeRequest.random()
-    return client.barbershops.create_employee(barbershop_id, request)
+    return client.barbershops.create_employee(open_barbershop_id, request)
 
 
 def test_status(response: requests.Response) -> None:
@@ -53,24 +53,18 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, CreateBarbershopEmployeeResponse)
 
 
-def test_email_matches_input(client: ApiClient, barbershop_id: int) -> None:
+def test_fields_matches_input(client: ApiClient, open_barbershop_id: int) -> None:
     """
-    Response email matches the submitted email.
-    """
-
-    request = CreateBarbershopEmployeeRequest.random()
-    response = client.barbershops.create_employee(barbershop_id, request)
-    assert response.json()["email"] == request.email.value
-
-
-def test_role_matches_input(client: ApiClient, barbershop_id: int) -> None:
-    """
-    Response role matches the submitted role.
+    Response fields matches the submitted request fields.
     """
 
     request = CreateBarbershopEmployeeRequest.random()
-    response = client.barbershops.create_employee(barbershop_id, request)
-    assert response.json()["role"] == request.role.value
+    response = client.barbershops.create_employee(open_barbershop_id, request)
+    employee = CreateBarbershopEmployeeResponse.from_response(response)
+
+    assert employee.username == request.username.value
+    assert employee.email == request.email.value
+    assert employee.role == request.role.value
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:
@@ -85,20 +79,20 @@ def test_status_on_unknown_barbershop(client: ApiClient) -> None:
     assert_body(response, BARBERSHOP_NOT_FOUND)
 
 
-def test_duplicate_email(client: ApiClient, barbershop_id: int) -> None:
+def test_duplicate_email(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Creating an employee with a duplicate email returns 409.
     """
 
     request = CreateBarbershopEmployeeRequest.random()
-    client.barbershops.create_employee(barbershop_id, request)
-    response = client.barbershops.create_employee(barbershop_id, request)
+    client.barbershops.create_employee(open_barbershop_id, request)
+    response = client.barbershops.create_employee(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, EMAIL_ALREADY_IN_USE)
+    assert_body(response, USER_EMAIL_IN_USE)
 
 
-def test_incorrect_employee_role(client: ApiClient, barbershop_id: int) -> None:
+def test_incorrect_employee_role(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Registering an employee as a client or admin returns 422.
     """
@@ -106,7 +100,7 @@ def test_incorrect_employee_role(client: ApiClient, barbershop_id: int) -> None:
     request = CreateBarbershopEmployeeRequest.random(
         role=(RoleEnum.CLIENT, RoleEnum.ADMIN)
     )
-    response = client.barbershops.create_employee(barbershop_id, request)
+    response = client.barbershops.create_employee(open_barbershop_id, request)
 
     assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
     assert_body(response, _ONLY_BARBERS_AND_ASSISTANTS_ASSIGNMENTS)

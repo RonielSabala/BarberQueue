@@ -10,6 +10,7 @@ use App\Domain\ValueObjects\{
     DateTimeString,
     Id,
     OwnerType,
+    PhotoUrl,
     PositiveInteger,
     Username
 };
@@ -25,6 +26,7 @@ final readonly class TurnEntity extends BaseEntity
         public Username $ownerName,
         public OwnerType $ownerType,
         public ClientStatus $ownerStatus,
+        public ?PhotoUrl $ownerPhotoUrl,
         public ?PositiveInteger $groupSize,
         public DateTimeString $createdAt,
         public ?DateTimeString $attendedAt,

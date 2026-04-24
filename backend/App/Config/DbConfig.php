@@ -41,6 +41,8 @@ final class DbConfig
                 \PDO::ATTR_EMULATE_PREPARES => false,
             ]
         );
+
+        self::$pdo->exec('SET SESSION innodb_lock_wait_timeout = 5');
     }
 
     public static function getConnection(): \PDO

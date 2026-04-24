@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Attributes;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-abstract readonly class HttpMethod
+readonly class HttpMethod
 {
     public function __construct(public readonly string $uri) {}
 

@@ -6,10 +6,12 @@ from api.client import ApiClient
 from api.core import HttpStatus
 from backend.conftest import (
     NON_EXISTENT_ID,
+    checked_in,
     get_fresh_client_id,
-    get_open_barbershop_request,
+    get_open_barbershop_id,
 )
 from domain.dtos import ErrorResponse
+from domain.dtos.barbershops import BarbershopClientResponse
 from helpers.assertions import assert_body, assert_status
 from helpers.common_responses import (
     BARBERSHOP_NOT_FOUND,
@@ -18,18 +20,12 @@ from helpers.common_responses import (
 )
 
 _SEEDED_ON_QUEUE_CLIENT_ID = 18
-_DIFFERENT_BARBERSHOP = ErrorResponse(
+_CLIENT_ALREADY_CHECKED_IN = ErrorResponse(
     error="The client is registered at a different barbershop location"
 )
-_INVALID_STATUS = ErrorResponse(
-    error="Client must have status 'at_barbershop' or 'paid' to check out"
+_CLIENT_CANNOT_CHECK_OUT = ErrorResponse(
+    error="Only 'at_barbershop' or 'paid' clients can check out"
 )
-
-
-def _checked_in_client(client: ApiClient, barbershop_id: int) -> int:
-    client_id = get_fresh_client_id(client)
-    client.barbershops.check_in(barbershop_id, client_id)
-    return client_id
 
 
 def test_status(client: ApiClient, open_barbershop_id: int) -> None:
@@ -37,7 +33,7 @@ def test_status(client: ApiClient, open_barbershop_id: int) -> None:
     Successful check-out returns 204.
     """
 
-    client_id = _checked_in_client(client, open_barbershop_id)
+    client_id = checked_in(client, open_barbershop_id)
     response = client.barbershops.check_out(open_barbershop_id, client_id)
     assert_status(response, HttpStatus.NO_CONTENT)
 
@@ -47,11 +43,13 @@ def test_client_no_longer_in_list(client: ApiClient, open_barbershop_id: int) ->
     Checked-out client no longer appears in GET /api/barbershops/{id}/clients.
     """
 
-    client_id = _checked_in_client(client, open_barbershop_id)
+    client_id = checked_in(client, open_barbershop_id)
     client.barbershops.check_out(open_barbershop_id, client_id)
 
     response = client.barbershops.get_clients(open_barbershop_id)
-    assert all(client_id != client["clientId"] for client in response.json())
+    clients = BarbershopClientResponse.from_array_response(response)
+
+    assert all(client_id != client.client_id for client in clients)
 
 
 def test_status_on_unknown_client(client: ApiClient, open_barbershop_id: int) -> None:
@@ -61,8 +59,8 @@ def test_status_on_unknown_client(client: ApiClient, open_barbershop_id: int) ->
 
     response = client.barbershops.check_out(open_barbershop_id, NON_EXISTENT_ID)
 
-    assert_body(response, CLIENT_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, CLIENT_NOT_FOUND)
 
 
 def test_status_on_unknown_barbershop(
@@ -72,11 +70,11 @@ def test_status_on_unknown_barbershop(
     Unknown barbershop returns 404.
     """
 
-    client_id = _checked_in_client(client, open_barbershop_id)
+    client_id = checked_in(client, open_barbershop_id)
     response = client.barbershops.check_out(NON_EXISTENT_ID, client_id)
 
-    assert_body(response, BARBERSHOP_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, BARBERSHOP_NOT_FOUND)
 
 
 def test_default_status_client_cannot_check_out(
@@ -101,15 +99,13 @@ def test_client_at_different_barbershop_cannot_check_out(
     barbershop `B`.
     """
 
-    barbershop_request = get_open_barbershop_request()
-    barbershop_response = client.barbershops.create(barbershop_request)
-    other_barbershop_id = barbershop_response.json()["id"]
+    other_barbershop_id = get_open_barbershop_id(client)
 
-    client_id = _checked_in_client(client, open_barbershop_id)
+    client_id = checked_in(client, open_barbershop_id)
     response = client.barbershops.check_out(other_barbershop_id, client_id)
 
     assert_status(response, HttpStatus.CONFLICT)
-    assert_body(response, _DIFFERENT_BARBERSHOP)
+    assert_body(response, _CLIENT_ALREADY_CHECKED_IN)
 
 
 def test_wrong_role_cannot_check_out(
@@ -123,5 +119,5 @@ def test_wrong_role_cannot_check_out(
         open_barbershop_id, _SEEDED_ON_QUEUE_CLIENT_ID
     )
 
-    assert_body(response, _INVALID_STATUS)
+    assert_body(response, _CLIENT_CANNOT_CHECK_OUT)
     assert_status(response, HttpStatus.FORBIDDEN)

@@ -7,8 +7,8 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.barbers import BarberReviewResponse
+from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id, get_fresh_client_id
+from domain.dtos.barbers import BarberReviewResponse, CreateBarberReviewRequest
 from helpers.assertions import (
     assert_body,
     assert_content_type,
@@ -19,7 +19,13 @@ from helpers.common_responses import BARBER_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barber_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
+    client_id = get_fresh_client_id(client)
+    barber_id = get_fresh_barber_id(client)
+    client.barbers.create_review(
+        barber_id, CreateBarberReviewRequest.random(client_id=client_id)
+    )
+
     return client.barbers.get_reviews(barber_id)
 
 

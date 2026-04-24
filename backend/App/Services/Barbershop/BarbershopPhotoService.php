@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Barbershop;
 
 use App\DTOs\Barbershops\Requests\CreateBarbershopPhotosRequest;
+use App\DTOs\Barbershops\Responses\BarbershopPhotoResponse;
 use App\Repositories\Barbershop\BarbershopPhotoRepository;
 use App\Services\BaseService;
-use App\DTOs\Barbershops\Responses\{
-    BarbershopPhotoResponse,
-    CreateBarbershopPhotosResponse,
-    GetBarbershopPhotosResponse
-};
 
 final readonly class BarbershopPhotoService extends BaseService
 {
@@ -20,26 +16,26 @@ final readonly class BarbershopPhotoService extends BaseService
         private readonly BarbershopService $barbershopService,
     ) {}
 
-    public function getPhotos(int $barbershopId): GetBarbershopPhotosResponse
+    /** @return BarbershopPhotoResponse[] */
+    public function getPhotos(int $barbershopId): array
     {
         $this->barbershopService->validateBarbershopExists($barbershopId);
         $barbershopPhotos = $this->barbershopPhotoRepository->getAll($barbershopId);
-
-        return new GetBarbershopPhotosResponse(
-            photos: BarbershopPhotoResponse::fromEntities($barbershopPhotos)
-        );
+        return BarbershopPhotoResponse::fromEntities($barbershopPhotos);
     }
 
+    /** @return BarbershopPhotoResponse[] */
     public function createPhotos(
         int $barbershopId,
         CreateBarbershopPhotosRequest $request
-    ): CreateBarbershopPhotosResponse {
+    ): array {
         $this->barbershopService->validateBarbershopExists($barbershopId);
-        $barbershopPhotos = $this->barbershopPhotoRepository->createPhotos($barbershopId, $request->photoUrls);
-
-        return new CreateBarbershopPhotosResponse(
-            uploaded: BarbershopPhotoResponse::fromEntities($barbershopPhotos)
+        $barbershopPhotos = $this->barbershopPhotoRepository->createPhotos(
+            $barbershopId,
+            $request->photos
         );
+
+        return BarbershopPhotoResponse::fromEntities($barbershopPhotos);
     }
 
     public function deletePhoto(int $barbershopId, int $photoId): bool

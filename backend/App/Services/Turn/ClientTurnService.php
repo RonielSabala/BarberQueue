@@ -46,24 +46,50 @@ final readonly class ClientTurnService extends BaseTurnService
         );
 
         $group = null;
+        $estimatedGroupTime = null;
         $groupId = $turn->groupId;
+
         if ($groupId !== null) {
             $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId->value);
-            $memberResponses = array_map(
-                static fn ($turn) => GroupMemberTurnResponse::fromEntity(
-                    $turn,
-                    ['position' => $scheduled->findTurnPosition($turn->id->value)]
-                ),
-                $memberTurns
-            );
+            $memberResponses = [];
 
-            $group = new GroupResponse(groupId: $groupId->value, members: $memberResponses);
+            foreach ($memberTurns as $memberTurn) {
+                $memberTurnId = $memberTurn->id->value;
+                $estimatedMemberTime = $scheduled->estimatedWaitMinutesFor($memberTurnId);
+
+                if (
+                    $estimatedMemberTime !== null
+                    && ($estimatedGroupTime === null || $estimatedMemberTime > $estimatedGroupTime)
+                ) {
+                    $estimatedGroupTime = $estimatedMemberTime;
+                }
+
+                $memberResponse = GroupMemberTurnResponse::fromEntity(
+                    $memberTurn,
+                    [
+                        'position' => $scheduled->findTurnPosition($memberTurnId),
+                        'absolutePosition' => $scheduled->absolutePositionOf($memberTurnId),
+                        'estimatedTime' => $estimatedMemberTime,
+                    ]
+                );
+
+                $memberResponses[] = $memberResponse;
+            }
+
+            $group = new GroupResponse(
+                groupId: $groupId->value,
+                members: $memberResponses
+            );
         }
 
+        $turnId = $turn->id->value;
         return ClientTurnResponse::fromEntity(
             $turn,
             [
-                'position' => $scheduled->findTurnPosition($turn->id->value),
+                'position' => $scheduled->findTurnPosition($turnId),
+                'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+                'estimatedGroupTime' => $estimatedGroupTime,
                 'group' => $group,
             ]
         );

@@ -7,8 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.auth import RegisterRequest
+from backend.conftest import NON_EXISTENT_ID, get_fresh_barber_id, get_fresh_client_id
 from domain.dtos.barbers import BarberResponse
 from domain.value_objects import BarberStatus
 from helpers.assertions import (
@@ -21,7 +20,8 @@ from helpers.common_responses import BARBER_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barber_id: int) -> requests.Response:
+def response(client: ApiClient) -> requests.Response:
+    barber_id = get_fresh_barber_id(client)
     return client.barbers.get(barber_id)
 
 
@@ -54,8 +54,8 @@ def test_current_status_is_valid(response: requests.Response) -> None:
     currentStatus is one of the valid enum values.
     """
 
-    current_status = response.json()["currentStatus"]
-    assert BarberStatus.has_value(current_status)
+    barber = BarberResponse.from_response(response)
+    assert BarberStatus.has_value(barber.current_status)
 
 
 def test_status_on_unknown_barber(client: ApiClient) -> None:
@@ -74,8 +74,7 @@ def test_status_on_non_barber_user(client: ApiClient) -> None:
     Requesting a non-barber user returns 404.
     """
 
-    register_response = client.auth.register(RegisterRequest.random())
-    client_id = register_response.json()["id"]
+    client_id = get_fresh_client_id(client)
     response = client.barbers.get(client_id)
 
     assert_status(response, HttpStatus.NOT_FOUND)

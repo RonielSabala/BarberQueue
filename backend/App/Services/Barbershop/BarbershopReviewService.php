@@ -36,7 +36,7 @@ final readonly class BarbershopReviewService extends BaseService
         $client = $this->userService->validateUserExists($clientId);
 
         if ($client->role->value !== RoleEnum::Client->value) {
-            throw new BarbershopReviewException('Only clients can leave barbershop reviews', HttpStatus::Forbidden);
+            throw new BarbershopReviewException('Only clients can leave reviews to barbershops', HttpStatus::Forbidden);
         }
 
         $barbershopReview = $this->barbershopReviewRepository->createReview(

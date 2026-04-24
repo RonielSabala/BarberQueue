@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from domain.dtos import BaseRequest
-from domain.value_objects import Email, Password, Phone, Username
+from domain.value_objects import Email, Password, Phone, PhotoUrl, Username
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -9,6 +9,7 @@ class UpdateUserRequest(BaseRequest):
     username: Username | None
     email: Email | None
     phone: Phone | None
+    photo_url: PhotoUrl | None
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

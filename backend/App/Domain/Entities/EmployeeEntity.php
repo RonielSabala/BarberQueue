@@ -9,6 +9,7 @@ use App\Domain\ValueObjects\{Email, Id, Phone, Role, Username};
 
 final readonly class EmployeeEntity extends BaseEntity
 {
+    /** @param EmployeeAssignmentEntity[] $assignments */
     public function __construct(
         public Id $id,
         public Username $username,

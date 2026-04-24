@@ -4,7 +4,7 @@ Http controllers package.
 
 from api.controllers.auth import AuthController
 from api.controllers.barbers import BarberController
-from api.controllers.Barbershops import BarbershopController
+from api.controllers.barbershops import BarbershopController
 from api.controllers.clients import ClientController
 from api.controllers.employees import EmployeeController
 from api.controllers.group_members import GroupMemberController

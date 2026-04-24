@@ -281,7 +281,7 @@ UPDATE barbershops
 SET
     is_active = TRUE
 WHERE
-    id IN (1, 2, 3);
+    id IN (1, 2, 3, 4);
 
 -- STAFF ASSIGNMENTS
 INSERT INTO
@@ -332,6 +332,8 @@ VALUES
     (4, 3, 3),
     (4, 3, 4),
     (4, 3, 5),
+    (4, 3, 6),
+    (4, 3, 7),
     -- Luis
     (5, 3, 2),
     (5, 3, 3),
@@ -375,7 +377,6 @@ VALUES
     (4, 2, 'client_mark', 'in_service');
 
 -- TURNS
--- 1. INSERT EVERYTHING WITH NULL finished_at
 INSERT INTO
     turns (
         id,
@@ -404,13 +405,13 @@ VALUES
     (9, 3, NULL, 3, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:10:00', NULL),
     (10, 3, NULL, 4, 2, 6, '2026-03-09 09:00:00', '2026-03-09 09:45:00', NULL),
     -- Currently in service
-    (11, 3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 5 MINUTE, NULL),
-    (12, 2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 2 MINUTE, NULL),
+    (11, 3, 15, NULL, NULL, 4, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 9 MINUTE, NULL),
+    (12, 2, 16, NULL, NULL, 6, NOW() - INTERVAL 20 MINUTE, NOW() - INTERVAL 8 MINUTE, NULL),
+    (13, 1, 17, NULL, NULL, 8, NOW() - INTERVAL 25 MINUTE, NOW() - INTERVAL 7 MINUTE, NULL),
     -- Waiting in queue
-    (13, 1, 17, NULL, NULL, 8, NOW() - INTERVAL 10 MINUTE, NULL, NULL),
     (14, 1, 18, NULL, NULL, NULL, NOW() - INTERVAL 5 MINUTE, NULL, NULL);
 
--- 2. UPDATE COMPLETED TURNS TO TRIGGER STATS CALCULATION
+-- UPDATE COMPLETED TURNS TO TRIGGER STATS CALCULATION
 UPDATE turns
 SET
     finished_at = '2026-03-05 09:35:00'

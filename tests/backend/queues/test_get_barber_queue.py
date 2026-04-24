@@ -7,7 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
+from backend.conftest import NON_EXISTENT_ID, LiveTurnData, get_fresh_client_id
 from domain.dtos.queues import QueueResponse
 from domain.enums import OwnerTypeEnum
 from helpers.assertions import (
@@ -50,60 +50,49 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, QueueResponse)
 
 
-def test_barber_id_matches(response: requests.Response) -> None:
+def test_queue_matches(response: requests.Response) -> None:
     """
-    Response barberId matches the requested barber.
-    """
-
-    assert response.json()["barberId"] == SEEDED_BARBER_ID
-
-
-def test_positions_are_sequential(response: requests.Response) -> None:
-    """
-    Turns have sequential positions starting at 1.
+    Response queue matches the requested queue.
     """
 
-    turns = response.json()["turns"]
-    positions = [turn["position"] for turn in turns]
+    queue = QueueResponse.from_response(response)
+    assert queue.barber_id == SEEDED_BARBER_ID
+
+    positions = []
+    turns = queue.turns
+
+    for turn in turns:
+        positions.append(turn.position)
+        assert turn.owner_type in (OwnerTypeEnum.CLIENT, OwnerTypeEnum.MEMBER)
+
     assert positions == list(range(1, len(positions) + 1))
 
 
-def test_all_turns_have_valid_owner_type(response: requests.Response) -> None:
-    """
-    Every turn ownerType is client or member.
-    """
-
-    for turn in response.json()["turns"]:
-        assert turn["ownerType"] in (OwnerTypeEnum.CLIENT, OwnerTypeEnum.MEMBER)
-
-
-def test_live_turn_appears_in_queue(client: ApiClient, live_turn: dict) -> None:
+def test_live_turn_appears_in_queue(client: ApiClient, live_turn: LiveTurnData) -> None:
     """
     A turn created via POST appears in that barber's queue.
     """
 
-    response = client.queues.get_barber_queue(live_turn["barber_id"])
-    turn_ids = [turn["id"] for turn in response.json()["turns"]]
-    assert live_turn["turn_id"] in turn_ids
+    response = client.queues.get_barber_queue(live_turn.barber_id)
+    turn_id = live_turn.turn_id
+    queue = QueueResponse.from_response(response)
+    assert any(turn_id == turn._id for turn in queue.turns)
 
 
-def test_live_turn_position_is_positive(client: ApiClient, live_turn: dict) -> None:
+def test_live_turn_position_is_positive(
+    client: ApiClient, live_turn: LiveTurnData
+) -> None:
     """
     The live turn has a positive position in the barber queue.
     """
 
-    response = client.queues.get_barber_queue(live_turn["barber_id"])
-    turn = next(
-        (
-            turn
-            for turn in response.json()["turns"]
-            if turn["id"] == live_turn["turn_id"]
-        ),
-        None,
-    )
+    response = client.queues.get_barber_queue(live_turn.barber_id)
+    turn_id = live_turn.turn_id
+    queue = QueueResponse.from_response(response)
+    turn = next((turn for turn in queue.turns if turn._id == turn_id), None)
 
     assert turn is not None
-    assert turn["position"] >= 1
+    assert turn.position is not None and turn.position >= 1
 
 
 def test_status_on_unknown_barber(client: ApiClient) -> None:

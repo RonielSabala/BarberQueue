@@ -36,7 +36,7 @@ final readonly class TurnService extends BaseTurnService
 
     // Private helpers
 
-    private function scheduledQueue(int $barbershopId): ScheduledQueue
+    public function scheduledQueue(int $barbershopId): ScheduledQueue
     {
         return $this->getScheduledQueue($this->turnRepository, $barbershopId);
     }
@@ -51,20 +51,18 @@ final readonly class TurnService extends BaseTurnService
         return $turn;
     }
 
-    private function validateBarberIsAccepting(int $barberId): void
+    private function groupMembersHaveValidStatus(int $groupId, ClientStatusEnum $status, bool $shouldMatch): bool
     {
-        $barber = $this->barberRepository->getById($barberId);
-        if ($barber === null) {
-            throw new TurnException('Barber not found', HttpStatus::NotFound);
+        $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
+
+        foreach ($memberTurns as $memberTurn) {
+            $isMatch = $memberTurn->status->value === $status->value;
+            if ($isMatch !== $shouldMatch) {
+                return false;
+            }
         }
 
-        if ($barber->currentStatus->value !== BarberStatusEnum::Active->value) {
-            throw new TurnException('Barber is not active', HttpStatus::UnprocessableEntity);
-        }
-
-        if (!$barber->isAccepting) {
-            throw new TurnException('Barber is not accepting new clients', HttpStatus::UnprocessableEntity);
-        }
+        return true;
     }
 
     private function setOwnerStatus(TurnEntity $turn, string $newStatus): void
@@ -79,23 +77,25 @@ final readonly class TurnService extends BaseTurnService
         }
     }
 
-    private function promoteToInService(TurnEntity $turn, int $barberId): bool
+    public function promoteToInService(TurnEntity $turn, int $barberId): bool
     {
+        // Already promoted
+        if ($turn->ownerStatus->value === ClientStatusEnum::InService->value) {
+            return true;
+        }
+
         // Only promote on queue owners
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
             return false;
         }
 
+        $turnId = $turn->id->value;
+        $this->turnRepository->setAttendedAt($turnId);
         $this->setOwnerStatus($turn, ClientStatusEnum::InService->value);
 
-        // Assign barber to this turn
+        // Assign barber if it didn't have a barber preference
         if ($turn->barberId === null) {
-            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
-        }
-
-        // Assign barber to this turn
-        if ($turn->barberId === null) {
-            $this->turnRepository->updateBarberId($turn->id->value, $barberId);
+            $this->turnRepository->updateBarberId($turnId, $barberId);
         }
 
         return true;
@@ -118,9 +118,14 @@ final readonly class TurnService extends BaseTurnService
         TurnEntity $turn,
         ScheduledQueue $scheduled,
     ): TurnDetailResponse {
+        $turnId = $turn->id->value;
         return TurnDetailResponse::fromEntity(
             $turn,
-            ['position' => $scheduled->findTurnPosition($turn->id->value)]
+            [
+                'position' => $scheduled->findTurnPosition($turnId),
+                'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+            ]
         );
     }
 
@@ -219,15 +224,26 @@ final readonly class TurnService extends BaseTurnService
 
         if ($client->currentStatus->value !== ClientStatusEnum::AtBarbershop->value) {
             throw new TurnException(
-                'Client must have status \'at_barbershop\' to join the queue',
-                HttpStatus::UnprocessableEntity
+                'Only \'at_barbershop\' clients can join to a queue',
+                HttpStatus::Forbidden
             );
         }
 
         // Validate barber
         $barberId = $request->barberId?->value;
         if ($barberId !== null) {
-            $this->validateBarberIsAccepting($barberId);
+            $barber = $this->barberRepository->getByAssignment($barberId, $barbershopId);
+            if ($barber === null) {
+                throw new TurnException('Barber not found in this barbershop', HttpStatus::NotFound);
+            }
+
+            if ($barber->currentStatus->value !== BarberStatusEnum::Active->value) {
+                throw new TurnException('Barber is not active', HttpStatus::UnprocessableEntity);
+            }
+
+            if (!$barber->isAccepting) {
+                throw new TurnException('Barber is not accepting new clients', HttpStatus::UnprocessableEntity);
+            }
         }
 
         return $this->turnRepository->transaction(
@@ -315,10 +331,23 @@ final readonly class TurnService extends BaseTurnService
     {
         $turn = $this->validateTurnExists($turnId);
 
-        if ($turn->attendedAt !== null) {
+        if ($turn->finishedAt !== null) {
             throw new TurnException(
                 'Cannot delete a turn that has been completed',
                 HttpStatus::UnprocessableEntity
+            );
+        }
+
+        // Verify no member is attended
+        $groupId = $turn->groupId?->value;
+        if ($groupId && !$this->groupMembersHaveValidStatus(
+            groupId: $groupId,
+            status: ClientStatusEnum::Attended,
+            shouldMatch: false
+        )) {
+            throw new TurnException(
+                'Cannot cancel group because service has already started for some members',
+                HttpStatus::Forbidden
             );
         }
 
@@ -333,8 +362,8 @@ final readonly class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::OnQueue->value) {
             throw new TurnException(
-                'Only \'on_queue\' turns can be set to \'waiting\'',
-                HttpStatus::UnprocessableEntity
+                'Only \'on_queue\' clients can be set to \'waiting\'',
+                HttpStatus::Forbidden
             );
         }
 
@@ -346,52 +375,37 @@ final readonly class TurnService extends BaseTurnService
         );
     }
 
-    private function orchestrateTurnUnwait(TurnEntity $turn): void
-    {
-        $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
-
-        $turnId = $turn->id->value;
-        $scheduled = $this->scheduledQueue($turn->barbershopId->value);
-        [$position, $barberId] = $scheduled->findTurnLocation($turnId);
-
-        // Promote this turn if now is at position 1
-        if ($position === 1) {
-            $updatedTurn = $this->turnRepository->getById($turnId);
-            $this->promoteToInService($updatedTurn, $barberId);
-        }
-    }
-
     public function unwaitTurn(int $turnId): TurnDetailResponse
     {
         $turn = $this->validateTurnExists($turnId);
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::Waiting->value) {
             throw new TurnException(
-                'Only \'waiting\' turns can be set back to \'on_queue\'',
-                HttpStatus::UnprocessableEntity
+                'Only \'waiting\' clients can be set back to \'on_queue\'',
+                HttpStatus::Forbidden
             );
         }
 
+        // Orchestrate turn unwait
+        $barbershopId = $turn->barbershopId->value;
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnUnwait($turn)
+            function () use ($turn, $turnId, $barbershopId): void {
+                $this->setOwnerStatus($turn, ClientStatusEnum::OnQueue->value);
+
+                $scheduled = $this->scheduledQueue($barbershopId);
+                [$position, $barberId] = $scheduled->findTurnLocation($turnId);
+
+                // Promote this turn if it is at position 1
+                if ($position === 1) {
+                    $updatedTurn = $this->turnRepository->getById($turnId);
+                    $this->promoteToInService($updatedTurn, $barberId);
+                }
+            }
         );
 
         return $this->buildTurnResponse(
             turn: $this->turnRepository->getById($turnId),
-            scheduled: $this->scheduledQueue($turn->barbershopId->value)
-        );
-    }
-
-    private function orchestrateTurnAttendance(TurnEntity $turn): void
-    {
-        $this->setOwnerStatus($turn, ClientStatusEnum::Attended->value);
-        $this->turnRepository->setAttendedAt($turn->id->value);
-
-        // Promote the next eligible turn
-        $scheduled = $this->scheduledQueue($turn->barbershopId->value);
-        $this->promoteNextEligibleInQueue(
-            scheduled: $scheduled,
-            barberId: $turn->barberId->value
+            scheduled: $this->scheduledQueue($barbershopId)
         );
     }
 
@@ -401,40 +415,30 @@ final readonly class TurnService extends BaseTurnService
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::InService->value) {
             throw new TurnException(
-                'Only \'in_service\' turns can be attended',
-                HttpStatus::UnprocessableEntity
+                'Only \'in_service\' clients can be attended',
+                HttpStatus::Forbidden
             );
         }
 
+        // Orchestrate turn attendance
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnAttendance($turn)
+            function () use ($turn): void {
+                $this->setOwnerStatus($turn, ClientStatusEnum::Attended->value);
+                $this->turnRepository->setFinishedAt($turn->id->value);
+
+                // Promote next turn
+                $scheduled = $this->scheduledQueue($turn->barbershopId->value);
+                $this->promoteNextEligibleInQueue(
+                    scheduled: $scheduled,
+                    barberId: $turn->barberId->value
+                );
+            }
         );
 
         return $this->buildTurnResponse(
             turn: $this->turnRepository->getById($turnId),
             scheduled: $this->scheduledQueue($turn->barbershopId->value)
         );
-    }
-
-    private function orchestrateTurnPayment(TurnEntity $turn, ?int $groupId): void
-    {
-        // Set client to paid
-        $this->groupMemberRepository->updateClientStatus(
-            $turn->ownerId->value,
-            ClientStatusEnum::Paid->value
-        );
-
-        // Set solo client finished_at field
-        if ($groupId === null) {
-            $this->turnRepository->setFinishedAt($turn->id->value);
-            return;
-        }
-
-        // Set all group members to paid
-        $this->groupMemberRepository->updateAllMemberStatus($groupId, ClientStatusEnum::Paid->value);
-
-        // Set whole group and leader finished_at field
-        $this->turnRepository->setGroupFinishedAt($groupId);
     }
 
     public function payTurn(int $turnId): TurnDetailResponse
@@ -444,33 +448,50 @@ final readonly class TurnService extends BaseTurnService
         if ($turn->ownerType->value === OwnerTypeEnum::Member->value) {
             throw new TurnException(
                 'Member turns cannot be paid independently. The group leader must pay',
-                HttpStatus::UnprocessableEntity
+                HttpStatus::Forbidden
             );
         }
 
         if ($turn->ownerStatus->value !== ClientStatusEnum::Attended->value) {
             throw new TurnException(
-                'Client must have status \'attended\' to pay',
-                HttpStatus::UnprocessableEntity
+                'Only \'attended\' clients can pay',
+                HttpStatus::Forbidden
             );
         }
 
         // Verify every member is attended
         $groupId = $turn->groupId?->value;
-        if ($groupId !== null) {
-            $memberTurns = $this->clientTurnRepository->getAllByGroupId($groupId);
-            foreach ($memberTurns as $memberTurn) {
-                if ($memberTurn->status->value !== ClientStatusEnum::Attended->value) {
-                    throw new TurnException(
-                        'All group members must have status \'attended\' before the group can pay',
-                        HttpStatus::UnprocessableEntity
-                    );
-                }
-            }
+        if ($groupId && !$this->groupMembersHaveValidStatus(
+            groupId: $groupId,
+            status: ClientStatusEnum::Attended,
+            shouldMatch: true
+        )) {
+            throw new TurnException(
+                'All group members must have status \'attended\' before the group can pay',
+                HttpStatus::Forbidden
+            );
         }
 
+        // Orchestrate turn payment
+        $ownerId = $turn->ownerId->value;
         $this->turnRepository->transaction(
-            fn () => $this->orchestrateTurnPayment($turn, $groupId)
+            function () use ($ownerId, $groupId): void {
+                // Set client to paid
+                $this->groupMemberRepository->updateClientStatus(
+                    $ownerId,
+                    ClientStatusEnum::Paid->value
+                );
+
+                if ($groupId === null) {
+                    return;
+                }
+
+                // Set all group members to paid
+                $this->groupMemberRepository->updateAllMemberStatus(
+                    $groupId,
+                    ClientStatusEnum::Paid->value
+                );
+            }
         );
 
         return $this->buildTurnResponse(

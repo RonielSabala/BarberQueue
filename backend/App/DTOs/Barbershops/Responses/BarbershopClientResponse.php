@@ -12,5 +12,6 @@ final readonly class BarbershopClientResponse extends BaseResponse
         public int $clientId,
         public string $currentStatus,
         public string $username,
+        public ?string $photoUrl,
     ) {}
 }

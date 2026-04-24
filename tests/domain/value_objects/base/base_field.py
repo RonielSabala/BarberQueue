@@ -26,6 +26,10 @@ class BaseField[T](ABC):
         return ValidationError(f"{cls.__name__} {message}")
 
     @classmethod
+    def _undefined_field_error(cls, field: str) -> RuntimeError:
+        return RuntimeError(f"{cls.__name__}.{field} must be defined")
+
+    @classmethod
     def _random_value_error(cls, name: str) -> NotImplementedError:
         return NotImplementedError(
             f"{cls.__name__}.random_value() requires {name} to be set"
