@@ -167,10 +167,11 @@ Errors are grouped by domain. Each entry shows the identifier used in [`docs/ROU
 
 ## Turns
 
-| Identifier                         | Status | Message                                                        |
-| ---------------------------------- | ------ | -------------------------------------------------------------- |
-| `TURN_NOT_FOUND`                   | 404    | Turn not found                                                 |
-| `CLIENT_TURN_NOT_FOUND`            | 404    | No active turn found for this client                           |
-| `MEMBER_TURN_NOT_FOUND`            | 404    | No active turn found for this group member                     |
-| `NO_TURN_FOR_CLIENT_AT_BARBERSHOP` | 404    | The client currently has no turn despite being in a barbershop |
-| `CANNOT_DELETE_TURN`               | 422    | Cannot delete a turn that has been completed                   |
+| Identifier                         | Status | Message                                                                  |
+| ---------------------------------- | ------ | ------------------------------------------------------------------------ |
+| `TURN_NOT_FOUND`                   | 404    | Turn not found                                                           |
+| `CLIENT_TURN_NOT_FOUND`            | 404    | No active turn found for this client                                     |
+| `MEMBER_TURN_NOT_FOUND`            | 404    | No active turn found for this group member                               |
+| `NO_TURN_FOR_CLIENT_AT_BARBERSHOP` | 404    | The client currently has no turn despite being in a barbershop           |
+| `CANNOT_DELETE_TURN`               | 422    | Cannot delete a turn that has been completed                             |
+| `CANNOT_DELETE_GROUP_TURNS`        | 422    | Cannot cancel group because service has already started for some members |
