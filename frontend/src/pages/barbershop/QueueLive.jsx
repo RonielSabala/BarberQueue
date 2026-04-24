@@ -71,8 +71,11 @@ function CapacityModal({ capacity, onClose }) {
 }
 
 function QueueLive() {
-  const { id } = useParams();
-  const q = useQueueLive(id);
+  // ── FIX: la ruta pública usa ":id" y la del asistente usa ":barbershopId"
+  const { id, barbershopId } = useParams();
+  const resolvedId = id ?? barbershopId;
+
+  const q = useQueueLive(resolvedId);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
@@ -498,7 +501,7 @@ function QueueLive() {
             </div>
             <AssistantRegisterPanel
               barbers={q.activeBarbers}
-              barbershopId={id}
+              barbershopId={resolvedId}
               onClose={() => q.setIsRegisterModalOpen(false)}
               onRegistered={async () => {
                 await Promise.all([
