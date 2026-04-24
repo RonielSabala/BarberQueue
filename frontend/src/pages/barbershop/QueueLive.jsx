@@ -71,11 +71,8 @@ function CapacityModal({ capacity, onClose }) {
 }
 
 function QueueLive() {
-  // ── FIX: la ruta pública usa ":id" y la del asistente usa ":barbershopId"
-  const { id, barbershopId } = useParams();
-  const resolvedId = id ?? barbershopId;
-
-  const q = useQueueLive(resolvedId);
+  const { id } = useParams();
+  const q = useQueueLive(id);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen">
@@ -133,32 +130,36 @@ function QueueLive() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {q.loadingQueue ? (
                 <p className="text-slate-500">Cargando cola...</p>
-              ) : q.activeBarbers.length === 0 ? (
-                <p className="text-slate-500">No hay barberos activos.</p>
+              ) : q.activeBarbers.filter((b) => b.isAccepting).length === 0 ? (
+                <p className="text-slate-500">
+                  No hay barberos disponibles en este momento.
+                </p>
               ) : (
-                q.activeBarbers.map((barber) => (
-                  <QueueColumn
-                    key={barber.id}
-                    barber={barber}
-                    showJoinAction={q.isClient}
-                    canJoin={q.currentUserCheckedIn && !q.myTurn}
-                    joining={q.turnActionLoading || q.joiningGroup}
-                    onJoinQueue={q.handleOpenJoinModal}
-                    currentUserId={q.currentUserId}
-                    currentUserRole={
-                      q.isClient
-                        ? "client"
-                        : q.isAssistant
-                          ? "assistant"
-                          : "other"
-                    }
-                    myTurn={q.myTurn}
-                    onOpenMyTurn={() => {
-                      q.setIsTurnModalOpen(true);
-                      q.fetchMyTurn();
-                    }}
-                  />
-                ))
+                q.activeBarbers
+                  .filter((b) => b.isAccepting)
+                  .map((barber) => (
+                    <QueueColumn
+                      key={barber.id}
+                      barber={barber}
+                      showJoinAction={q.isClient}
+                      canJoin={q.currentUserCheckedIn && !q.myTurn}
+                      joining={q.turnActionLoading || q.joiningGroup}
+                      onJoinQueue={q.handleOpenJoinModal}
+                      currentUserId={q.currentUserId}
+                      currentUserRole={
+                        q.isClient
+                          ? "client"
+                          : q.isAssistant
+                            ? "assistant"
+                            : "other"
+                      }
+                      myTurn={q.myTurn}
+                      onOpenMyTurn={() => {
+                        q.setIsTurnModalOpen(true);
+                        q.fetchMyTurn();
+                      }}
+                    />
+                  ))
               )}
             </div>
 
@@ -294,6 +295,18 @@ function QueueLive() {
                       Registra tu llegada para aparecer en la espera general de
                       la barbería.
                     </p>
+
+                    {/* Pago pendiente */}
+                    {q.currentUserCheckedIn &&
+                      q.myTurnStatus === "attended" && (
+                        <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-amber-700 text-sm font-medium text-center">
+                          <span className="material-icons-round text-base align-middle mr-1">
+                            payments
+                          </span>
+                          Pago pendiente — recuerda pagar antes de salir.
+                        </div>
+                      )}
+
                     {q.currentUserCheckedIn ? (
                       <>
                         <button
@@ -336,9 +349,24 @@ function QueueLive() {
                           q.fetchMyTurn();
                         }}
                         disabled={q.loadingMyTurn}
-                        className="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-2xl transition disabled:opacity-60"
+                        className={`w-full font-bold py-3 rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2 ${
+                          q.myTurnStatus === "attended"
+                            ? "bg-emerald-500 hover:bg-emerald-600 text-white border border-emerald-500"
+                            : "border border-slate-200 hover:bg-slate-50 text-slate-700"
+                        }`}
                       >
-                        {q.loadingMyTurn ? "Cargando..." : "Ver mi turno"}
+                        {q.loadingMyTurn ? (
+                          "Cargando..."
+                        ) : q.myTurnStatus === "attended" ? (
+                          <>
+                            <span className="material-icons-round text-base">
+                              payments
+                            </span>
+                            Pagar
+                          </>
+                        ) : (
+                          "Ver mi turno"
+                        )}
                       </button>
                     )}
                   </div>
@@ -470,7 +498,7 @@ function QueueLive() {
             </div>
             <AssistantRegisterPanel
               barbers={q.activeBarbers}
-              barbershopId={resolvedId}
+              barbershopId={id}
               onClose={() => q.setIsRegisterModalOpen(false)}
               onRegistered={async () => {
                 await Promise.all([
@@ -482,6 +510,8 @@ function QueueLive() {
           </div>
         </div>
       )}
+
+      <div className="h-20"></div>
     </div>
   );
 }
