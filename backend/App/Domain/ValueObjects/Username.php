@@ -8,6 +8,6 @@ use App\Domain\ValueObjects\Base\NameField;
 
 final readonly class Username extends NameField
 {
-    protected const int MIN_LEN = 5;
+    public const int MIN_LEN = 5;
     protected const int MAX_LEN = 30;
 }

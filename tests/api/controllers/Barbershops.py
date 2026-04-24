@@ -3,6 +3,7 @@ import requests
 from api.base_controller import BaseController
 from api.decorators import DELETE, GET, PATCH, POST, route_prefix
 from domain.dtos.barbershops import (
+    AssignBarbershopEmployeeRequest,
     CreateBarbershopEmployeeRequest,
     CreateBarbershopPhotosRequest,
     CreateBarbershopRequest,
@@ -82,6 +83,11 @@ class BarbershopController(BaseController):
     @POST("/{id}/employees")
     def create_employee(
         self, id: int, request: CreateBarbershopEmployeeRequest
+    ) -> requests.Response: ...
+
+    @POST("/{id}/employees/{employee_id}")
+    def assign_employee(
+        self, id: int, employee_id: int, request: AssignBarbershopEmployeeRequest
     ) -> requests.Response: ...
 
     @DELETE("/{id}/employees/{employee_id}")

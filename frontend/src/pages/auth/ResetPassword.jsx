@@ -132,7 +132,7 @@ function ResetPassword() {
             disabled={loading}
             style={{ marginTop: "8px" }}
           >
-            {loading ? "Actualizando..." : "Actualizar contraseña →"}
+            {loading ? "Actualizando..." : "Actualizar contraseña"}
           </button>
         </form>
 

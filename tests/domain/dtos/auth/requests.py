@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from domain.dtos import BaseRequest
-from domain.value_objects import Email, Password, Phone, ResetCode, Username
+from domain.value_objects import Email, Password, Phone, PhotoUrl, ResetCode, Username
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -15,6 +15,7 @@ class RegisterRequest(BaseRequest):
     username: Username
     email: Email
     phone: Phone
+    photo_url: PhotoUrl | None
     password: Password
 
 

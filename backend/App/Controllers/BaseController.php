@@ -7,20 +7,20 @@ namespace App\Controllers;
 use App\Attributes\ArrayOf;
 use App\Core\HttpStatus;
 use App\DTOs\BaseRequest;
-use App\Exceptions\Base\ValidationException;
+use App\Exceptions\Base\{ValidationException, ValueObjectException};
 use App\Utils\{TextUtils, TypeCoercion};
 
 abstract readonly class BaseController
 {
+    public static function buildRequest(string $requestClass): object
+    {
+        return self::mapFromArray($requestClass, self::getJsonBody());
+    }
+
     private static function getJsonBody(): array
     {
         $raw = file_get_contents('php://input');
         return json_decode($raw ?: '', true) ?? [];
-    }
-
-    public static function buildRequest(string $requestClass): object
-    {
-        return self::mapFromArray($requestClass, self::getJsonBody());
     }
 
     private static function mapFromArray(string $requestClass, array $data, string $path = ''): object
@@ -106,7 +106,14 @@ abstract readonly class BaseController
 
         // Value Object
         if (!is_subclass_of($className, BaseRequest::class)) {
-            return new $className(self::coerceForValueObject($className, $value));
+            try {
+                return new $className(self::coerceForValueObject($className, $value));
+            } catch (ValueObjectException $e) {
+                throw new ValidationException(
+                    "'{$fieldPath}' {$e->getMessage()}",
+                    HttpStatus::UnprocessableEntity
+                );
+            }
         }
 
         if (!\is_array($value)) {
@@ -166,7 +173,7 @@ abstract readonly class BaseController
 
                 if (!\is_array($item)) {
                     throw new ValidationException(
-                        "Field '{$fieldPath}[]' must be an object",
+                        "Field '{$fieldPath}' must be an array",
                         HttpStatus::BadRequest
                     );
                 }

@@ -31,6 +31,11 @@ abstract readonly class BaseRepository
         return $tableName;
     }
 
+    public function getPlaceHolders(array $fields): string
+    {
+        return implode(', ', array_fill(0, \count($fields), '?'));
+    }
+
     private function getClauses(string $clauseToken, array $columns): string
     {
         return implode($clauseToken, array_map(
@@ -130,12 +135,11 @@ abstract readonly class BaseRepository
         }
 
         $columns = implode(', ', array_keys($entityFields));
-        $placeholders = implode(', ', array_fill(0, \count($entityFields), '?'));
         $sql = <<<SQL
             INSERT INTO
                 {$tableName} ({$columns})
             VALUES
-                ({$placeholders})
+                ({$this->getPlaceHolders($entityFields)})
         SQL;
 
         $this->query($sql, array_values($entityFields));

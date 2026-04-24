@@ -7,6 +7,15 @@ from domain.dtos.users import UpdateUserPasswordRequest, UpdateUserRequest
 
 @route_prefix("/api/users")
 class UserController(BaseController):
+    @GET("")
+    def get_all(
+        self,
+        *,
+        username: str | None = None,
+        email: str | None = None,
+        role: str | None = None,
+    ) -> requests.Response: ...
+
     @GET("/{id}")
     def get_user(self, id: int) -> requests.Response: ...
 

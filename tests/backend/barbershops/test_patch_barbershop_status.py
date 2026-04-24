@@ -9,7 +9,10 @@ from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
 from backend.conftest import NON_EXISTENT_ID
 from domain.dtos import MessageResponse
-from domain.dtos.barbershops import UpdateBarbershopStatusRequest
+from domain.dtos.barbershops import (
+    BarbershopDetailResponse,
+    UpdateBarbershopStatusRequest,
+)
 from domain.utils import random_bool
 from helpers.assertions import assert_body, assert_content_type, assert_status
 from helpers.common_responses import BARBERSHOP_NOT_FOUND
@@ -18,9 +21,9 @@ _STATUS_UPDATED = MessageResponse(message="Barbershop status updated")
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
     request = UpdateBarbershopStatusRequest(is_active=False)
-    return client.barbershops.update_status(barbershop_id, request)
+    return client.barbershops.update_status(open_barbershop_id, request)
 
 
 def test_status(response: requests.Response) -> None:
@@ -47,17 +50,19 @@ def test_body(response: requests.Response) -> None:
     assert_body(response, _STATUS_UPDATED)
 
 
-def test_status_reflects_change(client: ApiClient, barbershop_id: int) -> None:
+def test_status_reflects_change(client: ApiClient, open_barbershop_id: int) -> None:
     """
     Updated isActive is reflected.
     """
 
-    status_value = random_bool()
-    Update_request = UpdateBarbershopStatusRequest(is_active=status_value)
-    client.barbershops.update_status(barbershop_id, Update_request)
+    is_active_value = random_bool()
+    Update_request = UpdateBarbershopStatusRequest(is_active=is_active_value)
+    client.barbershops.update_status(open_barbershop_id, Update_request)
 
-    response = client.barbershops.get(barbershop_id)
-    assert response.json()["isActive"] is status_value
+    response = client.barbershops.get(open_barbershop_id)
+    barbershop = BarbershopDetailResponse.from_response(response)
+
+    assert barbershop.is_active is is_active_value
 
 
 def test_status_on_unknown_barbershop(client: ApiClient) -> None:

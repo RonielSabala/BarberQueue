@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
+use App\Exceptions\Base\ValueObjectException;
 
 final readonly class ReviewContent extends StringField
 {
@@ -15,7 +16,7 @@ final readonly class ReviewContent extends StringField
     {
         $value = trim($value);
         if ($value === '') {
-            throw $this->validationException('must not be empty');
+            throw new ValueObjectException('must not be empty');
         }
 
         parent::__construct($value);

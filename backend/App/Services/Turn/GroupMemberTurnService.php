@@ -36,9 +36,14 @@ final readonly class GroupMemberTurnService extends BaseTurnService
             $turn->barbershopId->value
         );
 
+        $turnId = $turn->id->value;
         return GroupMemberTurnResponse::fromEntity(
             $turn,
-            ['position' => $scheduled->findTurnPosition($turn->id->value)]
+            [
+                'position' => $scheduled->findTurnPosition($turnId),
+                'absolutePosition' => $scheduled->absolutePositionOf($turnId),
+                'estimatedTime' => $scheduled->estimatedWaitMinutesFor($turnId),
+            ]
         );
     }
 }

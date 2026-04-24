@@ -1,12 +1,76 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Outlet, useLocation, useNavigate, Link } from "react-router-dom";
+import { Avatar } from "../components/UserProfileCard";
 
 function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const getUser = () =>
+    JSON.parse(localStorage.getItem("user") || "null") || {
+      username: "Usuario",
+      role: "client",
+    };
+  const [user, setUser] = useState(getUser);
+
+  // Re-leer el usuario cuando cambia el localStorage (ej: al actualizar foto)
+  useEffect(() => {
+    const handleStorage = () => setUser(getUser());
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  // También re-leer al cambiar de ruta (cubre actualizaciones en la misma pestaña)
+  useEffect(() => {
+    setUser(getUser());
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const getPageTitle = (pathname) => {
+    if (pathname.includes("dashboard")) return "Dashboard";
+    if (pathname.includes("profile")) return "Perfil";
+    if (pathname.includes("employees")) return "Empleados";
+    if (pathname.includes("barbershop")) return "Barberías";
+    if (pathname.includes("home")) return "Inicio";
+    if (pathname.includes("queue")) return "Fila Virtual";
+    return "Panel Central";
+  };
+
+  const getNavItems = () => {
+    const items = [];
+    if (user.role === "admin") {
+      items.push({ name: "Inicio", path: "/admin/home", icon: "home" });
+      items.push({ name: "Perfil", path: "/admin/profile", icon: "person" });
+    } else if (user.role === "client") {
+      items.push({ name: "Inicio", path: "/client/home", icon: "home" });
+      items.push({ name: "Perfil", path: "/client/profile", icon: "person" });
+    } else if (user.role === "barber") {
+      items.push({ name: "Inicio", path: "/barber/home", icon: "home" });
+      items.push({ name: "Perfil", path: "/barber/profile", icon: "person" });
+    } else if (user.role === "assistant") {
+      items.push({ name: "Inicio", path: "/assistant/home", icon: "home" });
+      items.push({
+        name: "Perfil",
+        path: "/assistant/profile",
+        icon: "person",
+      });
+    }
+    return items;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="flex min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100">
-      {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
@@ -22,48 +86,47 @@ function MainLayout() {
       >
         <div className="p-6">
           <h2 className="text-2xl font-display font-bold mb-2 flex items-center gap-2 text-white">
-            {/* <span className="material-icons-round text-primary">content_cut</span> */}
-            BarberQueue
+            <span className="material-icons-round text-primary shadow-sm bg-white/10 p-2 rounded-xl">
+              content_cut
+            </span>
           </h2>
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mb-8 ml-1">
-            Sistema de Gestión
+          <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mb-8 ml-1 mt-4">
+            Gestión de turnos
           </p>
 
           <nav>
             <ul className="space-y-3">
-              <li className="flex items-center gap-3 p-3 rounded-xl bg-primary/20 text-primary cursor-pointer transition-colors shadow-inner">
-                <span className="material-icons-round">dashboard</span>
-                <span className="font-semibold">Dashboard</span>
-              </li>
-              <li className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white cursor-pointer transition-colors">
-                <span className="material-icons-round">storefront</span>
-                <span className="font-medium">Barberías</span>
-              </li>
-              <li className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white cursor-pointer transition-colors">
-                <span className="material-icons-round">person</span>
-                <span className="font-medium">Perfil</span>
-              </li>
-              <li className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white cursor-pointer transition-colors">
-                <span className="material-icons-round">settings</span>
-                <span className="font-medium">Configuración</span>
-              </li>
+              {navItems.map((item) => {
+                const isActive = location.pathname.includes(item.path);
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
+                        isActive
+                          ? "bg-primary/20 text-primary shadow-inner font-semibold"
+                          : "hover:bg-slate-800 hover:text-white font-medium"
+                      }`}
+                      onClick={() => setIsSidebarOpen(false)}
+                    >
+                      <span className="material-icons-round">{item.icon}</span>
+                      <span>{item.name}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </div>
 
-        {/* Footer info in sidebar */}
         <div className="mt-auto p-6 border-t border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
-              <span className="material-icons-round text-sm">
-                support_agent
-              </span>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">Soporte</p>
-              <p className="text-xs text-slate-500">v1.0.2</p>
-            </div>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 p-3 rounded-xl mb-4 bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 transition-colors font-medium border border-transparent hover:border-red-500/30"
+          >
+            <span className="material-icons-round text-sm">logout</span>
+            <span className="text-sm font-semibold">Cerrar Sesión</span>
+          </button>
         </div>
       </aside>
 
@@ -79,39 +142,135 @@ function MainLayout() {
               <span className="material-icons-round">menu_open</span>
             </button>
             <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-500">
-              <span className="material-icons-round text-sm">home</span>
+              <Link
+                to="/"
+                className="flex items-center hover:text-primary transition-colors"
+              >
+                <span className="material-icons-round text-sm">home</span>
+              </Link>
               <span className="material-icons-round text-xs">
                 chevron_right
               </span>
-              <span className="text-slate-800 dark:text-slate-200">
-                Panel Central
+              <span className="text-slate-800 dark:text-slate-200 font-semibold text-[15px]">
+                {getPageTitle(location.pathname)}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-400 hover:text-primary transition-colors">
-              <span className="material-icons-round">notifications</span>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <div className="relative">
+              <button
+                className="relative p-2 text-slate-400 hover:text-primary transition-colors focus:outline-none"
+                onClick={() => {
+                  setIsNotificationsOpen(!isNotificationsOpen);
+                  setHasNotifications(false);
+                }}
+              >
+                <span className="material-icons-round">notifications</span>
+                {hasNotifications && (
+                  <span className="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsNotificationsOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 transform origin-top-right transition-all animate-in fade-in slide-in-from-top-4">
+                    <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700 mb-2">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
+                        Notificaciones
+                      </p>
+                    </div>
+                    <div className="px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer border-l-4 border-primary bg-slate-50/50 dark:bg-slate-800">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <span className="material-icons-round text-primary text-[20px]">
+                            celebration
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800 dark:text-white mb-1">
+                            ¡Bienvenido a BarberQueue! 🎉
+                          </p>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            Estamos felices de tenerte aquí. Explora las mejores
+                            barberías y pide tu turno en línea.
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-2 font-medium">
+                            Hace un momento
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-            <div className="flex items-center gap-3 cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-md">
-                U
+            <div className="relative">
+              <div
+                className="flex items-center gap-3 cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {/* Avatar con foto si existe */}
+                <Avatar
+                  photoUrl={user.photoUrl}
+                  username={user.username}
+                  size="sm"
+                  className="shadow-md"
+                />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block group-hover:text-primary transition-colors">
+                  {user.username || "Usuario"}
+                </span>
+                <span
+                  className={`material-icons-round text-slate-400 text-sm hidden sm:block transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                >
+                  expand_more
+                </span>
               </div>
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block group-hover:text-primary transition-colors">
-                Usuario
-              </span>
-              <span className="material-icons-round text-slate-400 text-sm hidden sm:block">
-                expand_more
-              </span>
+
+              {isDropdownOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsDropdownOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-2 z-50 transform origin-top-right transition-all">
+                    <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-700 mb-2">
+                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">
+                        Conectado como
+                      </p>
+                      <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                        {user.username || "Usuario"}
+                      </p>
+                      <p className="text-xs text-slate-400 font-medium capitalize mt-0.5">
+                        {user.role}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-colors font-semibold"
+                    >
+                      <span className="material-icons-round text-[18px]">
+                        logout
+                      </span>
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>
 
-        {/* CONTENIDO DINÁMICO */}
         <main className="flex-1 w-full relative">
           <Outlet />
         </main>

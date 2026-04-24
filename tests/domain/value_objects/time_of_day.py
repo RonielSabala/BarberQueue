@@ -2,8 +2,16 @@ import datetime
 import random
 import re
 from dataclasses import dataclass
+from typing import Self
 
 from domain.value_objects.base.string_field import StringField
+
+_MAX_HOUR = 24
+_MAX_MINUTE = 60
+_MAX_SECOND = 60
+_SECONDS_PER_HOUR = _MAX_MINUTE * _MAX_SECOND
+_SECONDS_PER_DAY = _MAX_HOUR * _SECONDS_PER_HOUR
+_TIME_FORMAT = "%H:%M:%S"
 
 _FIXED_TIME_LENGTH = 8
 _TIME_PATTERN = re.compile(r"^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$")
@@ -19,7 +27,20 @@ class TimeOfDay(StringField):
     @classmethod
     def random_value(cls) -> str:
         return datetime.time(
-            hour=random.randrange(24),
-            minute=random.randrange(60),
-            second=random.randrange(60),
-        ).strftime("%H:%M:%S")
+            hour=random.randrange(_MAX_HOUR),
+            minute=random.randrange(_MAX_MINUTE),
+            second=random.randrange(_MAX_SECOND),
+        ).strftime(_TIME_FORMAT)
+
+    @classmethod
+    def _from_total_seconds(cls, total_seconds: int) -> datetime.time:
+        hour, reminder = divmod(total_seconds, _SECONDS_PER_HOUR)
+        minute, second = divmod(reminder, _MAX_MINUTE)
+        return datetime.time(hour=hour, minute=minute, second=second)
+
+    @classmethod
+    def random_sorted_times(cls, *, n: int) -> tuple[Self, ...]:
+        return tuple(
+            cls(cls._from_total_seconds(time).strftime(_TIME_FORMAT))
+            for time in sorted(random.sample(range(_SECONDS_PER_DAY), n))
+        )

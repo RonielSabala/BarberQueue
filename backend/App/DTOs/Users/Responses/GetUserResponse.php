@@ -13,6 +13,7 @@ final readonly class GetUserResponse extends BaseResponse
         public readonly string $username,
         public readonly string $email,
         public readonly string $phone,
+        public readonly ?string $photoUrl,
         public readonly string $role,
     ) {}
 }

@@ -12,11 +12,13 @@ final readonly class ScheduledQueue
      * @param BarberSlotData[]           $barberSlots
      * @param array<int, BarberSlotData> $slotsById
      * @param array<int, TurnEntity[]>   $queues
+     * @param TurnEntity[]               $allTurnsSortedById
      */
     public function __construct(
         public array $barberSlots,
         public array $slotsById,
         public array $queues,
+        public array $allTurnsSortedById,
     ) {}
 
     /** @return TurnEntity[] */
@@ -50,9 +52,11 @@ final readonly class ScheduledQueue
     {
         foreach ($this->queues as $barberId => $queue) {
             $position = $this->positionOf($queue, $turnId);
-            if ($position !== null) {
-                return [$position, (int) $barberId];
+            if ($position === null) {
+                continue;
             }
+
+            return [$position, (int) $barberId];
         }
 
         return null;
@@ -66,5 +70,29 @@ final readonly class ScheduledQueue
     public function findTurnBarberId(int $turnId): ?int
     {
         return $this->findTurnLocation($turnId)[1] ?? null;
+    }
+
+    /** 1-indexed position of the turn in the global list of ALL active turns. */
+    public function absolutePositionOf(int $turnId): ?int
+    {
+        foreach ($this->allTurnsSortedById as $i => $turn) {
+            if ($turn->id->value === $turnId) {
+                return $i + 1;
+            }
+        }
+
+        return null;
+    }
+
+    /** Estimated minutes until the turn gets attended. */
+    public function estimatedWaitMinutesFor(int $turnId): ?float
+    {
+        $location = $this->findTurnLocation($turnId);
+        if ($location === null) {
+            return null;
+        }
+
+        [$position, $barberId] = $location;
+        return ($position - 1) * $this->slotsById[$barberId]?->avgServiceMinutes;
     }
 }

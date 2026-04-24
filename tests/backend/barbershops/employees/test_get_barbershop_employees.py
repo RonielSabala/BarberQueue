@@ -7,11 +7,8 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.barbershops import (
-    BarbershopEmployeeResponse,
-    CreateBarbershopEmployeeRequest,
-)
+from backend.conftest import NON_EXISTENT_ID, get_employee_id
+from domain.dtos.barbershops import BarbershopEmployeeResponse
 from helpers.assertions import (
     assert_body,
     assert_content_type,
@@ -22,10 +19,9 @@ from helpers.common_responses import BARBERSHOP_NOT_FOUND
 
 
 @pytest.fixture(scope="module")
-def response(client: ApiClient, barbershop_id: int) -> requests.Response:
-    request = CreateBarbershopEmployeeRequest.random()
-    client.barbershops.create_employee(barbershop_id, request)
-    return client.barbershops.get_employees(barbershop_id)
+def response(client: ApiClient, open_barbershop_id: int) -> requests.Response:
+    get_employee_id(client, open_barbershop_id)
+    return client.barbershops.get_employees(open_barbershop_id)
 
 
 def test_status(response: requests.Response) -> None:

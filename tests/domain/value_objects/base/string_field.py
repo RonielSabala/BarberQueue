@@ -16,15 +16,17 @@ class StringField(BaseField[str]):
     _max_len: ClassVar[int | None] = field(default=None, init=False)
     _allowed_chars: ClassVar[str | None] = field(default=None, init=False)
     _pattern: ClassVar[re.Pattern | None] = field(default=None, init=False)
-    _pattern_error_msg: ClassVar[str] = field(
-        default="must be in a valid format", init=False
-    )
+    _pattern_error_msg: ClassVar[str | None] = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         length = len(self.value)
 
         if (pattern := self._pattern) is not None and not pattern.fullmatch(self.value):
-            raise self._validation_error(self._pattern_error_msg)
+            pattern_error_msg = self._pattern_error_msg
+            if pattern_error_msg is None:
+                raise self._undefined_field_error("_pattern_error_msg")
+
+            raise self._validation_error(pattern_error_msg)
 
         if (min_len := self._min_len) is not None and length < min_len:
             raise self._validation_error(f"length must be >= {min_len} (got {length})")

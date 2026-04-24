@@ -20,7 +20,8 @@ final readonly class BarbershopClientRepository extends BaseRepository
         return <<<'SQL'
             SELECT
                 cs.*,
-                u.username
+                u.username,
+                u.photo_url
             FROM
                 client_status cs
                 JOIN users u ON cs.client_id = u.id
@@ -47,6 +48,39 @@ final readonly class BarbershopClientRepository extends BaseRepository
         SQL;
 
         return $this->fetchAll(BarbershopClientEntity::class, $sql, [$barbershopId]);
+    }
+
+    public function isBarbershopFull(int $barbershopId): bool
+    {
+        $sql = <<<'SQL'
+            SELECT
+                (
+                    (
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            client_status
+                        WHERE
+                            barbershop_id = b.id
+                            AND current_status = 'at_barbershop'
+                    ) + (
+                        SELECT
+                            COUNT(*)
+                        FROM
+                            turns t
+                        WHERE
+                            t.barbershop_id = b.id
+                            AND t.finished_at IS NULL
+                    )
+                ) >= b.capacity AS is_full
+            FROM
+                barbershops b
+            WHERE
+                b.id = ?
+        SQL;
+
+        $row = $this->query($sql, [$barbershopId]);
+        return (bool) $row->fetchColumn();
     }
 
     public function updateBarbershopStatus(int $clientId, ?int $barbershopId, string $currentStatus): void

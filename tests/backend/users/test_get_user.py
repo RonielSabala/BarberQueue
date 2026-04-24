@@ -7,8 +7,7 @@ import requests
 
 from api.client import ApiClient
 from api.core import HttpHeader, HttpStatus
-from backend.conftest import NON_EXISTENT_ID
-from domain.dtos.auth import RegisterRequest
+from backend.conftest import NON_EXISTENT_ID, get_fresh_client_id
 from domain.dtos.users import GetUserResponse
 from helpers.assertions import (
     assert_body,
@@ -21,8 +20,7 @@ from helpers.common_responses import USER_NOT_FOUND
 
 @pytest.fixture(scope="module")
 def response(client: ApiClient) -> requests.Response:
-    register_response = client.auth.register(RegisterRequest.random())
-    user_id = register_response.json()["id"]
+    user_id = get_fresh_client_id(client)
     return client.users.get_user(user_id)
 
 
@@ -56,5 +54,5 @@ def test_non_existing_user(client: ApiClient) -> None:
     """
 
     response = client.users.get_user(NON_EXISTENT_ID)
-    assert_body(response, USER_NOT_FOUND)
     assert_status(response, HttpStatus.NOT_FOUND)
+    assert_body(response, USER_NOT_FOUND)

@@ -22,6 +22,8 @@ final readonly class ClientTurnRepository extends BaseRepository
                 JOIN users u ON u.id = t.client_id
             WHERE
                 t.client_id = ?
+            ORDER BY
+                t.created_at DESC
             LIMIT
                 1
         SQL;

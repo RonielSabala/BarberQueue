@@ -25,7 +25,9 @@ from helpers.assertions import (
 )
 from helpers.common_responses import TURN_NOT_FOUND
 
-_NOT_WAITING = ErrorResponse(error="Only 'waiting' turns can be set back to 'on_queue'")
+_CLIENT_CANNOT_BE_ON_QUEUE = ErrorResponse(
+    error="Only 'waiting' clients can be set back to 'on_queue'"
+)
 
 
 def _get_waiting_turn_id(client: ApiClient, barbershop_id: int, barber_id: int) -> int:
@@ -77,20 +79,14 @@ def test_body_shape(response: requests.Response) -> None:
     assert_body_shape(response, TurnDetailResponse)
 
 
-def test_status_becomes_on_queue(response: requests.Response) -> None:
+def test_valid_turn_state(response: requests.Response) -> None:
     """
-    Turn status becomes `on_queue`.
-    """
-
-    assert response.json()["ownerStatus"] == ClientStatusEnum.ON_QUEUE
-
-
-def test_turn_has_position_after_unwait(response: requests.Response) -> None:
-    """
-    Turn has a valid position after re-entering the queue.
+    Turn has a valid state after being marked as waiting.
     """
 
-    assert response.json()["position"] >= 1
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.owner_status == ClientStatusEnum.ON_QUEUE
+    assert turn.position is not None and turn.position >= 1
 
 
 def test_position_preserved_after_unwait(
@@ -100,8 +96,9 @@ def test_position_preserved_after_unwait(
     Turn regains its original relative position after unwait.
     """
 
-    turn = client.turns.get_turn(waiting_turn_id)
-    assert turn.json()["position"] == 2
+    response = client.turns.get_turn(waiting_turn_id)
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.position == 2
 
 
 def test_status_on_unknown_turn(client: ApiClient) -> None:
@@ -133,8 +130,8 @@ def test_on_queue_turn_cannot_unwait(client: ApiClient) -> None:
 
     response = client.turns.unwait_turn(second_turn_id)
 
-    assert_body(response, _NOT_WAITING)
-    assert_status(response, HttpStatus.UNPROCESSABLE_ENTITY)
+    assert_status(response, HttpStatus.FORBIDDEN)
+    assert_body(response, _CLIENT_CANNOT_BE_ON_QUEUE)
 
 
 def test_unwait_at_position_1_promotes_to_in_service(client: ApiClient) -> None:
@@ -155,10 +152,12 @@ def test_unwait_at_position_1_promotes_to_in_service(client: ApiClient) -> None:
     )
 
     response = client.turns.wait_turn(second_turn_id)
-    assert response.json()["ownerStatus"] == ClientStatusEnum.WAITING
+    turn = TurnDetailResponse.from_response(response)
+    assert turn.owner_status == ClientStatusEnum.WAITING
 
     client.turns.delete_turn(first_turn_id)
     response = client.turns.unwait_turn(second_turn_id)
+    turn = TurnDetailResponse.from_response(response)
 
     assert_status(response, HttpStatus.OK)
-    assert response.json()["ownerStatus"] == ClientStatusEnum.IN_SERVICE
+    assert turn.owner_status == ClientStatusEnum.IN_SERVICE

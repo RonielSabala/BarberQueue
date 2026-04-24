@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from typing import Annotated
 
 from domain.dtos import BaseResponse
-from domain.value_objects.base import ListOf
+from domain.value_objects import IntWorkingDays
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -10,6 +9,7 @@ class BarbershopClientResponse(BaseResponse):
     client_id: int
     current_status: str
     username: str
+    photo_url: str | None
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -46,16 +46,18 @@ class BarbershopEmployeeResponse(BaseResponse):
     username: str
     email: str
     phone: str
+    photo_url: str | None
     role: str
     start_time: str
     end_time: str
-    working_days: Annotated[list[int], ListOf(base_type=int, min_items=1, max_items=7)]
+    working_days: IntWorkingDays
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class BarbershopPhotoResponse(BaseResponse):
     _id: int
     photo_url: str
+    photo_description: str
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -73,6 +75,7 @@ class BarbershopReviewResponse(BaseResponse):
     _id: int
     client_id: int
     username: str
+    photo_url: str | None
     rating: int
     content: str
     created_at: str
@@ -87,14 +90,6 @@ class CreateBarbershopEmployeeResponse(BaseResponse):
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class CreateBarbershopPhotosResponse(BaseResponse):
-    uploaded: Annotated[
-        list[BarbershopPhotoResponse],
-        ListOf(base_type=BarbershopPhotoResponse, min_items=1),
-    ]
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
 class CreateBarbershopResponse(BaseResponse):
     _id: int
     barbershop_name: str
@@ -106,11 +101,3 @@ class CreateBarbershopResponse(BaseResponse):
     closes_at: str
     capacity: int
     is_active: bool
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
-class GetBarbershopPhotosResponse(BaseResponse):
-    photos: Annotated[
-        list[BarbershopPhotoResponse],
-        ListOf(base_type=BarbershopPhotoResponse, min_items=0),
-    ]

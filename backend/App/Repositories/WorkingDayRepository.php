@@ -8,6 +8,7 @@ final readonly class WorkingDayRepository extends BaseRepository
 {
     protected const string TABLE_NAME = 'working_days';
 
+    /** @param int[] $days */
     public function createWorkingDays(int $staffId, int $barbershopId, array $days): void
     {
         foreach ($days as $day) {
@@ -19,9 +20,9 @@ final readonly class WorkingDayRepository extends BaseRepository
         }
     }
 
-    public function deleteWorkingDays(int $staffId, int $barbershopId): void
+    public function deleteWorkingDays(int $staffId, int $barbershopId): bool
     {
-        $this->deleteFrom(
+        return $this->deleteFrom(
             self::TABLE_NAME,
             [
                 'staff_id' => $staffId,

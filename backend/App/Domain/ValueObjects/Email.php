@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\ValueObjects;
 
 use App\Domain\ValueObjects\Base\StringField;
+use App\Exceptions\Base\ValueObjectException;
 
 final readonly class Email extends StringField
 {
@@ -16,7 +17,7 @@ final readonly class Email extends StringField
         parent::__construct($value);
 
         if (!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
-            throw $this->validationException('must be a valid email in format user@domain');
+            throw new ValueObjectException('must be a valid email in format user@domain');
         }
     }
 }

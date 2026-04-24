@@ -14,7 +14,7 @@ INSERT INTO
 VALUES
     (NEW.id, 'inactive');
 
--- Provision a new row in the stats table
+-- Provision a new row in the barber stats table
 INSERT INTO
     barber_stats (barber_id)
 VALUES
@@ -33,54 +33,6 @@ INSERT INTO
     barbershop_stats (barbershop_id)
 VALUES
     (NEW.id);
-
--- CLIENT STATUS - BEFORE INSERT
--- Only users with role 'client' can have a client status
-CREATE TRIGGER trg_client_status_before_insert BEFORE
-INSERT
-    ON client_status FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
-
-SELECT
-    role_id INTO v_role_id
-FROM
-    users
-WHERE
-    id = NEW.client_id
-LIMIT
-    1;
-
-IF v_role_id IS NULL
-OR v_role_id != 1 THEN SIGNAL SQLSTATE '45000'
-SET
-    MESSAGE_TEXT = 'Only users with role client can have a client status';
-
-END IF;
-
-END;
-
--- BARBER STATUS - BEFORE INSERT
--- Only users with role 'barber' can have a barber status
-CREATE TRIGGER trg_barber_status_before_insert BEFORE
-INSERT
-    ON barber_status FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
-
-SELECT
-    role_id INTO v_role_id
-FROM
-    users
-WHERE
-    id = NEW.barber_id
-LIMIT
-    1;
-
-IF v_role_id IS NULL
-OR v_role_id != 2 THEN SIGNAL SQLSTATE '45000'
-SET
-    MESSAGE_TEXT = 'Only users with role barber can have a barber status';
-
-END IF;
-
-END;
 
 -- BARBER REVIEWS - AFTER INSERT
 -- When a row is added, recalculate the rating average
@@ -143,53 +95,6 @@ SET
     total_reviews = GREATEST(total_reviews - 1, 0)
 WHERE
     barbershop_id = OLD.barbershop_id;
-
-END;
-
--- STAFF ASSIGNMENTS - BEFORE INSERT
--- Only barbers and assistants can be assigned to a barbershop
-CREATE TRIGGER trg_staff_assignments_before_insert BEFORE
-INSERT
-    ON staff_assignments FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
-
-SELECT
-    role_id INTO v_role_id
-FROM
-    users
-WHERE
-    id = NEW.staff_id
-LIMIT
-    1;
-
-IF v_role_id NOT IN(2, 3) THEN SIGNAL SQLSTATE '45000'
-SET
-    MESSAGE_TEXT = 'Only barbers and assistants can be assigned to a barbershop';
-
-END IF;
-
-END;
-
--- CLIENT GROUPS - BEFORE INSERT
--- The group leader must be a client
-CREATE TRIGGER trg_client_groups_before_insert BEFORE
-INSERT
-    ON client_groups FOR EACH ROW BEGIN DECLARE v_role_id INT DEFAULT NULL;
-
-SELECT
-    role_id INTO v_role_id
-FROM
-    users
-WHERE
-    id = NEW.leader_id
-LIMIT
-    1;
-
-IF v_role_id IS NULL
-OR v_role_id != 1 THEN SIGNAL SQLSTATE '45000'
-SET
-    MESSAGE_TEXT = 'Group leader must be a client';
-
-END IF;
 
 END;
 

@@ -12,6 +12,8 @@ class GroupMemberTurnResponse(BaseResponse):
     member_name: str
     barber_id: int | None
     position: int | None
+    absolute_position: int | None
+    estimated_time: float | None
     status: str
 
 
@@ -32,5 +34,8 @@ class ClientTurnResponse(BaseResponse):
     username: str
     status: str
     position: int | None
+    absolute_position: int | None
+    estimated_time: float | None
+    estimated_group_time: float | None
     created_at: str
     group: GroupResponse | None

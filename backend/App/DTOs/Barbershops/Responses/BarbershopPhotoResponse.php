@@ -10,6 +10,7 @@ final readonly class BarbershopPhotoResponse extends BaseResponse
 {
     public function __construct(
         public int $id,
-        public string $photoUrl
+        public string $photoUrl,
+        public string $photoDescription
     ) {}
 }

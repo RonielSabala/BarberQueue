@@ -66,7 +66,7 @@ final readonly class BarbershopClientService extends BaseService
         if (!$barbershop->isOpen) {
             throw new BarbershopClientException(
                 'Barbershop is not open',
-                HttpStatus::BadRequest
+                HttpStatus::UnprocessableEntity
             );
         }
 
@@ -80,6 +80,13 @@ final readonly class BarbershopClientService extends BaseService
             throw new BarbershopClientException(
                 'Client is already active in a barbershop',
                 HttpStatus::Conflict
+            );
+        }
+
+        if ($this->barbershopClientRepository->isBarbershopFull($barbershopId)) {
+            throw new BarbershopClientException(
+                'Barbershop is full',
+                HttpStatus::UnprocessableEntity
             );
         }
 
@@ -104,7 +111,7 @@ final readonly class BarbershopClientService extends BaseService
             && $clientStatus !== ClientStatusEnum::Paid->value
         ) {
             throw new BarbershopClientException(
-                'Client must have status \'at_barbershop\' or \'paid\' to check out',
+                'Only \'at_barbershop\' or \'paid\' clients can check out',
                 HttpStatus::Forbidden
             );
         }
