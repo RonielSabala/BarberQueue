@@ -284,14 +284,12 @@ From the `tests/` folder:
 
 ```bash
 cd tests
-uv run pytest                                # backend only
-uv run pytest -m frontend                    # frontend only
-uv run pytest -m "frontend or not frontend"  # everything
+uv run pytest
 ```
 
-Results are saved to `tests/results/`, including an HTML report with pass/fail summaries and screenshots from frontend tests.
+Results are saved to `tests/results/`, including an HTML report with pass/fail summaries.
 
-> **Note:** Frontend tests require the dev server running at `FRONTEND_URL`. Backend tests only require the PHP server at `BACKEND_URL`.
+> **Note:** Tests require the PHP server running at `BACKEND_URL`.
 
 ---
 
