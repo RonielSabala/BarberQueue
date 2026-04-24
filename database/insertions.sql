@@ -323,7 +323,7 @@ VALUES
         'Willy Perez',
         'willy.perez@gmail.com',
         '8094000035',
-        NUll,
+        NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     ),
     (
@@ -605,7 +605,7 @@ VALUES
         NULL,
         '$2y$12$msKYqQ3ucmZ1CpU8BRa.UOBz01XLRcb1hghOZsbxBMqZn7kCoOlku'
     );
-    
+
 -- BARBERSHOPS
 INSERT INTO
     barbershops (
@@ -721,8 +721,8 @@ JOIN (
     UNION ALL
     SELECT
         19,
-        1,
-        'attended'
+        5,
+        'in_service'
     UNION ALL
     SELECT
         20,
@@ -776,8 +776,8 @@ JOIN (
     UNION ALL
     SELECT
         30,
-        3,
-        'attended'
+        1,
+        'on_queue'
     UNION ALL
     SELECT
         34,
@@ -807,7 +807,7 @@ JOIN (
     SELECT
         39,
         1,
-        'attended'
+        'in_service'
     UNION ALL
     SELECT
         40,
@@ -827,7 +827,7 @@ JOIN (
     SELECT
         43,
         4,
-        'attended'
+        'on_queue'
     UNION ALL
     SELECT
         47,
@@ -861,8 +861,8 @@ JOIN (
     UNION ALL
     SELECT
         53,
-        NULL,
-        'default'
+        1,
+        'in_service'
     UNION ALL
     SELECT
         54,
@@ -872,7 +872,7 @@ JOIN (
     SELECT
         55,
         5,
-        'attended'
+        'in_service'
     UNION ALL
     SELECT
         56,
@@ -887,7 +887,7 @@ JOIN (
     SELECT
         58,
         4,
-        'attended'
+        'in_service'
     UNION ALL
     SELECT
         59,
@@ -906,18 +906,18 @@ JOIN (
     UNION ALL
     SELECT
         62,
-        NULL,
-        'default'
+        1,
+        'in_service'
     UNION ALL
     SELECT
         63,
-        NULL,
-        'default'
+        2,
+        'in_service'
     UNION ALL
     SELECT
         64,
-        NULL,
-        'default'
+        4,
+        'in_service'
     UNION ALL
     SELECT
         65,
@@ -1083,24 +1083,92 @@ VALUES
 INSERT INTO
     barbershop_photos (barbershop_id, photo_url, photo_description)
 VALUES
-    (1, 'https://i.pinimg.com/736x/2e/dd/19/2edd1927f0cdbb9c540e0a0548d11c29.jpg', 'Drop Fade'),
-    (1, 'https://i.pinimg.com/736x/d6/6b/d3/d66bd3bfb8d61559aa373494e8152e89.jpg', 'Taper Fade'),
-    (1, 'https://llongueras.com/cdn/shop/articles/Diseno_sin_titulo_4_e9434ced-bb37-4c99-abd6-4b0b3587c208.jpg?v=1758277197', 'Buzz Cut'),
-    (2, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo37-300x300.png', 'Burst Fade'),
-    (2, 'https://cambiatulook.cl/wp-content/uploads/2020/10/393ac2abed907eb7a7476b7fc9064fc0.jpg', 'Skin Fade'),
-    (2, 'https://i.pinimg.com/736x/24/16/9b/24169b92c7afe5fee4cd99ee9fd0a1a0.jpg', 'Corte Militar'),
-    (3, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo31-300x300.png', 'Mid Fade'),
-    (3, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo32-300x300.png', 'High Fade'),
-    (3, 'https://cdn.shopify.com/s/files/1/0029/0868/4397/files/Fade-Pompadour.webp?v=1754905431', 'Pompadour'),
-    (4, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo39-300x300.png', 'French Crop'),
-    (4, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY15-300x300.png', 'Buzz Cut'),
-    (4, 'https://agendapro.com/blog/wp-content/uploads/sites/2/2024/08/images-7.webp', 'Mohicano'),
-    (5, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY18-300x300.png', 'Mullet'),
-    (5, 'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY16-300x300.png', 'Skin Fade'),
+    (
+        1,
+        'https://i.pinimg.com/736x/2e/dd/19/2edd1927f0cdbb9c540e0a0548d11c29.jpg',
+        'Drop Fade'
+    ),
+    (
+        1,
+        'https://i.pinimg.com/736x/d6/6b/d3/d66bd3bfb8d61559aa373494e8152e89.jpg',
+        'Taper Fade'
+    ),
+    (
+        1,
+        'https://llongueras.com/cdn/shop/articles/Diseno_sin_titulo_4_e9434ced-bb37-4c99-abd6-4b0b3587c208.jpg?v=1758277197',
+        'Buzz Cut'
+    ),
+    (
+        2,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo37-300x300.png',
+        'Burst Fade'
+    ),
+    (
+        2,
+        'https://cambiatulook.cl/wp-content/uploads/2020/10/393ac2abed907eb7a7476b7fc9064fc0.jpg',
+        'Skin Fade'
+    ),
+    (
+        2,
+        'https://i.pinimg.com/736x/24/16/9b/24169b92c7afe5fee4cd99ee9fd0a1a0.jpg',
+        'Corte Militar'
+    ),
+    (
+        3,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo31-300x300.png',
+        'Mid Fade'
+    ),
+    (
+        3,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo32-300x300.png',
+        'High Fade'
+    ),
+    (
+        3,
+        'https://cdn.shopify.com/s/files/1/0029/0868/4397/files/Fade-Pompadour.webp?v=1754905431',
+        'Pompadour'
+    ),
+    (
+        4,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo39-300x300.png',
+        'French Crop'
+    ),
+    (
+        4,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY15-300x300.png',
+        'Buzz Cut'
+    ),
+    (
+        4,
+        'https://agendapro.com/blog/wp-content/uploads/sites/2/2024/08/images-7.webp',
+        'Mohicano'
+    ),
+    (
+        5,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY18-300x300.png',
+        'Mullet'
+    ),
+    (
+        5,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/HCD-BEAUTY16-300x300.png',
+        'Skin Fade'
+    ),
     (5, 'https://i.pinimg.com/474x/ce/6f/ee/ce6feec7d2329c71b3d438f883bc26ab.jpg', 'Hongo'),
-    (6, 'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo30-300x300.png', 'Drop Fade'),
-    (6, 'https://i.pinimg.com/736x/55/09/47/550947f0e70e42fad98b8b7d39c7d295.jpg', 'Francesa'),
-    (6, 'https://i.pinimg.com/236x/43/f4/b1/43f4b1d6d538d03f7271ed10ea01f863.jpg', 'Undercut');
+    (
+        6,
+        'https://haircutday.com/b/wp-content/uploads/2024/01/Diseno-sin-titulo30-300x300.png',
+        'Drop Fade'
+    ),
+    (
+        6,
+        'https://i.pinimg.com/736x/55/09/47/550947f0e70e42fad98b8b7d39c7d295.jpg',
+        'Francesa'
+    ),
+    (
+        6,
+        'https://i.pinimg.com/236x/43/f4/b1/43f4b1d6d538d03f7271ed10ea01f863.jpg',
+        'Undercut'
+    );
 
 -- STAFF ASSIGNMENTS
 INSERT INTO
@@ -1262,156 +1330,399 @@ INSERT INTO
         finished_at
     )
 VALUES
-    (1, 3, 18, NULL, NULL, 12, '2026-04-22 23:24:43', '2026-04-22 23:24:43', NULL),
-    (2, 1, 19, NULL, NULL, 9, '2026-04-22 23:25:49', '2026-04-22 23:25:49', NULL),
-    (3, 3, 21, NULL, NULL, 12, '2026-04-22 23:30:37', '2026-04-22 23:45:39', NULL),
-    (4, 4, 22, NULL, NULL, 13, '2026-04-22 23:31:07', '2026-04-22 23:31:07', NULL),
-    (5, 4, 23, NULL, NULL, 9, '2026-04-22 23:33:14', '2026-04-22 23:33:14', NULL),
-    (6, 5, 24, NULL, NULL, 14, '2026-04-22 23:33:59', '2026-04-22 23:33:59', NULL),
-    (7, 1, 29, NULL, NULL, 9, '2026-04-22 23:36:25', '2026-04-22 23:40:21', NULL),
-    (8, 3, 28, NULL, NULL, 11, '2026-04-23 00:48:46', '2026-04-23 00:48:46', NULL),
-    (9, 3, 30, NULL, NULL, 11, '2026-04-23 00:49:20', '2026-04-23 01:15:45', NULL),
-    (10, 3, 27, NULL, NULL, 12, '2026-04-23 00:51:56', '2026-04-23 00:51:56', NULL),
-    (11, 1, 37, NULL, NULL, 8, '2026-04-23 13:56:48', '2026-04-23 13:56:48', NULL),
-    (12, 1, 38, NULL, NULL, 8, '2026-04-23 13:57:47', '2026-04-23 14:07:52', NULL),
-    (13, 1, 39, NULL, NULL, 45, '2026-04-23 13:59:08', '2026-04-23 13:59:08', NULL),
-    (14, 1, 40, NULL, NULL, 45, '2026-04-23 13:59:54', '2026-04-23 14:08:10', NULL),
-    (15, 2, 41, NULL, NULL, 10, '2026-04-23 14:05:14', '2026-04-23 14:05:14', NULL),
-    (16, 2, 42, NULL, NULL, 10, '2026-04-23 14:05:52', '2026-04-23 14:22:01', NULL),
-    (17, 4, 43, NULL, NULL, 33, '2026-04-23 14:07:08', '2026-04-23 14:07:08', NULL),
-    (18, 3, 48, NULL, NULL, 12, '2026-04-23 14:32:52', '2026-04-23 14:32:52', NULL),
-    (19, 3, 49, NULL, NULL, 12, '2026-04-23 14:33:43', NULL, NULL),
-    (20, 3, 50, NULL, NULL, 11, '2026-04-23 14:34:43', '2026-04-23 14:34:43', NULL),
-    (21, 3, 51, NULL, NULL, 11, '2026-04-23 14:35:13', '2026-04-23 14:50:33', NULL),
-    (22, 5, 52, NULL, NULL, 46, '2026-04-23 14:37:46', '2026-04-23 14:37:46', NULL),
-    (23, 5, 55, NULL, 1, 11, '2026-04-23 14:45:45', '2026-04-23 14:45:45', NULL),
-    (24, 5, NULL, 1, 1, 11, '2026-04-23 14:45:45', '2026-04-23 14:50:40', NULL),
-    (25, 5, 56, NULL, 2, 14, '2026-04-23 14:47:59', '2026-04-23 14:47:59', NULL),
-    (26, 5, NULL, 2, 2, 14, '2026-04-23 14:47:59', '2026-04-23 14:52:48', NULL),
-    (27, 4, 58, NULL, NULL, 13, '2026-04-23 15:04:10', '2026-04-23 15:04:10', NULL),
-    (28, 6, 59, NULL, NULL, 14, '2026-04-23 15:09:56', '2026-04-23 15:09:56', NULL),
-    (29, 6, 25, NULL, NULL, 15, '2026-04-23 15:10:52', '2026-04-23 15:10:52', NULL),
-    (30, 1, 62, NULL, NULL, 8, '2026-04-23 21:35:32', '2026-04-23 21:35:32', NULL),
-    (31, 2, 63, NULL, NULL, 10, '2026-04-23 21:36:07', '2026-04-23 21:36:07', NULL),
-    (32, 4, 64, NULL, NULL, 13, '2026-04-23 21:36:36', '2026-04-23 21:36:36', NULL),
-    (33, 4, 58, NULL, NULL, 33, '2026-04-23 21:39:39', '2026-04-23 21:39:39', NULL),
-    (34, 5, 55, NULL, NULL, 46, '2026-04-23 21:41:13', '2026-04-23 21:41:13', NULL),
-    (35, 1, 53, NULL, NULL, 9, '2026-04-23 21:41:47', '2026-04-23 21:41:47', NULL),
-    (36, 1, 39, NULL, NULL, 45, '2026-04-23 21:43:36', '2026-04-23 21:43:36', NULL),
-    (37, 4, 43, NULL, NULL, 13, '2026-04-23 21:45:07', NULL, NULL),
-    (38, 1, 30, NULL, NULL, 8, '2026-04-23 21:46:47', NULL, NULL),
-    (39, 5, 19, NULL, NULL, 11, '2026-04-23 21:47:51', '2026-04-23 21:47:51', NULL);
+    -- Night session (24 hours ago)
+    (
+        1,
+        3,
+        18,
+        NULL,
+        NULL,
+        12,
+        NOW() - INTERVAL 1440 MINUTE,
+        NOW() - INTERVAL 1440 MINUTE,
+        NULL
+    ),
+    (
+        2,
+        1,
+        19,
+        NULL,
+        NULL,
+        9,
+        NOW() - INTERVAL 1439 MINUTE,
+        NOW() - INTERVAL 1439 MINUTE,
+        NULL
+    ),
+    (
+        3,
+        3,
+        21,
+        NULL,
+        NULL,
+        12,
+        NOW() - INTERVAL 1434 MINUTE,
+        NOW() - INTERVAL 1419 MINUTE,
+        NULL
+    ),
+    (
+        4,
+        4,
+        22,
+        NULL,
+        NULL,
+        13,
+        NOW() - INTERVAL 1433 MINUTE,
+        NOW() - INTERVAL 1433 MINUTE,
+        NULL
+    ),
+    (
+        5,
+        4,
+        23,
+        NULL,
+        NULL,
+        9,
+        NOW() - INTERVAL 1431 MINUTE,
+        NOW() - INTERVAL 1431 MINUTE,
+        NULL
+    ),
+    (
+        6,
+        5,
+        24,
+        NULL,
+        NULL,
+        14,
+        NOW() - INTERVAL 1430 MINUTE,
+        NOW() - INTERVAL 1430 MINUTE,
+        NULL
+    ),
+    (
+        7,
+        1,
+        29,
+        NULL,
+        NULL,
+        9,
+        NOW() - INTERVAL 1428 MINUTE,
+        NOW() - INTERVAL 1424 MINUTE,
+        NULL
+    ),
+    (
+        8,
+        3,
+        28,
+        NULL,
+        NULL,
+        11,
+        NOW() - INTERVAL 1371 MINUTE,
+        NOW() - INTERVAL 1371 MINUTE,
+        NULL
+    ),
+    (
+        9,
+        3,
+        30,
+        NULL,
+        NULL,
+        11,
+        NOW() - INTERVAL 1370 MINUTE,
+        NOW() - INTERVAL 1344 MINUTE,
+        NULL
+    ),
+    (
+        10,
+        3,
+        27,
+        NULL,
+        NULL,
+        12,
+        NOW() - INTERVAL 1368 MINUTE,
+        NOW() - INTERVAL 1368 MINUTE,
+        NULL
+    ),
+    -- Afternoon session (8 hours ago)
+    (
+        11,
+        1,
+        37,
+        NULL,
+        NULL,
+        8,
+        NOW() - INTERVAL 480 MINUTE,
+        NOW() - INTERVAL 480 MINUTE,
+        NULL
+    ),
+    (
+        12,
+        1,
+        38,
+        NULL,
+        NULL,
+        8,
+        NOW() - INTERVAL 479 MINUTE,
+        NOW() - INTERVAL 469 MINUTE,
+        NULL
+    ),
+    (
+        13,
+        1,
+        39,
+        NULL,
+        NULL,
+        45,
+        NOW() - INTERVAL 478 MINUTE,
+        NOW() - INTERVAL 478 MINUTE,
+        NULL
+    ),
+    (
+        14,
+        1,
+        40,
+        NULL,
+        NULL,
+        45,
+        NOW() - INTERVAL 477 MINUTE,
+        NOW() - INTERVAL 469 MINUTE,
+        NULL
+    ),
+    (
+        15,
+        2,
+        41,
+        NULL,
+        NULL,
+        10,
+        NOW() - INTERVAL 474 MINUTE,
+        NOW() - INTERVAL 474 MINUTE,
+        NULL
+    ),
+    (
+        16,
+        2,
+        42,
+        NULL,
+        NULL,
+        10,
+        NOW() - INTERVAL 473 MINUTE,
+        NOW() - INTERVAL 457 MINUTE,
+        NULL
+    ),
+    (
+        17,
+        4,
+        43,
+        NULL,
+        NULL,
+        33,
+        NOW() - INTERVAL 472 MINUTE,
+        NOW() - INTERVAL 472 MINUTE,
+        NULL
+    ),
+    (
+        18,
+        3,
+        48,
+        NULL,
+        NULL,
+        12,
+        NOW() - INTERVAL 447 MINUTE,
+        NOW() - INTERVAL 447 MINUTE,
+        NULL
+    ),
+    (19, 3, 49, NULL, NULL, 12, NOW() - INTERVAL 446 MINUTE, NULL, NULL),
+    (
+        20,
+        3,
+        50,
+        NULL,
+        NULL,
+        11,
+        NOW() - INTERVAL 445 MINUTE,
+        NOW() - INTERVAL 445 MINUTE,
+        NULL
+    ),
+    (
+        21,
+        3,
+        51,
+        NULL,
+        NULL,
+        11,
+        NOW() - INTERVAL 444 MINUTE,
+        NOW() - INTERVAL 429 MINUTE,
+        NULL
+    ),
+    (
+        22,
+        5,
+        52,
+        NULL,
+        NULL,
+        46,
+        NOW() - INTERVAL 442 MINUTE,
+        NOW() - INTERVAL 442 MINUTE,
+        NULL
+    ),
+    (23, 5, 55, NULL, 1, 11, NOW() - INTERVAL 435 MINUTE, NOW() - INTERVAL 435 MINUTE, NULL),
+    (24, 5, NULL, 1, 1, 11, NOW() - INTERVAL 435 MINUTE, NOW() - INTERVAL 429 MINUTE, NULL),
+    (25, 5, 56, NULL, 2, 14, NOW() - INTERVAL 432 MINUTE, NOW() - INTERVAL 432 MINUTE, NULL),
+    (26, 5, NULL, 2, 2, 14, NOW() - INTERVAL 432 MINUTE, NOW() - INTERVAL 427 MINUTE, NULL),
+    (
+        27,
+        4,
+        58,
+        NULL,
+        NULL,
+        13,
+        NOW() - INTERVAL 419 MINUTE,
+        NOW() - INTERVAL 419 MINUTE,
+        NULL
+    ),
+    (
+        28,
+        6,
+        59,
+        NULL,
+        NULL,
+        14,
+        NOW() - INTERVAL 415 MINUTE,
+        NOW() - INTERVAL 415 MINUTE,
+        NULL
+    ),
+    (
+        29,
+        6,
+        25,
+        NULL,
+        NULL,
+        15,
+        NOW() - INTERVAL 414 MINUTE,
+        NOW() - INTERVAL 414 MINUTE,
+        NULL
+    ),
+    -- Live session (last 15 minutes)
+    (30, 1, 62, NULL, NULL, 8, NOW() - INTERVAL 15 MINUTE, NOW() - INTERVAL 15 MINUTE, NULL),
+    (31, 2, 63, NULL, NULL, 10, NOW() - INTERVAL 14 MINUTE, NOW() - INTERVAL 14 MINUTE, NULL),
+    (32, 4, 64, NULL, NULL, 13, NOW() - INTERVAL 13 MINUTE, NOW() - INTERVAL 13 MINUTE, NULL),
+    (33, 4, 58, NULL, NULL, 33, NOW() - INTERVAL 10 MINUTE, NOW() - INTERVAL 10 MINUTE, NULL),
+    (34, 5, 55, NULL, NULL, 46, NOW() - INTERVAL 9 MINUTE, NOW() - INTERVAL 9 MINUTE, NULL),
+    (35, 1, 53, NULL, NULL, 9, NOW() - INTERVAL 8 MINUTE, NOW() - INTERVAL 8 MINUTE, NULL),
+    (36, 1, 39, NULL, NULL, 45, NOW() - INTERVAL 7 MINUTE, NOW() - INTERVAL 7 MINUTE, NULL),
+    (37, 4, 43, NULL, NULL, 13, NOW() - INTERVAL 5 MINUTE, NULL, NULL),
+    (38, 1, 30, NULL, NULL, 8, NOW() - INTERVAL 4 MINUTE, NULL, NULL),
+    (39, 5, 19, NULL, NULL, 11, NOW() - INTERVAL 3 MINUTE, NOW() - INTERVAL 3 MINUTE, NULL);
 
 -- UPDATE COMPLETED TURNS TO TRIGGER STATS CALCULATION
 UPDATE turns t
 JOIN (
     SELECT
         1 id,
-        '2026-04-22 23:45:39' finished_at
+        NOW() - INTERVAL 1419 MINUTE finished_at
     UNION ALL
     SELECT
         2,
-        '2026-04-22 23:40:21'
+        NOW() - INTERVAL 1424 MINUTE
     UNION ALL
     SELECT
         3,
-        '2026-04-22 23:45:43'
+        NOW() - INTERVAL 1418 MINUTE
     UNION ALL
     SELECT
         4,
-        '2026-04-22 23:42:07'
+        NOW() - INTERVAL 1422 MINUTE
     UNION ALL
     SELECT
         5,
-        '2026-04-22 23:40:36'
+        NOW() - INTERVAL 1423 MINUTE
     UNION ALL
     SELECT
         6,
-        '2026-04-22 23:42:19'
+        NOW() - INTERVAL 1421 MINUTE
     UNION ALL
     SELECT
         7,
-        '2026-04-22 23:57:06'
+        NOW() - INTERVAL 1407 MINUTE
     UNION ALL
     SELECT
         8,
-        '2026-04-23 01:15:45'
+        NOW() - INTERVAL 1344 MINUTE
     UNION ALL
     SELECT
         9,
-        '2026-04-23 01:15:47'
+        NOW() - INTERVAL 1343 MINUTE
     UNION ALL
     SELECT
         10,
-        '2026-04-23 01:16:34'
+        NOW() - INTERVAL 1343 MINUTE
     UNION ALL
     SELECT
         11,
-        '2026-04-23 14:07:52'
+        NOW() - INTERVAL 469 MINUTE
     UNION ALL
     SELECT
         12,
-        '2026-04-23 14:12:50'
+        NOW() - INTERVAL 464 MINUTE
     UNION ALL
     SELECT
         13,
-        '2026-04-23 14:08:10'
+        NOW() - INTERVAL 469 MINUTE
     UNION ALL
     SELECT
         14,
-        '2026-04-23 14:15:24'
+        NOW() - INTERVAL 462 MINUTE
     UNION ALL
     SELECT
         15,
-        '2026-04-23 14:22:01'
+        NOW() - INTERVAL 457 MINUTE
     UNION ALL
     SELECT
         16,
-        '2026-04-23 14:22:04'
+        NOW() - INTERVAL 456 MINUTE
     UNION ALL
     SELECT
         17,
-        '2026-04-23 14:20:24'
+        NOW() - INTERVAL 459 MINUTE
     UNION ALL
     SELECT
         20,
-        '2026-04-23 14:50:33'
+        NOW() - INTERVAL 429 MINUTE
     UNION ALL
     SELECT
         21,
-        '2026-04-23 14:50:38'
+        NOW() - INTERVAL 428 MINUTE
     UNION ALL
     SELECT
         22,
-        '2026-04-23 14:48:35'
+        NOW() - INTERVAL 431 MINUTE
     UNION ALL
     SELECT
         23,
-        '2026-04-23 14:50:40'
+        NOW() - INTERVAL 430 MINUTE
     UNION ALL
     SELECT
         24,
-        '2026-04-23 14:52:25'
+        NOW() - INTERVAL 427 MINUTE
     UNION ALL
     SELECT
         25,
-        '2026-04-23 14:52:48'
+        NOW() - INTERVAL 427 MINUTE
     UNION ALL
     SELECT
         26,
-        '2026-04-23 14:54:33'
+        NOW() - INTERVAL 425 MINUTE
     UNION ALL
     SELECT
         27,
-        '2026-04-23 15:05:53'
+        NOW() - INTERVAL 417 MINUTE
     UNION ALL
     SELECT
         28,
-        '2026-04-23 15:12:15'
+        NOW() - INTERVAL 413 MINUTE
     UNION ALL
     SELECT
         29,
-        '2026-04-23 15:11:05'
+        NOW() - INTERVAL 413 MINUTE
 ) v ON t.id = v.id
 SET
     t.finished_at = v.finished_at;

@@ -13,5 +13,5 @@ final readonly class Phone extends StringField
     protected const int MIN_LEN = self::FIXED_PHONE_LENGTH;
     protected const int MAX_LEN = self::FIXED_PHONE_LENGTH;
     protected const string PATTERN = '/^\d{' . self::FIXED_PHONE_LENGTH . '}$/';
-    protected const string PATTER_ERROR_MSG = 'must contain exactly ' . self::FIXED_PHONE_LENGTH . ' digits';
+    protected const string PATTERN_ERROR_MSG = 'must contain exactly ' . self::FIXED_PHONE_LENGTH . ' digits';
 }
