@@ -10,8 +10,7 @@ use App\Utils\EnvUtils;
 use Dotenv\Dotenv;
 
 const ROOT_DIR = __DIR__ . '/..';
-$dotenv = Dotenv\Dotenv::createUnsafeImmutable(ROOT_DIR);
-$dotenv->safeLoad();
+Dotenv\Dotenv::createUnsafeImmutable(ROOT_DIR)->safeLoad();
 
 $isTest = (
     EnvUtils::get('APP_ENV', 'development') === 'testing'
