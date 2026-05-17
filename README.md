@@ -295,7 +295,7 @@ Results are saved to `tests/results/`, including an HTML report with pass/fail s
 
 ## API Documentation
 
-The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, optional fields, and possible errors.
+The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, and optional fields.
 
 A [Postman collection](docs/BarberQueue.postman_collection.json) is also included. Import it directly into Postman via **File > Import** to get every route pre-configured against `BACKEND_URL`.
 
@@ -337,9 +337,9 @@ Four roles exist in the system:
 Full management of one or more barbershops they administer:
 
 - CRUD operations for employees (barbers and assistants).
-- Manage rules and settings: visibility, open/close times and maximum concurrent clients.
-- Upload and manage barbershop photos and content.
-- View business-level dashboards, metrics, and historical data.
+- Manage rules and settings: visibility, open/close times, and maximum concurrent clients.
+- Upload and manage barbershop photos.
+- View business-level dashboards and metrics.
 - Moderate client reviews.
 
 ![Admin panel](docs/screenshots/admin_panel.png)
