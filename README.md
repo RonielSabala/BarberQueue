@@ -2,6 +2,8 @@
 
 BarberQueue is a web application designed to improve the waiting experience at barbershops in the Dominican Republic. It provides real-time queue visualization, group handling, barber preference management, and basic administration tools so customers and businesses can better manage time, reduce uncertainty, and improve satisfaction.
 
+![Client queue view](docs/screenshots/client_queue.png)
+
 ---
 
 ## Table of Contents
@@ -27,11 +29,11 @@ BarberQueue is a web application designed to improve the waiting experience at b
 
 ## Motivation
 
-Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration, and lost time for customers when they cannot know how long they will wait or what position they are in the queue.
+Barbershops are face-to-face businesses where clients must be physically present. A simple "one-in, one-out" model is impractical: barbershops expect a steady flow of clients and frequently multiple clients are present at once. This generates queues that create uncertainty, frustration, and lost time for customers who cannot know how long they will wait or what position they hold in the queue.
 
 Current challenges this project addresses:
 
-- Clients cannot easily know how many people are ahead of them unless they are physically in the barbershop.
+- Clients cannot easily know how many people are ahead of them unless they are physically inside the barbershop.
 - Groups (families or friends) arriving together increase queue length and complicate ordering.
 - Client preferences for specific barbers alter queue behavior and increase uncertainty for those who arrive later.
 
@@ -39,22 +41,24 @@ Current challenges this project addresses:
 
 ## Solution
 
-BarberQueue gives customers and barbershops tools to manage queues in real time, allowing:
+BarberQueue gives customers and barbershops the tools to manage queues in real time:
 
-- Clients to see live queue length and their position.
-- Group handling so family members can join and move together.
-- Barber preference selection (choose a favorite barber or accept the next available).
-- Administrative views and basic management for barbershop staff.
+- Clients see live queue length and their current position.
+- Group handling lets family members join and move through the queue together.
+- Barber preference selection lets clients choose a favorite barber or accept the next available one.
+- Administrative views and management tools support barbershop staff at every level.
+
+![Barbershop browsing](docs/screenshots/barbershop_browse.png)
 
 ---
 
 ## Out of Scope
 
-The following items are explicitly out of scope for the current project:
+The following are explicitly out of scope for the current version:
 
 - Management of multiple branches per barber business.
-- Payment gateway integration (subscriptions & promotions).
-- Push notifications and complex trigger-based notification system.
+- Payment gateway integration (subscriptions and promotions).
+- Push notifications and complex trigger-based notification systems.
 
 ---
 
@@ -62,11 +66,13 @@ The following items are explicitly out of scope for the current project:
 
 ### Requirements
 
-- [PHP](https://www.php.net/downloads.php) >= 8.4
-- [Composer](https://getcomposer.org/download/) >= 2.8.9
-- [Node.js](https://nodejs.org/en/download) >= 22.0.0
-- [Python](https://www.python.org/downloads/) >= 3.13.9
-- [MySQL](https://downloads.mysql.com/archives/community/) >= 8.0.42
+| Tool                                                     | Version   |
+| -------------------------------------------------------- | --------- |
+| [PHP](https://www.php.net/downloads.php)                 | >= 8.4    |
+| [Composer](https://getcomposer.org/download/)            | >= 2.8.9  |
+| [Node.js](https://nodejs.org/en/download)                | >= 22.0.0 |
+| [Python](https://www.python.org/downloads/)              | >= 3.13.9 |
+| [MySQL](https://downloads.mysql.com/archives/community/) | >= 8.0.42 |
 
 ---
 
@@ -106,7 +112,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Install dependencies from the `tests/` folder:
+Then install dependencies from the `tests/` folder:
 
 ```bash
 cd tests
@@ -156,17 +162,15 @@ The application switches behavior based on the `APP_ENV` variable:
 
 - **`development`**: Standard mode. Emails are sent using the credentials in `.env` and all data is written to the production database (`DB_DATABASE`).
 
-- **`testing`**: Test mode. Real emails are suppressed to avoid sending noise during automated test runs, and all data is written to a separate test database. This keeps test data completely isolated from production.
+- **`testing`**: Test mode. Real emails are suppressed to avoid sending noise during automated test runs, and all data is written to a separate test database to keep it fully isolated from production.
 
-> The test mode is also activated on a per-request basis when the backend receives the `X-App-Env: testing` HTTP header, regardless of `APP_ENV`. Backend tests send this header automatically, so you can run tests against a `development` server without changing your `.env`.
+> Test mode is also activated on a per-request basis when the backend receives the `X-App-Env: testing` HTTP header, regardless of `APP_ENV`. Backend tests send this header automatically, so you can run tests against a `development` server without changing your `.env`.
 
 ---
 
 #### JWT Secret
 
-Generate a strong random value and set it as `JWT_SECRET`.
-
-You can create one with:
+Generate a strong random value and set it as `JWT_SECRET`:
 
 ```bash
 openssl rand -base64 32
@@ -176,9 +180,9 @@ openssl rand -base64 32
 
 #### Mail Service Setup
 
-`MAIL_USERNAME` must be a Gmail address. `MAIL_PASSWORD` is not your Gmail password, it is an **App Password** generated specifically for this application.
+`MAIL_USERNAME` must be a Gmail address. `MAIL_PASSWORD` is not your Gmail password; it is an **App Password** generated specifically for this application.
 
-1. Go to [myaccount.google.com/security](https://myaccount.google.com/security) and enable **2-Step Verification** on your Google account if you haven't already. App Passwords require this to be active.
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security) and enable **2-Step Verification** if you haven't already. App Passwords require this to be active.
 2. Go to [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords), create a new **App Password**, and copy the generated value into `MAIL_PASSWORD`.
 
 ---
@@ -192,8 +196,6 @@ openssl rand -base64 32
 3. Give it a name and click **Create**.
 
 ##### Step 2. Configure the OAuth consent screen
-
-Before creating credentials, Google requires you to describe how your application will use user data.
 
 1. Go to **APIs & Services** > **OAuth consent screen**.
 2. Select **External** as the user type and click **Create**.
@@ -220,9 +222,7 @@ Before creating credentials, Google requires you to describe how your applicatio
 
 **Step 4. Copy credentials to `.env`**
 
-A dialog will show your credentials. Copy them into your `.env`.
-
-You can also retrieve these at any time from the **Credentials** page by clicking on your OAuth client.
+A dialog will show your credentials. Copy them into your `.env`. You can also retrieve them at any time from the **Credentials** page by clicking on your OAuth client.
 
 ---
 
@@ -234,9 +234,9 @@ From the **repo root**:
 php scripts/install-db.php
 ```
 
-This creates and seeds two databases, one for local development and one for running tests.
+This creates and seeds two databases: one for local development and one for running tests.
 
-Both databases share the same schema (`creation.sql`, `triggers.sql`). They differ only in their seed data: the development DB is filled with realistic examples so you can start using the app immediately, while the testing DB uses a controlled, minimal dataset designed to support specific test scenarios.
+Both share the same schema (`creation.sql`, `triggers.sql`) but differ in seed data. The development database is filled with realistic examples so you can start using the app immediately. The test database uses a controlled, minimal dataset designed to support specific test scenarios.
 
 ---
 
@@ -244,7 +244,7 @@ Both databases share the same schema (`creation.sql`, `triggers.sql`). They diff
 
 ### Backend <!-- omit in toc -->
 
-**Option A. Start manually the built-in PHP server:**
+**Option A. Start the built-in PHP server manually:**
 
 From the **repo root**:
 
@@ -289,13 +289,13 @@ uv run pytest
 
 Results are saved to `tests/results/`, including an HTML report with pass/fail summaries.
 
-> **Note:** Tests require the PHP server running at `BACKEND_URL`.
+> Tests require the PHP server to be running at `BACKEND_URL`.
 
 ---
 
 ## API Documentation
 
-The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, optional fields and possible errors.
+The full API reference is available in [`docs/ROUTES.md`](docs/ROUTES.md). It covers every endpoint, request body, response shape, optional fields, and possible errors.
 
 A [Postman collection](docs/BarberQueue.postman_collection.json) is also included. Import it directly into Postman via **File > Import** to get every route pre-configured against `BACKEND_URL`.
 
@@ -303,49 +303,55 @@ A [Postman collection](docs/BarberQueue.postman_collection.json) is also include
 
 ## Roles & Permissions
 
-Four main roles exist in the system:
+Four roles exist in the system:
 
 ### `client` <!-- omit in toc -->
 
 - Browse available barbershops and view their live queue.
-- Join/leave a queue as an individual or as a group.
-- Choose a preferred barber or opt for the next available barber.
-- View personal turn details and, if in a group, view other group members' turns and group wait estimate.
-- Leave reviews to barbers and barbershops.
+- Join or leave a queue as an individual or as a group.
+- Choose a preferred barber or opt for the next available one.
+- View personal turn details and, if in a group, view other members' turns and the group wait estimate.
+- Leave reviews for barbers and barbershops.
 
 ### `barber` <!-- omit in toc -->
 
-- Sign in/out for service shifts and mark breaks.
+![Barber panel](docs/screenshots/barber_panel.png)
+
+- Sign in and out of service shifts and mark breaks.
 - View their personal queue with detailed information on assigned turns.
-- Start/finish service for a client.
+- Start and finish service for a client.
 - Access personal statistics and historical performance metrics.
 
 ### `assistant` <!-- omit in toc -->
 
 - Enqueue clients and groups on behalf of customers.
-- Provide a staff-facing view of the live queue to support front-desk operations.
-- Perform limited actions to support barbers (e.g., mark client as present, mark client as away).
+- Access a staff-facing view of the live queue to support front-desk operations.
+- Perform limited actions to support barbers (e.g. mark client as present, mark client as away).
 
 ### `admin` <!-- omit in toc -->
 
+![Admin panel](docs/screenshots/admin_panel.png)
+
 Full management of one or more barbershops they administer:
 
-- CRUD operations for employees (barbers & assistants).
-- Manage rules & settings: barbershop visibility, open/close times, maximum number of concurrent clients, allowed absence timeout, group policies, and queue assignment strategies.
+- CRUD operations for employees (barbers and assistants).
+- Manage rules and settings: visibility, open/close times and maximum concurrent clients.
 - Upload and manage barbershop photos and content.
-- View business-level dashboards, metrics and historical data.
+- View business-level dashboards, metrics, and historical data.
 - Moderate client reviews.
 
 ---
 
 ## Test Accounts
 
-Four sample users are included for testing. Password for all sample accounts: `app12345`
+Four sample accounts are included for testing. Password for all: `app12345`
 
-- [francisco.garcia@gmail.com](mailto:francisco.garcia@gmail.com) (`client`)
-- [gabriel.duarte@gmail.com](mailto:gabriel.duarte@gmail.com) (`barber`)
-- [frankie.jimenez@gmail.com](mailto:frankie.jimenez@gmail.com) (`assistant`)
-- [rafael.almonte@gmail.com](mailto:rafael.almonte@gmail.com) (`admin`)
+| Email                                                           | Role        |
+| --------------------------------------------------------------- | ----------- |
+| [francisco.garcia@gmail.com](mailto:francisco.garcia@gmail.com) | `client`    |
+| [gabriel.duarte@gmail.com](mailto:gabriel.duarte@gmail.com)     | `barber`    |
+| [frankie.jimenez@gmail.com](mailto:frankie.jimenez@gmail.com)   | `assistant` |
+| [rafael.almonte@gmail.com](mailto:rafael.almonte@gmail.com)     | `admin`     |
 
 ---
 
@@ -355,35 +361,35 @@ Contributions are welcome. Suggested workflow:
 
 1. Fork the repository.
 2. Create a feature branch: `feat/my-change`.
-3. Make your changes, ensuring they follow the existing code style.
+3. Make your changes following the existing code style.
 4. Include appropriate documentation or tests.
 5. Commit, push, and open a pull request describing the change and the reason for it.
 
 ### Pre-commit Hooks <!-- omit in toc -->
 
-This project uses [pre-commit](https://pre-commit.com/) to enforce code quality checks automatically before each commit. Run the following once from the **repo root** to set it up:
+This project uses [pre-commit](https://pre-commit.com/) to enforce code quality checks before each commit. Run once from the **repo root** to set it up:
 
 ```bash
 pip install pre-commit
-python3 -m pre_commit install
+pre-commit install
 ```
 
-After that, checks will run automatically on every `git commit`. To run them manually across all files:
+Checks run automatically on every `git commit`. To run them manually:
 
 ```bash
-python3 -m pre_commit run --all-files
+pre-commit run --all-files
 ```
 
 ---
 
 ## Authors
 
-| Name                            |       ID | Contact                                                    |
-| ------------------------------- | -------: | ---------------------------------------------------------- |
-| Roniel Antonio Sabala Germán    | 20240212 | [ronielsabala@gmail.com](ronielsabala@gmail.com)           |
-| Yerelin Vanessa Rosario Taveras | 20231751 | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com)   |
-| Idelka Regina Rodríguez Jáquez  | 20240255 | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
-| Jheinel Jesús Brown Curbata     | 20240017 | [jheinelbrown@gmail.com](jheinelbrown@gmail.com)           |
+| Name                            | Contact                                                    |
+| ------------------------------- | ---------------------------------------------------------- |
+| Roniel Antonio Sabala Germán    | [ronielsabala@gmail.com](ronielsabala@gmail.com)           |
+| Yerelin Vanessa Rosario Taveras | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com)   |
+| Jheinel Jesús Brown Curbata     | [jheinelbrown@gmail.com](jheinelbrown@gmail.com)           |
+| Idelka Regina Rodríguez Jáquez  | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
 
 ---
 
