@@ -342,7 +342,7 @@ Full management of one or more barbershops they administer:
 - View business-level dashboards and metrics.
 - Moderate client reviews.
 
-![Admin view](docs/screenshots/admin_view.png)
+![Admin view](docs/screenshots/admin_view.jpg)
 
 ---
 
