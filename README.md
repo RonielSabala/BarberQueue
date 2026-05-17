@@ -313,24 +313,26 @@ Four roles exist in the system:
 - View personal turn details and, if in a group, view other members' turns and the group wait estimate.
 - Leave reviews for barbers and barbershops.
 
-### `barber` <!-- omit in toc -->
+![Client reviews](docs/screenshots/client_reviews.png)
 
-![Barber panel](docs/screenshots/barber_panel.png)
+### `barber` <!-- omit in toc -->
 
 - Sign in and out of service shifts and mark breaks.
 - View their personal queue with detailed information on assigned turns.
 - Start and finish service for a client.
 - Access personal statistics and historical performance metrics.
 
+![Barber view](docs/screenshots/barber_view.png)
+
 ### `assistant` <!-- omit in toc -->
 
 - Enqueue clients and groups on behalf of customers.
 - Access a staff-facing view of the live queue to support front-desk operations.
-- Perform limited actions to support barbers (e.g. mark client as present, mark client as away).
+- Perform limited actions to support barbers (e.g. mark client as away).
+
+![Assistant view](docs/screenshots/assistant_view.png)
 
 ### `admin` <!-- omit in toc -->
-
-![Admin panel](docs/screenshots/admin_panel.png)
 
 Full management of one or more barbershops they administer:
 
@@ -339,6 +341,8 @@ Full management of one or more barbershops they administer:
 - Upload and manage barbershop photos and content.
 - View business-level dashboards, metrics, and historical data.
 - Moderate client reviews.
+
+![Admin panel](docs/screenshots/admin_panel.png)
 
 ---
 
