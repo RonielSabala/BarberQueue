@@ -2,7 +2,7 @@
 
 BarberQueue is a web application designed to improve the waiting experience at barbershops in the Dominican Republic. It provides real-time queue visualization, group handling, barber preference management, and basic administration tools so customers and businesses can better manage time, reduce uncertainty, and improve satisfaction.
 
-![App screenshot](docs/screenshots/hero_screenshot.jpg)
+![App screenshot](docs/screenshots/hero_screenshot.png)
 
 ---
 
@@ -48,7 +48,7 @@ BarberQueue gives customers and barbershops the tools to manage queues in real t
 - Barber preference selection lets clients choose a favorite barber or accept the next available one.
 - Administrative views and management tools support barbershop staff at every level.
 
-![Barbershop browsing](docs/screenshots/barbershop_browse.jpg)
+![Barbershop browsing](docs/screenshots/barbershop_browse.png)
 
 ---
 
@@ -313,7 +313,7 @@ Four roles exist in the system:
 - View personal turn details and, if in a group, view other members' turns and the group wait estimate.
 - Leave reviews for barbers and barbershops.
 
-![Client reviews](docs/screenshots/client_reviews.jpg)
+![Client reviews](docs/screenshots/client_reviews.png)
 
 ### `barber` <!-- omit in toc -->
 
@@ -322,7 +322,7 @@ Four roles exist in the system:
 - Start and finish service for a client.
 - Access personal statistics and historical performance metrics.
 
-![Barber workspace](docs/screenshots/barber_workspace.jpg)
+![Barber workspace](docs/screenshots/barber_workspace.png)
 
 ### `assistant` <!-- omit in toc -->
 
@@ -330,7 +330,7 @@ Four roles exist in the system:
 - Access a staff-facing view of the live queue to support front-desk operations.
 - Perform limited actions to support barbers (e.g. mark client as away).
 
-![Assistant view](docs/screenshots/assistant_view.jpg)
+![Assistant view](docs/screenshots/assistant_view.png)
 
 ### `admin` <!-- omit in toc -->
 
