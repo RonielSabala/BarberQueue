@@ -274,7 +274,7 @@ cd frontend
 npm run dev
 ```
 
-Open the URL configured in `FRONTEND_URL` in your browser. Use `Ctrl+C` to stop.
+Access at `FRONTEND_URL`. Use `Ctrl+C` to stop.
 
 ---
 
