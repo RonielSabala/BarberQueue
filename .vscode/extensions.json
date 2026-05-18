@@ -6,6 +6,7 @@
     "davidanson.vscode-markdownlint",
     "devsense.composer-php-vscode",
     "esbenp.prettier-vscode",
+    "inferrinizzard.prettier-sql-vscode",
     "junstyle.php-cs-fixer",
     "mehedidracula.php-namespace-resolver",
     "ms-python.python",

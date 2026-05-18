@@ -258,7 +258,7 @@ Use `Ctrl+C` to stop.
 
 **Option B. Use a VS Code extension (recommended):**
 
-1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in `.vscode/extensions.json`.
+1. Install the **PHP Server** extension (`brapifra.phpserver`), listed in [.vscode/extensions.json](.vscode/extensions.json).
 2. Open the Command Palette (`Ctrl+Shift+P`) and run **PHP Server: Reload project**.
 
 Use **PHP Server: Stop project** to stop.
