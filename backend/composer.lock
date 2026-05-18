@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "556c43ee4fd419fffa8260cad06a2b47",
+    "content-hash": "51a3b542dbbf289d1a3092fb4858b1e2",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -143,16 +143,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.441.0",
+            "version": "v0.441.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "9e3c10389ed39915261e5bc98a687c2b1307040d"
+                "reference": "b389588a2f9f375ec448d6cd8d0903d83c571ae0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/9e3c10389ed39915261e5bc98a687c2b1307040d",
-                "reference": "9e3c10389ed39915261e5bc98a687c2b1307040d",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/b389588a2f9f375ec448d6cd8d0903d83c571ae0",
+                "reference": "b389588a2f9f375ec448d6cd8d0903d83c571ae0",
                 "shasum": ""
             },
             "require": {
@@ -181,9 +181,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.441.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.441.1"
             },
-            "time": "2026-05-11T01:42:35+00:00"
+            "time": "2026-05-17T01:38:24+00:00"
         },
         {
             "name": "google/auth",
@@ -740,16 +740,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v7.1.0",
+            "version": "v7.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "e193b921a73e65bff40cab89ea0b0293be0e0c20"
+                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/e193b921a73e65bff40cab89ea0b0293be0e0c20",
-                "reference": "e193b921a73e65bff40cab89ea0b0293be0e0c20",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
+                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
                 "shasum": ""
             },
             "require": {
@@ -810,7 +810,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v7.1.0"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v7.1.1"
             },
             "funding": [
                 {
@@ -818,7 +818,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-15T14:22:59+00:00"
+            "time": "2026-05-18T08:06:14+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -3989,7 +3989,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
