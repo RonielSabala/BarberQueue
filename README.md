@@ -388,8 +388,8 @@ pre-commit run --all-files
 
 ## Authors
 
-| Name                            | Contact                                                    |
-| ------------------------------- | ---------------------------------------------------------- |
+| Name                            | Contact                                                           |
+| ------------------------------- | ----------------------------------------------------------------- |
 | Roniel Antonio Sabala Germán    | [ronielsabala@gmail.com](mailto:ronielsabala@gmail.com)           |
 | Yerelin Vanessa Rosario Taveras | [yerelinrosario26@gmail.com](mailto:yerelinrosario26@gmail.com)   |
 | Jheinel Jesús Brown Curbata     | [jheinelbrown@gmail.com](mailto:jheinelbrown@gmail.com)           |
