@@ -390,10 +390,10 @@ pre-commit run --all-files
 
 | Name                            | Contact                                                    |
 | ------------------------------- | ---------------------------------------------------------- |
-| Roniel Antonio Sabala Germán    | [ronielsabala@gmail.com](ronielsabala@gmail.com)           |
-| Yerelin Vanessa Rosario Taveras | [yerelinrosario26@gmail.com](yerelinrosario26@gmail.com)   |
-| Jheinel Jesús Brown Curbata     | [jheinelbrown@gmail.com](jheinelbrown@gmail.com)           |
-| Idelka Regina Rodríguez Jáquez  | [rodriguezidelka17@gmail.com](rodriguezidelka17@gmail.com) |
+| Roniel Antonio Sabala Germán    | [ronielsabala@gmail.com](mailto:ronielsabala@gmail.com)           |
+| Yerelin Vanessa Rosario Taveras | [yerelinrosario26@gmail.com](mailto:yerelinrosario26@gmail.com)   |
+| Jheinel Jesús Brown Curbata     | [jheinelbrown@gmail.com](mailto:jheinelbrown@gmail.com)           |
+| Idelka Regina Rodríguez Jáquez  | [rodriguezidelka17@gmail.com](mailto:rodriguezidelka17@gmail.com) |
 
 ---
 
