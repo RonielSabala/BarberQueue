@@ -2,7 +2,7 @@
 
 BarberQueue is a web application designed to improve the waiting experience at barbershops in the Dominican Republic. It provides real-time queue visualization, group handling, barber preference management, and basic administration tools so customers and businesses can better manage time, reduce uncertainty, and improve satisfaction.
 
-![App screenshot](docs/screenshots/hero_screenshot.jpg)
+![Hero](docs/screenshots/hero.jpg)
 
 ---
 
