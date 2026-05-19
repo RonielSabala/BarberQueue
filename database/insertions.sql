@@ -654,7 +654,7 @@ VALUES
         'Luimbert Style',
         'info@luimbertstyle.com',
         '8095451724',
-        ' Calle Duarte 88, Santiago de los Caballeros',
+        'Calle Duarte 88, Santiago de los Caballeros',
         'https://i.pinimg.com/736x/f6/98/04/f6980453f740b9f027a6bd5fd1d4bb03.jpg',
         '08:30:00',
         '22:00:00',
@@ -667,7 +667,7 @@ VALUES
         'Anton Barber',
         'info@antonbarber.com',
         '8298735683',
-        ' Av. Independencia 210, Santo Domingo',
+        'Av. Independencia 210, Santo Domingo',
         'https://i.pinimg.com/1200x/aa/df/b6/aadfb66c6719348e074fbe65e2e62fe3.jpg',
         '09:00:00',
         '20:30:00',
@@ -1004,42 +1004,42 @@ SET
 INSERT INTO
     barber_reviews (client_id, barber_id, rating, content, created_at)
 VALUES
-    (18, 12, 5, '11/10. Sin fallos', '2026-04-22 23:46:43'),
-    (21, 12, 5, 'El mejor papá', '2026-04-22 23:47:11'),
-    (18, 11, 5, 'Muy duro', '2026-04-23 02:10:19'),
-    (21, 12, 5, 'El mejor del mundo', '2026-04-23 02:13:20'),
-    (37, 8, 4, 'Muy buen trato la recomiendo 100%', '2026-04-23 14:09:32'),
-    (38, 8, 5, 'No hay fallo', '2026-04-23 14:14:10'),
+    (18, 12, 5, '11/10. Sin fallos', NOW() - INTERVAL 5 MINUTE),
+    (21, 12, 5, 'El mejor papá', NOW() - INTERVAL 6 MINUTE),
+    (18, 11, 5, 'Muy duro', NOW() - INTERVAL 7 MINUTE),
+    (21, 12, 5, 'El mejor del mundo', NOW() - INTERVAL 8 MINUTE),
+    (37, 8, 4, 'Muy buen trato la recomiendo 100%', NOW() - INTERVAL 9 MINUTE),
+    (38, 8, 5, 'No hay fallo', NOW() - INTERVAL 10 MINUTE),
     (
         39,
         45,
         3,
         'Winderson es bueno la verdad, pero le recomiendo que hable menos y rinda más. Buen corte gracias',
-        '2026-04-23 14:17:43'
+        NOW() - INTERVAL 11 MINUTE
     ),
     (
         40,
         45,
         4,
         'Fue mi primera vez que fuy y me gustó, todo bien. Lo recomiendo',
-        '2026-04-23 14:19:01'
+        NOW() - INTERVAL 12 MINUTE
     ),
-    (43, 33, 5, 'Rolando, el mejor!', '2026-04-23 14:21:36'),
-    (41, 10, 5, 'Sin duda volvería 1000 veces', '2026-04-23 14:22:49'),
-    (43, 10, 5, 'Buen muchacho muy sano excelente manos', '2026-04-23 14:23:48'),
-    (47, 9, 5, 'Duro, el muchacho no le bajes manito', '2026-04-23 14:26:58'),
-    (42, 9, 5, 'El mejor papá', '2026-04-23 14:29:20'),
-    (52, 46, 4, 'Duro', '2026-04-23 14:49:10'),
-    (55, 11, 5, 'Mi barbero es el final', '2026-04-23 14:51:39'),
-    (56, 14, 5, 'Siempre complacido', '2026-04-23 14:54:03'),
-    (58, 13, 5, 'Los mejores del país en servicio?', '2026-04-23 15:06:25'),
-    (25, 15, 5, 'The best', '2026-04-23 15:08:32'),
+    (43, 33, 5, 'Rolando, el mejor!', NOW() - INTERVAL 13 MINUTE),
+    (41, 10, 5, 'Sin duda volvería 1000 veces', NOW() - INTERVAL 14 MINUTE),
+    (43, 10, 5, 'Buen muchacho muy sano excelente manos', NOW() - INTERVAL 15 MINUTE),
+    (47, 9, 5, 'Duro, el muchacho no le bajes manito', NOW() - INTERVAL 16 MINUTE),
+    (42, 9, 5, 'El mejor papá', NOW() - INTERVAL 17 MINUTE),
+    (52, 46, 4, 'Duro', NOW() - INTERVAL 18 MINUTE),
+    (55, 11, 5, 'Mi barbero es el final', NOW() - INTERVAL 19 MINUTE),
+    (56, 14, 5, 'Siempre complacido', NOW() - INTERVAL 20 MINUTE),
+    (58, 13, 5, 'Los mejores del país en servicio?', NOW() - INTERVAL 21 MINUTE),
+    (25, 15, 5, 'The best', NOW() - INTERVAL 22 MINUTE),
     (
         59,
         14,
         5,
         'Excelente trato y calidad en el corte muy buena experiencia',
-        '2026-04-23 15:13:03'
+        NOW() - INTERVAL 23 MINUTE
     );
 
 -- BARBERSHOP REVIEWS
@@ -1051,33 +1051,33 @@ VALUES
         1,
         4,
         'Excelente servicio y calidad en los cortes. Desde que ingresas a la barbería se siente la calidad , profesionalismo y buen ambiente, lo recomiendo al 100%',
-        '2026-04-23 14:12:24'
+        NOW() - INTERVAL 5 MINUTE
     ),
-    (38, 2, 5, 'La mejor peluquería del mundo mundial!!!!', '2026-04-23 14:14:53'),
+    (38, 2, 5, 'La mejor peluquería del mundo mundial!!!!', NOW() - INTERVAL 6 MINUTE),
     (
         43,
         3,
         4,
         'Dios bendiga cada persona de este negocio familiar, se distingue en todo su calidad de servicio',
-        '2026-04-23 14:25:29'
+        NOW() - INTERVAL 7 MINUTE
     ),
     (
         52,
         4,
         5,
         'Excelente, nunca me puedo quejar, un buen ambiente, con un personal muy preparado y capacitado',
-        '2026-04-23 14:50:05'
+        NOW() - INTERVAL 8 MINUTE
     ),
     (
         56,
         5,
         5,
         'Cómo siempre, el final, pelan bacanisimo, y a buen precio.',
-        '2026-04-23 14:55:36'
+        NOW() - INTERVAL 9 MINUTE
     ),
-    (58, 4, 5, 'Buen servicio 100000/10', '2026-04-23 15:04:57'),
-    (52, 3, 5, 'Atención excelente', '2026-04-23 21:32:18'),
-    (65, 6, 5, 'excelente servicios', '2026-04-23 21:33:27');
+    (58, 4, 5, 'Buen servicio 100000/10', NOW() - INTERVAL 10 MINUTE),
+    (52, 3, 5, 'Atención excelente', NOW() - INTERVAL 11 MINUTE),
+    (65, 6, 5, 'excelente servicios', NOW() - INTERVAL 12 MINUTE);
 
 -- BARBERSHOP PHOTOS
 INSERT INTO

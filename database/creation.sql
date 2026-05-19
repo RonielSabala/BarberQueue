@@ -19,7 +19,7 @@ CREATE TABLE
         FOREIGN KEY (role_id) REFERENCES roles (id)
     );
 
--- PASSWORD_RESETS
+-- PASSWORD RESETS
 CREATE TABLE
     password_resets (
         id INT PRIMARY KEY AUTO_INCREMENT,
